@@ -1,0 +1,157 @@
+import React, { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Menu } from "lucide-react";
+
+interface SidebarLink {
+  name: string;
+  path: string;
+  icon: React.ReactNode;
+}
+
+interface SidebarProps {
+  title: string;
+  shortTitle: string;
+  links: SidebarLink[];
+}
+
+export default function Sidebar({ title, shortTitle, links }: SidebarProps) {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const isActive = (path: string) => {
+    return location.pathname.startsWith(path);
+  };
+
+  return (
+    <>
+      {/* ================= DESKTOP SIDEBAR ================= */}
+      <aside
+        onMouseEnter={() => setSidebarOpen(true)}
+        onMouseLeave={() => setSidebarOpen(false)}
+        className={`hidden md:flex flex-col bg-white shadow-md
+        transition-all duration-300 ease-in-out
+        ${sidebarOpen ? "w-64 p-6" : "w-20 p-3"}
+      `}
+      >
+        {/* Logo / Title */}
+        <div className="flex justify-center mb-8 transition-all duration-300">
+          <h1
+            className={`font-semibold text-gray-800 transition-all duration-300
+            ${sidebarOpen ? "text-lg" : "text-sm"}
+          `}
+          >
+            {sidebarOpen ? title : shortTitle}
+          </h1>
+        </div>
+
+        {/* Navigation */}
+        <nav className="flex-1">
+          <ul className="space-y-3">
+            {links.map((link) => {
+              const active = isActive(link.path);
+
+              return (
+                <li key={link.name}>
+                  <Link
+                    to={link.path}
+                    className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors
+                    ${
+                      active
+                        ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white"
+                        : "text-gray-700 hover:bg-gray-100"
+                    }
+                  `}
+                  >
+                    {link.icon}
+                    {sidebarOpen && <span>{link.name}</span>}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+      </aside>
+
+      {/* ================= MOBILE BOTTOM BAR ================= */}
+      <div className="fixed bottom-0 left-0 right-0 md:hidden z-50 bg-white border-t shadow">
+        <div className="flex justify-around items-center py-2">
+          {links.map((link) => {
+            const active = isActive(link.path);
+
+            return (
+              <button
+                key={link.name}
+                onClick={() => navigate(link.path)}
+                className={`flex flex-col items-center justify-center w-12 h-12 rounded-lg transition
+                ${active ? "text-blue-600" : "text-gray-500"}
+              `}
+              >
+                {link.icon}
+              </button>
+            );
+          })}
+
+          <button
+            onClick={() => setMobileMenuOpen(true)}
+            className="flex items-center justify-center w-12 h-12 rounded-lg text-gray-700"
+          >
+            <Menu size={24} />
+          </button>
+        </div>
+      </div>
+
+      {/* ================= MOBILE DRAWER ================= */}
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 z-50 flex">
+          <div
+            className="fixed inset-0 bg-black/40"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+
+          <aside className="relative w-64 bg-white shadow-lg p-6">
+            <button
+              className="absolute top-4 right-4 text-gray-600"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              ×
+            </button>
+
+            <div className="flex justify-center mb-6">
+              <h1 className="text-lg font-semibold">{title}</h1>
+            </div>
+
+            <nav>
+              <ul className="space-y-4">
+                {links.map((link) => {
+                  const active = isActive(link.path);
+
+                  return (
+                    <li key={link.name}>
+                      <Link
+                        to={link.path}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`flex items-center gap-3 px-3 py-2 rounded-lg transition
+                        ${
+                          active
+                            ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white"
+                            : "text-gray-700 hover:bg-gray-100"
+                        }
+                      `}
+                      >
+                        {link.icon}
+                        <span>{link.name}</span>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </nav>
+          </aside>
+        </div>
+      )}
+    </>
+  );
+}
