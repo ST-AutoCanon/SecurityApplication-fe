@@ -1,7 +1,8 @@
   import { useEffect, useState } from "react";
   import axios from "axios";
 
-  const API = "http://localhost:5000/api/org-super-admin";
+  // const API = "http://localhost:5000/api/org-super-admin";
+  const API = `${import.meta.env.VITE_BACKEND_URL}/api/org-super-admin`;
 
   const config = {
     withCredentials: true,
@@ -153,7 +154,7 @@
 
     return (
       <div className="max-w-7xl mx-auto p-6 text-gray-800">
-        <h1 className="text-3xl font-bold mb-6">Organisation Management</h1>
+        <h1 className="text-2xl md:text-3xl font-bold mb-6">Organisation Management</h1>
 
         <div className="bg-white shadow rounded-xl p-6 mb-8">
           <div className="grid md:grid-cols-2 gap-4">
@@ -230,7 +231,9 @@
             </div>
 
             <div>
-              <label className="block mb-2 text-sm font-medium">PAN Number</label>
+              <label className="block mb-2 text-sm font-medium">
+                PAN Number
+              </label>
               <input
                 value={panNumber}
                 onChange={(e) => setPanNumber(e.target.value)}
@@ -325,7 +328,9 @@
             </div>
 
             <div>
-              <label className="block mb-2 text-sm font-medium">Admin Last Name</label>
+              <label className="block mb-2 text-sm font-medium">
+                Admin Last Name
+              </label>
 
               <input
                 value={adminLastName}
@@ -364,23 +369,22 @@
             </div>
           </div>
 
-          <div className="flex gap-3 mt-6">
+          <div className="flex flex-col sm:flex-row gap-3 mt-6">
             <button
               onClick={handleSubmit}
-              className="bg-blue-600 text-white px-6 py-2 rounded"
+              className="w-full sm:w-auto bg-blue-600 text-white px-6 py-2 rounded"
             >
               Create
             </button>
           </div>
         </div>
 
-        <div className="bg-white shadow rounded-xl overflow-hidden">
-          <table className="w-full">
+        <div className="bg-white shadow rounded-xl overflow-x-auto">
+          <table className="min-w-full">
             <thead className="bg-gray-100">
               <tr>
                 <th className="text-left p-4">ID</th>
-                <th className="text-left p-4">Name</th>
-                <th className="text-left p-4">Org Code</th>
+                <th className="text-left p-4">Name</th>               
                 <th className="text-left p-4">Schema</th>
                 <th className="text-center p-4">Actions</th>
               </tr>
@@ -401,7 +405,7 @@
 
                   <td className="p-4">{org.org_name}</td>
 
-                  <td className="p-4">{org.org_code}</td>
+
 
                   <td className="p-4">{org.schema_name}</td>
 

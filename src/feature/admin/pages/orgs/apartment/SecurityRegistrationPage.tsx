@@ -2,7 +2,7 @@ import React, { useState, useContext } from "react";
 import axios from "axios";
 import { AuthContext } from "../../../../../context/AuthContext";
 
-// const API = "http://localhost:5000/api/admin";
+
 const API = `${import.meta.env.VITE_BACKEND_URL}/api/admin`;
 
 export default function SecurityRegistrationPage() {

@@ -106,7 +106,7 @@ const DeleteOrganisation = () => {
 
       {showConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="w-[380px] rounded-lg bg-white shadow-lg">
+          <div className="mx-4 w-full max-w-sm rounded-lg bg-white shadow-lg">
             <div className="flex items-center justify-between bg-red-600 px-4 py-3 text-white">
               <h3 className="font-semibold">Confirm Delete</h3>
 
@@ -141,10 +141,12 @@ const DeleteOrganisation = () => {
         </div>
       )}
 
-      <div className="min-h-screen bg-gradient-to-r from-[#4b1b7a] to-[#2d2a8c] p-6 text-gray-800">
+      <div className="min-h-screen bg-gradient-to-r from-[#4b1b7a] to-[#2d2a8c] px-4 py-6 sm:px-6 text-gray-800">
         <div className="mx-auto max-w-4xl">
-          <div className="rounded-2xl bg-white p-8 shadow-lg">
-            <h2 className="mb-6 text-3xl font-bold">Delete Organisation</h2>
+          <div className="rounded-2xl bg-white p-5 md:p-8 shadow-lg">
+            <h2 className="mb-6 text-2xl md:text-3xl font-bold">
+              Delete Organisation
+            </h2>
 
             <div className="space-y-6">
               <div>

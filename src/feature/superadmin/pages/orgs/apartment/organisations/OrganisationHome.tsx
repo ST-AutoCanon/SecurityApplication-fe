@@ -21,7 +21,7 @@ const OrganisationHome: React.FC = () => {
               : "bg-white/20 text-white hover:bg-white/30"
           }`}
         >
-          Create  Apartment Organisation
+          Create Organisation
         </button>
 
         <button

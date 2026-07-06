@@ -214,14 +214,7 @@ export default function VoiceRegisterPage() {
   // Update Form
   // =====================================
 
-  // const updateForm = (key: string, value: any) => {
-  //   setForm((prev) => ({
-  //     ...prev,
-  //     [key]: value,
-  //   }
 
-  //   ));
-  // };
 
 const updateForm = (key: string, value: any) => {
   setForm((prev) => {
@@ -558,32 +551,6 @@ if (
   // Submit
   // =====================================
 
-  // const submitRegistration = async () => {
-  //   if (!selectedModule) return;
-
-  //   try {
-  //     setLoading(true);
-
-  //     const res = await axios.post(
-  //       `${API}/dynamic-data/${organisationId}/${selectedModule.template_id}/${selectedModule.table_name}`,
-  //       formRef.current,
-  //       {
-  //         withCredentials: true,
-  //       },
-  //     );
-
-  //     console.log("res in voice assistance:", res);
-  //     setRegistrationId(res.data.id);
-
-  //     setCompleted(true);
-  //   } catch (err: any) {
-  //     console.error(err);
-
-  //     alert(err?.response?.data?.message || "Registration Failed");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
 
   const submitRegistration = async () => {

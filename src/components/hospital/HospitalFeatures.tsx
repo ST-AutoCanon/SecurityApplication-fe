@@ -42,37 +42,44 @@ const features = [
 
 export default function HospitalFeatures() {
   return (
-    <section className="py-24 bg-white">
-      <div className="max-w-7xl mx-auto px-6">
+    <section className="py-16 sm:py-20 lg:py-24 bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Heading */}
         <div className="text-center max-w-3xl mx-auto">
-          <h2 className="text-5xl font-bold text-slate-900">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900">
             Hospital Security Features
           </h2>
 
-          <p className="mt-6 text-lg text-slate-600 leading-8">
+          <p className="mt-4 sm:mt-6 text-sm sm:text-base lg:text-lg text-slate-600 leading-6 sm:leading-7 lg:leading-8">
             Designed for healthcare environments with strict security,
             compliance, and patient safety requirements.
           </p>
         </div>
 
         {/* Grid */}
-        <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-8 mt-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10 mt-12 sm:mt-14 lg:mt-16">
           {features.map((item, index) => {
             const Icon = item.icon;
 
             return (
               <div
                 key={index}
-                className="p-8 rounded-3xl bg-slate-50 border hover:shadow-xl transition"
+                className="group p-5 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl bg-slate-50 border border-slate-200 hover:shadow-xl transition-all duration-300"
               >
-                <Icon className="text-cyan-600" size={36} />
+                {/* Icon */}
+                <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-xl sm:rounded-2xl bg-cyan-50 flex items-center justify-center group-hover:scale-110 transition">
+                  <Icon className="text-cyan-600" size={22} />
+                </div>
 
-                <h3 className="text-xl font-bold mt-4 text-slate-900">
+                {/* Title */}
+                <h3 className="text-base sm:text-lg lg:text-xl font-bold mt-4 text-slate-900">
                   {item.title}
                 </h3>
 
-                <p className="text-slate-600 mt-3 leading-7">{item.desc}</p>
+                {/* Description */}
+                <p className="text-sm sm:text-base text-slate-600 mt-3 leading-6 sm:leading-7">
+                  {item.desc}
+                </p>
               </div>
             );
           })}
