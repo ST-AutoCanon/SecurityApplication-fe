@@ -49,45 +49,46 @@ const benefits = [
 
 export default function Benefits() {
   return (
-    <section className="py-24 bg-white">
-      <div className="max-w-7xl mx-auto px-6">
+    <section className="py-16 sm:py-20 lg:py-24 bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Heading */}
         <div className="text-center max-w-3xl mx-auto">
-          <span className="text-blue-600 font-semibold uppercase tracking-widest">
+          <span className="text-blue-600 font-semibold uppercase tracking-widest text-sm sm:text-base">
             Why Choose Smart Entry
           </span>
 
-          <h2 className="text-5xl font-bold text-slate-900 mt-4">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 mt-4 leading-tight">
             Built for Modern Residential Communities
           </h2>
 
-          <p className="mt-6 text-lg text-slate-600 leading-8">
+          <p className="mt-5 sm:mt-6 text-base sm:text-lg text-slate-600 leading-7 sm:leading-8">
             Smart Entry helps apartment associations improve security, automate
             visitor approvals, reduce manual work and deliver a seamless
             experience for residents and guests.
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8 mt-20">
-          {/* Left */}
-
-          <div className="lg:col-span-2 grid md:grid-cols-2 gap-8">
+        {/* Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-12 sm:mt-16 lg:mt-20">
+          {/* LEFT GRID */}
+          <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
             {benefits.map((benefit, index) => {
               const Icon = benefit.icon;
 
               return (
                 <div
                   key={index}
-                  className="rounded-3xl border border-slate-200 bg-slate-50 p-8 hover:shadow-xl hover:border-blue-500 transition"
+                  className="rounded-3xl border border-slate-200 bg-slate-50 p-6 sm:p-8 hover:shadow-xl hover:border-blue-500 transition"
                 >
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 flex items-center justify-center text-white">
-                    <Icon size={30} />
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 flex items-center justify-center text-white">
+                    <Icon size={26} className="sm:w-7 sm:h-7" />
                   </div>
 
-                  <h3 className="text-2xl font-bold mt-6 text-slate-900">
+                  <h3 className="text-xl sm:text-2xl font-bold mt-5 sm:mt-6 text-slate-900">
                     {benefit.title}
                   </h3>
 
-                  <p className="mt-4 text-slate-600 leading-7">
+                  <p className="mt-3 sm:mt-4 text-sm sm:text-base text-slate-600 leading-6 sm:leading-7">
                     {benefit.description}
                   </p>
                 </div>
@@ -95,19 +96,19 @@ export default function Benefits() {
             })}
           </div>
 
-          {/* Right */}
-
-          <div className="rounded-3xl bg-gradient-to-br from-[#020b3d] to-[#0a2b92] p-10 text-white">
-            <h3 className="text-3xl font-bold">
+          {/* RIGHT PANEL */}
+          <div className="rounded-3xl bg-gradient-to-br from-[#020b3d] to-[#0a2b92] p-6 sm:p-10 text-white">
+            <h3 className="text-2xl sm:text-3xl font-bold leading-tight">
               Trusted by Residential Communities
             </h3>
 
-            <p className="mt-5 text-gray-300 leading-8">
+            <p className="mt-4 sm:mt-5 text-sm sm:text-base text-gray-300 leading-7 sm:leading-8">
               Thousands of residents rely on Smart Entry every day to keep their
               homes secure and simplify visitor management.
             </p>
 
-            <div className="space-y-6 mt-10">
+            {/* Features list */}
+            <div className="space-y-4 sm:space-y-6 mt-8 sm:mt-10">
               {[
                 "End-to-End Visitor Authentication",
                 "Resident Approval Workflow",
@@ -118,37 +119,51 @@ export default function Benefits() {
                 "Complete Audit Trail",
                 "Cloud-Based Security Dashboard",
               ].map((item, index) => (
-                <div key={index} className="flex items-start gap-4">
-                  <CheckCircle2 className="text-cyan-400 mt-1" size={22} />
-
-                  <span className="text-gray-200">{item}</span>
+                <div key={index} className="flex items-start gap-3 sm:gap-4">
+                  <CheckCircle2 className="text-cyan-400 mt-1" size={20} />
+                  <span className="text-gray-200 text-sm sm:text-base leading-6">
+                    {item}
+                  </span>
                 </div>
               ))}
             </div>
 
-            <div className="grid grid-cols-2 gap-6 mt-12">
+            {/* Stats */}
+            <div className="grid grid-cols-2 gap-4 sm:gap-6 mt-10 sm:mt-12">
               <div>
-                <h2 className="text-4xl font-bold text-cyan-400">500+</h2>
-
-                <p className="text-gray-300 mt-2">Apartment Communities</p>
+                <h2 className="text-3xl sm:text-4xl font-bold text-cyan-400">
+                  500+
+                </h2>
+                <p className="text-gray-300 mt-2 text-sm sm:text-base">
+                  Apartment Communities
+                </p>
               </div>
 
               <div>
-                <h2 className="text-4xl font-bold text-cyan-400">1M+</h2>
-
-                <p className="text-gray-300 mt-2">Visitors Verified</p>
+                <h2 className="text-3xl sm:text-4xl font-bold text-cyan-400">
+                  1M+
+                </h2>
+                <p className="text-gray-300 mt-2 text-sm sm:text-base">
+                  Visitors Verified
+                </p>
               </div>
 
               <div>
-                <h2 className="text-4xl font-bold text-cyan-400">99.9%</h2>
-
-                <p className="text-gray-300 mt-2">Security Accuracy</p>
+                <h2 className="text-3xl sm:text-4xl font-bold text-cyan-400">
+                  99.9%
+                </h2>
+                <p className="text-gray-300 mt-2 text-sm sm:text-base">
+                  Security Accuracy
+                </p>
               </div>
 
               <div>
-                <h2 className="text-4xl font-bold text-cyan-400">24/7</h2>
-
-                <p className="text-gray-300 mt-2">Monitoring</p>
+                <h2 className="text-3xl sm:text-4xl font-bold text-cyan-400">
+                  24/7
+                </h2>
+                <p className="text-gray-300 mt-2 text-sm sm:text-base">
+                  Monitoring
+                </p>
               </div>
             </div>
           </div>

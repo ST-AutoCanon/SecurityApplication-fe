@@ -63,19 +63,19 @@ const features = [
 
 export default function ApartmentFeatures() {
   return (
-    <section className="bg-slate-50 py-24">
-      <div className="max-w-7xl mx-auto px-6">
+    <section className="bg-slate-50 py-16 sm:py-20 lg:py-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Heading */}
         <div className="text-center max-w-3xl mx-auto">
-          <span className="text-blue-600 font-semibold uppercase tracking-widest">
+          <span className="text-blue-600 font-semibold uppercase tracking-widest text-sm sm:text-base">
             Features
           </span>
 
-          <h2 className="mt-4 text-4xl lg:text-5xl font-bold text-slate-900">
+          <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 leading-tight">
             Complete Apartment Security Platform
           </h2>
 
-          <p className="mt-6 text-lg text-slate-600 leading-8">
+          <p className="mt-5 sm:mt-6 text-base sm:text-lg text-slate-600 leading-7 sm:leading-8">
             Smart Entry combines visitor authentication, resident approvals,
             digital gate management, delivery tracking, and real-time monitoring
             into one secure platform.
@@ -83,28 +83,28 @@ export default function ApartmentFeatures() {
         </div>
 
         {/* Feature Grid */}
-        <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-8 mt-20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 sm:gap-8 mt-12 sm:mt-16 lg:mt-20">
           {features.map((feature, index) => {
             const Icon = feature.icon;
 
             return (
               <div
                 key={index}
-                className="group bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition duration-300 border border-slate-200 hover:border-blue-500"
+                className="group bg-white rounded-3xl p-6 sm:p-8 shadow-lg hover:shadow-2xl transition duration-300 border border-slate-200 hover:border-blue-500"
               >
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 flex items-center justify-center text-white group-hover:scale-110 transition">
-                  <Icon size={30} />
+                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 flex items-center justify-center text-white group-hover:scale-110 transition">
+                  <Icon size={28} className="sm:w-8 sm:h-8" />
                 </div>
 
-                <h3 className="mt-6 text-2xl font-bold text-slate-900">
+                <h3 className="mt-5 sm:mt-6 text-xl sm:text-2xl font-bold text-slate-900">
                   {feature.title}
                 </h3>
 
-                <p className="mt-4 text-slate-600 leading-7">
+                <p className="mt-3 sm:mt-4 text-sm sm:text-base text-slate-600 leading-6 sm:leading-7">
                   {feature.description}
                 </p>
 
-                <button className="mt-6 flex items-center gap-2 text-blue-600 font-semibold group-hover:gap-4 transition-all">
+                <button className="mt-5 sm:mt-6 flex items-center gap-2 text-blue-600 font-semibold group-hover:gap-4 transition-all active:scale-95">
                   Learn More
                   <ArrowRight size={18} />
                 </button>
@@ -114,46 +114,62 @@ export default function ApartmentFeatures() {
         </div>
 
         {/* Bottom Highlight */}
-        <div className="mt-24 rounded-3xl bg-gradient-to-r from-[#020b3d] to-[#0a2b92] p-10 lg:p-16">
-          <div className="grid lg:grid-cols-2 gap-10 items-center">
+        <div className="mt-16 sm:mt-20 lg:mt-24 rounded-3xl bg-gradient-to-r from-[#020b3d] to-[#0a2b92] p-6 sm:p-10 lg:p-16">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+            {/* Text */}
             <div>
-              <h3 className="text-4xl font-bold text-white">
+              <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white leading-tight">
                 Everything Your Apartment Needs
               </h3>
 
-              <p className="mt-6 text-gray-300 text-lg leading-8">
+              <p className="mt-5 sm:mt-6 text-sm sm:text-base lg:text-lg text-gray-300 leading-7 sm:leading-8">
                 Replace paper registers with a secure digital visitor management
                 system. Monitor guests, staff, deliveries, and vehicles in
                 real-time while keeping residents informed through instant
                 notifications.
               </p>
 
-              <button className="mt-8 bg-white text-[#020b3d] px-8 py-4 rounded-xl font-semibold hover:scale-105 transition">
+              <button className="mt-6 sm:mt-8 bg-white text-[#020b3d] px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold hover:scale-105 active:scale-95 transition">
                 Schedule Demo
               </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-6">
-              <div className="bg-white/10 backdrop-blur rounded-2xl p-6 border border-white/20">
-                <h4 className="text-4xl font-bold text-cyan-400">99.9%</h4>
-                <p className="text-gray-300 mt-2">
+            {/* Stats */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+              <div className="bg-white/10 backdrop-blur rounded-2xl p-5 sm:p-6 border border-white/20">
+                <h4 className="text-3xl sm:text-4xl font-bold text-cyan-400">
+                  99.9%
+                </h4>
+                <p className="text-gray-300 mt-2 text-sm sm:text-base">
                   Secure Visitor Authentication
                 </p>
               </div>
 
-              <div className="bg-white/10 backdrop-blur rounded-2xl p-6 border border-white/20">
-                <h4 className="text-4xl font-bold text-cyan-400">24/7</h4>
-                <p className="text-gray-300 mt-2">Live Security Monitoring</p>
+              <div className="bg-white/10 backdrop-blur rounded-2xl p-5 sm:p-6 border border-white/20">
+                <h4 className="text-3xl sm:text-4xl font-bold text-cyan-400">
+                  24/7
+                </h4>
+                <p className="text-gray-300 mt-2 text-sm sm:text-base">
+                  Live Security Monitoring
+                </p>
               </div>
 
-              <div className="bg-white/10 backdrop-blur rounded-2xl p-6 border border-white/20">
-                <h4 className="text-4xl font-bold text-cyan-400">500+</h4>
-                <p className="text-gray-300 mt-2">Residential Communities</p>
+              <div className="bg-white/10 backdrop-blur rounded-2xl p-5 sm:p-6 border border-white/20">
+                <h4 className="text-3xl sm:text-4xl font-bold text-cyan-400">
+                  500+
+                </h4>
+                <p className="text-gray-300 mt-2 text-sm sm:text-base">
+                  Residential Communities
+                </p>
               </div>
 
-              <div className="bg-white/10 backdrop-blur rounded-2xl p-6 border border-white/20">
-                <h4 className="text-4xl font-bold text-cyan-400">1M+</h4>
-                <p className="text-gray-300 mt-2">Verified Visitors</p>
+              <div className="bg-white/10 backdrop-blur rounded-2xl p-5 sm:p-6 border border-white/20">
+                <h4 className="text-3xl sm:text-4xl font-bold text-cyan-400">
+                  1M+
+                </h4>
+                <p className="text-gray-300 mt-2 text-sm sm:text-base">
+                  Verified Visitors
+                </p>
               </div>
             </div>
           </div>

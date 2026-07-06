@@ -255,7 +255,7 @@ const [adminEmail, setAdminEmail] = useState("");
                   <option value="">-- Select --</option>
                   {organisations.map((org) => (
                     <option key={org.id} value={org.id}>
-                      {org.org_name} 
+                      {org.org_name}
                     </option>
                   ))}
                 </select>
@@ -278,7 +278,6 @@ const [adminEmail, setAdminEmail] = useState("");
                     onChange={(e) => setOrgName(e.target.value)}
                     className="rounded-xl border px-4 py-3 text-gray-700 placeholder-gray-400 focus:ring-2 focus:ring-blue-400 outline-none"
                   />
-                  
                 </div>
                 <div className="bg-gray-50 p-5 sm:p-6 rounded-xl border text-gray-700">
                   <h3 className="text-lg font-semibold text-gray-800 mb-5">
@@ -286,7 +285,6 @@ const [adminEmail, setAdminEmail] = useState("");
                   </h3>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
                     <div>
                       <label className="block text-gray-700 font-semibold mb-2">
                         Organisation Type
@@ -374,7 +372,7 @@ const [adminEmail, setAdminEmail] = useState("");
                       <option value="inactive">Inactive</option>
                     </select>
 
-                    <label className="flex items-center gap-2">
+                    <label className="flex items-center gap-2 pt-2 md:pt-8">
                       <input
                         type="checkbox"
                         checked={isActive}
@@ -399,21 +397,21 @@ const [adminEmail, setAdminEmail] = useState("");
                       className="rounded-xl border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-blue-400 outline-none text-gray-700"
                     /> */}
 
-                        <input
-      type="text"
-      placeholder="First Name"
-      value={adminFirstName}
-      onChange={(e) => setAdminFirstName(e.target.value)}
-      className="rounded-xl border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-blue-400 outline-none text-gray-700"
-    />
+                    <input
+                      type="text"
+                      placeholder="First Name"
+                      value={adminFirstName}
+                      onChange={(e) => setAdminFirstName(e.target.value)}
+                      className="rounded-xl border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-blue-400 outline-none text-gray-700"
+                    />
 
-    <input
-      type="text"
-      placeholder="Last Name"
-      value={adminLastName}
-      onChange={(e) => setAdminLastName(e.target.value)}
-      className="rounded-xl border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-blue-400 outline-none text-gray-700"
-    />
+                    <input
+                      type="text"
+                      placeholder="Last Name"
+                      value={adminLastName}
+                      onChange={(e) => setAdminLastName(e.target.value)}
+                      className="rounded-xl border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-blue-400 outline-none text-gray-700"
+                    />
 
                     <input
                       type="email"

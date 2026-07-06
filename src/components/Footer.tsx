@@ -7,8 +7,10 @@ export default function Footer() {
       {/* TOP SECTION */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
         {/* Brand */}
-        <div className="text-center sm:text-left">
-          <div className="flex items-center justify-center sm:justify-start gap-3 mb-4">
+        {/* <div className="text-center sm:text-left"> */}
+        <div className="text-left">
+          {/* <div className="flex items-center justify-center sm:justify-start gap-3 mb-4"> */}
+          <div className="flex items-center justify-start gap-3 mb-4">
             <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 flex items-center justify-center">
               <ShieldCheck size={22} />
             </div>
@@ -74,23 +76,24 @@ export default function Footer() {
         </div>
 
         {/* Contact */}
-        <div className="text-center sm:text-left">
+        {/* <div className="text-center sm:text-left"> */}
+        <div className="text-left">
           <h3 className="text-base sm:text-lg font-semibold mb-4 sm:mb-5">
             Contact
           </h3>
 
           <div className="space-y-3 sm:space-y-4 text-gray-400 text-xs sm:text-sm">
-            <div className="flex items-center justify-center sm:justify-start gap-3">
+            <div className="flex items-center gap-3">
               <MapPin size={18} className="text-cyan-400" />
               <span>Bengaluru, Karnataka</span>
             </div>
 
-            <div className="flex items-center justify-center sm:justify-start gap-3">
+            <div className="flex items-center gap-3">
               <Mail size={18} className="text-cyan-400" />
               <span className="break-all">support@smartentry.com</span>
             </div>
 
-            <div className="flex items-center justify-center sm:justify-start gap-3">
+            <div className="flex items-center gap-3">
               <Phone size={18} className="text-cyan-400" />
               <span>+91 95911 04481</span>
             </div>
