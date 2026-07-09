@@ -113,7 +113,7 @@ export default function SecurityRegistrationPage() {
           </div>
 
           <div>
-            <label className="block mb-2 font-medium">Phone</label>
+            <label className="block mb-2 font-medium">Phone Number</label>
 
             <input
               type="text"

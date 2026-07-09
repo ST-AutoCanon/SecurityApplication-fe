@@ -62,13 +62,21 @@ export default function HospitalFeatures() {
             const Icon = item.icon;
 
             return (
-              <div
+              // <div
+              //   key={index}
+              //   className="group p-5 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl bg-slate-50 border border-slate-200 hover:shadow-xl transition-all duration-300"
+              // >
+              //   {/* Icon */}
+              //   <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-xl sm:rounded-2xl bg-cyan-50 flex items-center justify-center group-hover:scale-110 transition">
+              //     <Icon className="text-cyan-600" size={22} />
+              //   </div>
+
+               <div
                 key={index}
-                className="group p-5 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl bg-slate-50 border border-slate-200 hover:shadow-xl transition-all duration-300"
+                className="group bg-white rounded-3xl p-6 sm:p-8 shadow-lg hover:shadow-2xl transition duration-300 border border-slate-200 hover:border-blue-500"
               >
-                {/* Icon */}
-                <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-xl sm:rounded-2xl bg-cyan-50 flex items-center justify-center group-hover:scale-110 transition">
-                  <Icon className="text-cyan-600" size={22} />
+                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 flex items-center justify-center text-white group-hover:scale-110 transition">
+                  <Icon size={28} className="sm:w-8 sm:h-8" />
                 </div>
 
                 {/* Title */}

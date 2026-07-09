@@ -1,4 +1,5 @@
   import { useEffect, useState } from "react";
+  import { Upload } from "lucide-react";
   import axios from "axios";
 
   // const API = "http://localhost:5000/api/org-super-admin";
@@ -200,7 +201,7 @@
               />
             </div>
             <div>
-              <label className="block mb-2 text-sm font-medium">Email</label>
+              <label className="block mb-2 text-sm font-medium">Email-Id</label>
               <input
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -292,7 +293,7 @@
               </select>
             </div>
 
-            <div className="md:col-span-2">
+            {/* <div className="md:col-span-2">
               <label className="block mb-2 text-sm font-medium">Photo</label>
               <input
                 type="file"
@@ -300,7 +301,48 @@
                 onChange={(e) => setPhoto(e.target.files?.[0] || null)}
                 className="w-full border rounded-lg p-3"
               />
-            </div>
+            </div> */}
+
+            <div className="md:col-span-2">
+  <label className="block mb-2 text-sm font-medium">
+    Photo
+  </label>
+
+  {/* <label
+    htmlFor="photo-upload"
+    className="flex items-center justify-between w-full border rounded-lg p-3 cursor-pointer hover:border-blue-500 transition"
+  >
+    <div className="flex items-center gap-2">
+      <Upload size={20} className="text-blue-600" />
+      <span className="font-medium">Choose File</span>
+    </div>
+
+<span className="text-gray-900 text-sm ml-2 truncate">
+  {photo ? photo.name : "No file chosen"}
+</span>
+  </label> */}
+  <label
+  htmlFor="photo-upload"
+  className="flex items-center gap-3 w-full border rounded-lg p-3 cursor-pointer hover:border-blue-500 transition"
+>
+  <div className="flex items-center gap-2">
+    <Upload size={18} className="text-blue-600" />
+    <span className="font-medium text-sm">Choose File</span>
+  </div>
+
+  <span className="text-xs text-gray-900 truncate">
+    {photo ? photo.name : "No file chosen"}
+  </span>
+</label>
+
+  <input
+    id="photo-upload"
+    type="file"
+    accept="image/*"
+    onChange={(e) => setPhoto(e.target.files?.[0] || null)}
+    className="hidden"
+  />
+</div>
 
             {/* Admin Name */}
             {/* <div>
@@ -342,7 +384,7 @@
             {/* Admin Phone */}
             <div>
               <label className="block mb-2 text-sm font-medium">
-                Admin Phone
+                Admin Phone number
               </label>
 
               <input
@@ -356,7 +398,7 @@
             {/* Admin Email */}
             <div className="md:col-span-2">
               <label className="block mb-2 text-sm font-medium">
-                Admin Email
+                Admin Email-Id
               </label>
 
               <input
