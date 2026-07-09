@@ -55,11 +55,11 @@ const UpdateOrganisation = () => {
   const [status, setStatus] = useState("active");
   const [isActive, setIsActive] = useState(true);
 
-const [adminFirstName, setAdminFirstName] = useState("");
-const [adminLastName, setAdminLastName] = useState("");
-const [adminEmail, setAdminEmail] = useState("");
+  const [adminFirstName, setAdminFirstName] = useState("");
+  const [adminLastName, setAdminLastName] = useState("");
+  const [adminEmail, setAdminEmail] = useState("");
   const [adminPhone, setAdminPhone] = useState("");
-  
+
   const [loading, setLoading] = useState(false);
   const [fetchingDetails, setFetchingDetails] = useState(false);
 
@@ -301,85 +301,139 @@ const [adminEmail, setAdminEmail] = useState("");
                         <option value="APARTMENT">APARTMENT</option>
                       </select>
                     </div>
-                    <input
-                      type="text"
-                      placeholder="Phone Number"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      className="rounded-xl border px-4 py-3"
-                    />
 
-                    <input
-                      type="email"
-                      placeholder="Organisation Email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="rounded-xl border px-4 py-3"
-                    />
+                    <div>
+                      <label className="block text-gray-700 font-semibold mb-2">
+                        Phone Number
+                      </label>
 
-                    <input
-                      type="text"
-                      placeholder="Address"
-                      value={address}
-                      onChange={(e) => setAddress(e.target.value)}
-                      className="rounded-xl border px-4 py-3"
-                    />
-
-                    <input
-                      type="text"
-                      placeholder="Aadhaar Number"
-                      value={aadhaarNumber}
-                      onChange={(e) => setAadhaarNumber(e.target.value)}
-                      className="rounded-xl border px-4 py-3"
-                    />
-
-                    <input
-                      type="text"
-                      placeholder="PAN Number"
-                      value={panNumber}
-                      onChange={(e) => setPanNumber(e.target.value)}
-                      className="rounded-xl border px-4 py-3"
-                    />
-
-                    <input
-                      type="text"
-                      placeholder="Passport Number"
-                      value={passportNumber}
-                      onChange={(e) => setPassportNumber(e.target.value)}
-                      className="rounded-xl border px-4 py-3"
-                    />
-
-                    <input
-                      type="date"
-                      value={registrationStartDate}
-                      onChange={(e) => setRegistrationStartDate(e.target.value)}
-                      className="rounded-xl border px-4 py-3"
-                    />
-
-                    <input
-                      type="date"
-                      value={registrationEndDate}
-                      onChange={(e) => setRegistrationEndDate(e.target.value)}
-                      className="rounded-xl border px-4 py-3"
-                    />
-
-                    <select
-                      value={status}
-                      onChange={(e) => setStatus(e.target.value)}
-                      className="rounded-xl border px-4 py-3"
-                    >
-                      <option value="active">Active</option>
-                      <option value="inactive">Inactive</option>
-                    </select>
-
-                    <label className="flex items-center gap-2 pt-2 md:pt-8">
                       <input
-                        type="checkbox"
-                        checked={isActive}
-                        onChange={(e) => setIsActive(e.target.checked)}
+                        type="text"
+                        placeholder="Phone Number"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        className="w-full rounded-xl border border-black-300 px-4 py-3
+focus:ring-2 focus:ring-blue-400 outline-none text-gray-700"
                       />
-                      Active
-                    </label>
+                    </div>
+                    <div>
+                      <label className="block text-gray-700 font-semibold mb-2">
+                        Email-Id
+                      </label>
+
+                      <input
+                        type="email"
+                        placeholder="Organisation Email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="w-full rounded-xl border border-black-300 px-4 py-3
+focus:ring-2 focus:ring-blue-400 outline-none text-gray-700"                      />
+                    </div>
+                    <div>
+                      <label className="block text-gray-700 font-semibold mb-2">
+                        Address
+                      </label>
+
+                      <input
+                        type="text"
+                        placeholder="Address"
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
+                        className="w-full rounded-xl border border-black-300 px-4 py-3
+focus:ring-2 focus:ring-blue-400 outline-none text-gray-700"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-gray-700 font-semibold mb-2">
+                        Aadhar Number
+                      </label>
+
+                      <input
+                        type="text"
+                        placeholder="Aadhaar Number"
+                        value={aadhaarNumber}
+                        onChange={(e) => setAadhaarNumber(e.target.value)}
+                        className="w-full rounded-xl border border-black-300 px-4 py-3
+focus:ring-2 focus:ring-blue-400 outline-none text-gray-700"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-gray-700 font-semibold mb-2">
+                        PAN number
+                      </label>
+
+                      <input
+                        type="text"
+                        placeholder="PAN Number"
+                        value={panNumber}
+                        onChange={(e) => setPanNumber(e.target.value)}
+                        className="w-full rounded-xl border border-black-300 px-4 py-3
+focus:ring-2 focus:ring-blue-400 outline-none text-gray-700"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-gray-700 font-semibold mb-2">
+                        Passport number
+                      </label>
+
+                      <input
+                        type="text"
+                        placeholder="Passport Number"
+                        value={passportNumber}
+                        onChange={(e) => setPassportNumber(e.target.value)}
+                        className="w-full rounded-xl border border-black-300 px-4 py-3
+focus:ring-2 focus:ring-blue-400 outline-none text-gray-700"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-gray-700 font-semibold mb-2">
+                        Registration Start Date
+                      </label>
+
+                      <input
+                        type="date"
+                        value={registrationStartDate}
+                        onChange={(e) => setRegistrationStartDate(e.target.value)}
+                        className="w-full rounded-xl border border-black-300 px-4 py-3
+focus:ring-2 focus:ring-blue-400 outline-none text-gray-700"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-gray-700 font-semibold mb-2">
+                        Registration End Date
+                      </label>
+
+                      <input
+                        type="date"
+                        value={registrationEndDate}
+                        onChange={(e) => setRegistrationEndDate(e.target.value)}
+                        className="w-full rounded-xl border border-black-300 px-4 py-3
+focus:ring-2 focus:ring-blue-400 outline-none text-gray-700"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-gray-700 font-semibold mb-2">
+                        Status
+                      </label>
+
+                      <select
+                        value={status}
+                        onChange={(e) => setStatus(e.target.value)}
+                        className="rounded-xl border px-4 py-3"
+                      >
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                      </select>
+
+                      <label className="flex items-center gap-2 pt-2 md:pt-8">
+                        <input
+                          type="checkbox"
+                          checked={isActive}
+                          onChange={(e) => setIsActive(e.target.checked)}
+                        />
+                        Active
+                      </label>
+                    </div>
                   </div>
                 </div>
                 {/* Admin Info */}

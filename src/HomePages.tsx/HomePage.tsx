@@ -119,10 +119,12 @@ export default function Home() {
                 </div>
 
                 {/* RIGHT */}
-                <div>
+                {/* <div> */}
+                <div className="relative">
+
                   <img
                     src={slide.image}
-                    className="rounded-2xl sm:rounded-3xl shadow-2xl w-full h-[260px] sm:h-[360px] lg:h-[520px] object-cover"
+                    className="rounded-2xl sm:rounded-3xl shadow-2xl w-full h-[200px] sm:h-[300px] lg:h-[480px] object-cover"
                     alt="slide"
                   />
                 </div>
