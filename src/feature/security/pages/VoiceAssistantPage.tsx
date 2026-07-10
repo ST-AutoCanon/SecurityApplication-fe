@@ -266,19 +266,64 @@ const updateForm = (key: string, value: any) => {
   // Ask Current Question
   // =====================================
 
-const askCurrentQuestion = async () => {
-  const field = fieldsRef.current[currentStepRef.current];
+// const askCurrentQuestion = async () => {
+//   const field = fieldsRef.current[currentStepRef.current];
 
-  if (!field) return;
+//   if (!field) return;
 
-  let message = field.field_label;
+//   let message = field.field_label;
 
-  if (!field.is_required) {
-    message += ". This field is optional. You may say Skip.";
-  }
+//   if (!field.is_required) {
+//     message += ". This field is optional. You may say Skip.";
+//   }
 
-  await speak(message);
-};
+//   await speak(message);
+// };
+
+  const askCurrentQuestion = async () => {
+    const field = fieldsRef.current[currentStepRef.current];
+
+    if (!field) return;
+
+    let message = field.field_label;
+
+    const key = field.field_key.toLowerCase();
+    const label = field.field_label.toLowerCase();
+
+    // Email field
+    if (key.includes("email") || label.includes("email")) {
+      message +=
+        ". Please say your email address clearly. For example, vinay at gmail dot com.";
+    }
+
+    // Date field
+    if (
+      key.includes("date") ||
+      key.includes("dob") ||
+      label.includes("date") ||
+      label.includes("birth")
+    ) {
+      message +=
+        ". Please say the date in Day Month Year format. For example, 10 July 1998.";
+    }
+
+    // Phone field
+    if (
+      key.includes("phone") ||
+      key.includes("mobile") ||
+      label.includes("phone") ||
+      label.includes("mobile")
+    ) {
+      message +=
+        ". Please say each digit one by one. For example, nine eight seven six five four three two one zero.";
+    }
+
+    if (!field.is_required) {
+      message += ". This field is optional. You may say Skip.";
+    }
+
+    await speak(message);
+  };
 
 useEffect(() => {
   if (
@@ -312,19 +357,24 @@ if (!field) {
     
     let value = answer.trim();
 
-    if (
-      field.field_key.toLowerCase().includes("email") ||
-      field.field_label.toLowerCase().includes("email")
-    ) {
-      value = value
-        .replace(/\s+at\s+/gi, "@")
-        .replace(/\s+dot\s+/gi, ".")
-        .replace(/\s+underscore\s+/gi, "_")
-        .replace(/\s+dash\s+/gi, "-")
-        .replace(/\s+hyphen\s+/gi, "-")
-        .replace(/\s+plus\s+/gi, "+")
-        .replace(/\s+/g, "");
-    }
+if (
+  field.field_key.toLowerCase().includes("email") ||
+  field.field_label.toLowerCase().includes("email")
+) {
+  value = value
+    .toLowerCase()
+    .trim()
+
+    // convert spoken words
+    .replace(/\bat\b/g, "@")
+    .replace(/\bdot\b/g, ".")
+    .replace(/\bunderscore\b/g, "_")
+    .replace(/\bhyphen\b|\bdash\b/g, "-")
+    .replace(/\bplus\b/g, "+")
+
+    // remove every remaining space
+    .replace(/\s+/g, "");
+}
 
     const lower = value.toLowerCase();
 
