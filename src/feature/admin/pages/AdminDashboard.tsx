@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import TopNav from "../components/TopNav";
-import SecurityRegistration from "./orgs/apartment/SecurityRegistrationPage";
+import SecurityManagement from "./orgs/all/SecurityManagement";
 import DynamicTableCreatePage from "./DynamicTableCreatePage";
 import DynamicTableUpdatePage from "./DynamicTableUpdatePage";
 import BusinessDataPage from "./BusinessDataPage";
@@ -45,7 +45,7 @@ export default function SuperAdminDashboard() {
         </div>
       </div>
     ),
-    "Create Security": <SecurityRegistration />,
+    "Create Security": <SecurityManagement />,
     "Manage Tables": <DynamicTableCreatePage />,
     "Update Tables": <DynamicTableUpdatePage />,
     "Business Data": <BusinessDataPage />
