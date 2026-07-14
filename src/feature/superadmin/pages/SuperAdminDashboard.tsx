@@ -1,8 +1,8 @@
 import { useLocation } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import TopNav from "../components/TopNav";
-import OrganisationHome from "./orgs/apartment/organisations/OrganisationHome";
-import UpdateOrganisation from "./orgs/apartment/organisations/UpdateOrganisation";
+import OrganisationHome from "./orgs/OrganisationHome";
+import UpdateOrganisation from "./orgs/UpdateOrganisation";
 
 export default function SuperAdminDashboard() {
   const { pathname } = useLocation();
@@ -18,12 +18,9 @@ export default function SuperAdminDashboard() {
 
   if (pathname.includes("create_organisation")) {
     activePage = "Create Organisation";
-  }
-  else if (pathname.includes("manage_organisation")) {
+  } else if (pathname.includes("manage_organisation")) {
     activePage = "Manage Organisation";
   }
- 
-
 
   const pageComponents: Record<string, JSX.Element> = {
     Dashboard: (
@@ -42,7 +39,6 @@ export default function SuperAdminDashboard() {
     ),
     "Create Organisation": <OrganisationHome />,
     "Manage Organisation": <UpdateOrganisation />,
-
   };
 
   return (

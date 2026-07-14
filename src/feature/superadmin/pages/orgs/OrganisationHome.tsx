@@ -2,10 +2,15 @@ import React, { useState } from "react";
 import CreateOrganisation from "./CreateOrganisation";
 import UpdateOrganisation from "./UpdateOrganisation";
 import DeleteOrganisation from "./deleteOrganisation";
+import OrganisationList from "./OrganisationList";
+import OrganisationDetails from "./OrganisationDetails";
 // comment test
 
 const OrganisationHome: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<"create" | "update" | "delete">(
+
+  const [selectedOrgId, setSelectedOrgId] = useState<number | null>(null);
+  
+  const [activeTab, setActiveTab] = useState<"create" | "update" | "delete" | "list" | "details">(
     "create",
   );
 
@@ -45,6 +50,28 @@ const OrganisationHome: React.FC = () => {
         >
           Delete Organisation
         </button>
+
+        <button
+          onClick={() => setActiveTab("list")}
+          className={`px-4 sm:px-5 py-2 rounded-full font-medium transition-colors ${
+            activeTab === "list"
+              ? "bg-white text-purple-700"
+              : "bg-white/20 text-white hover:bg-white/30"
+          }`}
+        >
+          List Organisations
+        </button>
+
+        <button
+          onClick={() => setActiveTab("details")}
+          className={`px-4 sm:px-5 py-2 rounded-full font-medium transition-colors ${
+            activeTab === "details"
+              ? "bg-white text-purple-700"
+              : "bg-white/20 text-white hover:bg-white/30"
+          }`}
+        >
+          Organisation Details
+        </button>
       </div>
 
       {/* ================= CONTENT ================= */}
@@ -52,6 +79,27 @@ const OrganisationHome: React.FC = () => {
         {activeTab === "create" && <CreateOrganisation />}
         {activeTab === "update" && <UpdateOrganisation />}
         {activeTab === "delete" && <DeleteOrganisation />}
+        {/* {activeTab === "list" && <OrganisationList />}
+        {activeTab === "details" && <OrganisationDetails />} */}
+
+        {activeTab === "list" && (
+          <OrganisationList
+            onView={(id) => {
+              console.log("Selected Org:", id);
+
+              setSelectedOrgId(id);
+
+              setActiveTab("details");
+            }}
+          />
+        )}
+
+        {activeTab === "details" && (
+          <OrganisationDetails
+            organisationId={selectedOrgId}
+            onBack={() => setActiveTab("list")}
+          />
+        )}
       </div>
     </div>
   );
