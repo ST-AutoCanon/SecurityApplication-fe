@@ -10,7 +10,6 @@
   };
 
   export default function OrganisationPage() {
-    const [organisations, setOrganisations] = useState<any[]>([]);
 
     const [orgname, setOrgName] = useState("");
     const [email, setEmail] = useState("");
@@ -29,110 +28,66 @@
   const [adminLastName, setAdminLastName] = useState("");
   const [adminEmail, setAdminEmail] = useState("");
   const [adminPhone, setAdminPhone] = useState("");
-    const [editingId, setEditingId] = useState<number | null>(null);
 
-    const loadOrganisations = async () => {
-      try {
-        const res = await axios.get(API, config);
+const handleSubmit = async () => {
+  try {
+    if (!orgname.trim()) {
+      alert("Organisation Name Required");
+      return;
+    }
 
-        setOrganisations(res.data.data || []);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+    if (!adminEmail.trim()) {
+      alert("Admin Email Required");
+      return;
+    }
 
-    useEffect(() => {
-      loadOrganisations();
-    }, []);
+    const formData = new FormData();
 
-    const handleSubmit = async () => {
-      try {
-        if (!orgname.trim()) {
-          alert("Organisation Name Required");
-          return;
-        }
+    formData.append("org_name", orgname);
+    formData.append("org_type", orgType);
+    formData.append("phone", phone);
+    formData.append("email", email);
+    formData.append("address", address);
+    formData.append("aadhaar_number", aadhaarNumber);
+    formData.append("pan_number", panNumber);
+    formData.append("passport_number", passportNumber);
+    formData.append("registration_start_date", registrationStartDate);
+    formData.append("registration_end_date", registrationEndDate);
+    formData.append("status", status);
 
-        if (!editingId) {
+    formData.append(
+      "admin",
+      JSON.stringify({
+        first_name: adminFirstName,
+        last_name: adminLastName,
+        email: adminEmail,
+        phone: adminPhone,
+      }),
+    );
 
+    if (photo) {
+      formData.append("photo", photo);
+    }
 
-    
+    await axios.post(`${API}/register`, formData, {
+      withCredentials: true,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
 
-          if (!adminEmail.trim()) {
-            alert("Admin Email Required");
-            return;
-          }
-
-
-          const formData = new FormData();
-
-          formData.append("org_name", orgname);
-          formData.append("org_type", orgType);
-          formData.append("phone", phone);
-          formData.append("email", email);
-          formData.append("address", address);
-          formData.append("aadhaar_number", aadhaarNumber);
-          formData.append("pan_number", panNumber);
-          formData.append("passport_number", passportNumber);
-          formData.append("registration_start_date", registrationStartDate);
-          formData.append("registration_end_date", registrationEndDate);
-          formData.append("status", status);
-
-          formData.append(
-            "admin",
-            JSON.stringify({
-              first_name: adminFirstName,
-              last_name: adminLastName,
-              email: adminEmail,
-              phone: adminPhone,
-            }),
-          );
-          
-          if (photo) {
-            formData.append("photo", photo);
-          }
-
-          await axios.post(`${API}/register`, formData, {
-            withCredentials: true,
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          });
-
-          alert("Organisation Created");
-        } else {
-          await axios.put(
-            `${API}/${editingId}`,
-            {
-              org_name: orgname,
-              admin: {
-                first_name: adminFirstName,
-                last_name: adminLastName,
-                email: adminEmail,
-                phone: adminPhone,
-              },
-            },
-            config,
-          );
-
-          alert("Organisation Updated");
-        }
-
-        resetForm();
-        loadOrganisations();
-      } catch (error: any) {
-          console.log("FULL ERROR:", error);
-        console.log("RESPONSE:", error?.response?.data);
-        
-        alert(error?.response?.data?.message || "Something went wrong");
-      }
-    };
-
-
+    alert("Organisation Created");
+    resetForm();
+  } catch (error: any) {
+    console.log(error);
+    alert(error?.response?.data?.message || "Something went wrong");
+  }
+};
 
 
 
     const resetForm = () => {
-      setEditingId(null);
+     
 
       setOrgName("");
       setOrgType("");
@@ -147,7 +102,7 @@
       setAadhaarNumber("");
       setPanNumber("");
       setPassportNumber("");
-      setPhoto("");
+    setPhoto(null);
       setRegistrationStartDate("");
       setRegistrationEndDate("");
       setStatus("");
@@ -155,7 +110,9 @@
 
     return (
       <div className="max-w-7xl mx-auto p-6 text-gray-800">
-        <h1 className="text-2xl md:text-3xl font-bold mb-6">Organisation Management</h1>
+        <h1 className="text-2xl md:text-3xl font-bold mb-6 text-white">
+          Organisation Management
+        </h1>
 
         <div className="bg-white shadow rounded-xl p-6 mb-8">
           <div className="grid md:grid-cols-2 gap-4">
@@ -304,11 +261,9 @@
             </div> */}
 
             <div className="md:col-span-2">
-  <label className="block mb-2 text-sm font-medium">
-    Photo
-  </label>
+              <label className="block mb-2 text-sm font-medium">Photo</label>
 
-  {/* <label
+              {/* <label
     htmlFor="photo-upload"
     className="flex items-center justify-between w-full border rounded-lg p-3 cursor-pointer hover:border-blue-500 transition"
   >
@@ -321,28 +276,28 @@
   {photo ? photo.name : "No file chosen"}
 </span>
   </label> */}
-  <label
-  htmlFor="photo-upload"
-  className="flex items-center gap-3 w-full border rounded-lg p-3 cursor-pointer hover:border-blue-500 transition"
->
-  <div className="flex items-center gap-2">
-    <Upload size={18} className="text-blue-600" />
-    <span className="font-medium text-sm">Choose File</span>
-  </div>
+              <label
+                htmlFor="photo-upload"
+                className="flex items-center gap-3 w-full border rounded-lg p-3 cursor-pointer hover:border-blue-500 transition"
+              >
+                <div className="flex items-center gap-2">
+                  <Upload size={18} className="text-blue-600" />
+                  <span className="font-medium text-sm">Choose File</span>
+                </div>
 
-  <span className="text-xs text-gray-900 truncate">
-    {photo ? photo.name : "No file chosen"}
-  </span>
-</label>
+                <span className="text-xs text-gray-900 truncate">
+                  {photo ? photo.name : "No file chosen"}
+                </span>
+              </label>
 
-  <input
-    id="photo-upload"
-    type="file"
-    accept="image/*"
-    onChange={(e) => setPhoto(e.target.files?.[0] || null)}
-    className="hidden"
-  />
-</div>
+              <input
+                id="photo-upload"
+                type="file"
+                accept="image/*"
+                onChange={(e) => setPhoto(e.target.files?.[0] || null)}
+                className="hidden"
+              />
+            </div>
 
             {/* Admin Name */}
             {/* <div>
@@ -416,50 +371,9 @@
               onClick={handleSubmit}
               className="w-full sm:w-auto bg-blue-600 text-white px-6 py-2 rounded"
             >
-              Create
+              Create Organisation
             </button>
           </div>
-        </div>
-
-        <div className="bg-white shadow rounded-xl overflow-x-auto">
-          <table className="min-w-full">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="text-left p-4">ID</th>
-                <th className="text-left p-4">Name</th>               
-                <th className="text-left p-4">Schema</th>
-                <th className="text-center p-4">Actions</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {organisations.length === 0 && (
-                <tr>
-                  <td colSpan={5} className="text-center p-6">
-                    No Organisations Found
-                  </td>
-                </tr>
-              )}
-
-              {organisations.map((org) => (
-                <tr key={org.id} className="border-t">
-                  <td className="p-4">{org.id}</td>
-
-                  <td className="p-4">{org.org_name}</td>
-
-
-
-                  <td className="p-4">{org.schema_name}</td>
-
-                  <td className="p-4">
-                    <div className="flex justify-center gap-2">
-                      <button className="px-4 py-2 rounded">-</button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
         </div>
       </div>
     );

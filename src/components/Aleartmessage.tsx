@@ -3,35 +3,52 @@ import { CheckCircle, XCircle, X } from "lucide-react";
 export default function Alert({ type, message, onClose }) {
   const isSuccess = type === "success";
 
+  const styles = isSuccess
+    ? {
+        border: "border-emerald-500",
+        icon: "text-emerald-500",
+        button: "bg-emerald-500 hover:bg-emerald-600",
+        title: "Success",
+        Icon: CheckCircle,
+      }
+    : {
+        border: "border-rose-500",
+        icon: "text-rose-500",
+        button: "bg-rose-500 hover:bg-rose-600",
+        title: "Error",
+        Icon: XCircle,
+      };
+
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center">
       <div
-        className={`w-[360px] rounded-lg shadow-lg bg-white border
-        ${isSuccess ? "border-green-400" : "border-red-400"}`}
+        className={`w-[380px] overflow-hidden rounded-xl bg-white shadow-2xl border-l-4 ${styles.border}`}
       >
         {/* Header */}
-        <div
-          className={`flex items-center justify-between px-4 py-3 text-white
-          ${isSuccess ? "bg-green-500" : "bg-red-500"}`}
-        >
-          <div className="flex items-center gap-2 font-semibold">
-            {isSuccess ? <CheckCircle size={18} /> : <XCircle size={18} />}
-            {isSuccess ? "Success" : "Error"}
+        <div className="flex items-center justify-between bg-[#020b3d] px-5 py-4 text-white">
+          <div className="flex items-center gap-3">
+            <styles.Icon className={styles.icon} size={24} />
+            <h2 className="text-lg font-semibold">{styles.title}</h2>
           </div>
-          <button onClick={onClose}>
+
+          <button
+            onClick={onClose}
+            className="rounded p-1 transition hover:bg-white/10"
+          >
             <X size={18} />
           </button>
         </div>
 
         {/* Body */}
-        <div className="p-4 text-gray-700 text-sm">{message}</div>
+        <div className="px-5 py-6">
+          <p className="text-sm leading-6 text-gray-600">{message}</p>
+        </div>
 
         {/* Footer */}
-        <div className="flex justify-end px-4 pb-4">
+        <div className="flex justify-end gap-3 border-t bg-gray-50 px-5 py-4">
           <button
             onClick={onClose}
-            className={`px-4 py-1.5 rounded text-white text-sm
-            ${isSuccess ? "bg-green-600" : "bg-red-600"}`}
+            className={`rounded-lg px-5 py-2 text-sm font-medium text-white transition ${styles.button}`}
           >
             OK
           </button>

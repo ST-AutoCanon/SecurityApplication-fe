@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import Alert from "../../../../../../components/Aleartmessage";
+import Alert from "../../../../components/Aleartmessage";
 
 type Organisation = {
   id: number;
@@ -54,6 +54,8 @@ const UpdateOrganisation = () => {
   const [registrationEndDate, setRegistrationEndDate] = useState("");
   const [status, setStatus] = useState("active");
   const [isActive, setIsActive] = useState(true);
+
+  const [photo, setPhoto] = useState<File | null>(null);
 
   const [adminFirstName, setAdminFirstName] = useState("");
   const [adminLastName, setAdminLastName] = useState("");
@@ -135,7 +137,6 @@ const UpdateOrganisation = () => {
     }
   };
 
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -150,34 +151,74 @@ const UpdateOrganisation = () => {
     try {
       setLoading(true);
 
-      const payload = {
-        org_name: orgname,
-        phone: phone,
-        email,
-        address,
-        aadhaar_number: aadhaarNumber,
-        pan_number: panNumber,
-        passport_number: passportNumber,
-        registration_start_date: registrationStartDate,
-        registration_end_date: registrationEndDate,
-        status,
-        is_active: isActive,
+      // const payload = {
+      //   org_name: orgname,
+      //   phone: phone,
+      //   email,
+      //   address,
+      //   aadhaar_number: aadhaarNumber,
+      //   pan_number: panNumber,
+      //   passport_number: passportNumber,
+      //   registration_start_date: registrationStartDate,
+      //   registration_end_date: registrationEndDate,
+      //   status,
+      //   is_active: isActive,
 
-        admin: {
+      //   admin: {
+      //     first_name: adminFirstName,
+      //     last_name: adminLastName,
+      //     email: adminEmail,
+      //     phone: adminPhone,
+      //   },
+      // };
+
+      const formData = new FormData();
+
+      formData.append("org_name", orgname);
+      formData.append("org_type", orgType);
+      formData.append("phone", phone);
+      formData.append("email", email);
+      formData.append("address", address);
+      formData.append("aadhaar_number", aadhaarNumber);
+      formData.append("pan_number", panNumber);
+      formData.append("passport_number", passportNumber);
+      formData.append("registration_start_date", registrationStartDate);
+      formData.append("registration_end_date", registrationEndDate);
+      formData.append("status", status);
+      formData.append("is_active", String(isActive));
+
+      formData.append(
+        "admin",
+        JSON.stringify({
           first_name: adminFirstName,
           last_name: adminLastName,
           email: adminEmail,
           phone: adminPhone,
-        },
-      };
+        }),
+      );
 
-      const res = await axios.put<ApiResponse>(
+      if (photo) {
+        formData.append("photo", photo);
+      }
+
+      const res = await axios.put(
         `${ADMIN_API_BASE}/org-super-admin/${selectedOrgId}`,
-        payload,
+        formData,
         {
           withCredentials: true,
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         },
       );
+
+      // const res = await axios.put<ApiResponse>(
+      //   `${ADMIN_API_BASE}/org-super-admin/${selectedOrgId}`,
+      //   payload,
+      //   {
+      //     withCredentials: true,
+      //   },
+      // );
 
       setAlert({
         type: res.data.success ? "success" : "error",
@@ -327,7 +368,23 @@ focus:ring-2 focus:ring-blue-400 outline-none text-gray-700"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         className="w-full rounded-xl border border-black-300 px-4 py-3
-focus:ring-2 focus:ring-blue-400 outline-none text-gray-700"                      />
+focus:ring-2 focus:ring-blue-400 outline-none text-gray-700"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-gray-700 font-semibold mb-2">
+                        Organisation Photo
+                      </label>
+
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          if (e.target.files?.length) {
+                            setPhoto(e.target.files[0]);
+                          }
+                        }}
+                      />
                     </div>
                     <div>
                       <label className="block text-gray-700 font-semibold mb-2">
@@ -393,7 +450,9 @@ focus:ring-2 focus:ring-blue-400 outline-none text-gray-700"
                       <input
                         type="date"
                         value={registrationStartDate}
-                        onChange={(e) => setRegistrationStartDate(e.target.value)}
+                        onChange={(e) =>
+                          setRegistrationStartDate(e.target.value)
+                        }
                         className="w-full rounded-xl border border-black-300 px-4 py-3
 focus:ring-2 focus:ring-blue-400 outline-none text-gray-700"
                       />

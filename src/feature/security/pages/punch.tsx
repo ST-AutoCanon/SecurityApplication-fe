@@ -20,8 +20,11 @@ export default function FacePunch() {
   const [cameraOpen, setCameraOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const punchedRef = useRef(false);
 
-  const organisationId = 32;
+  const retryCountRef = useRef(0);
+
+  const MAX_RETRIES = 3;
 
   // ---------------- Models ----------------
   useEffect(() => {
@@ -83,13 +86,39 @@ export default function FacePunch() {
         },
       );
 
+      // if (res.data?.success) {
+      //   setMessage(`✅ Punch Successful : ${res.data.data.full_name}`);
+      // } else {
+      //   setMessage(`❌ ${res.data?.message || "Punch Failed"}`);
+      // }
+
       if (res.data?.success) {
         setMessage(`✅ Punch Successful : ${res.data.data.full_name}`);
-      } else {
-        setMessage(`❌ ${res.data?.message || "Punch Failed"}`);
+        punchedRef.current = true;
+        retryCountRef.current = 0;
+        setCameraOpen(false);
+        return;
       }
 
-      setCameraOpen(false);
+      // Face not recognized
+      retryCountRef.current++;
+
+retryCountRef.current++;
+
+if (retryCountRef.current < MAX_RETRIES) {
+  setMessage(
+    `❌ Face not recognized. Retrying (${retryCountRef.current}/${MAX_RETRIES})...`,
+  );
+  return;
+}
+
+setMessage("❌ Face not recognized after 3 attempts.");
+
+setTimeout(() => {
+  setCameraOpen(false);
+  retryCountRef.current = 0;
+  punchedRef.current = false;
+}, 2000);
     } catch (err: any) {
       setMessage(err?.response?.data?.message || "Server Error");
     } finally {
@@ -97,6 +126,40 @@ export default function FacePunch() {
     }
   };
 
+
+  useEffect(() => {
+ if (!cameraOpen || !modelsLoaded) return;
+
+  const interval = setInterval(async () => {
+    // if (loading || punchedRef.current) return;
+if (loading || punchedRef.current || retryCountRef.current >= MAX_RETRIES)
+  return;
+    const imageSrc = webcamRef.current?.getScreenshot();
+    if (!imageSrc) return;
+
+    const img = await faceapi.fetchImage(imageSrc);
+
+    const detection = await faceapi
+      .detectSingleFace(img, new faceapi.TinyFaceDetectorOptions())
+      .withFaceLandmarks()
+      .withFaceDescriptor();
+
+    // if (detection) {
+    //   punchedRef.current = true;
+    //   punchFace();
+    // }
+
+    if (detection) {
+  punchFace();
+    }
+    
+    // punchedRef.current = true;
+  }, 1000); // Check every 1 second
+
+  return () => clearInterval(interval);
+}, [cameraOpen, modelsLoaded, loading]);
+
+  
   return (
     <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 flex items-center justify-center px-5 py-10">
       {/* Background Blur */}
@@ -184,7 +247,13 @@ export default function FacePunch() {
 
             {!cameraOpen && (
               <button
-                onClick={() => setCameraOpen(true)}
+                // onClick={() => setCameraOpen(true)}
+                onClick={() => {
+                  punchedRef.current = false;
+                  retryCountRef.current = 0;
+                  setMessage("");
+                  setCameraOpen(true);
+                }}
                 disabled={!modelsLoaded}
                 className="group w-full relative overflow-hidden rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 py-4 font-semibold text-white transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-[0_0_35px_rgba(6,182,212,.5)] disabled:opacity-40"
               >
@@ -248,24 +317,6 @@ export default function FacePunch() {
                 </div>
 
                 {/* Punch Button */}
-
-                <button
-                  onClick={punchFace}
-                  disabled={loading}
-                  className="group w-full rounded-2xl bg-gradient-to-r from-green-500 to-emerald-600 py-4 text-white font-semibold transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-[0_0_35px_rgba(34,197,94,.5)] disabled:opacity-60"
-                >
-                  {loading ? (
-                    <div className="flex items-center justify-center gap-3">
-                      <Loader2 className="animate-spin" size={22} />
-                      Processing Face...
-                    </div>
-                  ) : (
-                    <div className="flex items-center justify-center gap-3">
-                      <ScanFace size={22} />
-                      Punch In
-                    </div>
-                  )}
-                </button>
 
                 {/* Close Camera */}
 

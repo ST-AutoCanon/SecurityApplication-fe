@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import TopNav from "../components/TopNav";
-import SecurityRegistration from "./SecurityRegistrationPage";
+import SecurityRegistration from "./punch";
 // import DynamicRegisterPage from "./DynamicRegisterPage";
 import DynamicRegisterPage from "./VoiceAssistantPage";
 

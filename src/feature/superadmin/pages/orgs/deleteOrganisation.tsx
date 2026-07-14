@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import Alert from "../../../../../../components/Aleartmessage";
+import Alert from "../../../../components/Aleartmessage";
 import { X } from "lucide-react";
 
 type Organisation = {
   id: number;
   org_name: string;
-  org_code: string;
 };
 
 type ApiResponse<T = any> = {
@@ -115,14 +114,14 @@ const DeleteOrganisation = () => {
               </button>
             </div>
 
-            <div className="p-5">
+            <div className="p-5 text-gray-700">
               <p>Are you sure you want to delete this organisation?</p>
             </div>
 
             <div className="flex justify-end gap-2 px-4 pb-4">
               <button
                 onClick={() => setShowConfirm(false)}
-                className="rounded bg-gray-200 px-4 py-2"
+                className="rounded bg-gray-200 px-4 py-2 text-gray-700"
               >
                 Cancel
               </button>
@@ -167,7 +166,7 @@ const DeleteOrganisation = () => {
 
                   {organisations.map((org) => (
                     <option key={org.id} value={org.id}>
-                      {org.org_name} ({org.org_code})
+                      {org.org_name}
                     </option>
                   ))}
                 </select>
