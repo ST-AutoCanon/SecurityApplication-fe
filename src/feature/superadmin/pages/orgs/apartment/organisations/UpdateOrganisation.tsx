@@ -451,6 +451,11 @@ focus:ring-2 focus:ring-blue-400 outline-none text-gray-700"
                       className="rounded-xl border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-blue-400 outline-none text-gray-700"
                     /> */}
 
+<div>
+                      <label className="block text-gray-700 font-semibold mb-2">
+                        Admin First name
+                      </label>
+
                     <input
                       type="text"
                       placeholder="First Name"
@@ -458,6 +463,11 @@ focus:ring-2 focus:ring-blue-400 outline-none text-gray-700"
                       onChange={(e) => setAdminFirstName(e.target.value)}
                       className="rounded-xl border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-blue-400 outline-none text-gray-700"
                     />
+</div>
+<div>
+                      <label className="block text-gray-700 font-semibold mb-2">
+                        Admin Last name
+                      </label>
 
                     <input
                       type="text"
@@ -466,6 +476,11 @@ focus:ring-2 focus:ring-blue-400 outline-none text-gray-700"
                       onChange={(e) => setAdminLastName(e.target.value)}
                       className="rounded-xl border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-blue-400 outline-none text-gray-700"
                     />
+</div>
+<div>
+                      <label className="block text-gray-700 font-semibold mb-2">
+                        Admin Email-Id
+                      </label>
 
                     <input
                       type="email"
@@ -474,6 +489,12 @@ focus:ring-2 focus:ring-blue-400 outline-none text-gray-700"
                       onChange={(e) => setAdminEmail(e.target.value)}
                       className="rounded-xl border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-blue-400 outline-none text-gray-700"
                     />
+                    </div>
+                    <div>
+                      <label className="block text-gray-700 font-semibold mb-2">
+                        Admin Phone number
+                      </label>
+
 
                     <input
                       type="text"
@@ -482,6 +503,7 @@ focus:ring-2 focus:ring-blue-400 outline-none text-gray-700"
                       onChange={(e) => setAdminPhone(e.target.value)}
                       className="rounded-xl border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-blue-400 outline-none text-gray-700"
                     />
+                    </div>
                   </div>
                 </div>
 

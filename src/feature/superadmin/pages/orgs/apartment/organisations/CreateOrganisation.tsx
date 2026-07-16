@@ -158,9 +158,10 @@
         <h1 className="text-2xl md:text-3xl font-bold mb-6">Organisation Management</h1>
 
         <div className="bg-white shadow rounded-xl p-6 mb-8">
-          <div className="grid md:grid-cols-2 gap-4">
+          {/* <div className="grid md:grid-cols-2 gap-4"> */}
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-6">
             {/* Organisation Name */}
-            <div>
+            <div className="flex flex-col">
               <label className="block mb-2 text-sm font-medium">
                 Organisation Name
               </label>
@@ -168,12 +169,13 @@
               <input
                 value={orgname}
                 onChange={(e) => setOrgName(e.target.value)}
-                className="w-full border rounded-lg p-3"
+                // className="w-full border rounded-lg p-3"
+                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Enter organisation name"
               />
             </div>
 
-            <div>
+            <div className="flex flex-col">
               <label className="block mb-2 text-sm font-medium">
                 Organisation Type
               </label>
@@ -181,7 +183,8 @@
               <select
                 value={orgType}
                 onChange={(e) => setOrgType(e.target.value)}
-                className="w-full border rounded-lg p-3"
+                // className="w-full border rounded-lg p-3"
+                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="">Select Type</option>
                 <option value="HOSPITAL">Hospital</option>
@@ -189,73 +192,88 @@
                 <option value="EVENT">Event</option>
               </select>
             </div>
-            <div>
+            <div className="flex flex-col">
               <label className="block mb-2 text-sm font-medium">
                 Phone Number
               </label>
               <input
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="w-full border rounded-lg p-3"
+                // className="w-full border rounded-lg p-3"
+                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Enter phone number"
               />
             </div>
-            <div>
+            <div className="flex flex-col">
               <label className="block mb-2 text-sm font-medium">Email-Id</label>
               <input
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full border rounded-lg p-3"
+                // className="w-full border rounded-lg p-3"
+                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Enter email"
               />
             </div>
-            <div>
+            {/* <div>
               <label className="block mb-2 text-sm font-medium">Address</label>
               <textarea
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                className="w-full border rounded-lg p-3"
+                // className="w-full border rounded-lg p-3"
+                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Enter address"
               />
-            </div>
-
-            <div>
+            </div> */}
+<div className="md:col-span-2 flex flex-col">
+  <label className="mb-2 text-sm font-medium">Address</label>
+  <textarea
+    rows={4}
+    value={address}
+    onChange={(e) => setAddress(e.target.value)}
+    className="w-full rounded-lg border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+    placeholder="Enter address"
+  />
+</div>
+            <div className="flex flex-col">
               <label className="block mb-2 text-sm font-medium">
                 Aadhaar Number
               </label>
               <input
                 value={aadhaarNumber}
                 onChange={(e) => setAadhaarNumber(e.target.value)}
-                className="w-full border rounded-lg p-3"
+                // className="w-full border rounded-lg p-3"
+                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Enter Aadhaar number"
               />
             </div>
 
-            <div>
+            <div className="flex flex-col">
               <label className="block mb-2 text-sm font-medium">
                 PAN Number
               </label>
               <input
                 value={panNumber}
                 onChange={(e) => setPanNumber(e.target.value)}
-                className="w-full border rounded-lg p-3"
+                // className="w-full border rounded-lg p-3"
+                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Enter PAN number"
               />
             </div>
 
-            <div>
+            <div className="flex flex-col">
               <label className="block mb-2 text-sm font-medium">
                 Passport Number
               </label>
               <input
                 value={passportNumber}
                 onChange={(e) => setPassportNumber(e.target.value)}
-                className="w-full border rounded-lg p-3"
+                // className="w-full border rounded-lg p-3"
+                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Enter Passport number"
               />
             </div>
 
-            <div>
+            <div className="flex flex-col">
               <label className="block mb-2 text-sm font-medium">
                 Registration Start Date
               </label>
@@ -263,11 +281,12 @@
                 type="date"
                 value={registrationStartDate}
                 onChange={(e) => setRegistrationStartDate(e.target.value)}
-                className="w-full border rounded-lg p-3"
+                // className="w-full border rounded-lg p-3"
+                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
 
-            <div>
+            <div className="flex flex-col">
               <label className="block mb-2 text-sm font-medium">
                 Registration End Date
               </label>
@@ -275,16 +294,18 @@
                 type="date"
                 value={registrationEndDate}
                 onChange={(e) => setRegistrationEndDate(e.target.value)}
-                className="w-full border rounded-lg p-3"
+                // className="w-full border rounded-lg p-3"
+                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
 
-            <div>
+            <div className="flex flex-col">
               <label className="block mb-2 text-sm font-medium">Status</label>
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
-                className="w-full border rounded-lg p-3"
+                // className="w-full border rounded-lg p-3"
+                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="">Select Status</option>
                 <option value="ACTIVE">ACTIVE</option>
@@ -321,9 +342,13 @@
   {photo ? photo.name : "No file chosen"}
 </span>
   </label> */}
-  <label
+  {/* <label
   htmlFor="photo-upload"
   className="flex items-center gap-3 w-full border rounded-lg p-3 cursor-pointer hover:border-blue-500 transition"
+> */}
+<label
+  htmlFor="photo-upload"
+  className="flex h-11 items-center gap-3 w-full rounded-lg border border-gray-300 px-3 cursor-pointer hover:border-blue-500 transition"
 >
   <div className="flex items-center gap-2">
     <Upload size={18} className="text-blue-600" />
@@ -364,7 +389,8 @@
               <input
                 value={adminFirstName}
                 onChange={(e) => setAdminFirstName(e.target.value)}
-                className="w-full border rounded-lg p-3"
+                // className="w-full border rounded-lg p-3"
+                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="First Name"
               />
             </div>
@@ -377,7 +403,8 @@
               <input
                 value={adminLastName}
                 onChange={(e) => setAdminLastName(e.target.value)}
-                className="w-full border rounded-lg p-3"
+                // className="w-full border rounded-lg p-3"
+                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Last Name"
               />
             </div>
@@ -390,7 +417,8 @@
               <input
                 value={adminPhone}
                 onChange={(e) => setAdminPhone(e.target.value)}
-                className="w-full border rounded-lg p-3"
+                // className="w-full border rounded-lg p-3"
+                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="9876543210"
               />
             </div>
@@ -405,7 +433,8 @@
                 type="email"
                 value={adminEmail}
                 onChange={(e) => setAdminEmail(e.target.value)}
-                className="w-full border rounded-lg p-3"
+                // className="w-full border rounded-lg p-3"
+                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="admin@example.com"
               />
             </div>

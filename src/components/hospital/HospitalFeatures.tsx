@@ -57,7 +57,9 @@ export default function HospitalFeatures() {
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10 mt-12 sm:mt-14 lg:mt-16">
+        {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10 mt-12 sm:mt-14 lg:mt-16"> */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 sm:gap-8 mt-12 sm:mt-16 lg:mt-20">
+
           {features.map((item, index) => {
             const Icon = item.icon;
 
@@ -74,18 +76,26 @@ export default function HospitalFeatures() {
                <div
                 key={index}
                 className="group bg-white rounded-3xl p-6 sm:p-8 shadow-lg hover:shadow-2xl transition duration-300 border border-slate-200 hover:border-blue-500"
+                // className="group bg-white rounded-3xl p-6 sm:p-8 shadow-lg hover:shadow-2xl transition duration-300 border border-slate-200 hover:border-blue-500"
               >
+                {/* <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 flex items-center justify-center text-white group-hover:scale-110 transition">
+                  <Icon size={28} className="sm:w-8 sm:h-8" />
+                </div> */}
                 <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 flex items-center justify-center text-white group-hover:scale-110 transition">
                   <Icon size={28} className="sm:w-8 sm:h-8" />
                 </div>
 
+
                 {/* Title */}
-                <h3 className="text-base sm:text-lg lg:text-xl font-bold mt-4 text-slate-900">
+                {/* <h3 className="text-base sm:text-lg lg:text-xl font-bold mt-4 text-slate-900"> */}
+                <h3 className="mt-5 sm:mt-6 text-xl sm:text-2xl font-bold text-slate-900">
                   {item.title}
                 </h3>
 
                 {/* Description */}
-                <p className="text-sm sm:text-base text-slate-600 mt-3 leading-6 sm:leading-7">
+                                <p className="mt-3 sm:mt-4 text-sm sm:text-base text-slate-600 leading-6 sm:leading-7">
+
+                {/* <p className="text-sm sm:text-base text-slate-600 mt-3 leading-6 sm:leading-7"> */}
                   {item.desc}
                 </p>
               </div>
