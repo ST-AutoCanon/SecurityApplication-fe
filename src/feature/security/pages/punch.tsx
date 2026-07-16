@@ -11,6 +11,9 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
+import Alert from "../../../components/Aleartmessage";
+import { useNavigate } from "react-router-dom";
+
 const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
 
 export default function FacePunch() {
@@ -20,8 +23,14 @@ export default function FacePunch() {
   const [cameraOpen, setCameraOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-  const punchedRef = useRef(false);
 
+
+  const [showAlert, setShowAlert] = useState(false);
+const [alertType, setAlertType] = useState("error");
+  const [alertMessage, setAlertMessage] = useState("");
+  
+  const punchedRef = useRef(false);
+const navigate = useNavigate();
   const retryCountRef = useRef(0);
 
   const MAX_RETRIES = 3;
@@ -112,13 +121,20 @@ if (retryCountRef.current < MAX_RETRIES) {
   return;
 }
 
-setMessage("❌ Face not recognized after 3 attempts.");
+// setMessage("❌ Face not recognized after 3 attempts.");
 
-setTimeout(() => {
-  setCameraOpen(false);
-  retryCountRef.current = 0;
-  punchedRef.current = false;
-}, 2000);
+      
+setAlertType("error");
+setAlertMessage("Face not recognized after 3 attempts. Please register your face.");
+      setShowAlert(true);
+      
+// setTimeout(() => {
+//   setCameraOpen(false);
+//   retryCountRef.current = 0;
+//   punchedRef.current = false;
+//  navigate("/security/organisation/manage_registration");
+//   // navigate("manage_registration");
+// }, 2000);
     } catch (err: any) {
       setMessage(err?.response?.data?.message || "Server Error");
     } finally {
@@ -162,6 +178,21 @@ if (loading || punchedRef.current || retryCountRef.current >= MAX_RETRIES)
   
   return (
     <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 flex items-center justify-center px-5 py-10">
+      {showAlert && (
+        <Alert
+          type={alertType}
+          message={alertMessage}
+          onClose={() => {
+            setShowAlert(false);
+
+            setCameraOpen(false);
+            retryCountRef.current = 0;
+            punchedRef.current = false;
+
+            navigate("/security/organisation/manage_registration");
+          }}
+        />
+      )}
       {/* Background Blur */}
       <div className="absolute w-[500px] h-[500px] bg-blue-500/20 blur-[180px] rounded-full -top-32 -left-32"></div>
 
