@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { ShieldCheck, ChevronDown, Globe, User, Menu, X } from "lucide-react";
+
 import Login from "../feature/auth/pages/Login";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
+  const [showServices, setShowServices] = useState(false);
 
-  // Lock scroll when menu or login is open
   useEffect(() => {
     document.body.style.overflow = isOpen || showLogin ? "hidden" : "auto";
   }, [isOpen, showLogin]);
@@ -17,7 +18,16 @@ export default function Navbar() {
       ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white px-5 py-2 rounded-full text-sm font-medium shadow-lg"
       : "text-white text-sm font-medium hover:text-blue-300 transition px-2 py-2";
 
-  const closeMenus = () => setIsOpen(false);
+  const closeMenus = () => {
+    setIsOpen(false);
+    setShowServices(false);
+  };
+
+  const services = [
+    { name: "Apartment Security", path: "/apartment" },
+    { name: "Event Management", path: "/event" },
+    { name: "Hospital Security", path: "/hospital" },
+  ];
 
   return (
     <>
@@ -31,55 +41,78 @@ export default function Navbar() {
             </div>
 
             <div>
-              <h1 className="text-white text-lg sm:text-xl lg:text-2xl font-extrabold leading-none">
+              <h1 className="text-white text-lg sm:text-xl font-extrabold">
                 SMART ENTRY
               </h1>
-
-              <p className="hidden sm:block text-[11px] sm:text-xs text-gray-300">
+              <p className="hidden sm:block text-xs text-gray-300">
                 Secure. Verify. Enter.
               </p>
             </div>
           </div>
 
           {/* DESKTOP MENU */}
-          <div className="hidden lg:flex items-center gap-6 xl:gap-8">
-            {[
-              ["Home", "/"],
-              ["Features", "/features"],
-              ["Solutions", "/solutions"],
-              ["Resources", "/resources"],
-              ["Pricing", "/pricing"],
-              ["Contact", "/contact"],
-            ].map(([label, link]) => (
-              <NavLink key={label} to={link} className={navClass}>
-                <span className="flex items-center gap-1">
-                  {label}
-                  {(label === "Solutions" || label === "Resources") && (
-                    <ChevronDown size={14} />
-                  )}
-                </span>
-              </NavLink>
-            ))}
+          <div className="hidden lg:flex items-center gap-6">
+            <NavLink to="/" className={navClass}>
+              Home
+            </NavLink>
+
+            <NavLink to="/features" className={navClass}>
+              Features
+            </NavLink>
+
+            {/* SERVICES DROPDOWN */}
+            <div
+              className="relative"
+              onMouseEnter={() => setShowServices(true)}
+              onMouseLeave={() => setShowServices(false)}
+            >
+              <button className="text-white text-sm font-medium hover:text-blue-300 transition px-2 py-2 flex items-center gap-1">
+                Services <ChevronDown size={14} />
+              </button>
+
+              {showServices && (
+                <div className="absolute top-10 left-0 bg-[#021a4d] border border-blue-900 rounded-xl shadow-xl w-52 overflow-hidden">
+                  {services.map((s) => (
+                    <NavLink
+                      key={s.name}
+                      to={s.path}
+                      onClick={() => setShowServices(false)}
+                      className="block px-4 py-3 text-sm text-white hover:bg-blue-600/30 transition"
+                    >
+                      {s.name}
+                    </NavLink>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <NavLink to="/comingSoon" className={navClass}>
+              Pricing
+            </NavLink>
+
+            <NavLink to="/contactUs" className={navClass}>
+              Contact
+            </NavLink>
           </div>
 
-          {/* RIGHT SIDE (DESKTOP) */}
-          <div className="hidden lg:flex items-center gap-4 xl:gap-6">
-            <button className="flex items-center gap-2 text-white text-sm font-medium">
+          {/* RIGHT */}
+          <div className="hidden lg:flex items-center gap-4">
+            {/* <button className="flex items-center gap-2 text-white text-sm">
               <Globe size={18} />
               English
               <ChevronDown size={14} />
-            </button>
+            </button> */}
 
             <button
               onClick={() => setShowLogin(true)}
-              className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 px-5 xl:px-7 py-2.5 rounded-xl text-white font-medium shadow-lg hover:opacity-90 transition"
+              className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 px-6 py-2.5 rounded-xl text-white font-medium"
             >
               <User size={18} />
               Login
             </button>
           </div>
 
-          {/* MOBILE BUTTON */}
+          {/* MOBILE MENU BUTTON */}
           <button
             className="lg:hidden text-white"
             onClick={() => setIsOpen(!isOpen)}
@@ -90,34 +123,57 @@ export default function Navbar() {
 
         {/* MOBILE MENU */}
         {isOpen && (
-          <div className="lg:hidden fixed top-[70px] sm:top-[78px] left-0 w-full bg-[#020b3d] border-t border-blue-900 z-40">
-            <div className="flex flex-col px-6 py-6 space-y-4">
-              {[
-                ["Home", "/"],
-                ["Features", "/features"],
-                ["Solutions", "/solutions"],
-                ["Resources", "/resources"],
-                ["Pricing", "/pricing"],
-                ["Contact", "/contact"],
-              ].map(([label, link]) => (
+          <div className="lg:hidden fixed top-[70px] left-0 w-full bg-[#020b3d] border-t border-blue-900 z-40">
+            <div className="flex flex-col px-6 py-6 space-y-3">
+              <NavLink to="/" onClick={closeMenus} className="text-white py-2">
+                Home
+              </NavLink>
+
+              <NavLink
+                to="/features"
+                onClick={closeMenus}
+                className="text-white py-2"
+              >
+                Features
+              </NavLink>
+
+              {/* MOBILE SERVICES */}
+              <div className="text-white font-medium">Services</div>
+
+              {services.map((s) => (
                 <NavLink
-                  key={label}
-                  to={link}
+                  key={s.name}
+                  to={s.path}
                   onClick={closeMenus}
-                  className="text-white text-base hover:text-blue-300 transition py-2"
+                  className="text-gray-300 pl-4 py-1"
                 >
-                  {label}
+                  {s.name}
                 </NavLink>
               ))}
+
+              <NavLink
+                to="/comingSoon"
+                onClick={closeMenus}
+                className="text-white py-2"
+              >
+                Pricing
+              </NavLink>
+
+              <NavLink
+                to="/contactUs"
+                onClick={closeMenus}
+                className="text-white py-2"
+              >
+                Contact
+              </NavLink>
 
               <button
                 onClick={() => {
                   setShowLogin(true);
                   setIsOpen(false);
                 }}
-                className="mt-4 flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 px-6 py-3 rounded-xl text-white font-medium shadow-lg"
+                className="mt-4 bg-gradient-to-r from-blue-600 to-blue-500 px-6 py-3 rounded-xl text-white font-medium"
               >
-                <User size={18} />
                 Login
               </button>
             </div>
@@ -125,24 +181,20 @@ export default function Navbar() {
         )}
       </header>
 
-      {/* SPACER */}
       <div className="h-[70px] sm:h-[78px]" />
 
       {/* LOGIN MODAL */}
       {showLogin && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[100] px-4">
-          <div className="w-full max-w-md relative">
-            <div className="bg-[#020b3d] border border-blue-900 rounded-3xl shadow-2xl p-4 sm:p-6">
-              {/* CLOSE */}
-              <button
-                onClick={() => setShowLogin(false)}
-                className="absolute top-3 right-3 text-gray-400 hover:text-white text-lg"
-              >
-                ✕
-              </button>
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[100]">
+          <div className="w-full max-w-md bg-[#020b3d] p-2 rounded-3xl relative">
+            {/* <button
+              onClick={() => setShowLogin(false)}
+              className="absolute top-3 right-3 text-white"
+            >
+              ✕
+            </button> */}
 
-              <Login onSuccess={() => setShowLogin(false)} />
-            </div>
+            <Login onSuccess={() => setShowLogin(false)} />
           </div>
         </div>
       )}

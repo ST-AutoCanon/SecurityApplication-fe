@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import TopNav from "../components/TopNav";
-import SecurityRegistration from "./SecurityRegistrationPage";
+import SecurityRegistration from "./punch";
 // import DynamicRegisterPage from "./DynamicRegisterPage";
 import DynamicRegisterPage from "./VoiceAssistantPage";
 
@@ -9,10 +9,6 @@ export default function SecurityDashboard() {
   const { pathname } = useLocation();
 
   // Map paths to page names
-  const pathToPage: Record<string, string> = {
-    "/security/organisation": "Dashboard",
-    "/security/organisation/create_security": "Security",
-  };
 
   let activePage = "Dashboard";
 

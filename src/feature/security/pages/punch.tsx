@@ -1,198 +1,3 @@
-// // import React from "react";
-
-// // const AuthPage = () => {
-// //   const handleClick = () => {
-// //     alert("This feature is under process. Please check back later!");
-// //   };
-
-// //   return (
-// //     <div className="min-h-screen flex items-center justify-center bg-gray-100">
-// //       <div className="w-full max-w-md bg-white shadow-xl rounded-2xl p-8">
-// //         <h1 className="text-3xl font-bold text-center text-gray-800 mb-2">
-// //           Welcome
-// //         </h1>
-
-// //         <p className="text-center text-gray-500 mb-8">
-// //           Login & Registration are currently under process.
-// //         </p>
-
-// //         <div className="space-y-4">
-// //           <button
-// //             onClick={handleClick}
-// //             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition duration-300"
-// //           >
-// //             Login
-// //           </button>
-
-// //           <button
-// //             onClick={handleClick}
-// //             className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition duration-300"
-// //           >
-// //             Register
-// //           </button>
-// //         </div>
-
-// //         <div className="mt-8 rounded-lg bg-yellow-100 border border-yellow-300 p-4">
-// //           <p className="text-center text-yellow-800 font-medium">
-// //             🚧 Login and Registration modules are under process.
-// //           </p>
-// //         </div>
-// //       </div>
-// //     </div>
-// //   );
-// // };
-
-// // export default AuthPage;
-
-// ///////////////////////////
-
-// import { useEffect, useRef, useState } from "react";
-// import Webcam from "react-webcam";
-// import * as faceapi from "face-api.js";
-// import axios from "axios";
-
-// export default function FacePunch() {
-//   const webcamRef = useRef<Webcam>(null);
-
-//   const [modelsLoaded, setModelsLoaded] = useState(false);
-//   const [cameraOpen, setCameraOpen] = useState(false);
-//   const [loading, setLoading] = useState(false);
-//   const [message, setMessage] = useState<string>("");
-
-//   const organisationId = 32; // 🔥 change dynamically if needed
-
-//   // -------------------------------
-//   // Load Face API Models
-//   // -------------------------------
-//   useEffect(() => {
-//     const loadModels = async () => {
-//       try {
-//         const MODEL_URL = "/models";
-
-//         await Promise.all([
-//           faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
-//           faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
-//           faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
-//         ]);
-
-//         setModelsLoaded(true);
-//       } catch (err) {
-//         console.error("Model loading error:", err);
-//         setMessage("Failed to load face models");
-//       }
-//     };
-
-//     loadModels();
-//   }, []);
-
-//   // -------------------------------
-//   // FACE PUNCH FUNCTION
-//   // -------------------------------
-//   const punchFace = async () => {
-//     try {
-//       setLoading(true);
-//       setMessage("");
-
-//       const imageSrc = webcamRef.current?.getScreenshot();
-
-//       if (!imageSrc) {
-//         setMessage("No image captured");
-//         return;
-//       }
-
-//       const img = await faceapi.fetchImage(imageSrc);
-
-//       const detection = await faceapi
-//         .detectSingleFace(img, new faceapi.TinyFaceDetectorOptions())
-//         .withFaceLandmarks()
-//         .withFaceDescriptor();
-
-//       if (!detection) {
-//         setMessage("Face not detected");
-//         return;
-//       }
-
-//       const descriptor = Array.from(detection.descriptor);
-
-//       const res = await axios.post(
-//         `http://localhost:5000/punch-data/${organisationId}/face-punch`,
-//         {
-//           descriptor,
-//           photo: imageSrc,
-//         },
-//       );
-
-//       if (res.data?.success) {
-//         setMessage(`✅ Punch Successful: ${res.data.data.full_name}`);
-//       } else {
-//         setMessage(`❌ ${res.data?.message || "Punch Failed"}`);
-//       }
-
-//       setCameraOpen(false);
-//     } catch (err: any) {
-//       console.error(err);
-//       setMessage(err?.response?.data?.message || "Server Error");
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   return (
-//     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-//       <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md space-y-5">
-//         <h1 className="text-2xl font-bold text-center">Face Punch System</h1>
-
-//         {/* Status message */}
-//         {message && (
-//           <div className="text-center text-sm p-2 bg-gray-100 rounded">
-//             {message}
-//           </div>
-//         )}
-
-//         {/* Open camera */}
-//         {!cameraOpen && (
-//           <button
-//             onClick={() => setCameraOpen(true)}
-//             disabled={!modelsLoaded}
-//             className="w-full bg-gray-800 text-white p-3 rounded-lg"
-//           >
-//             {modelsLoaded ? "Open Camera" : "Loading Models..."}
-//           </button>
-//         )}
-
-//         {/* Camera UI */}
-//         {cameraOpen && (
-//           <>
-//             <Webcam
-//               ref={webcamRef}
-//               screenshotFormat="image/jpeg"
-//               mirrored
-//               className="rounded-xl w-full"
-//             />
-
-//             <button
-//               onClick={punchFace}
-//               disabled={loading}
-//               className="w-full bg-green-600 hover:bg-green-700 text-white p-3 rounded-lg mt-3"
-//             >
-//               {loading ? "Processing..." : "Punch In"}
-//             </button>
-
-//             <button
-//               onClick={() => setCameraOpen(false)}
-//               className="w-full bg-red-600 hover:bg-red-700 text-white p-3 rounded-lg mt-2"
-//             >
-//               Close Camera
-//             </button>
-//           </>
-//         )}
-//       </div>
-//     </div>
-//   );
-// }
-
-
-
 import { useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
 import * as faceapi from "face-api.js";
@@ -206,6 +11,11 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
+import Alert from "../../../components/Aleartmessage";
+import { useNavigate } from "react-router-dom";
+
+const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+
 export default function FacePunch() {
   const webcamRef = useRef<Webcam>(null);
 
@@ -214,7 +24,16 @@ export default function FacePunch() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
-  const organisationId = 32;
+
+  const [showAlert, setShowAlert] = useState(false);
+const [alertType, setAlertType] = useState("error");
+  const [alertMessage, setAlertMessage] = useState("");
+  
+  const punchedRef = useRef(false);
+const navigate = useNavigate();
+  const retryCountRef = useRef(0);
+
+  const MAX_RETRIES = 3;
 
   // ---------------- Models ----------------
   useEffect(() => {
@@ -266,7 +85,7 @@ export default function FacePunch() {
       const descriptor = Array.from(detection.descriptor);
 
       const res = await axios.post(
-        "http://localhost:5000/punch-data/face-punch",
+        `${API_URL}/punch-data/face-punch`,
         {
           descriptor,
           photo: imageSrc,
@@ -276,13 +95,46 @@ export default function FacePunch() {
         },
       );
 
+      // if (res.data?.success) {
+      //   setMessage(`✅ Punch Successful : ${res.data.data.full_name}`);
+      // } else {
+      //   setMessage(`❌ ${res.data?.message || "Punch Failed"}`);
+      // }
+
       if (res.data?.success) {
         setMessage(`✅ Punch Successful : ${res.data.data.full_name}`);
-      } else {
-        setMessage(`❌ ${res.data?.message || "Punch Failed"}`);
+        punchedRef.current = true;
+        retryCountRef.current = 0;
+        setCameraOpen(false);
+        return;
       }
 
-      setCameraOpen(false);
+      // Face not recognized
+      retryCountRef.current++;
+
+retryCountRef.current++;
+
+if (retryCountRef.current < MAX_RETRIES) {
+  setMessage(
+    `❌ Face not recognized. Retrying (${retryCountRef.current}/${MAX_RETRIES})...`,
+  );
+  return;
+}
+
+// setMessage("❌ Face not recognized after 3 attempts.");
+
+      
+setAlertType("error");
+setAlertMessage("Face not recognized after 3 attempts. Please register your face.");
+      setShowAlert(true);
+      
+// setTimeout(() => {
+//   setCameraOpen(false);
+//   retryCountRef.current = 0;
+//   punchedRef.current = false;
+//  navigate("/security/organisation/manage_registration");
+//   // navigate("manage_registration");
+// }, 2000);
     } catch (err: any) {
       setMessage(err?.response?.data?.message || "Server Error");
     } finally {
@@ -290,8 +142,57 @@ export default function FacePunch() {
     }
   };
 
+
+  useEffect(() => {
+ if (!cameraOpen || !modelsLoaded) return;
+
+  const interval = setInterval(async () => {
+    // if (loading || punchedRef.current) return;
+if (loading || punchedRef.current || retryCountRef.current >= MAX_RETRIES)
+  return;
+    const imageSrc = webcamRef.current?.getScreenshot();
+    if (!imageSrc) return;
+
+    const img = await faceapi.fetchImage(imageSrc);
+
+    const detection = await faceapi
+      .detectSingleFace(img, new faceapi.TinyFaceDetectorOptions())
+      .withFaceLandmarks()
+      .withFaceDescriptor();
+
+    // if (detection) {
+    //   punchedRef.current = true;
+    //   punchFace();
+    // }
+
+    if (detection) {
+  punchFace();
+    }
+    
+    // punchedRef.current = true;
+  }, 1000); // Check every 1 second
+
+  return () => clearInterval(interval);
+}, [cameraOpen, modelsLoaded, loading]);
+
+  
   return (
     <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 flex items-center justify-center px-5 py-10">
+      {showAlert && (
+        <Alert
+          type={alertType}
+          message={alertMessage}
+          onClose={() => {
+            setShowAlert(false);
+
+            setCameraOpen(false);
+            retryCountRef.current = 0;
+            punchedRef.current = false;
+
+            navigate("/security/organisation/manage_registration");
+          }}
+        />
+      )}
       {/* Background Blur */}
       <div className="absolute w-[500px] h-[500px] bg-blue-500/20 blur-[180px] rounded-full -top-32 -left-32"></div>
 
@@ -377,7 +278,13 @@ export default function FacePunch() {
 
             {!cameraOpen && (
               <button
-                onClick={() => setCameraOpen(true)}
+                // onClick={() => setCameraOpen(true)}
+                onClick={() => {
+                  punchedRef.current = false;
+                  retryCountRef.current = 0;
+                  setMessage("");
+                  setCameraOpen(true);
+                }}
                 disabled={!modelsLoaded}
                 className="group w-full relative overflow-hidden rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 py-4 font-semibold text-white transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-[0_0_35px_rgba(6,182,212,.5)] disabled:opacity-40"
               >
@@ -441,24 +348,6 @@ export default function FacePunch() {
                 </div>
 
                 {/* Punch Button */}
-
-                <button
-                  onClick={punchFace}
-                  disabled={loading}
-                  className="group w-full rounded-2xl bg-gradient-to-r from-green-500 to-emerald-600 py-4 text-white font-semibold transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-[0_0_35px_rgba(34,197,94,.5)] disabled:opacity-60"
-                >
-                  {loading ? (
-                    <div className="flex items-center justify-center gap-3">
-                      <Loader2 className="animate-spin" size={22} />
-                      Processing Face...
-                    </div>
-                  ) : (
-                    <div className="flex items-center justify-center gap-3">
-                      <ScanFace size={22} />
-                      Punch In
-                    </div>
-                  )}
-                </button>
 
                 {/* Close Camera */}
 

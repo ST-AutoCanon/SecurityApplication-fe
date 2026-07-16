@@ -18,6 +18,9 @@ import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 import Footer from "./components/Footer";
+import ContactUs from "./pages/ContactUs";
+import Features from "./pages/Features";
+import ComingSoon from "./pages/ComingSoon";
 const RequireAuth = ({
   children,
   roles,
@@ -56,6 +59,9 @@ export default function App() {
         <Route path="/apartment" element={<Apartment />} />
         <Route path="/event" element={<Event />} />
         <Route path="/hospital" element={<Hospital />} />
+        <Route path="/contactUs" element={<ContactUs />} />
+        <Route path="/features" element={<Features />} />
+        <Route path="/comingSoon" element={<ComingSoon />} />
         {/* Apartment Super Admin */}
         <Route
           path="/super_admin/organisation/*"

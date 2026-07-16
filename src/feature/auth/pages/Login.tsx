@@ -302,7 +302,7 @@ export default function LoginPage({ onSuccess }: LoginPageProps) {
   return (
     <div className="w-full max-w-md">
       {/* CARD */}
-      <div className="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl shadow-2xl p-6 text-white">
+      <div className="relative bg-white/10 backdrop-blur-xl border rounded-3xl  p-6 text-white">
         {/* CLOSE BUTTON (for popup use) */}
         <button
           onClick={onSuccess}
@@ -347,7 +347,7 @@ export default function LoginPage({ onSuccess }: LoginPageProps) {
 
           {/* EMAIL */}
           <div>
-            <label className="text-xs text-gray-300">Email</label>
+            <label className="text-xs text-gray-300">Email-Id</label>
 
             <input
               type="email"
@@ -376,9 +376,9 @@ export default function LoginPage({ onSuccess }: LoginPageProps) {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600"
               >
-                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                {showPassword ? <EyeOff size={26} /> : <Eye size={26} />}
               </button>
             </div>
 
