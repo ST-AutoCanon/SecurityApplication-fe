@@ -9,10 +9,6 @@ export default function SecurityDashboard() {
   const { pathname } = useLocation();
 
   // Map paths to page names
-  const pathToPage: Record<string, string> = {
-    "/security/organisation": "Dashboard",
-    "/security/organisation/create_security": "Security",
-  };
 
   let activePage = "Dashboard";
 
