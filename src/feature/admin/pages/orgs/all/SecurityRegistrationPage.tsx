@@ -1,13 +1,23 @@
 import React, { useState, useContext } from "react";
 import axios from "axios";
 import { AuthContext } from "../../../../../context/AuthContext";
-
-
+// import Alert from "../../../../../components/Aleartmessage";
 const API = `${import.meta.env.VITE_BACKEND_URL}/api/admin`;
+// const [alertOpen, setAlertOpen] = useState(false);
+// const [alertType, setAlertType] = useState<"success" | "error">("success");
+// const [alertMessage, setAlertMessage] = useState("");
 
+// const showAlert = (
+//   type: "success" | "error",
+//   message: string
+// ) => {
+//   setAlertType(type);
+//   setAlertMessage(message);
+//   setAlertOpen(true);
+// };
 export default function SecurityRegistrationPage() {
   const { user } = useContext(AuthContext);
-    const isEventOrg = user?.org_type?.toUpperCase() === "EVENT";
+  const isEventOrg = user?.org_type?.toUpperCase() === "EVENT";
   const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
@@ -44,7 +54,26 @@ export default function SecurityRegistrationPage() {
       return alert("Email is required");
     }
 
+    if (!form.phone.trim()) {
+      return alert("Phone Number is required");
+    }
+
+    if (!/^[6-9]\d{9}$/.test(form.phone)) {
+      return alert("Please enter a valid 10-digit Phone Number");
+    }
+
     try {
+      //    // Phone
+      // if (!form.phone.trim()) {
+      //   showAlert("error", "Phone Number is required");
+      //   return;
+      // }
+
+      // if (!/^[6-9]\d{9}$/.test(form.phone)) {
+      //   showAlert("error", "Please enter a valid 10-digit Phone Number");
+      //   return;
+      // }
+
       setLoading(true);
 
       const res = await axios.post(`${API}/security`, form, {
@@ -57,12 +86,27 @@ export default function SecurityRegistrationPage() {
     } catch (err: any) {
       alert(err?.response?.data?.message || "Something went wrong");
     } finally {
+      // catch (error: any) {
+      // console.log(error);
+
+      // showAlert(
+      //   "error",
+      //   error?.response?.data?.message || "Something went wrong"
+      // );
+
       setLoading(false);
     }
   };
 
   return (
     <div className="max-w-3xl mx-auto p-6">
+      {/* {alertOpen && (
+        <Alert
+          type={alertType}
+          message={alertMessage}
+          onClose={() => setAlertOpen(false)}
+        />
+      )} */}
       <div className="bg-white shadow rounded-xl p-8">
         <h1 className="text-3xl font-bold mb-8">
           {" "}

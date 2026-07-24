@@ -483,15 +483,6 @@ focus:ring-2 focus:ring-blue-400 outline-none text-gray-700"
                         <option value="active">Active</option>
                         <option value="inactive">Inactive</option>
                       </select>
-
-                      <label className="flex items-center gap-2 pt-2 md:pt-8">
-                        <input
-                          type="checkbox"
-                          checked={isActive}
-                          onChange={(e) => setIsActive(e.target.checked)}
-                        />
-                        Active
-                      </label>
                     </div>
                   </div>
                 </div>
@@ -509,38 +500,58 @@ focus:ring-2 focus:ring-blue-400 outline-none text-gray-700"
                       onChange={(e) => setAdminName(e.target.value)}
                       className="rounded-xl border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-blue-400 outline-none text-gray-700"
                     /> */}
+                    <div>
+                      <label className="block text-gray-700 font-semibold mb-2">
+                        Admin First name
+                      </label>
 
-                    <input
-                      type="text"
-                      placeholder="First Name"
-                      value={adminFirstName}
-                      onChange={(e) => setAdminFirstName(e.target.value)}
-                      className="rounded-xl border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-blue-400 outline-none text-gray-700"
-                    />
+                      <input
+                        type="text"
+                        placeholder="First Name"
+                        value={adminFirstName}
+                        onChange={(e) => setAdminFirstName(e.target.value)}
+                        className="rounded-xl border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-blue-400 outline-none text-gray-700"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-gray-700 font-semibold mb-2">
+                        Admin Last name
+                      </label>
 
-                    <input
-                      type="text"
-                      placeholder="Last Name"
-                      value={adminLastName}
-                      onChange={(e) => setAdminLastName(e.target.value)}
-                      className="rounded-xl border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-blue-400 outline-none text-gray-700"
-                    />
+                      <input
+                        type="text"
+                        placeholder="Last Name"
+                        value={adminLastName}
+                        onChange={(e) => setAdminLastName(e.target.value)}
+                        className="rounded-xl border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-blue-400 outline-none text-gray-700"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-gray-700 font-semibold mb-2">
+                        Admin Email-Id
+                      </label>
 
-                    <input
-                      type="email"
-                      placeholder="admin@acme.com"
-                      value={adminEmail}
-                      onChange={(e) => setAdminEmail(e.target.value)}
-                      className="rounded-xl border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-blue-400 outline-none text-gray-700"
-                    />
+                      <input
+                        type="email"
+                        placeholder="admin@acme.com"
+                        value={adminEmail}
+                        onChange={(e) => setAdminEmail(e.target.value)}
+                        className="rounded-xl border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-blue-400 outline-none text-gray-700"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-gray-700 font-semibold mb-2">
+                        Admin Phone number
+                      </label>
 
-                    <input
-                      type="text"
-                      placeholder="Phone Number"
-                      value={adminPhone}
-                      onChange={(e) => setAdminPhone(e.target.value)}
-                      className="rounded-xl border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-blue-400 outline-none text-gray-700"
-                    />
+                      <input
+                        type="text"
+                        placeholder="Phone Number"
+                        value={adminPhone}
+                        onChange={(e) => setAdminPhone(e.target.value)}
+                        className="rounded-xl border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-blue-400 outline-none text-gray-700"
+                      />
+                    </div>
                   </div>
                 </div>
 

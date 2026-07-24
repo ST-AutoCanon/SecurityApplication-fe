@@ -1,230 +1,3 @@
-// import { useState, useEffect } from "react";
-// import { useAuth } from "../hooks/useAuth";
-// import { jwtDecode } from "jwt-decode";
-// import { Link,useNavigate } from "react-router-dom";
-// import { Eye, EyeOff } from "lucide-react";
-
-// interface LoginPageProps {
-//   onSuccess?: () => void;
-// }
-
-// export default function LoginPage({ onSuccess }: LoginPageProps) {
-//   const { login, error, loading } = useAuth();
-//   const navigate = useNavigate();
-
-//   const [email, setEmail] = useState("");
-//   const [password, setPassword] = useState("");
-//   const [orgId, setOrgId] = useState("");
-//   const [orgCodes, setOrgCodes] = useState<any[]>([]);
-//   const [showPassword, setShowPassword] = useState(false);
-
-//   useEffect(() => {
-//     const fetchOrgCodes = async () => {
-//       try {
-//         const res = await fetch(
-//           `${import.meta.env.VITE_BACKEND_URL}/api/organisation/organisations`,
-//         );
-
-//         const data = await res.json();
-
-//         if (data.success) {
-//           setOrgCodes(data.data);
-//         }
-//       } catch (err) {
-//         console.error("Failed to fetch organization codes", err);
-//       }
-//     };
-
-//     fetchOrgCodes();
-//   }, []);
-
-//   const handleSubmit = async (e: React.FormEvent) => {
-//     e.preventDefault();
-
-//     try {
-//       // const result = await login(email, password || "");
-// console.log({
-//   email,
-//   password,
-//   organisation_id: orgId,
-// });
-
-// const result = await login(email, password || "", orgId);
-//       const token = result?.data?.token || result?.token;
-
-//       if (!token) {
-//         throw new Error("Token not found");
-//       }
-
-//       const user: any = jwtDecode(token);
-
-//       if (onSuccess) {
-//         onSuccess();
-//       }
-
-//       switch (user.role) {
-//         case "super_admin":
-//           navigate("/super_admin/organisation/dashboard");
-//           break;
-
-//         case "admin":
-//           navigate("/admin/organisation/dashboard");
-//           break;
-
-//         case "security":
-//           navigate("/security/organisation/dashboard");
-//           break;
-
-//         case "manager":
-//           navigate("/manager");
-//           break;
-
-//         case "employee":
-//           navigate("/employee");
-//           break;
-
-//         default:
-//           navigate("/dashboard");
-//       }
-//     } catch (err) {
-//       console.error("Login failed:", err);
-//     }
-//   };
-
-//   return (
-//     <div className="w-full max-w-md">
-//       <h2 className="text-2xl font-semibold text-gray-800 text-center mb-2">
-//         Welcome Back
-//       </h2>
-
-//       <p className="text-center text-gray-500 mb-6 text-sm">
-//         Please login to continue
-//       </p>
-
-//       <form onSubmit={handleSubmit} className="space-y-5">
-//         {/* Organization */}
-//         {/* <div>
-//           <label className="block mb-1 text-sm font-medium text-gray-600">
-//             Organization
-//           </label>
-
-//           <select
-//             value={orgCode}
-//             onChange={(e) => setOrgCode(e.target.value)}
-//             className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-//           >
-//             <option value="">Super Admin Login (No Organization)</option>
-
-//             {orgCodes.map((org) => (
-//               <option key={org.org_code} value={org.org_code} >
-//                 {org.name}
-//               </option>
-//             ))}
-//           </select>
-//         </div> */}
-
-//         <div>
-//           <label className="block mb-1 text-sm font-medium text-gray-600">
-//             Organization
-//           </label>
-
-//           <select
-//             value={orgId}
-//             onChange={(e) => setOrgId(e.target.value)}
-//             className="w-full px-4 py-2.5 rounded-xl border border-gray-300 text-black bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-//           >
-//             <option value="">Super Admin Login</option>
-
-//             {orgCodes.map((org: any) => (
-//               <option key={org.id} value={org.id} className="text-black">
-//                 {org.org_name}
-//               </option>
-//             ))}
-//           </select>
-//         </div>
-
-//         {/* Email */}
-//         <div>
-//           <label className="block mb-1 text-sm font-medium text-gray-600">
-//             Email Address
-//           </label>
-
-//           <input
-//             type="email"
-//             value={email}
-//             onChange={(e) => setEmail(e.target.value)}
-//             required
-//             placeholder="you@example.com"
-//             className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-//           />
-//         </div>
-
-//         {/* Password */}
-//         <div>
-//           <label className="block mb-1 text-sm font-medium text-gray-600">
-//             Password
-//           </label>
-
-//           <div className="relative">
-//             <input
-//               type={showPassword ? "text" : "password"}
-//               value={password}
-//               onChange={(e) => setPassword(e.target.value)}
-//               required
-//               placeholder="••••••••"
-//               className="w-full px-4 py-2.5 pr-11 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-//             />
-
-//             <button
-//               type="button"
-//               onClick={() => setShowPassword(!showPassword)}
-//               className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-//             >
-//               {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-//             </button>
-//           </div>
-//           {/* Forgot Password */}
-//           <div className="flex justify-end">
-//             {orgId && (
-//               <button
-//                 type="button"
-//                 className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
-//                 onClick={() => {
-//                   if (onSuccess) {
-//                     onSuccess(); // Close Login Popup
-//                   }
-
-//                   navigate(`/forgot-password?organisation_id=${orgId}`);
-//                 }}
-//               >
-//                 Forgot Password?
-//               </button>
-//             )}
-//           </div>
-//         </div>
-
-//         {/* Error */}
-//         {error && (
-//           <div className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg px-4 py-2">
-//             {error}
-//           </div>
-//         )}
-
-//         {/* Submit */}
-//         <button
-//           type="submit"
-//           disabled={loading}
-//           className="w-full py-2.5 rounded-xl bg-blue-600 text-white font-medium hover:bg-blue-700 transition disabled:opacity-50"
-//         >
-//           {loading ? "Logging in..." : "Login"}
-//         </button>
-//       </form>
-//     </div>
-//   );
-// }
-
-/////////
-
 import { useState, useEffect } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { jwtDecode } from "jwt-decode";
@@ -300,17 +73,38 @@ export default function LoginPage({ onSuccess }: LoginPageProps) {
   };
 
   return (
-    <div className="w-full max-w-md">
-      {/* CARD */}
-      <div className="relative bg-white/10 backdrop-blur-xl border rounded-3xl  p-6 text-white">
-        {/* CLOSE BUTTON (for popup use) */}
-        <button
-          onClick={onSuccess}
-          className="absolute top-4 right-4 text-gray-300 hover:text-white"
-        >
-          <X size={20} />
-        </button>
+    // <div className="w-full max-w-md">
+    //   {/* CARD */}
+    //   <div className="relative bg-white/10 backdrop-blur-xl border rounded-3xl  p-6 text-white">
+    //     {/* CLOSE BUTTON (for popup use) */}
+    //     <button
+    //       onClick={onSuccess}
+    //       className="absolute top-4 right-4 text-gray-300 hover:text-white"
+    //     >
+    //       <X size={20} />
+    //     </button>
 
+    //     {/* HEADER */}
+    //     <div className="text-center mb-6">
+    //       <div className="flex justify-center mb-3">
+    //         <div className="w-12 h-12 rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 flex items-center justify-center">
+    //           <ShieldCheck size={22} />
+    //         </div>
+    //       </div>
+
+
+
+  <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[100]">
+    <div className="w-full max-w-md bg-[#020b3d] p-2 rounded-3xl relative">
+      {/* Close */}
+      <button
+        onClick={() => navigate("/")}
+        className="absolute top-4 right-4 text-gray-300 hover:text-white z-10"
+      >
+        <X size={20} />
+      </button>
+
+      <div className="bg-white/10 backdrop-blur-xl border rounded-3xl p-6 text-white">
         {/* HEADER */}
         <div className="text-center mb-6">
           <div className="flex justify-center mb-3">
@@ -318,6 +112,7 @@ export default function LoginPage({ onSuccess }: LoginPageProps) {
               <ShieldCheck size={22} />
             </div>
           </div>
+
 
           <h2 className="text-xl font-bold">Smart Entry Login</h2>
           <p className="text-gray-300 text-xs mt-1">Secure Access Portal</p>
@@ -335,7 +130,7 @@ export default function LoginPage({ onSuccess }: LoginPageProps) {
               onChange={(e) => setOrgId(e.target.value)}
               className="w-full px-3 py-2.5 rounded-xl bg-white/10 border border-white/20 text-white text-sm outline-none focus:ring-2 focus:ring-cyan-400"
             >
-              <option value="">Super Admin Login</option>
+              <option value="" className="text-black">Super Admin Login</option>
 
               {orgCodes.map((org: any) => (
                 <option key={org.id} value={org.id} className="text-black">
@@ -416,6 +211,7 @@ export default function LoginPage({ onSuccess }: LoginPageProps) {
           </button>
         </form>
       </div>
-    </div>
+      </div>
+      </div>
   );
 }

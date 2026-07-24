@@ -1,18 +1,18 @@
 import { useState, useEffect } from "react";
-import { NavLink } from "react-router-dom";
 import { ShieldCheck, ChevronDown, Globe, User, Menu, X } from "lucide-react";
-
-import Login from "../feature/auth/pages/Login";
+import { NavLink, useNavigate } from "react-router-dom";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [showLogin, setShowLogin] = useState(false);
+
   const [showServices, setShowServices] = useState(false);
 
-  useEffect(() => {
-    document.body.style.overflow = isOpen || showLogin ? "hidden" : "auto";
-  }, [isOpen, showLogin]);
+  const navigate = useNavigate();
 
+useEffect(() => {
+  document.body.style.overflow = isOpen ? "hidden" : "auto";
+}, [isOpen]);
+  
   const navClass = ({ isActive }) =>
     isActive
       ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white px-5 py-2 rounded-full text-sm font-medium shadow-lg"
@@ -104,7 +104,7 @@ export default function Navbar() {
             </button> */}
 
             <button
-              onClick={() => setShowLogin(true)}
+              onClick={() => navigate("/login")}
               className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 px-6 py-2.5 rounded-xl text-white font-medium"
             >
               <User size={18} />
@@ -169,8 +169,8 @@ export default function Navbar() {
 
               <button
                 onClick={() => {
-                  setShowLogin(true);
-                  setIsOpen(false);
+  setIsOpen(false);
+  navigate("/login");
                 }}
                 className="mt-4 bg-gradient-to-r from-blue-600 to-blue-500 px-6 py-3 rounded-xl text-white font-medium"
               >
@@ -183,21 +183,7 @@ export default function Navbar() {
 
       <div className="h-[70px] sm:h-[78px]" />
 
-      {/* LOGIN MODAL */}
-      {showLogin && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[100]">
-          <div className="w-full max-w-md bg-[#020b3d] p-2 rounded-3xl relative">
-            {/* <button
-              onClick={() => setShowLogin(false)}
-              className="absolute top-3 right-3 text-white"
-            >
-              ✕
-            </button> */}
 
-            <Login onSuccess={() => setShowLogin(false)} />
-          </div>
-        </div>
-      )}
     </>
   );
 }
