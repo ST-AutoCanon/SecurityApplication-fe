@@ -33,12 +33,12 @@ interface Props {
 export default function OrganisationList({ onView }: Props) {
   const [organisations, setOrganisations] = useState<Organisation[]>([]);
   const [loading, setLoading] = useState(true);
-const [alert, setAlert] = useState({
-  show: false,
-  type: "success" as "success" | "error",
-  message: "",
-});
-    
+  const [alert, setAlert] = useState({
+    show: false,
+    type: "success" as "success" | "error",
+    message: "",
+  });
+
   // Search & Filters
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
@@ -54,12 +54,12 @@ const [alert, setAlert] = useState({
       setOrganisations(res.data.data || []);
     } catch (err) {
       console.error(err);
-       setAlert({
-         show: true,
-         type: "error",
-         message:
-           err?.response?.data?.message || "Failed to load organisations.",
-       });
+      setAlert({
+        show: true,
+        type: "error",
+        message:
+          err?.response?.data?.message || "Failed to load organisations.",
+      });
     } finally {
       setLoading(false);
     }
@@ -118,161 +118,159 @@ const [alert, setAlert] = useState({
     );
   }
 
-    return (
-      <>
-        {alert.show && (
-          <Alert
-            type={alert.type}
-            message={alert.message}
-            onClose={() =>
-              setAlert((prev) => ({
-                ...prev,
-                show: false,
-              }))
-            }
-          />
-        )}
-        <div className="max-w-7xl mx-auto p-6 text-gray-700">
-          {/* Header */}
+  return (
+    <>
+      {alert.show && (
+        <Alert
+          type={alert.type}
+          message={alert.message}
+          onClose={() =>
+            setAlert((prev) => ({
+              ...prev,
+              show: false,
+            }))
+          }
+        />
+      )}
+      <div className="max-w-7xl mx-auto p-6 text-gray-700">
+        {/* Header */}
 
-          <div className="flex flex-col md:flex-row justify-between md:items-center mb-6 gap-4">
-            <div>
-              <h1 className="text-3xl font-bold text-white">Organisations</h1>
+        <div className="flex flex-col md:flex-row justify-between md:items-center mb-6 gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-white">Organisations</h1>
 
-              <p className="text-gray-200 mt-1">
-                Total Organisations :{" "}
-                <span className="font-bold">
-                  {filteredOrganisations.length}
-                </span>
-              </p>
-            </div>
+            <p className="text-gray-200 mt-1">
+              Total Organisations :{" "}
+              <span className="font-bold">{filteredOrganisations.length}</span>
+            </p>
           </div>
+        </div>
 
-          {/* Toolbar */}
+        {/* Toolbar */}
 
-          <div className="bg-white rounded-xl shadow p-4 mb-5">
-            <div className="grid md:grid-cols-4 gap-4">
-              {/* Search */}
+        <div className="bg-white rounded-xl shadow p-4 mb-5">
+          <div className="grid md:grid-cols-4 gap-4">
+            {/* Search */}
 
-              <div className="relative">
-                <Search
-                  size={18}
-                  className="absolute left-3 top-3 text-gray-400"
-                />
+            <div className="relative">
+              <Search
+                size={18}
+                className="absolute left-3 top-3 text-gray-400"
+              />
 
-                <input
-                  type="text"
-                  placeholder="Search organisation..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="w-full border rounded-lg pl-10 pr-3 py-2"
-                />
-              </div>
-
-              {/* Status */}
-
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="border rounded-lg px-3 py-2"
-              >
-                <option value="ALL">All Status</option>
-                <option value="ACTIVE">ACTIVE</option>
-                <option value="PENDING">PENDING</option>
-                <option value="INACTIVE">INACTIVE</option>
-              </select>
-
-              {/* Type */}
-
-              <select
-                value={typeFilter}
-                onChange={(e) => setTypeFilter(e.target.value)}
-                className="border rounded-lg px-3 py-2"
-              >
-                <option value="ALL">All Types</option>
-                <option value="APARTMENT">Apartment</option>
-                <option value="HOSPITAL">Hospital</option>
-                <option value="EVENT">Event</option>
-              </select>
-
-              {/* Sort */}
-
-              <select
-                value={sortOrder}
-                onChange={(e) => setSortOrder(e.target.value)}
-                className="border rounded-lg px-3 py-2"
-              >
-                <option value="LATEST">Latest First</option>
-                <option value="OLDEST">Oldest First</option>
-              </select>
+              <input
+                type="text"
+                placeholder="Search organisation..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full border rounded-lg pl-10 pr-3 py-2"
+              />
             </div>
+
+            {/* Status */}
+
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="border rounded-lg px-3 py-2"
+            >
+              <option value="ALL">All Status</option>
+              <option value="ACTIVE">ACTIVE</option>
+              <option value="PENDING">PENDING</option>
+              <option value="INACTIVE">INACTIVE</option>
+            </select>
+
+            {/* Type */}
+
+            <select
+              value={typeFilter}
+              onChange={(e) => setTypeFilter(e.target.value)}
+              className="border rounded-lg px-3 py-2"
+            >
+              <option value="ALL">All Types</option>
+              <option value="APARTMENT">Apartment</option>
+              <option value="HOSPITAL">Hospital</option>
+              <option value="EVENT">Event</option>
+            </select>
+
+            {/* Sort */}
+
+            <select
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value)}
+              className="border rounded-lg px-3 py-2"
+            >
+              <option value="LATEST">Latest First</option>
+              <option value="OLDEST">Oldest First</option>
+            </select>
           </div>
+        </div>
 
-          {/* Table */}
+        {/* Table */}
 
-          <div className="bg-white rounded-xl shadow overflow-hidden">
-            <table className="w-full">
-              <thead className="bg-gray-100">
+        <div className="bg-white rounded-xl shadow overflow-hidden">
+          <table className="w-full">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="p-4 text-left">ID</th>
+                <th className="p-4 text-left">Organisation</th>
+                <th className="p-4 text-left">Type</th>
+                <th className="p-4 text-left">Contact</th>
+                <th className="p-4 text-left">Status</th>
+                <th className="p-4 text-left">Created</th>
+                <th className="p-4 text-center">Action</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {filteredOrganisations.length === 0 && (
                 <tr>
-                  <th className="p-4 text-left">ID</th>
-                  <th className="p-4 text-left">Organisation</th>
-                  <th className="p-4 text-left">Type</th>
-                  <th className="p-4 text-left">Contact</th>
-                  <th className="p-4 text-left">Status</th>
-                  <th className="p-4 text-left">Created</th>
-                  <th className="p-4 text-center">Action</th>
+                  <td colSpan={7} className="text-center p-8">
+                    No Organisations Found
+                  </td>
                 </tr>
-              </thead>
+              )}
 
-              <tbody>
-                {filteredOrganisations.length === 0 && (
-                  <tr>
-                    <td colSpan={7} className="text-center p-8">
-                      No Organisations Found
-                    </td>
-                  </tr>
-                )}
+              {filteredOrganisations.map((org) => (
+                <tr
+                  key={org.id}
+                  className="border-t hover:bg-gray-50 transition"
+                >
+                  <td className="p-4 font-semibold">#{org.id}</td>
 
-                {filteredOrganisations.map((org) => (
-                  <tr
-                    key={org.id}
-                    className="border-t hover:bg-gray-50 transition"
-                  >
-                    <td className="p-4 font-semibold">#{org.id}</td>
+                  <td className="p-4">
+                    <div className="flex items-center gap-3">
+                      <Building2 className="text-blue-600" size={20} />
 
-                    <td className="p-4">
-                      <div className="flex items-center gap-3">
-                        <Building2 className="text-blue-600" size={20} />
+                      <div>
+                        <div className="font-semibold">{org.org_name}</div>
 
-                        <div>
-                          <div className="font-semibold">{org.org_name}</div>
-
-                          <div className="text-sm text-gray-500">
-                            {org.schema_name}
-                          </div>
+                        <div className="text-sm text-gray-500">
+                          {org.schema_name}
                         </div>
                       </div>
-                    </td>
+                    </div>
+                  </td>
 
-                    <td>{org.org_type}</td>
+                  <td>{org.org_type}</td>
 
-                    <td className="p-4">
-                      <div className="space-y-1 text-sm">
-                        <div className="flex items-center gap-2">
-                          <Mail size={15} />
-                          {org.email}
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          <Phone size={15} />
-                          {org.phone}
-                        </div>
+                  <td className="p-4">
+                    <div className="space-y-1 text-sm">
+                      <div className="flex items-center gap-2">
+                        <Mail size={15} />
+                        {org.email}
                       </div>
-                    </td>
 
-                    <td>
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-semibold
+                      <div className="flex items-center gap-2">
+                        <Phone size={15} />
+                        {org.phone}
+                      </div>
+                    </div>
+                  </td>
+
+                  <td>
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-semibold
                     ${
                       org.status === "ACTIVE"
                         ? "bg-green-100 text-green-700"
@@ -280,33 +278,33 @@ const [alert, setAlert] = useState({
                           ? "bg-yellow-100 text-yellow-700"
                           : "bg-red-100 text-red-700"
                     }`}
-                      >
-                        {org.status}
-                      </span>
-                    </td>
+                    >
+                      {org.status}
+                    </span>
+                  </td>
 
-                    <td className="p-4">
-                      <div className="flex items-center gap-2">
-                        <Calendar size={15} />
-                        {new Date(org.created_at).toLocaleDateString()}
-                      </div>
-                    </td>
+                  <td className="p-4">
+                    <div className="flex items-center gap-2">
+                      <Calendar size={15} />
+                      {new Date(org.created_at).toLocaleDateString()}
+                    </div>
+                  </td>
 
-                    <td className="text-center">
-                      <button
-                        onClick={() => onView(org.id)}
-                        className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition"
-                      >
-                        <Eye size={18} />
-                        View
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                  <td className="text-center">
+                    <button
+                      onClick={() => onView(org.id)}
+                      className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition"
+                    >
+                      <Eye size={18} />
+                      View
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-      </>
-    );
+      </div>
+    </>
+  );
 }

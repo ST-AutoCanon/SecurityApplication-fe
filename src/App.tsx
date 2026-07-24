@@ -11,8 +11,6 @@ import Hospital from "./pages/Hospital";
 import HomePage from "./HomePages.tsx/HomePage";
 import Navbar from "./components/Navbar";
 
-
-
 import SetPasswordPage from "./pages/SetPasswordPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
@@ -21,6 +19,7 @@ import Footer from "./components/Footer";
 import ContactUs from "./pages/ContactUs";
 import Features from "./pages/Features";
 import ComingSoon from "./pages/ComingSoon";
+import LoginPage from "./feature/auth/pages/Login";
 const RequireAuth = ({
   children,
   roles,
@@ -62,6 +61,15 @@ export default function App() {
         <Route path="/contactUs" element={<ContactUs />} />
         <Route path="/features" element={<Features />} />
         <Route path="/comingSoon" element={<ComingSoon />} />
+        <Route
+          path="/login"
+          element={
+            <>
+              <HomePage />
+              <LoginPage />
+            </>
+          }
+        />
         {/* Apartment Super Admin */}
         <Route
           path="/super_admin/organisation/*"

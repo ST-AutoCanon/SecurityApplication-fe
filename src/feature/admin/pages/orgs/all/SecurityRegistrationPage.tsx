@@ -56,7 +56,6 @@ export default function SecurityRegistrationPage() {
 
     if (!form.phone.trim()) {
       return alert("Phone Number is required");
-
     }
 
     if (!/^[6-9]\d{9}$/.test(form.phone)) {

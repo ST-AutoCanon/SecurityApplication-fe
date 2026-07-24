@@ -1,7 +1,15 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import Webcam from "react-webcam";
-import * as faceapi from "face-api.js";
+
+// import { FaceContext } from "../../../context/FaceContext";
+import { useFace } from "../../../context/FaceContext";
+import { faceDetector } from "../face/detector/detector";
+import { faceAligner } from "../face/alignment/align";
+import { faceRecognizer } from "../face/recognition/recognizer";
+import { faceQuality } from "../face/quality/quality";
+import { enrollmentPipeline } from "../face/enrollment/pipeline";
+
 
 import { AuthContext } from "../../../context/AuthContext";
 
@@ -46,6 +54,11 @@ declare global {
 export default function VoiceRegisterPage() {
   const { user, isInitializing } = useContext(AuthContext);
 
+ const { isModelsLoaded, isLoadingModels, loadFaceModels } = useFace();
+
+  console.log("Loaded:", isModelsLoaded);
+  console.log("Loading:", isLoadingModels);
+
   const organisationId = user?.organisation_id;
 
   const webcamRef = useRef<Webcam>(null);
@@ -70,8 +83,6 @@ export default function VoiceRegisterPage() {
   const [form, setForm] = useState<Record<string, any>>({});
 
   const [loading, setLoading] = useState(false);
-
-  const [modelsLoaded, setModelsLoaded] = useState(false);
 
   const [listening, setListening] = useState(false);
 
@@ -147,29 +158,7 @@ const [alertData, setAlertData] = useState({
     waitingForConfirmationRef.current = waitingForConfirmation;
   }, [waitingForConfirmation]);
 
-  // =====================================
-  // Load Face Models
-  // =====================================
 
-  useEffect(() => {
-    const loadModels = async () => {
-      try {
-        const MODEL_URL = "/models";
-
-        await Promise.all([
-          faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL),
-          faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
-          faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
-        ]);
-
-        setModelsLoaded(true);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    loadModels();
-  }, []);
 
   // =====================================
   // Load Modules
@@ -898,7 +887,8 @@ console.log("Voice:", lower);
 
     // Last field
     if (step >= allFields.length - 1) {
-      if (isReviewMode) {
+      // if (isReviewMode) {
+      if (isReviewModeRef.current) {
         isReviewModeRef.current = false;
         setIsReviewMode(false);
         setWaitingForConfirmation(false);
@@ -937,7 +927,9 @@ console.log("Voice:", lower);
     //   return;
     // }
 
-    if (isReviewMode) {
+    // if (isReviewMode) {
+
+    if (isReviewModeRef.current) {
       let reviewStep = nextStep;
 
       // Skip face-related fields
@@ -1096,35 +1088,198 @@ console.log("Voice:", lower);
   // Capture Face
   // =====================================
 
+// const captureFace = async () => {
+//   try {
+//         if (!modelsLoaded) {
+//           alert("Face models are loading. Please wait.");
+//           return;
+//         }
+//     setLoading(true);
+
+//     const video = webcamRef.current?.video;
+
+//     if (!video) {
+//       throw new Error("Camera not ready");
+//     }
+
+
+//     // 1. Detect face
+//     const result = await faceDetector.detect(video);
+
+//     if (!result || result.length === 0) {
+//       alert("Face not detected");
+//       return;
+//     }
+
+//     const face = result[0];
+
+//     // 2. Quality
+
+//     console.log("Face:", face);
+//     console.log("BBox:", face.bbox);
+//     console.log("Landmarks:", face.landmarks);
+//     const quality = faceQuality.evaluate(video, face);
+  
+//     if (!quality.passed) {
+      
+//         console.log("Face Quality:", quality);
+//       alert("Please adjust your face position");
+//       return;
+//     }
+
+//     if (!face.landmarks) {
+//       throw new Error("Face landmarks not detected");
+//     }
+
+//     // 3. Alignment
+//     const aligned = await faceAligner.align(video, face.landmarks);
+
+//     // 4. Generate embedding
+
+
+    
+//   const embedding = await faceRecognizer.embeddingFromAligned(aligned);
+//     console.log("Embedding:", embedding.length);
+
+//     // Save embedding
+
+//     updateForm("face_descriptor", Array.from(embedding));
+
+//     // Save photo
+
+//     const photo = webcamRef.current?.getScreenshot();
+
+//     if (photo) {
+//       updateForm("profile_photo", photo);
+//     }
+
+//     setFaceDetected(true);
+//     setCaptured(true);
+//     setCameraOpen(false);
+
+//     nextQuestion();
+//   } catch (err) {
+//     console.error("Face capture error", err);
+
+//     alert("Face registration failed");
+//   } finally {
+//     setLoading(false);
+//   }
+// };
+
+
   const captureFace = async () => {
     try {
+      // if (!modelsLoaded) {
+      if (!isModelsLoaded) {
+        alert("Face models are loading. Please wait.");
+        return;
+      }
+
       setLoading(true);
 
       const video = webcamRef.current?.video;
 
       if (!video) {
-        alert("Camera not ready");
-        return;
+        throw new Error("Camera not ready");
       }
 
-      const detection = await faceapi
-        .detectSingleFace(
-          video,
-          new faceapi.SsdMobilenetv1Options({
-            minConfidence: 0.5,
-          }),
-        )
-        .withFaceLandmarks()
-        .withFaceDescriptor();
+      console.log("======================================");
+      console.log("VIDEO");
+      console.log("Width :", video.videoWidth);
+      console.log("Height:", video.videoHeight);
+      console.log("======================================");
 
-      if (!detection) {
+      // ------------------------------------
+      // Detect Face
+      // ------------------------------------
+
+      const result = await faceDetector.detect(video);
+
+      console.log("======================================");
+      console.log("Detection Result");
+      console.log(result);
+      console.log("======================================");
+
+      if (!result || result.length === 0) {
         alert("Face not detected");
         return;
       }
 
-      setFaceDetected(true);
+      const face = result[0];
 
-      const descriptor = Array.from(detection.descriptor);
+      console.log("======================================");
+      console.log("FACE");
+      console.log(face);
+
+      console.log("Score:", face.score);
+
+      console.log("BBox:", face.bbox);
+
+      console.log("Landmarks:", face.landmarks);
+
+      console.log(
+        "BBox Finite:",
+        Number.isFinite(face.bbox.x),
+        Number.isFinite(face.bbox.y),
+        Number.isFinite(face.bbox.width),
+        Number.isFinite(face.bbox.height),
+      );
+
+      face.landmarks.forEach((point, index) => {
+        console.log(`Landmark ${index}`, point);
+      });
+
+      console.log("======================================");
+
+      // ------------------------------------
+      // Face Quality
+      // ------------------------------------
+
+      const quality = faceQuality.evaluate(video, face);
+
+      console.log("======================================");
+      console.log("FACE QUALITY");
+      console.log(quality);
+      console.log("======================================");
+
+      if (!quality.passed) {
+        alert("Please adjust your face position");
+        return;
+      }
+
+      // ------------------------------------
+      // Alignment
+      // ------------------------------------
+
+      console.log("======================================");
+      console.log("Aligning Face...");
+      console.log("======================================");
+
+      const aligned = faceAligner.align(video, face.landmarks);
+
+      console.log("Aligned Canvas:", aligned);
+      console.log("Canvas Width :", aligned.width);
+      console.log("Canvas Height:", aligned.height);
+
+      // ------------------------------------
+      // Recognition
+      // ------------------------------------
+
+      console.log("======================================");
+      console.log("Generating Embedding...");
+      console.log("======================================");
+
+      const embedding = await faceRecognizer.embeddingFromAligned(aligned);
+
+      console.log("Embedding Length:", embedding.length);
+      console.log("Embedding Sample:", Array.from(embedding.slice(0, 10)));
+
+      // ------------------------------------
+      // Save
+      // ------------------------------------
+
+      updateForm("face_descriptor", Array.from(embedding));
 
       const photo = webcamRef.current?.getScreenshot();
 
@@ -1132,29 +1287,18 @@ console.log("Voice:", lower);
         updateForm("profile_photo", photo);
       }
 
-      updateForm("face_descriptor", descriptor);
-
-      // updateForm("profile_photo", photo);
-
+      setFaceDetected(true);
       setCaptured(true);
-
       setCameraOpen(false);
 
-      const step = currentStepRef.current;
-      const allFields = fieldsRef.current;
-
-      if (step >= allFields.length - 1){
-        setSummaryPage(true);
-      } else {
-         const nextStep = step + 1;
-
-         currentStepRef.current = nextStep; // <-- IMPORTANT
-
-         setCurrentStep(nextStep);
-      }
+      nextQuestion();
     } catch (err) {
+      console.error("======================================");
+      console.error("FACE CAPTURE ERROR");
       console.error(err);
-      alert("Face capture failed.");
+      console.error("======================================");
+
+      alert("Face registration failed");
     } finally {
       setLoading(false);
     }
@@ -1269,6 +1413,35 @@ setAlertData({
     );
   }
 
+
+if (isLoadingModels) {
+  return (
+    <div className="flex h-screen items-center justify-center">
+      <div className="text-center">
+        <div className="text-xl font-semibold">
+          Loading Face Recognition Models...
+        </div>
+
+        <div className="mt-2 text-gray-500">Please wait a few seconds.</div>
+      </div>
+    </div>
+  );
+}
+  
+
+  const isFaceField = (field?: Field) => {
+    if (!field) return false;
+
+    const key = field.field_key.toLowerCase();
+
+    return (
+      key.includes("profile_photo") ||
+      key.includes("profile photo") ||
+      key.includes("face_descriptor") ||
+      key.includes("face descriptor")
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-cyan-100">
       <div
@@ -1315,13 +1488,14 @@ space-y-6"
           !cameraOpen &&
           !summaryPage &&
           !completed &&
-          !(
-            currentField.field_key.toLowerCase().includes("profile_photo") ||
-            currentField.field_key.toLowerCase().includes("profile photo") ||
-            currentField.field_key.toLowerCase().includes("face_descriptor") ||
-            currentField.field_key.toLowerCase().includes("face descriptor")
-          ) &&
-          currentField && (
+          // !(
+          //   currentField.field_key.toLowerCase().includes("profile_photo") ||
+          //   currentField.field_key.toLowerCase().includes("profile photo") ||
+          //   currentField.field_key.toLowerCase().includes("face_descriptor") ||
+          //   currentField.field_key.toLowerCase().includes("face descriptor")
+        // ) &&
+          !isFaceField(currentField) && (
+          // currentField && (
             <VoiceQuestion
               field={currentField}
               currentStep={currentStep}
@@ -1341,11 +1515,12 @@ space-y-6"
           CAMERA
       ------------------------------ */}
 
-        {cameraOpen && (
+        {/* {cameraOpen && ( */}
+        {cameraOpen && !isReviewMode && (
           <VoiceCamera
             webcamRef={webcamRef}
             loading={loading}
-            modelsLoaded={modelsLoaded}
+            modelsLoaded={isModelsLoaded}
             detected={faceDetected}
             captured={captured}
             onCapture={captureFace}
