@@ -180,6 +180,10 @@ const [alertData, setAlertData] = useState({
       );
 
       setModules(res.data.data || []);
+      console.table(res.data.data);
+
+      const ids = res.data.data.map((m: any) => m.template_id);
+      console.log(ids);
     } catch (err) {
       console.error(err);
     }
