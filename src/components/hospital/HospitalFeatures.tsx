@@ -82,6 +82,7 @@ export default function HospitalFeatures() {
                 key={index}
                 className="group bg-white rounded-3xl p-6 sm:p-8 shadow-lg hover:shadow-2xl transition duration-300 border border-slate-200 hover:border-blue-500"
                 // className="group bg-white rounded-3xl p-6 sm:p-8 shadow-lg hover:shadow-2xl transition duration-300 border border-slate-200 hover:border-blue-500"
+              // className="group bg-white rounded-3xl p-6 sm:p-8 shadow-lg hover:shadow-2xl transition duration-300 border border-slate-200 hover:border-blue-500"
               >
                 {/* <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 flex items-center justify-center text-white group-hover:scale-110 transition">
                   <Icon size={28} className="sm:w-8 sm:h-8" />
@@ -97,6 +98,7 @@ export default function HospitalFeatures() {
 
                 {/* Description */}
                 <p className="mt-3 sm:mt-4 text-sm sm:text-base text-slate-600 leading-6 sm:leading-7">
+
                   {/* <p className="text-sm sm:text-base text-slate-600 mt-3 leading-6 sm:leading-7"> */}
                   {item.desc}
                 </p>

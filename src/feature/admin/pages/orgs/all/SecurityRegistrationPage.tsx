@@ -83,17 +83,19 @@ export default function SecurityRegistrationPage() {
       alert(res.data.message);
 
       resetForm();
-    } catch (err: any) {
+    }
+    catch (err: any) {
       alert(err?.response?.data?.message || "Something went wrong");
-    } finally {
-      // catch (error: any) {
-      // console.log(error);
+    }
+    // catch (error: any) {
+    // console.log(error);
 
-      // showAlert(
-      //   "error",
-      //   error?.response?.data?.message || "Something went wrong"
-      // );
+    // showAlert(
+    //   "error",
+    //   error?.response?.data?.message || "Something went wrong"
+    // );
 
+    finally {
       setLoading(false);
     }
   };
