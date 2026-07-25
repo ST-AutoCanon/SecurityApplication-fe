@@ -77,8 +77,16 @@ outline-none
             >
               <option value="">Select Module</option>
 
-              {modules.map((module) => (
+              {/* {modules.map((module) => (
                 <option key={module.template_id} value={module.table_name}>
+                  {module.template_name}
+                </option>
+              ))} */}
+              {modules.map((module) => (
+                <option
+                  key={`${module.template_id}-${module.table_name}`}
+                  value={module.table_name}
+                >
                   {module.template_name}
                 </option>
               ))}
