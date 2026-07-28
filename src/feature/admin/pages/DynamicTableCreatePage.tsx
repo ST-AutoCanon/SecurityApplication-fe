@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { AuthContext } from "../../../context/AuthContext";
-
+import Alert from "../../../components/Aleartmessage"; // adjust the path
 const API = `${import.meta.env.VITE_BACKEND_URL}`;
 
 type Template = {
@@ -25,7 +25,10 @@ export default function DynamicTableCreatePage() {
   const [selectedFields, setSelectedFields] = useState<string[]>([]);
   const [displayName, setDisplayName] = useState("");
   const [loading, setLoading] = useState(false);
-
+const [alertData, setAlertData] = useState<{
+  type: "success" | "error";
+  message: string;
+} | null>(null);
   /* ---------------- GET TEMPLATES ---------------- */
   useEffect(() => {
     axios
@@ -97,17 +100,26 @@ export default function DynamicTableCreatePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!selectedTemplate) {
-      return alert("Please select template");
-    }
+if (!selectedTemplate) {
+  return setAlertData({
+    type: "error",
+    message: "Please select a template.",
+  });
+}
 
-    if (!displayName.trim()) {
-      return alert("Display name required");
-    }
+if (!displayName.trim()) {
+  return setAlertData({
+    type: "error",
+    message: "Display name is required.",
+  });
+}
 
-    if (selectedFields.length === 0) {
-      return alert("Select at least one field");
-    }
+if (selectedFields.length === 0) {
+  return setAlertData({
+    type: "error",
+    message: "Please select at least one field.",
+  });
+}
 
     try {
       setLoading(true);
@@ -125,7 +137,10 @@ export default function DynamicTableCreatePage() {
         { withCredentials: true },
       );
 
-      alert(res.data.message);
+    setAlertData({
+      type: "success",
+      message: res.data.message,
+    });
 
       // reset
       setSelectedTemplate(null);
@@ -133,87 +148,99 @@ export default function DynamicTableCreatePage() {
       setDisplayName("");
       setFields([]);
     } catch (err: any) {
-      alert(err?.response?.data?.message || "Error creating table");
+      setAlertData({
+        type: "error",
+        message: err?.response?.data?.message || "Error creating table",
+      });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <div className="bg-white shadow rounded-xl p-8">
-        <h1 className="text-3xl font-bold mb-6">Create Dynamic Table</h1>
+    <>
+      <div className="max-w-4xl mx-auto p-6">
+        <div className="bg-white shadow rounded-xl p-8">
+          <h1 className="text-3xl font-bold mb-6">Create Dynamic Table</h1>
 
-        {/* ---------------- TEMPLATE SELECT ---------------- */}
-        <div className="mb-6">
-          <label className="block mb-2 font-medium">Select Template</label>
-
-          <select
-            className="w-full border rounded-lg p-3"
-            value={selectedTemplate || ""}
-            onChange={(e) => setSelectedTemplate(Number(e.target.value))}
-          >
-            <option value="">Select</option>
-            {templates.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.template_name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* ---------------- DISPLAY NAME ---------------- */}
-        <div className="mb-6">
-          <label className="block mb-2 font-medium">Display Name</label>
-
-          <input
-            className="w-full border rounded-lg p-3"
-            value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
-            placeholder="e.g. Maids / Visitors"
-          />
-        </div>
-
-        {/* ---------------- FIELD SELECT ---------------- */}
-        {fields.length > 0 && (
+          {/* ---------------- TEMPLATE SELECT ---------------- */}
           <div className="mb-6">
-            <label className="block mb-3 font-medium">Select Fields</label>
+            <label className="block mb-2 font-medium">Select Template</label>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {fields.map((f) => (
-                <label
-                  key={f.field_key}
-                  className="flex items-center gap-2 border p-3 rounded-lg"
-                >
-                  {/* <input
+            <select
+              className="w-full border rounded-lg p-3"
+              value={selectedTemplate || ""}
+              onChange={(e) => setSelectedTemplate(Number(e.target.value))}
+            >
+              <option value="">Select</option>
+              {templates.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.template_name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* ---------------- DISPLAY NAME ---------------- */}
+          <div className="mb-6">
+            <label className="block mb-2 font-medium">Display Name</label>
+
+            <input
+              className="w-full border rounded-lg p-3"
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+              placeholder="e.g. Maids / Visitors"
+            />
+          </div>
+
+          {/* ---------------- FIELD SELECT ---------------- */}
+          {fields.length > 0 && (
+            <div className="mb-6">
+              <label className="block mb-3 font-medium">Select Fields</label>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {fields.map((f) => (
+                  <label
+                    key={f.field_key}
+                    className="flex items-center gap-2 border p-3 rounded-lg"
+                  >
+                    {/* <input
                     type="checkbox"
                     onChange={() => toggleField(f.field_key)}
                   /> */}
-                  <input
-                    type="checkbox"
-                    checked={selectedFields.includes(f.field_key)}
-                    onChange={() => toggleField(f.field_key)}
-                  />
-                  {f.field_label}
-                </label>
-              ))}
+                    <input
+                      type="checkbox"
+                      checked={selectedFields.includes(f.field_key)}
+                      onChange={() => toggleField(f.field_key)}
+                    />
+                    {f.field_label}
+                  </label>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* ---------------- SUBMIT ---------------- */}
-        <button
-          onClick={handleSubmit}
-          disabled={loading || tableExists}
-          className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg disabled:opacity-50"
-        >
-          {tableExists
-            ? "Table Already Exists"
-            : loading
-              ? "Creating..."
-              : "Create Table"}
-        </button>
+          {/* ---------------- SUBMIT ---------------- */}
+          <button
+            onClick={handleSubmit}
+            disabled={loading || tableExists}
+            className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg disabled:opacity-50"
+          >
+            {tableExists
+              ? "Table Already Exists"
+              : loading
+                ? "Creating..."
+                : "Create Table"}
+          </button>
+        </div>
       </div>
-    </div>
+      {alertData && (
+        <Alert
+          type={alertData.type}
+          message={alertData.message}
+          onClose={() => setAlertData(null)}
+        />
+      )}
+    </>
   );
 }

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { AuthContext } from "../../../context/AuthContext";
-
+import Alert from "../../../components/Aleartmessage";
 const API = `${import.meta.env.VITE_BACKEND_URL}`;
 
 type Template = {
@@ -30,6 +30,11 @@ export default function DynamicTableUpdatePage() {
 
   const [tableExists, setTableExists] = useState(false);
 
+  const [alertData, setAlertData] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
+
   /* ---------------------------------------------
       Load Templates
   ---------------------------------------------- */
@@ -40,7 +45,14 @@ export default function DynamicTableUpdatePage() {
       .then((res) => {
         setTemplates(res.data.data);
       })
-      .catch(console.error);
+      .catch((err: any) => {
+        console.error(err);
+
+        setAlertData({
+          type: "error",
+          message: err?.response?.data?.message || "Failed to load templates.",
+        });
+      });
   }, []);
 
   /* ---------------------------------------------
@@ -71,7 +83,10 @@ export default function DynamicTableUpdatePage() {
         );
 
         if (!configRes.data.exists) {
-          alert("No Dynamic Table found.");
+          setAlertData({
+            type: "error",
+            message: "No Dynamic Table found.",
+          });
 
           setTableExists(false);
 
@@ -87,8 +102,15 @@ export default function DynamicTableUpdatePage() {
         setDisplayName(configRes.data.displayName);
 
         setSelectedFields(configRes.data.selectedFields);
-      } catch (err) {
+      } catch (err: any) {
         console.error(err);
+
+        setAlertData({
+          type: "error",
+          message:
+            err?.response?.data?.message ||
+            "Failed to load table configuration.",
+        });
       } finally {
         setLoading(false);
       }
@@ -114,17 +136,26 @@ export default function DynamicTableUpdatePage() {
   const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!selectedTemplate) {
-      return alert("Select Template");
-    }
+if (!selectedTemplate) {
+  return setAlertData({
+    type: "error",
+    message: "Please select a template.",
+  });
+}
 
-    if (!displayName.trim()) {
-      return alert("Display Name required");
-    }
+if (!displayName.trim()) {
+  return setAlertData({
+    type: "error",
+    message: "Display Name is required.",
+  });
+}
 
-    if (selectedFields.length === 0) {
-      return alert("Select at least one field");
-    }
+if (selectedFields.length === 0) {
+  return setAlertData({
+    type: "error",
+    message: "Please select at least one field.",
+  });
+}
 
     try {
       setLoading(true);
@@ -144,88 +175,103 @@ export default function DynamicTableUpdatePage() {
         },
       );
 
-      alert(response.data.message);
+    setAlertData({
+      type: "success",
+      message: response.data.message,
+    });
     } catch (err: any) {
       console.error(err);
 
-      alert(err?.response?.data?.message || "Update Failed");
+      setAlertData({
+        type: "error",
+        message: err?.response?.data?.message || "Update Failed",
+      });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-5xl mx-auto p-6">
-      <div className="bg-white shadow-lg rounded-xl p-8">
-        <h1 className="text-3xl font-bold mb-8">Update Dynamic Table</h1>
+    <>
+      <div className="max-w-5xl mx-auto p-6">
+        <div className="bg-white shadow-lg rounded-xl p-8">
+          <h1 className="text-3xl font-bold mb-8">Update Dynamic Table</h1>
 
-        <form onSubmit={handleUpdate}>
-          {/* Template */}
+          <form onSubmit={handleUpdate}>
+            {/* Template */}
 
-          <div className="mb-6">
-            <label className="block font-medium mb-2">Select Template</label>
+            <div className="mb-6">
+              <label className="block font-medium mb-2">Select Template</label>
 
-            <select
-              className="w-full border rounded-lg p-3"
-              value={selectedTemplate ?? ""}
-              onChange={(e) => setSelectedTemplate(Number(e.target.value))}
-            >
-              <option value="">Select Template</option>
+              <select
+                className="w-full border rounded-lg p-3"
+                value={selectedTemplate ?? ""}
+                onChange={(e) => setSelectedTemplate(Number(e.target.value))}
+              >
+                <option value="">Select Template</option>
 
-              {templates.map((template) => (
-                <option key={template.id} value={template.id}>
-                  {template.template_name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Display Name */}
-
-          <div className="mb-6">
-            <label className="block font-medium mb-2">Display Name</label>
-
-            <input
-              className="w-full border rounded-lg p-3"
-              value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
-            />
-          </div>
-
-          {/* Fields */}
-
-          {fields.length > 0 && (
-            <div className="mb-8">
-              <label className="block font-medium mb-3">Fields</label>
-
-              <div className="grid grid-cols-2 gap-3">
-                {fields.map((field) => (
-                  <label
-                    key={field.field_key}
-                    className="border rounded-lg p-3 flex gap-3 items-center"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={selectedFields.includes(field.field_key)}
-                      onChange={() => toggleField(field.field_key)}
-                    />
-
-                    {field.field_label}
-                  </label>
+                {templates.map((template) => (
+                  <option key={template.id} value={template.id}>
+                    {template.template_name}
+                  </option>
                 ))}
-              </div>
+              </select>
             </div>
-          )}
 
-          <button
-            disabled={!tableExists || loading}
-            type="submit"
-            className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-8 py-3 rounded-lg"
-          >
-            {loading ? "Updating..." : "Update Table"}
-          </button>
-        </form>
+            {/* Display Name */}
+
+            <div className="mb-6">
+              <label className="block font-medium mb-2">Display Name</label>
+
+              <input
+                className="w-full border rounded-lg p-3"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+              />
+            </div>
+
+            {/* Fields */}
+
+            {fields.length > 0 && (
+              <div className="mb-8">
+                <label className="block font-medium mb-3">Fields</label>
+
+                <div className="grid grid-cols-2 gap-3">
+                  {fields.map((field) => (
+                    <label
+                      key={field.field_key}
+                      className="border rounded-lg p-3 flex gap-3 items-center"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedFields.includes(field.field_key)}
+                        onChange={() => toggleField(field.field_key)}
+                      />
+
+                      {field.field_label}
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <button
+              disabled={!tableExists || loading}
+              type="submit"
+              className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-8 py-3 rounded-lg"
+            >
+              {loading ? "Updating..." : "Update Table"}
+            </button>
+          </form>
+        </div>
       </div>
-    </div>
+      {alertData && (
+        <Alert
+          type={alertData.type}
+          message={alertData.message}
+          onClose={() => setAlertData(null)}
+        />
+      )}
+    </>
   );
 }

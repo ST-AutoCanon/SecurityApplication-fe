@@ -451,7 +451,7 @@ export default function OrganisationPage() {
               <option value="">Select Status</option>
               <option value="ACTIVE">ACTIVE</option>
               <option value="INACTIVE">INACTIVE</option>
-              <option value="PENDING">PENDING</option>
+              {/* <option value="PENDING">PENDING</option> */}
             </select>
           </div>
 

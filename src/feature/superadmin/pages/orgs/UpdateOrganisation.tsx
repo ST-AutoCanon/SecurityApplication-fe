@@ -21,7 +21,7 @@ type OrganisationDetails = {
   registration_end_date?: string;
   status?: string;
   is_active?: boolean;
-
+  photo_path?: string;
   admin?: {
     first_name: string;
     last_name: string;
@@ -56,7 +56,7 @@ const UpdateOrganisation = () => {
   const [isActive, setIsActive] = useState(true);
 
   const [photo, setPhoto] = useState<File | null>(null);
-
+const [existingPhoto, setExistingPhoto] = useState("");
   const [adminFirstName, setAdminFirstName] = useState("");
   const [adminLastName, setAdminLastName] = useState("");
   const [adminEmail, setAdminEmail] = useState("");
@@ -70,8 +70,9 @@ const UpdateOrganisation = () => {
     message: string;
   } | null>(null);
 
-  // Fetch Departments
-
+ const getFileName = (path: string) => {
+   return path.split(/[\\/]/).pop() || "";
+ };
   // Fetch Organisations
   useEffect(() => {
     const fetchOrgs = async () => {
@@ -101,7 +102,7 @@ const UpdateOrganisation = () => {
         if (res.data.success && res.data.data) {
           console.log("ORG DETAILS:", res.data.data);
           const org = res.data.data;
-
+setExistingPhoto(getFileName(org.photo_path || ""));
           setOrgName(org.org_name || "");
           setOrgType(org.org_type || "");
           setPhone(org.phone || "");
@@ -385,6 +386,10 @@ focus:ring-2 focus:ring-blue-400 outline-none text-gray-700"
                           }
                         }}
                       />
+
+                      <p className="text-sm text-gray-500 mt-2">
+                        {photo ? photo.name : existingPhoto}
+                      </p>
                     </div>
                     <div>
                       <label className="block text-gray-700 font-semibold mb-2">

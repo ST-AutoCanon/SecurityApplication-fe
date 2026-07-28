@@ -52,6 +52,7 @@ export default function OrganisationList({ onView }: Props) {
       });
 
       setOrganisations(res.data.data || []);
+      
     } catch (err) {
       console.error(err);
       setAlert({
@@ -85,9 +86,12 @@ export default function OrganisationList({ onView }: Props) {
     });
 
     // Status
-    if (statusFilter !== "ALL") {
-      data = data.filter((org) => org.status === statusFilter);
-    }
+if (statusFilter !== "ALL") {
+  data = data.filter(
+    (org) =>
+      org.status?.trim().toUpperCase() === statusFilter.trim().toUpperCase(),
+  );
+}
 
     // Type
     if (typeFilter !== "ALL") {
@@ -236,7 +240,7 @@ export default function OrganisationList({ onView }: Props) {
                   key={org.id}
                   className="border-t hover:bg-gray-50 transition"
                 >
-                  <td className="p-4 font-semibold">#{org.id}</td>
+                  <td className="p-4 font-semibold">{org.id}</td>
 
                   <td className="p-4">
                     <div className="flex items-center gap-3">

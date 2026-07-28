@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Building2, Menu } from "lucide-react";
+import { LayoutDashboard, Building2, Menu, Building, Users } from "lucide-react";
 import { AuthContext } from "../../../context/AuthContext";
 export default function Sidebar() {
   const location = useLocation();
@@ -36,6 +36,11 @@ const { user } = useContext(AuthContext);
       name: "Buisness Data",
       path: "/admin/organisation/buisness_data",
       icon: <LayoutDashboard size={22} />,
+    },
+    {
+      name: "Apartment",
+      path: "/admin/organisation/apartment/members",
+      icon: <Building size={22} />,
     },
   ];
 
