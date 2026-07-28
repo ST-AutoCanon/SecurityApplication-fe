@@ -1,20 +1,9 @@
 import React, { useState, useContext } from "react";
 import axios from "axios";
 import { AuthContext } from "../../../../../context/AuthContext";
-// import Alert from "../../../../../components/Aleartmessage";
 const API = `${import.meta.env.VITE_BACKEND_URL}/api/admin`;
-// const [alertOpen, setAlertOpen] = useState(false);
-// const [alertType, setAlertType] = useState<"success" | "error">("success");
-// const [alertMessage, setAlertMessage] = useState("");
+import Alert from "../../../../../components/Aleartmessage";
 
-// const showAlert = (
-//   type: "success" | "error",
-//   message: string
-// ) => {
-//   setAlertType(type);
-//   setAlertMessage(message);
-//   setAlertOpen(true);
-// };
 export default function SecurityRegistrationPage() {
   const { user } = useContext(AuthContext);
   const isEventOrg = user?.org_type?.toUpperCase() === "EVENT";
@@ -33,6 +22,9 @@ export default function SecurityRegistrationPage() {
       [e.target.name]: e.target.value,
     });
   };
+const [alertOpen, setAlertOpen] = useState(false);
+const [alertType, setAlertType] = useState<"success" | "error">("success");
+const [alertMessage, setAlertMessage] = useState("");
 
   const resetForm = () => {
     setForm({
@@ -42,24 +34,54 @@ export default function SecurityRegistrationPage() {
       phone: "",
     });
   };
+const showAlert = (
+  type: "success" | "error",
+  message: string
+) => {
+  setAlertType(type);
+  setAlertMessage(message);
+  setAlertOpen(true);
+};
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!form.first_name.trim()) {
-      return alert("First Name is required");
-    }
+      //return alert("First Name is required");
+            showAlert("error", "First Name is required");
+            return;
 
+    }
+//const firstNameRegex = /^[A-Za-z]{2,50}$/;
+
+if (!/^[A-Za-z]{2,50}$/.test(form.first_name.trim())) {
+  showAlert("error","First Name must contain only letters (2-50 characters)");
+  return;
+}
     if (!form.email.trim()) {
-      return alert("Email is required");
+     // return alert("Email is required");
+                  showAlert("error", "Email-Id is required");
+            return;
+
+    }
+    if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(form.email)) {
+      showAlert("error", "Please enter a valid Email-Id");
+      return;
     }
 
     if (!form.phone.trim()) {
-      return alert("Phone Number is required");
+//return alert("Phone Number is required");
+                  showAlert("error", "Phone number is required");
+            return;
+
+
     }
 
     if (!/^[6-9]\d{9}$/.test(form.phone)) {
-      return alert("Please enter a valid 10-digit Phone Number");
+      ///return alert("Please enter a valid 10-digit Phone Number");
+                  showAlert("error", "Please enter a valid 10-digit Phone Number");
+            return;
+
     }
 
     try {
@@ -80,35 +102,35 @@ export default function SecurityRegistrationPage() {
         withCredentials: true,
       });
 
-      alert(res.data.message);
-
+      //alert(res.data.message);
+showAlert("success",res.data.message);
       resetForm();
     }
-    catch (err: any) {
-      alert(err?.response?.data?.message || "Something went wrong");
-    }
-    // catch (error: any) {
-    // console.log(error);
+    // catch (err: any) {
+    //   alert(err?.response?.data?.message || "Something went wrong");
+    // }
+    catch (error: any) {
+    console.log(error);
 
-    // showAlert(
-    //   "error",
-    //   error?.response?.data?.message || "Something went wrong"
-    // );
+    showAlert(
+      "error",
+      error?.response?.data?.message || "Something went wrong"
+    );
 
-    finally {
+   } finally {
       setLoading(false);
     }
   };
 
   return (
     <div className="max-w-3xl mx-auto p-6">
-      {/* {alertOpen && (
+       {alertOpen && (
         <Alert
           type={alertType}
           message={alertMessage}
           onClose={() => setAlertOpen(false)}
         />
-      )} */}
+      )} 
       <div className="bg-white shadow rounded-xl p-8">
         <h1 className="text-3xl font-bold mb-8">
           {" "}
@@ -120,7 +142,7 @@ export default function SecurityRegistrationPage() {
           className="grid grid-cols-1 md:grid-cols-2 gap-5"
         >
           <div>
-            <label className="block mb-2 font-medium">First Name *</label>
+            <label className="block mb-2 font-medium">First Name<span className="text-red-500">*</span></label>
 
             <input
               type="text"
@@ -146,7 +168,7 @@ export default function SecurityRegistrationPage() {
           </div>
 
           <div>
-            <label className="block mb-2 font-medium">Email *</label>
+            <label className="block mb-2 font-medium">Email<span className="text-red-500">*</span></label>
 
             <input
               type="email"
@@ -159,7 +181,7 @@ export default function SecurityRegistrationPage() {
           </div>
 
           <div>
-            <label className="block mb-2 font-medium">Phone Number</label>
+            <label className="block mb-2 font-medium">Phone Number<span className="text-red-500">*</span></label>
 
             <input
               type="text"
