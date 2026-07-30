@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 // import { Link, useParams } from "react-router-dom";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import FamilyTable from "../../components/FamilyTable";
 import VehicleTable from "../../components/VehicleTable";
@@ -9,9 +9,11 @@ import StatusBadge from "../../components/StatusBadge";
 // const API = "/api/admin/apartment";
 const API = import.meta.env.VITE_BACKEND_URL;
 const ApartmentMemberDetails = () => {
+
+  
   // const { id } = useParams();
 const { pathname } = useLocation();
-
+const navigate = useNavigate();
   const id = pathname.split("/").pop();
   
   const [member, setMember] = useState<any>(null);
@@ -53,13 +55,20 @@ const { pathname } = useLocation();
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Member Details</h1>
-
-        <Link
-          to={`/admin/organisation/apartment/members/edit/${member.id}`}
-          className="px-4 py-2 bg-indigo-600 text-white rounded-lg"
-        >
-          Edit
-        </Link>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => navigate(-1)}
+            className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition"
+          >
+            ← Back
+          </button>
+          <Link
+            to={`/admin/organisation/apartment/members/edit/${member.id}`}
+            className="px-4 py-2 bg-indigo-600 text-white rounded-lg"
+          >
+            Edit
+          </Link>
+        </div>
       </div>
 
       <div className="bg-white rounded-xl shadow p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">

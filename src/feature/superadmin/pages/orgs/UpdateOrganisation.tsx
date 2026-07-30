@@ -82,6 +82,7 @@ const [existingPhoto, setExistingPhoto] = useState("");
           { withCredentials: true },
         );
         if (res.data.success) setOrganisations(res.data.data || []);
+        console.log("ORG DETAILS:", res.data.data);
       } catch (err) {
         console.error("Failed to fetch organisations");
       }
@@ -485,8 +486,8 @@ focus:ring-2 focus:ring-blue-400 outline-none text-gray-700"
                         onChange={(e) => setStatus(e.target.value)}
                         className="rounded-xl border px-4 py-3"
                       >
-                        <option value="active">Active</option>
-                        <option value="inactive">Inactive</option>
+                        <option value="ACTIVE">Active</option>
+                        <option value="INACTIVE">Inactive</option>
                       </select>
                     </div>
                   </div>
