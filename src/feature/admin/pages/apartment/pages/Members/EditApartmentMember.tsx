@@ -42,8 +42,15 @@ console.log("Edit Member ID:", id);
 
   return (
     <div className="p-6">
-      <div className="mb-6">
+      <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold">Edit Apartment Member</h1>
+
+        <button
+          onClick={() => navigate(-1)}
+          className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition"
+        >
+          ← Back
+        </button>
       </div>
 
       <MemberForm

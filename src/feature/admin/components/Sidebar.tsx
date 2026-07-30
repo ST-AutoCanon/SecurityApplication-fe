@@ -37,11 +37,21 @@ const { user } = useContext(AuthContext);
       path: "/admin/organisation/buisness_data",
       icon: <LayoutDashboard size={22} />,
     },
-    {
-      name: "Apartment",
-      path: "/admin/organisation/apartment/members",
-      icon: <Building size={22} />,
-    },
+    // {
+    //   name: "Apartment",
+    //   path: "/admin/organisation/apartment/members",
+    //   icon: <Building size={22} />,
+    // },
+    // Show Apartment only if org_type is NOT EVENT or HOSPITAL
+    ...(!["EVENT", "HOSPITAL"].includes(user?.org_type?.toUpperCase() || "")
+      ? [
+          {
+            name: "Apartment",
+            path: "/admin/organisation/apartment/members",
+            icon: <Building size={22} />,
+          },
+        ]
+      : []),
   ];
 
   const isActive = (path: string) => {
