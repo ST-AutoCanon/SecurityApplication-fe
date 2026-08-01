@@ -2,19 +2,21 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import Webcam from "react-webcam";
 
+import Fuse from "fuse.js";
+
 // import { FaceContext } from "../../../context/FaceContext";
 import { useFace } from "../../../context/FaceContext";
 import { faceDetector } from "../face/detector/detector";
 import { faceAligner } from "../face/alignment/align";
 import { faceRecognizer } from "../face/recognition/recognizer";
 import { faceQuality } from "../face/quality/quality";
-import { enrollmentPipeline } from "../face/enrollment/pipeline";
+// import { enrollmentPipeline } from "../face/enrollment/pipeline";
 
 
 import { AuthContext } from "../../../context/AuthContext";
 
 import VoiceHeader from "../components/voice/VoiceHeader";
-import ModuleSelector from "../components/voice/ModuleSelector";
+// import ModuleSelector from "../components/voice/ModuleSelector";
 import VoiceQuestion from "../components/voice/VoiceQuestion";
 import VoiceCamera from "../components/voice/VoiceCamera";
 import VoiceSummary from "../components/voice/VoiceSummary";
@@ -111,7 +113,16 @@ const [waitingForConfirmation, setWaitingForConfirmation] = useState(false);
 
 const isReviewModeRef = useRef(false);
   const waitingForConfirmationRef = useRef(false);
+  const reviewFieldRef = useRef<Field | null>(null);
+  const replacingReviewValueRef = useRef(false);
+  const modulesRef = useRef<Module[]>([]);
+
+  const [availableCategories, setAvailableCategories] = useState<string[]>([]);
   
+  const waitingForModuleSelectionRef = useRef(true);
+
+  const autoCaptureTimerRef = useRef<number | null>(null);
+  const isCapturingRef = useRef(false);
 const [alertData, setAlertData] = useState({
   open: false,
   type: "success",
@@ -121,6 +132,10 @@ const [alertData, setAlertData] = useState({
   useEffect(() => {
     fieldsRef.current = fields;
   }, [fields]);
+  
+  useEffect(() => {
+    modulesRef.current = modules;
+  }, [modules]);
 
   useEffect(() => {
     currentStepRef.current = currentStep;
@@ -130,25 +145,28 @@ const [alertData, setAlertData] = useState({
     formRef.current = form;
   }, [form]);
 
-  useEffect(() => {
-    if (!currentField) return;
+useEffect(() => {
+  if (!currentField) return;
 
+  if (isReviewModeRef.current) return;
 
-      // Don't open camera while reviewing
-    if (isReviewModeRef.current) return;
-    
-   const key = currentField.field_key.toLowerCase();
+  const hasProfilePhoto = fieldsRef.current.some(
+    (f) => f.field_key.toLowerCase() === "profile_photo",
+  );
 
-  if (
-    key.includes("profile_photo") ||
-    key.includes("profile photo") ||
-    key.includes("face_descriptor") ||
-    key.includes("face descriptor")
-  ) {
+  const hasFaceDescriptor = fieldsRef.current.some(
+    (f) => f.field_key.toLowerCase() === "face_descriptor",
+  );
+
+  const key = currentField.field_key.toLowerCase();
+
+  const isCurrentFaceField =
+    key === "profile_photo" || key === "face_descriptor";
+
+  if (isCurrentFaceField && (hasProfilePhoto || hasFaceDescriptor)) {
     setCameraOpen(true);
   }
-  }, [currentStep, currentField]);
-
+}, [currentStep, currentField]);
 
   useEffect(() => {
     isReviewModeRef.current = isReviewMode;
@@ -170,6 +188,143 @@ const [alertData, setAlertData] = useState({
     }
   }, [organisationId, isInitializing]);
 
+
+  // useEffect(() => {
+  //   if (!cameraOpen || !isModelsLoaded) return;
+
+  //   let cancelled = false;
+
+  //   const detectFace = async () => {
+  //     const video = webcamRef.current?.video;
+
+  //     if (
+  //       !video ||
+  //       video.readyState !== 4 ||
+  //       video.videoWidth === 0 ||
+  //       video.videoHeight === 0
+  //     ) {
+  //       return;
+  //     }
+
+  //     try {
+  //       const faces = await faceDetector.detect(video);
+
+  //       if (!cancelled) {
+  //         setFaceDetected(faces.length > 0);
+  //       }
+  //     } catch (err) {
+  //       console.error("Live detection error:", err);
+
+  //       if (!cancelled) {
+  //         setFaceDetected(false);
+  //       }
+  //     }
+  //   };
+
+  //   // Detect immediately
+  //   detectFace();
+
+  //   // Then every 300ms
+  //   const interval = setInterval(detectFace, 300);
+
+  //   return () => {
+  //     cancelled = true;
+  //     clearInterval(interval);
+  //     setFaceDetected(false);
+  //   };
+  // }, [cameraOpen, isModelsLoaded]);
+
+
+  useEffect(() => {
+  if (!cameraOpen || !isModelsLoaded) return;
+
+  let cancelled = false;
+
+  const detectFace = async () => {
+    const video = webcamRef.current?.video;
+
+    if (
+      !video ||
+      video.readyState !== 4 ||
+      video.videoWidth === 0 ||
+      video.videoHeight === 0
+    ) {
+      return;
+    }
+
+    try {
+      const faces = await faceDetector.detect(video);
+
+      const detected = faces.length > 0;
+
+      if (!cancelled) {
+        setFaceDetected(detected);
+      }
+
+      // -----------------------------
+      // AUTO CAPTURE
+      // -----------------------------
+      if (detected) {
+        // Already waiting? do nothing
+        if (!autoCaptureTimerRef.current && !isCapturingRef.current) {
+          autoCaptureTimerRef.current = window.setTimeout(async () => {
+            autoCaptureTimerRef.current = null;
+
+            if (
+              !isCapturingRef.current &&
+              webcamRef.current?.video &&
+              cameraOpen
+            ) {
+              isCapturingRef.current = true;
+
+              try {
+                await captureFace();
+              } finally {
+                isCapturingRef.current = false;
+              }
+            }
+          }, 1500); // Hold still for 1.5 seconds
+        }
+      } else {
+        // Face moved away → cancel timer
+        if (autoCaptureTimerRef.current) {
+          clearTimeout(autoCaptureTimerRef.current);
+          autoCaptureTimerRef.current = null;
+        }
+      }
+    } catch (err) {
+      console.error(err);
+
+      if (!cancelled) {
+        setFaceDetected(false);
+      }
+
+      if (autoCaptureTimerRef.current) {
+        clearTimeout(autoCaptureTimerRef.current);
+        autoCaptureTimerRef.current = null;
+      }
+    }
+  };
+
+  detectFace();
+
+  const interval = setInterval(detectFace, 300);
+
+  return () => {
+    cancelled = true;
+
+    clearInterval(interval);
+
+    if (autoCaptureTimerRef.current) {
+      clearTimeout(autoCaptureTimerRef.current);
+      autoCaptureTimerRef.current = null;
+    }
+
+    isCapturingRef.current = false;
+    setFaceDetected(false);
+  };
+  }, [cameraOpen, isModelsLoaded]);
+  
   const loadModules = async () => {
     try {
       const res = await axios.get(
@@ -179,7 +334,26 @@ const [alertData, setAlertData] = useState({
         },
       );
 
-      setModules(res.data.data || []);
+     const data = res.data.data || [];
+
+      setModules(data);
+      modulesRef.current = data;
+
+      setAvailableCategories(
+  data.map((m: Module) => m.template_name)
+      );
+      
+     waitingForModuleSelectionRef.current = true;
+
+     const moduleNames = data.map((m: Module) => m.template_name).join(", ");
+
+     await speak(
+       `Welcome.
+  Please say the registration category.
+  Available categories are ${moduleNames}.`,
+     );
+
+     startListening();
       console.table(res.data.data);
 
       const ids = res.data.data.map((m: any) => m.template_id);
@@ -333,28 +507,6 @@ const updateForm = (key: string, value: any) => {
   // Review Mode
   //=====================================
 
-  // const handleReviewAgain = async () => {
-  //   setIsReviewMode(true);
-
-  //   setSummaryPage(false);
-
-  //   setCurrentStep(0);
-  //   currentStepRef.current = 0;
-
-  //   await reviewCurrentField();
-  // };
-
-  // const handleReviewAgain = async () => {
-  //   isReviewModeRef.current = true;
-  //   setIsReviewMode(true);
-
-  //   setSummaryPage(false);
-
-  //   setCurrentStep(0);
-  //   currentStepRef.current = 0;
-
-  //   await reviewCurrentField();
-  // };
 
 
 
@@ -392,105 +544,17 @@ const updateForm = (key: string, value: any) => {
   };;
   
 
-  // const reviewCurrentField = async () => {
-  //   const field = fields[currentStepRef.current];
-
-  //   if (!field) {
-  //     await speak("Review completed. Click submit to save.");
-  //     return;
-  //   }
-
-  //   const value = formRef.current[field.field_key];
-
-  //   await speak(
-  //     `${field.field_label} is ${value || "empty"}.
-  //       Do you want to change it? Say Yes or No.`,
-  //   );
-
-  //   setWaitingForConfirmation(true);
-  // };
-
-
-  // =====================================
-  // Ask Current Question
-  // =====================================
-
-
-  // const askCurrentQuestion = async () => {
-  //   setTranscript("");
-
-  //   const field = fieldsRef.current[currentStepRef.current];
-
-  //   if (!field) return;
-  //   const existingValue = formRef.current[field.field_key];
-
-  //   // let message = field.field_label;
-  //    let message: string; 
-
-  //   // During review, tell the existing value
-  //   if (
-  //     existingValue !== undefined &&
-  //     existingValue !== null &&
-  //     existingValue !== ""
-  //   ) {
-  //     if (
-  //       field.field_key.toLowerCase().includes("profile_photo") ||
-  //       field.field_key.toLowerCase().includes("photo")
-  //     ) {
-  //       message = `${field.field_label}. Photo has already been captured. You may capture it again if you want.`;
-  //     } else if (
-  //       field.field_key.toLowerCase().includes("face_descriptor") ||
-  //       field.field_key.toLowerCase().includes("face")
-  //     ) {
-  //       message = `${field.field_label}. Face has already been registered. You may register it again if needed.`;
-  //     } else {
-  //       message = `${field.field_label}. Current value is ${existingValue}. Please say the new value or say Skip to keep the current value.`;
-  //     }
-  //   } else {
-  //     message = `Please provide your ${field.field_label}.`;
-  //   }
-  //   const key = field.field_key.toLowerCase();
-  //   const label = field.field_label.toLowerCase();
-
-  //   // Email field
-  //   if (key.includes("email") || label.includes("email")) {
-  //     message +=
-  //       ". Please say your email address clearly. For example, vinay at gmail dot com.";
-  //   }
-
-  //   // Date field
-  //   if (
-  //     key.includes("date") ||
-  //     key.includes("dob") ||
-  //     label.includes("date") ||
-  //     label.includes("birth")
-  //   ) {
-  //     message +=
-  //       ". Please say the date in Day Month Year format. For example, 10 July 1998.";
-  //   }
-
-  //   // Phone field
-  //   if (
-  //     key.includes("phone") ||
-  //     key.includes("mobile") ||
-  //     label.includes("phone") ||
-  //     label.includes("mobile")
-  //   ) {
-  //     message +=
-  //       ". Please say each digit one by one. For example, nine eight seven six five four three two one zero.";
-  //   }
-
-  //   if (!field.is_required) {
-  //     message += ". This field is optional. You may say Skip.";
-  //   }
-
-  //   await speak(message);
-  // };
 
 
   const reviewCurrentField = async () => {
     const field = fieldsRef.current[currentStepRef.current];
 
+      if (!field) {
+    return;
+  }
+
+    reviewFieldRef.current = field;
+    
     if (!field) {
       isReviewModeRef.current = false;
       setIsReviewMode(false);
@@ -535,6 +599,10 @@ const updateForm = (key: string, value: any) => {
 
     await speak(message);
 
+    setTimeout(() => {
+      startListening();
+    }, 300);
+
     setWaitingForConfirmation(true);
   };
 
@@ -543,69 +611,6 @@ const updateForm = (key: string, value: any) => {
 
   if (!field) return;
 
-  // const currentValue = formRef.current[field.field_key];
-
-  // let message = "";
-
-  // if (isReviewMode) {
-  //   message = `${field.field_label}.`;
-
-  //   if (
-  //     currentValue !== undefined &&
-  //     currentValue !== null &&
-  //     currentValue !== ""
-  //   ) {
-  //     if (field.field_key === "profile_photo") {
-  //       message += " A photo has already been captured.";
-  //     } else if (field.field_key === "face_descriptor") {
-  //       message += " Face has already been registered.";
-  //     } else {
-  //       message += ` Current value is ${currentValue}.`;
-  //     }
-
-  //     message +=
-  //       " Say the new value to change it, or say Next to keep the current value.";
-  //   } else {
-  //     message += " This field is empty. Please provide a value.";
-  //   }
-  // } else {
-  //   message = field.field_label;
-
-  //   const key = field.field_key.toLowerCase();
-  //   const label = field.field_label.toLowerCase();
-
-  //   // Email
-  //   if (key.includes("email") || label.includes("email")) {
-  //     message +=
-  //       ". Please say your email address clearly. For example, vinay at gmail dot com.";
-  //   }
-
-  //   // Date
-  //   if (
-  //     key.includes("date") ||
-  //     key.includes("dob") ||
-  //     label.includes("date") ||
-  //     label.includes("birth")
-  //   ) {
-  //     message +=
-  //       ". Please say the date in Day Month Year format. For example, 10 July 1998.";
-  //   }
-
-  //   // Mobile
-  //   if (
-  //     key.includes("mobile") ||
-  //     key.includes("phone") ||
-  //     label.includes("mobile") ||
-  //     label.includes("phone")
-  //   ) {
-  //     message +=
-  //       ". Please say each digit one by one. For example, nine eight seven six five four three two one zero.";
-  //   }
-
-  //   if (!field.is_required) {
-  //     message += ". This field is optional. You may say Skip.";
-  //   }
-  // }
 
 
 
@@ -677,21 +682,80 @@ const updateForm = (key: string, value: any) => {
 
     await speak(message);
 
-
+setTimeout(() => {
+  startListening();
+}, 300);
 
   };
-  
-// useEffect(() => {
-//   if (
-//     selectedModule &&
-//     fieldsRef.current.length > 0 &&
-//     !cameraOpen &&
-//     !summaryPage
-//   ) {
-//     askCurrentQuestion();
-//   }
-// }, [currentStep, cameraOpen, summaryPage, selectedModule]);
 
+  
+//================================
+  // process Model 
+  //======================
+const processModuleVoice = async (answer: string) => {
+  console.log("===== Module Selection =====");
+  console.log("Answer:", answer);
+  console.log("Modules:", modulesRef.current);
+
+  // Normalize speech
+  let spoken = answer.toLowerCase().trim();
+
+  // Common speech-recognition aliases
+  const aliases: Record<string, string> = {
+    made: "maid",
+    maide: "maid",
+    meid: "maid",
+
+    organizer: "organiser",
+
+    vender: "vendor",
+
+    service: "service provider",
+    services: "service provider",
+
+    deliveries: "delivery",
+    events: "event",
+  };
+
+  spoken = aliases[spoken] || spoken;
+
+  console.log("Normalized:", spoken);
+
+  const fuse = new Fuse(modulesRef.current, {
+    keys: ["template_name", "table_name", "display_name"],
+    threshold: 0.45,
+    ignoreLocation: true,
+    includeScore: true,
+    minMatchCharLength: 2,
+  });
+
+  const results = fuse.search(spoken);
+
+  console.log("Fuse Results:", results);
+
+  if (results.length === 0) {
+    await speak("Module not found. Please say the module name again.");
+
+    startListening();
+    return;
+  }
+
+  const module = results[0].item;
+
+  console.log("Selected Module:", module);
+
+  waitingForModuleSelectionRef.current = false;
+
+  setTranscript(`Selected Module: ${module.template_name}`);
+
+  await speak(`${module.template_name} selected.`);
+
+  await loadTemplate(module);
+
+  setTimeout(() => {
+    askCurrentQuestion();
+  }, 300);
+};
   // =====================================
   // Process Voice Answer
   // =====================================
@@ -705,6 +769,14 @@ const updateForm = (key: string, value: any) => {
     console.log("Fields Length:", fields.length);
     console.log("Current Form:", form);
 
+    console.log(
+      "VOICE FIELD:",
+      field?.field_key,
+      "STEP:",
+      currentStepRef.current,
+      "REVIEW:",
+      isReviewModeRef.current,
+    );
     // if (!currentField) return;
     if (!field) {
       console.log("No field found");
@@ -792,19 +864,34 @@ setTranscript(`You said: ${value}`);
         return;
       }
 
-      if (lower === "yes") {
-        setWaitingForConfirmation(false);
+if (lower === "yes") {
+  setWaitingForConfirmation(false);
 
-        await speak(`Please say the new ${field.field_label}.`);
+  replacingReviewValueRef.current = true;
 
-        return;
-      }
+  await speak(`Please say the new ${field.field_label}.`);
+
+  startListening();
+
+  return;
+}
 
       await speak("Please say Yes or No.");
 
       return;
     }
 
+    if (isReviewModeRef.current && replacingReviewValueRef.current) {
+      replacingReviewValueRef.current = false;
+
+      updateForm(field.field_key, value);
+
+      await speak(`${field.field_label} updated`);
+
+      await nextQuestion();
+
+      return;
+    }
     const error = validateField(field, value);
 
     if (error) {
@@ -885,16 +972,139 @@ console.log("Voice:", lower);
 
 
 
+  // const nextQuestion = async () => {
+  //   const step = currentStepRef.current;
+  //   const allFields = fieldsRef.current;
+
+  //   // Last field
+  //   if (step >= allFields.length - 1) {
+  //     // if (isReviewMode) {
+  //     if (isReviewModeRef.current) {
+  //       isReviewModeRef.current = false;
+  //       setIsReviewMode(false);
+  //       setWaitingForConfirmation(false);
+
+  //       await speak(
+  //         "Review completed. Please click Submit to save the record.",
+  //       );
+
+  //       setSummaryPage(true);
+  //       return;
+  //     }
+
+  //     setSummaryPage(true);
+  //     return;
+  //   }
+
+  //   const nextStep = step + 1;
+
+  //   currentStepRef.current = nextStep;
+
+  //   const next = allFields[nextStep];
+
+  //   if (!next) {
+  //     setSummaryPage(true);
+  //     return;
+  //   }
+
+  //   // 👇 REVIEW MODE
+  //   // if (isReviewMode) {
+  //   //   setCurrentStep(nextStep);
+
+  //   //   setTimeout(() => {
+  //   //     reviewCurrentField();
+  //   //   }, 200);
+
+  //   //   return;
+  //   // }
+
+  //   // if (isReviewMode) {
+
+  //   if (isReviewModeRef.current) {
+  //     let reviewStep = nextStep;
+
+  //     // Skip face-related fields
+  //     while (reviewStep < allFields.length) {
+  //       const key = allFields[reviewStep].field_key.toLowerCase();
+
+  //       if (
+  //         key.includes("profile_photo") ||
+  //         key.includes("profile photo") ||
+  //         key.includes("face_descriptor") ||
+  //         key.includes("face descriptor")
+  //       ) {
+  //         reviewStep++;
+  //       } else {
+  //         break;
+  //       }
+  //     }
+
+  //     // No more fields left
+  //     if (reviewStep >= allFields.length) {
+  //       isReviewModeRef.current = false;
+  //       setIsReviewMode(false);
+
+  //       waitingForConfirmationRef.current = false;
+  //       setWaitingForConfirmation(false);
+
+  //       await speak(
+  //         "Review completed. Please click Submit to save the record.",
+  //       );
+
+  //       setSummaryPage(true);
+  //       return;
+  //     }
+
+  //     currentStepRef.current = reviewStep;
+  //     setCurrentStep(reviewStep);
+
+  //     setTimeout(() => {
+  //       reviewCurrentField();
+  //     }, 200);
+
+  //     return;
+  //   }
+
+  //   // Normal Flow
+  //   const key = next.field_key.toLowerCase();
+
+  //   if (
+  //     key.includes("profile_photo") ||
+  //     key.includes("profile photo") ||
+  //     key.includes("face_descriptor") ||
+  //     key.includes("face descriptor")
+  //   ) {
+  //     setFaceDetected(false);
+  //     setCaptured(false);
+  //     // setCurrentStep(nextStep);
+  //     currentStepRef.current = nextStep;
+  //     setCurrentStep(nextStep);
+
+  //     setTimeout(() => {
+  //       askCurrentQuestion();
+  //     }, 300);
+  //     setCameraOpen(true);
+  //     return;
+  //   }
+
+  //   setCurrentStep(nextStep);
+  // };
+
+
+
   const nextQuestion = async () => {
     const step = currentStepRef.current;
     const allFields = fieldsRef.current;
 
-    // Last field
+    // -------------------------
+    // Last Field
+    // -------------------------
     if (step >= allFields.length - 1) {
-      // if (isReviewMode) {
       if (isReviewModeRef.current) {
         isReviewModeRef.current = false;
         setIsReviewMode(false);
+
+        waitingForConfirmationRef.current = false;
         setWaitingForConfirmation(false);
 
         await speak(
@@ -909,6 +1119,9 @@ console.log("Voice:", lower);
       return;
     }
 
+    // -------------------------
+    // Next Step
+    // -------------------------
     const nextStep = step + 1;
 
     currentStepRef.current = nextStep;
@@ -920,23 +1133,12 @@ console.log("Voice:", lower);
       return;
     }
 
-    // 👇 REVIEW MODE
-    // if (isReviewMode) {
-    //   setCurrentStep(nextStep);
-
-    //   setTimeout(() => {
-    //     reviewCurrentField();
-    //   }, 200);
-
-    //   return;
-    // }
-
-    // if (isReviewMode) {
-
+    // -------------------------
+    // REVIEW MODE
+    // -------------------------
     if (isReviewModeRef.current) {
       let reviewStep = nextStep;
 
-      // Skip face-related fields
       while (reviewStep < allFields.length) {
         const key = allFields[reviewStep].field_key.toLowerCase();
 
@@ -952,7 +1154,6 @@ console.log("Voice:", lower);
         }
       }
 
-      // No more fields left
       if (reviewStep >= allFields.length) {
         isReviewModeRef.current = false;
         setIsReviewMode(false);
@@ -978,9 +1179,12 @@ console.log("Voice:", lower);
       return;
     }
 
-    // Normal Flow
+    // -------------------------
+    // NORMAL FLOW
+    // -------------------------
     const key = next.field_key.toLowerCase();
 
+    // Face / Camera fields
     if (
       key.includes("profile_photo") ||
       key.includes("profile photo") ||
@@ -989,14 +1193,23 @@ console.log("Voice:", lower);
     ) {
       setFaceDetected(false);
       setCaptured(false);
+
+      currentStepRef.current = nextStep;
       setCurrentStep(nextStep);
+
       setCameraOpen(true);
       return;
     }
 
+    // Normal Voice Question
+    currentStepRef.current = nextStep;
     setCurrentStep(nextStep);
-  };
 
+    // Wait until React updates currentStep
+    setTimeout(async () => {
+      await askCurrentQuestion();
+    }, 300);
+  };
 
 
   useEffect(() => {
@@ -1042,9 +1255,17 @@ console.log("Voice:", lower);
       // setTranscript(`You said: ${text}`);
       
 
-      // processVoiceAnswer(text);
-      const field = fieldsRef.current[currentStepRef.current];
+      if (waitingForModuleSelectionRef.current) {
+  processModuleVoice(text);
+  return;
+      }
+      
 
+      // processVoiceAnswer(text);
+      // const field = fieldsRef.current[currentStepRef.current];
+const field = isReviewModeRef.current
+  ? reviewFieldRef.current
+  : fieldsRef.current[currentStepRef.current];
       processVoiceAnswer(text, field);
     };
 
@@ -1172,90 +1393,113 @@ console.log("Voice:", lower);
 // };
 
 
-  const captureFace = async () => {
-    try {
-      // if (!modelsLoaded) {
-      if (!isModelsLoaded) {
-        alert("Face models are loading. Please wait.");
-        return;
-      }
+const captureFace = async () => {
+  try {
+    if (!isModelsLoaded) {
+      alert("Face models are loading. Please wait.");
+      return;
+    }
 
-      setLoading(true);
+    setLoading(true);
 
-      const video = webcamRef.current?.video;
+    const video = webcamRef.current?.video;
 
-      if (!video) {
-        throw new Error("Camera not ready");
-      }
+    if (!video) {
+      throw new Error("Camera not ready");
+    }
 
-      console.log("======================================");
-      console.log("VIDEO");
-      console.log("Width :", video.videoWidth);
-      console.log("Height:", video.videoHeight);
-      console.log("======================================");
+    // ------------------------------------
+    // Check what fields exist in this template
+    // ------------------------------------
 
-      // ------------------------------------
-      // Detect Face
-      // ------------------------------------
+    const hasProfilePhoto = fieldsRef.current.some(
+      (f) => f.field_key.toLowerCase() === "profile_photo",
+    );
 
-      const result = await faceDetector.detect(video);
+    const hasFaceDescriptor = fieldsRef.current.some(
+      (f) => f.field_key.toLowerCase() === "face_descriptor",
+    );
 
-      console.log("======================================");
-      console.log("Detection Result");
-      console.log(result);
-      console.log("======================================");
+    console.log("Has Profile Photo:", hasProfilePhoto);
+    console.log("Has Face Descriptor:", hasFaceDescriptor);
 
-      if (!result || result.length === 0) {
-        alert("Face not detected");
-        return;
-      }
+    console.log("======================================");
+    console.log("VIDEO");
+    console.log("Width :", video.videoWidth);
+    console.log("Height:", video.videoHeight);
+    console.log("======================================");
 
-      const face = result[0];
+    // ------------------------------------
+    // Detect Face
+    // ------------------------------------
 
-      console.log("======================================");
-      console.log("FACE");
-      console.log(face);
+    const result = await faceDetector.detect(video);
 
-      console.log("Score:", face.score);
+    console.log("======================================");
+    console.log("Detection Result");
+    console.log(result);
+    console.log("======================================");
 
-      console.log("BBox:", face.bbox);
-
-      console.log("Landmarks:", face.landmarks);
-
-      console.log(
-        "BBox Finite:",
-        Number.isFinite(face.bbox.x),
-        Number.isFinite(face.bbox.y),
-        Number.isFinite(face.bbox.width),
-        Number.isFinite(face.bbox.height),
-      );
-
-      face.landmarks.forEach((point, index) => {
-        console.log(`Landmark ${index}`, point);
+    if (!result || result.length === 0) {
+      setAlertData({
+        open: true,
+        type: "warning",
+        message: "Face not detected. Please look at the camera.",
       });
 
-      console.log("======================================");
+      setTimeout(() => {
+        setAlertData((prev) => ({
+          ...prev,
+          open: false,
+        }));
+      }, 1500);
 
-      // ------------------------------------
-      // Face Quality
-      // ------------------------------------
+      return;
+    }
 
-      const quality = faceQuality.evaluate(video, face);
+    const face = result[0];
 
-      console.log("======================================");
-      console.log("FACE QUALITY");
-      console.log(quality);
-      console.log("======================================");
+    console.log("======================================");
+    console.log("FACE");
+    console.log(face);
+    console.log("Score:", face.score);
+    console.log("BBox:", face.bbox);
+    console.log("Landmarks:", face.landmarks);
+    console.log("======================================");
 
-      if (!quality.passed) {
-        alert("Please adjust your face position");
-        return;
-      }
+    // ------------------------------------
+    // Face Quality
+    // ------------------------------------
 
-      // ------------------------------------
-      // Alignment
-      // ------------------------------------
+    const quality = faceQuality.evaluate(video, face);
 
+    console.log("======================================");
+    console.log("FACE QUALITY");
+    console.log(quality);
+    console.log("======================================");
+
+    if (!quality.passed) {
+      setAlertData({
+        open: true,
+        type: "warning",
+        message: "Please adjust your face position",
+      });
+
+      setTimeout(() => {
+        setAlertData((prev) => ({
+          ...prev,
+          open: false,
+        }));
+      }, 1500);
+
+      return;
+    }
+
+    // ------------------------------------
+    // Save Face Descriptor (Only if needed)
+    // ------------------------------------
+
+    if (hasFaceDescriptor) {
       console.log("======================================");
       console.log("Aligning Face...");
       console.log("======================================");
@@ -1266,47 +1510,59 @@ console.log("Voice:", lower);
       console.log("Canvas Width :", aligned.width);
       console.log("Canvas Height:", aligned.height);
 
-      // ------------------------------------
-      // Recognition
-      // ------------------------------------
-
       console.log("======================================");
       console.log("Generating Embedding...");
       console.log("======================================");
 
       const embedding = await faceRecognizer.embeddingFromAligned(aligned);
 
+      const embeddingArray = Array.from(embedding);
+
+      const norm = Math.sqrt(
+        embeddingArray.reduce((sum, value) => sum + value * value, 0),
+      );
+
+
       console.log("Embedding Length:", embedding.length);
+      console.log("Embedding Norm:", norm);
+      
       console.log("Embedding Sample:", Array.from(embedding.slice(0, 10)));
 
-      // ------------------------------------
-      // Save
-      // ------------------------------------
-
       updateForm("face_descriptor", Array.from(embedding));
+    }
 
+    // ------------------------------------
+    // Save Profile Photo (Only if needed)
+    // ------------------------------------
+
+    if (hasProfilePhoto) {
       const photo = webcamRef.current?.getScreenshot();
 
       if (photo) {
         updateForm("profile_photo", photo);
       }
-
-      setFaceDetected(true);
-      setCaptured(true);
-      setCameraOpen(false);
-
-      nextQuestion();
-    } catch (err) {
-      console.error("======================================");
-      console.error("FACE CAPTURE ERROR");
-      console.error(err);
-      console.error("======================================");
-
-      alert("Face registration failed");
-    } finally {
-      setLoading(false);
     }
-  };
+
+    // ------------------------------------
+    // Finish
+    // ------------------------------------
+
+    setFaceDetected(true);
+    setCaptured(true);
+    setCameraOpen(false);
+
+    nextQuestion();
+  } catch (err) {
+    console.error("======================================");
+    console.error("FACE CAPTURE ERROR");
+    console.error(err);
+    console.error("======================================");
+
+    alert("Face registration failed");
+  } finally {
+    setLoading(false);
+  }
+};
 
   // =====================================
   // Submit
@@ -1387,6 +1643,7 @@ setAlertData({
   // =====================================
 
   const resetRegistration = () => {
+    waitingForModuleSelectionRef.current = true;
     setSelectedModule(null);
 
     setFields([]);
@@ -1404,6 +1661,10 @@ setAlertData({
     setCameraOpen(false);
 
     setTranscript("");
+    setTimeout(() => {
+  loadModules();
+    }, 300);
+    
   };
   // =====================================
   // UI
@@ -1466,21 +1727,28 @@ space-y-6"
         {/* ------------------------------
           MODULE SELECTION
       ------------------------------ */}
-
         {!selectedModule && (
-          <ModuleSelector
-            modules={modules}
-            selectedModule={selectedModule}
-            loading={loading}
-            // onSelect={setSelectedModule}
-            onSelect={(module) => {
-              loadTemplate(module);
+          <VoiceQuestion
+            field={{
+              field_key: "module",
+              field_label: "Please say the registration category.",
+              is_required: true,
             }}
-            onStart={() => {
-              if (selectedModule) {
-                loadTemplate(selectedModule);
-              }
+            currentStep={0}
+            totalSteps={1}
+            transcript={transcript}
+            listening={listening}
+            speaking={speaking}
+            processing={processing}
+            categories={availableCategories}
+            onStartListening={startListening}
+            onRepeat={() => {
+              speak(
+                `Available categories are ${availableCategories.join(", ")}`,
+              );
             }}
+            onSkip={() => {}}
+            onNext={() => {}}
           />
         )}
 
@@ -1497,9 +1765,9 @@ space-y-6"
           //   currentField.field_key.toLowerCase().includes("profile photo") ||
           //   currentField.field_key.toLowerCase().includes("face_descriptor") ||
           //   currentField.field_key.toLowerCase().includes("face descriptor")
-        // ) &&
+          // ) &&
           !isFaceField(currentField) && (
-          // currentField && (
+            // currentField && (
             <VoiceQuestion
               field={currentField}
               currentStep={currentStep}
@@ -1544,7 +1812,8 @@ space-y-6"
         {summaryPage && !completed && (
           <VoiceSummary
             moduleName={selectedModule?.template_name}
-            form={form}
+            // form={form}
+            form={formRef.current}
             loading={loading}
             onSubmit={submitRegistration}
             // onBack={() => {

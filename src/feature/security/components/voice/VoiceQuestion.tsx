@@ -22,6 +22,7 @@ interface VoiceQuestionProps {
   listening: boolean;
   speaking: boolean;
   processing: boolean;
+  categories?: string[];
   onStartListening: () => void;
   onRepeat: () => void;
   onSkip: () => void;
@@ -36,6 +37,7 @@ const VoiceQuestion: React.FC<VoiceQuestionProps> = ({
   listening,
   speaking,
   processing,
+  categories = [],
   onStartListening,
   onRepeat,
   onSkip,
@@ -90,6 +92,29 @@ const VoiceQuestion: React.FC<VoiceQuestionProps> = ({
           <h1 className="text-xl sm:text-2xl md:text-4xl font-bold text-gray-800 break-words">
             {field.field_label}
           </h1>
+          {categories.length > 0 && (
+            <div className="mt-6">
+              <p className="text-sm text-gray-500 mb-3">Available Categories</p>
+
+              <div className="flex flex-wrap justify-center gap-3">
+                {categories.map((category) => (
+                  <div
+                    key={category}
+                    className="
+            px-5 py-2
+            rounded-full
+            bg-blue-100
+            text-blue-700
+            font-semibold
+            border border-blue-200
+          "
+                  >
+                    {category}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {!field.is_required && (
             <div className="mt-3 inline-flex px-3 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs sm:text-sm">

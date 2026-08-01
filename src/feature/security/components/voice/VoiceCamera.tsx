@@ -164,14 +164,16 @@ mt-8
                   <CheckCircle2 className="text-green-600" size={24} />
 
                   <span className="font-semibold text-green-700">
-                    Face Detected
+                    🟢 Face Detected
                   </span>
                 </>
               ) : (
                 <>
                   <XCircle className="text-red-500" size={24} />
 
-                  <span className="font-semibold text-red-600">No Face</span>
+                  <span className="font-semibold text-red-600">
+                    🔴 No Face Detected
+                  </span>
                 </>
               )}
             </div>
@@ -231,20 +233,26 @@ sm:grid-cols-2
 gap-4
 mt-8"
         >
-          <button
+          {/* <button
             onClick={onCancel}
             className="rounded-xl border border-red-400 py-4 font-semibold text-red-600 hover:bg-red-50 transition"
           >
             Cancel
-          </button>
+          </button> */}
 
-          <button
+          {/* <button
             disabled={!modelsLoaded || loading}
             onClick={onCapture}
             className="rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white py-4 font-semibold hover:scale-[1.02] transition disabled:opacity-50"
           >
             {loading ? "Capturing..." : "Capture Face"}
-          </button>
+          </button> */}
+
+          <div className="rounded-xl bg-green-50 border border-green-200 py-4 text-center">
+            <p className="font-semibold text-green-700">
+              Face detected. Hold still for a moment...
+            </p>
+          </div>
         </div>
       </div>
     </div>
