@@ -6,12 +6,12 @@ import SecurityManagement from "./orgs/all/SecurityManagement";
 import DynamicTableCreatePage from "./DynamicTableCreatePage";
 import DynamicTableUpdatePage from "./DynamicTableUpdatePage";
 import BusinessDataPage from "./BusinessDataPage";
-
 import ApartmentMembers from "./apartment/pages/Members/ApartmentMembers";
 import AddApartmentMember from "./apartment/pages/Members/AddApartmentMember";
 import EditApartmentMember from "./apartment/pages/Members/EditApartmentMember";
 import ApartmentMemberDetails from "./apartment/pages/Members/ApartmentMemberDetails";
 import ImportMembers from "./apartment/pages/Members/ImportMembers";
+import FormBuilder from "./orgs/all/Formify/FormBuilder"; // ← add this
 
 export default function SuperAdminDashboard() {
   const { pathname } = useLocation();
@@ -26,8 +26,12 @@ export default function SuperAdminDashboard() {
     activePage = "Manage Tables";
   } else if (pathname.includes("update_tables")) {
     activePage = "Update Tables";
+    } else if (pathname.includes("form_builder") || pathname.includes("forms")) {
+    activePage = "Form Builder";
   } else if (pathname.includes("buisness_data")) {
     activePage = "Business Data";
+    
+  
   } else if (pathname.includes("apartment/members/add")) {
 
   /**
@@ -46,8 +50,8 @@ export default function SuperAdminDashboard() {
     activePage = "Apartment Members";
   }
 
-  const pageComponents: Record<string, JSX.Element> = {
-    Dashboard: (
+const pageComponents: Record<string, React.ReactElement> = {    Dashboard: (
+
       <div className="w-full h-full bg-gradient-to-r from-[#4b1b7a] to-[#2d2a8c] text-white min-h-[80vh]">
         <div className="w-full px-4 sm:px-6 md:px-10 pt-5 md:pt-8 flex flex-wrap gap-4">
           <div className="bg-white rounded-2xl shadow-md p-5 sm:p-8 w-full">
@@ -70,6 +74,7 @@ export default function SuperAdminDashboard() {
     "Update Tables": <DynamicTableUpdatePage />,
 
     "Business Data": <BusinessDataPage />,
+    "Form Builder": <FormBuilder />,
 
     /**
      * Apartment Module

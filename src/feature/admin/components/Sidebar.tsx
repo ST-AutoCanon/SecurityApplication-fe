@@ -37,6 +37,11 @@ const { user } = useContext(AuthContext);
       path: "/admin/organisation/buisness_data",
       icon: <LayoutDashboard size={22} />,
     },
+  {
+    name: "Form Builder",
+    path: "/admin/organisation/form_builder",
+    icon: <LayoutDashboard size={22} />,
+  },
     // {
     //   name: "Apartment",
     //   path: "/admin/organisation/apartment/members",
