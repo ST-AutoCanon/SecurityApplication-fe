@@ -20,6 +20,8 @@ import ContactUs from "./pages/ContactUs";
 import Features from "./pages/Features";
 import ComingSoon from "./pages/ComingSoon";
 import LoginPage from "./feature/auth/pages/Login";
+import PublicForm from "./feature/admin/pages/orgs/all/Formify/PublicForm";
+
 const RequireAuth = ({
   children,
   roles,
@@ -61,6 +63,7 @@ export default function App() {
         <Route path="/contactUs" element={<ContactUs />} />
         <Route path="/features" element={<Features />} />
         <Route path="/comingSoon" element={<ComingSoon />} />
+        <Route path="/form/:orgId/:formId" element={<PublicForm />} />
         <Route
           path="/login"
           element={
