@@ -43,8 +43,8 @@ export const defaultFaceConfig: FaceConfig = {
 
 
   // ArcFace Recognition Model
-  recognitionModel: "arcface.onnx",
-
+  // recognitionModel: "arcface.onnx",
+recognitionModel: "mobilefacenet.onnx",
 
   // InsightFace 106 Landmark Model
   landmarkModel: "2d106det.onnx",
