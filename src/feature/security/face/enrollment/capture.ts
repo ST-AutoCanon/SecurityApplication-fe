@@ -32,9 +32,17 @@ export class FaceCapture {
     if (options.validateQuality ?? true) {
       const quality = faceQuality.evaluate(canvas, detection);
 
+      // if (!quality.passed) {
+      //   throw new Error("Face quality check failed.");
+      // }
       if (!quality.passed) {
-        throw new Error("Face quality check failed.");
-      }
+    console.log("Blur:", quality.blur);
+    console.log("Brightness:", quality.brightness);
+    console.log("Pose:", quality.pose);
+    console.log("Size:", quality.size);
+
+    throw new Error("Face quality check failed.");
+}
     }
 
     return {

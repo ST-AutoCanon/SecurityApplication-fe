@@ -155,7 +155,7 @@ export class FaceSizeChecker {
 
     minHeight: 100,
 
-    minCoverage: 8,
+    minCoverage: 6,
 
   };
 

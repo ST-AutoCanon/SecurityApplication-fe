@@ -19,9 +19,7 @@ import { faceRecognizer } from "../face/recognition/recognizer";
 import { passiveLiveness } from "../face/liveness/passive";
 import { faceAligner } from "../face/alignment/align";
 
-const API_URL =
-  import.meta.env.VITE_BACKEND_URL ||
-  "http://localhost:5000";
+const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
 
 const MAX_RETRIES = 3;
 
@@ -30,13 +28,11 @@ export default function FacePunch() {
 
   const navigate = useNavigate();
 
-
   const { isModelsLoaded, isLoadingModels, loadFaceModels } = useFace();
 
   const punchedRef = useRef(false);
   const retryCountRef = useRef(0);
   const processingRef = useRef(false);
-
 
   const [cameraOpen, setCameraOpen] = useState(false);
 
@@ -50,7 +46,7 @@ export default function FacePunch() {
 
   const [alertMessage, setAlertMessage] = useState("");
 
-const [errorCode, setErrorCode] = useState("");
+  const [errorCode, setErrorCode] = useState("");
 
   const [punchData, setPunchData] = useState<{
     full_name: string;
@@ -60,12 +56,10 @@ const [errorCode, setErrorCode] = useState("");
 
   const [showConfirm, setShowConfirm] = useState(false);
 
-const [verifiedUser, setVerifiedUser] = useState<any>(null);
+  const [verifiedUser, setVerifiedUser] = useState<any>(null);
 
   const [capturedPhoto, setCapturedPhoto] = useState("");
-  
 
-  
   const processFrame = useCallback(async () => {
     if (
       !webcamRef.current ||
@@ -86,6 +80,80 @@ const [verifiedUser, setVerifiedUser] = useState<any>(null);
         validateQuality: true,
       });
 
+      console.log("========== FACE PUNCH ==========");
+
+      const det = capture.detection;
+
+      if (!det) {
+        console.log("No detection found.");
+        return;
+      }
+
+      console.log("Video Size:", {
+        width: video.videoWidth,
+        height: video.videoHeight,
+      });
+
+      console.log("Detection:", det);
+
+      console.log("BBox:", det.bbox);
+      console.log("BBox Type:", typeof det.bbox);
+      console.log("BBox Keys:", Object.keys(det.bbox || {}));
+      console.dir(det.bbox);
+
+      let faceWidth = 0;
+      let faceHeight = 0;
+
+      // Support x,y,width,height
+      if ("width" in det.bbox && "height" in det.bbox) {
+        faceWidth = det.bbox.width;
+        faceHeight = det.bbox.height;
+
+        console.log("BBox Format: x,y,width,height");
+        console.log({
+          x: det.bbox.x,
+          y: det.bbox.y,
+          width: det.bbox.width,
+          height: det.bbox.height,
+        });
+      }
+
+      // Support x1,y1,x2,y2
+      else if (
+        "x1" in det.bbox &&
+        "y1" in det.bbox &&
+        "x2" in det.bbox &&
+        "y2" in det.bbox
+      ) {
+        faceWidth = det.bbox.x2 - det.bbox.x1;
+        faceHeight = det.bbox.y2 - det.bbox.y1;
+
+        console.log("BBox Format: x1,y1,x2,y2");
+        console.log({
+          x1: det.bbox.x1,
+          y1: det.bbox.y1,
+          x2: det.bbox.x2,
+          y2: det.bbox.y2,
+        });
+      }
+
+      console.log("Face Size:", {
+        width: faceWidth,
+        height: faceHeight,
+      });
+
+      console.log(
+        "Face Coverage:",
+        (
+          ((faceWidth * faceHeight) / (video.videoWidth * video.videoHeight)) *
+          100
+        ).toFixed(2) + "%",
+      );
+
+      console.log("Landmarks:", det.landmarks);
+
+      console.log("===============================");
+
       const liveness = passiveLiveness.check(capture.image, capture.detection);
 
       if (!liveness.isLive) {
@@ -105,10 +173,25 @@ const [verifiedUser, setVerifiedUser] = useState<any>(null);
         capture.detection.landmarks,
       );
 
+      console.log("Aligned Face:", aligned);
+
+      console.log("Aligned Size:", {
+        width: aligned.width,
+        height: aligned.height,
+      });
+      // document.body.appendChild(aligned);
+
+
       const embedding = await faceRecognizer.embeddingFromAligned(aligned);
 
-      const descriptor = Array.from(embedding);
+      const emb = Array.from(embedding);
 
+      const norm = Math.sqrt(emb.reduce((sum, v) => sum + v * v, 0));
+
+      console.log("Embedding Length:", emb.length);
+      console.log("Embedding Norm:", norm);
+      console.log("First 10 Values:", emb.slice(0, 10));
+      const descriptor = Array.from(embedding);
 
       // const photo = capture.image.toDataURL("image/jpeg", 0.9);
 
@@ -138,59 +221,58 @@ const [verifiedUser, setVerifiedUser] = useState<any>(null);
         },
       );
 
-      console.log("res punch data:",res.data);
+      console.log("res punch data:", res.data);
 
-// if (res.data?.success) {
-//   punchedRef.current = true;
+      // if (res.data?.success) {
+      //   punchedRef.current = true;
 
-//   retryCountRef.current = 0;
+      //   retryCountRef.current = 0;
 
-//   const punch = res.data.data;
+      //   const punch = res.data.data;
 
-//   setPunchData({
-//     full_name: punch.full_name,
-//     module_name: punch.module_name,
-//     punch_type: punch.punch_type,
-//   });
+      //   setPunchData({
+      //     full_name: punch.full_name,
+      //     module_name: punch.module_name,
+      //     punch_type: punch.punch_type,
+      //   });
 
-//   // setAlertType("success");
+      //   // setAlertType("success");
 
-//   // setAlertMessage(`Punch ${punch.punch_type} Successful : ${punch.full_name}`);
+      //   // setAlertMessage(`Punch ${punch.punch_type} Successful : ${punch.full_name}`);
 
-//   // setShowAlert(true);
+      //   // setShowAlert(true);
 
-//   setMessage(`✅ Punch ${punch.punch_type} - Welcome ${punch.full_name}`);
+      //   setMessage(`✅ Punch ${punch.punch_type} - Welcome ${punch.full_name}`);
 
-//   setCameraOpen(false);
-//   // Clear UI after 3 seconds
-//   setTimeout(() => {
-//     setPunchData(null);
-//     setMessage("");
+      //   setCameraOpen(false);
+      //   // Clear UI after 3 seconds
+      //   setTimeout(() => {
+      //     setPunchData(null);
+      //     setMessage("");
 
-//     punchedRef.current = false;
-//     retryCountRef.current = 0;
-//     processingRef.current = false;
-//   }, 3000);
+      //     punchedRef.current = false;
+      //     retryCountRef.current = 0;
+      //     processingRef.current = false;
+      //   }, 3000);
 
-//   return;
+      //   return;
       // }
-      
 
-if (res.data.success) {
-  // stop scanning
-  processingRef.current = true;
-  punchedRef.current = true;
+      if (res.data.success) {
+        // stop scanning
+        processingRef.current = true;
+        punchedRef.current = true;
 
-  setVerifiedUser(res.data.data);
+        setVerifiedUser(res.data.data);
 
-  // close webcam
-  setCameraOpen(false);
+        // close webcam
+        setCameraOpen(false);
 
-  // show popup
-  setShowConfirm(true);
+        // show popup
+        setShowConfirm(true);
 
-  return;
-}
+        return;
+      }
 
       // retryCountRef.current++;
 
@@ -214,9 +296,9 @@ if (res.data.success) {
 
       retryCountRef.current++;
 
-const backendMessage = res.data?.message || "Face verification failed.";
+      const backendMessage = res.data?.message || "Face verification failed.";
 
-setErrorCode(res.data?.code || "");
+      setErrorCode(res.data?.code || "");
 
       if (retryCountRef.current >= MAX_RETRIES) {
         setAlertType("error");
@@ -233,22 +315,21 @@ setErrorCode(res.data?.code || "");
       setMessage(
         `❌ ${backendMessage} Retrying (${retryCountRef.current}/${MAX_RETRIES})...`,
       );
-
     } catch (err: any) {
-
-
-        console.log("FACE PUNCH ERROR:", err);
+      console.log("FACE PUNCH ERROR:", err);
 
       console.log("ERROR RESPONSE:", err?.response?.data);
-      
+
       retryCountRef.current++;
 
       if (retryCountRef.current >= MAX_RETRIES) {
         setAlertType("error");
 
-setErrorCode(err?.response?.data?.code || "");
+        setErrorCode(err?.response?.data?.code || "");
 
-setAlertMessage(err?.response?.data?.message || "Face verification failed.");
+        setAlertMessage(
+          err?.response?.data?.message || "Face verification failed.",
+        );
 
         setShowAlert(true);
 
@@ -310,15 +391,15 @@ setAlertMessage(err?.response?.data?.message || "Face verification failed.");
 
         setCameraOpen(false);
 
-setTimeout(() => {
-  setPunchData(null);
-  setMessage("");
-  setCapturedPhoto("");
+        setTimeout(() => {
+          setPunchData(null);
+          setMessage("");
+          setCapturedPhoto("");
 
-  punchedRef.current = false;
-  retryCountRef.current = 0;
-  processingRef.current = false;
-}, 3000);
+          punchedRef.current = false;
+          retryCountRef.current = 0;
+          processingRef.current = false;
+        }, 3000);
       }
     } catch (err: any) {
       setAlertType("error");
@@ -335,23 +416,22 @@ setTimeout(() => {
     }
   };
 
-const rejectPunch = () => {
-  setShowConfirm(false);
+  const rejectPunch = () => {
+    setShowConfirm(false);
 
-  setVerifiedUser(null);
+    setVerifiedUser(null);
 
-  setCapturedPhoto("");
+    setCapturedPhoto("");
 
-  punchedRef.current = false;
-  processingRef.current = false;
+    punchedRef.current = false;
+    processingRef.current = false;
 
-  retryCountRef.current = 0;
+    retryCountRef.current = 0;
 
-  setMessage("Please look at the camera again.");
+    setMessage("Please look at the camera again.");
 
-  setCameraOpen(true);
-};
-
+    setCameraOpen(true);
+  };
 
   useEffect(() => {
     if (!cameraOpen || !isModelsLoaded) {
@@ -368,7 +448,6 @@ const rejectPunch = () => {
 
     return () => clearInterval(timer);
   }, [cameraOpen, isModelsLoaded, processFrame]);
-
 
   if (isLoadingModels) {
     return (
@@ -554,8 +633,8 @@ const rejectPunch = () => {
                 disabled={!isModelsLoaded}
                 onClick={() => {
                   setCapturedPhoto("");
-                      setShowConfirm(false);
-                      setVerifiedUser(null);
+                  setShowConfirm(false);
+                  setVerifiedUser(null);
                   punchedRef.current = false;
                   retryCountRef.current = 0;
                   processingRef.current = false;
@@ -577,7 +656,7 @@ const rejectPunch = () => {
 
             {cameraOpen && (
               <div className="space-y-6">
-                <div className="relative rounded-3xl overflow-hidden border-4 border-cyan-400 shadow-[0_0_60px_rgba(34,211,238,.45)]">
+                {/* <div className="relative rounded-3xl overflow-hidden border-4 border-cyan-400 shadow-[0_0_60px_rgba(34,211,238,.45)]">
                   <div className="absolute top-0 left-0 right-0 h-1 bg-cyan-300 animate-[scan_2.5s_linear_infinite] z-20" />
 
                   <Webcam
@@ -588,6 +667,8 @@ const rejectPunch = () => {
                     className="w-full"
                     videoConstraints={{
                       facingMode: "user",
+                      width: 1280,
+                      height: 720,
                     }}
                   />
                   <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
@@ -603,12 +684,107 @@ const rejectPunch = () => {
                       </span>
                     </div>
                   </div>
+                </div> */}
+
+                {/* <div className="relative w-full overflow-hidden rounded-3xl border-4 border-cyan-400">
+                  <Webcam
+                    ref={webcamRef}
+                    mirrored
+                    audio={false}
+                    screenshotFormat="image/jpeg"
+                    className="w-full h-auto object-cover"
+                    videoConstraints={{
+                      facingMode: "user",
+                      width: 1280,
+                      height: 720,
+                    }}
+                  /> */}
+
+                {/* <div className="relative w-full max-w-md mx-auto overflow-hidden rounded-3xl border-4 border-cyan-400">
+                  <Webcam
+                    ref={webcamRef}
+                    mirrored
+                    audio={false}
+                    screenshotFormat="image/jpeg"
+                    className="w-full aspect-3/4 object-cover"
+                    videoConstraints={{
+                      facingMode: "user",
+                      width: 720,
+                      height: 960,
+                    }}
+                  />
+                </div> */}
+
+                <div className="w-full max-w-6xl mx-auto">
+                  <div className="relative rounded-3xl overflow-hidden border-4 border-cyan-400 bg-black">
+                    <Webcam
+                      ref={webcamRef}
+                      mirrored
+                      audio={false}
+                      screenshotFormat="image/jpeg"
+                      videoConstraints={{
+                        width: 1280,
+                        height: 720,
+                        facingMode: "user",
+                      }}
+                      className="
+        w-full
+        aspect-3/4
+        sm:aspect-video
+        lg:aspect-auto
+        lg:h-[550px]
+        object-cover
+      "
+                    />
+
+                    {/* Face Guide */}
+                    {/* Face Guide */}
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+                      <div
+                        className="
+      relative
+      w-[55%]
+      aspect-[3/4]
+
+      min-w-[180px]
+      min-h-[240px]
+
+      max-w-[320px]
+      max-h-[430px]
+
+      rounded-[45%]
+      border-[5px]
+      border-cyan-400
+      transition-all
+      duration-300
+    "
+                      >
+                        {/* Corners */}
+                        <div className="absolute left-0 top-0 w-10 h-10 border-l-4 border-t-4 border-white rounded-tl-xl" />
+                        <div className="absolute right-0 top-0 w-10 h-10 border-r-4 border-t-4 border-white rounded-tr-xl" />
+                        <div className="absolute left-0 bottom-0 w-10 h-10 border-l-4 border-b-4 border-white rounded-bl-xl" />
+                        <div className="absolute right-0 bottom-0 w-10 h-10 border-r-4 border-b-4 border-white rounded-br-xl" />
+                      </div>
+                    </div>
+
+                    {loading && (
+                      <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center">
+                        <Loader2
+                          size={60}
+                          className="animate-spin text-white"
+                        />
+                        <p className="mt-4 text-white text-lg">
+                          Detecting Face...
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <button
                   onClick={() => {
                     setCameraOpen(false);
-                        setShowConfirm(false);
+                    setShowConfirm(false);
                     setVerifiedUser(null);
                     setCapturedPhoto("");
                     setMessage("");
