@@ -47,8 +47,10 @@ export const CANVAS_CONTEXT_ATTRIBUTES: CanvasRenderingContext2DSettings = {
 };
 
 export const MODEL_FILENAMES = {
-  SCRFD: "scrfd_500m.onnx",
-  ARCFACE: "arcface_w600k_r50.onnx",
+  // SCRFD: "scrfd_500m.onnx",
+  // ARCFACE: "arcface_w600k_r50.onnx",
+  SCRFD: "scrfd_10g.onnx",
+   ARCFACE: "mobilefacenet.onnx", // actually MobileFaceNet
 } as const;
 
 export const SESSION_NAMES = {

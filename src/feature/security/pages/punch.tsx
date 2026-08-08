@@ -181,7 +181,6 @@ export default function FacePunch() {
       });
       // document.body.appendChild(aligned);
 
-
       const embedding = await faceRecognizer.embeddingFromAligned(aligned);
 
       const emb = Array.from(embedding);
@@ -463,8 +462,21 @@ export default function FacePunch() {
     );
   }
 
+
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 flex items-center justify-center px-5 py-10">
+    <div className="relative min-h-screen overflow-hidden bg-slate-950 px-4 py-6 sm:px-6 lg:px-8">
+      {/* =========================================================
+        BACKGROUND
+    ========================================================= */}
+
+      <div className="pointer-events-none absolute -left-32 -top-32 h-[420px] w-[420px] rounded-full bg-blue-500/15 blur-[140px]" />
+
+      <div className="pointer-events-none absolute -bottom-32 -right-32 h-[420px] w-[420px] rounded-full bg-cyan-500/15 blur-[140px]" />
+
+      {/* =========================================================
+        ALERT
+    ========================================================= */}
+
       {showAlert && (
         <Alert
           type={alertType}
@@ -475,7 +487,6 @@ export default function FacePunch() {
             punchedRef.current = false;
             retryCountRef.current = 0;
 
-            // Redirect only on error
             if (alertType === "error" && errorCode === "FACE_NOT_FOUND") {
               navigate("/security/organisation/manage_registration");
             }
@@ -483,12 +494,16 @@ export default function FacePunch() {
         />
       )}
 
+      {/* =========================================================
+        FACE VERIFIED CONFIRMATION
+    ========================================================= */}
+
       {showConfirm && verifiedUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
-          <div className="w-[420px] rounded-3xl border border-cyan-500/30 bg-slate-900 p-8 shadow-2xl">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 px-4 backdrop-blur-md">
+          <div className="w-full max-w-md rounded-3xl border border-cyan-400/20 bg-slate-900/95 p-6 shadow-[0_25px_100px_rgba(0,0,0,.6)] sm:p-8">
             <div className="flex justify-center">
-              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-cyan-500/20">
-                <ScanFace className="h-10 w-10 text-cyan-400" />
+              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-cyan-400/10">
+                <ScanFace size={42} className="text-cyan-400" />
               </div>
             </div>
 
@@ -496,29 +511,54 @@ export default function FacePunch() {
               Face Verified
             </h2>
 
-            <p className="mt-3 text-center text-slate-300">Are you</p>
+            <p className="mt-3 text-center text-sm text-slate-400">Are you</p>
 
-            <h3 className="mt-2 text-center text-3xl font-bold text-cyan-400">
+            <h3 className="mt-2 text-center text-2xl font-bold text-cyan-400 sm:text-3xl">
               {verifiedUser.full_name}
             </h3>
 
-            <p className="mt-2 text-center text-slate-400 capitalize">
+            <p className="mt-2 text-center text-sm capitalize text-slate-500">
               {verifiedUser.module_name}
             </p>
 
-            <div className="mt-8 flex gap-4">
+            <div className="mt-7 grid grid-cols-2 gap-3">
               <button
+                type="button"
                 onClick={confirmPunch}
                 disabled={loading}
-                className="flex-1 rounded-xl bg-green-600 py-3 text-lg font-semibold text-white transition hover:bg-green-700"
+                className="
+                rounded-xl
+                bg-green-500
+                py-3
+                font-semibold
+                text-white
+                transition
+                hover:bg-green-600
+                disabled:cursor-not-allowed
+                disabled:opacity-50
+              "
               >
                 Yes
               </button>
 
               <button
+                type="button"
                 onClick={rejectPunch}
                 disabled={loading}
-                className="flex-1 rounded-xl bg-red-600 py-3 text-lg font-semibold text-white transition hover:bg-red-700"
+                className="
+                rounded-xl
+                bg-red-500/10
+                py-3
+                font-semibold
+                text-red-300
+                border
+                border-red-400/20
+                transition
+                hover:bg-red-500
+                hover:text-white
+                disabled:cursor-not-allowed
+                disabled:opacity-50
+              "
               >
                 No
               </button>
@@ -527,96 +567,151 @@ export default function FacePunch() {
         </div>
       )}
 
-      <div className="absolute w-[500px] h-[500px] bg-blue-500/20 blur-[180px] rounded-full -top-32 -left-32" />
+      {/* =========================================================
+        MAIN CARD
+    ========================================================= */}
 
-      <div className="absolute w-[400px] h-[400px] bg-cyan-500/20 blur-[180px] rounded-full bottom-0 right-0" />
+      <div className="relative mx-auto w-full max-w-3xl">
+        <div
+          className="
+          overflow-hidden
+          rounded-[28px]
+          border
+          border-white/10
+          bg-white/[0.04]
+          shadow-[0_25px_80px_rgba(0,0,0,.45)]
+          backdrop-blur-2xl
+        "
+        >
+          {/* =====================================================
+            HEADER
+        ===================================================== */}
 
-      <div className="relative w-full max-w-xl">
-        <div className="rounded-[32px] overflow-hidden border border-white/10 bg-white/5 backdrop-blur-2xl shadow-[0_25px_80px_rgba(0,0,0,.45)]">
-          <div className="px-8 py-7 border-b border-white/10">
-            <div className="flex justify-center">
-              <div className="h-20 w-20 rounded-full bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center shadow-xl shadow-cyan-500/40">
-                <ScanFace className="w-10 h-10 text-white" />
+          <div className="border-b border-white/10 px-5 py-6 sm:px-8 sm:py-7">
+            <div className="flex items-center gap-4">
+              <div
+                className="
+                flex
+                h-14
+                w-14
+                shrink-0
+                items-center
+                justify-center
+                rounded-2xl
+                bg-gradient-to-br
+                from-cyan-400
+                to-blue-600
+                shadow-[0_0_35px_rgba(6,182,212,.35)]
+              "
+              >
+                <ScanFace size={28} className="text-white" />
+              </div>
+
+              <div className="min-w-0">
+                <h1 className="text-xl font-bold tracking-wide text-white sm:text-2xl">
+                  FACE PUNCH
+                </h1>
+
+                <p className="mt-1 text-xs text-slate-400 sm:text-sm">
+                  AI Powered Face Recognition
+                </p>
               </div>
             </div>
-
-            <h1 className="text-center text-3xl font-bold text-white mt-5 tracking-wide">
-              FACE PUNCH
-            </h1>
-
-            <p className="text-center text-slate-300 mt-2 text-sm">
-              AI Powered Face Recognition
-            </p>
           </div>
 
-          <div className="p-7 space-y-6">
-            <div className="rounded-2xl border border-cyan-400/20 bg-slate-900/60 p-5 flex justify-between items-center">
-              <div>
-                <p className="text-white font-semibold">Recognition Engine</p>
+          {/* =====================================================
+            CONTENT
+        ===================================================== */}
 
-                <p className="text-slate-400 text-sm">
-                  SCRFD + ArcFace + Liveness
+          <div className="space-y-4 p-4 sm:space-y-5 sm:p-6">
+            {/* Recognition Engine */}
+
+            <div className="flex items-center justify-between rounded-2xl border border-cyan-400/10 bg-slate-900/50 p-4 sm:p-5">
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-white sm:text-base">
+                  Recognition Engine
+                </p>
+
+                <p className="mt-1 truncate text-xs text-slate-500 sm:text-sm">
+                  SCRFD + MobileFaceNet + Liveness
                 </p>
               </div>
 
-              {isModelsLoaded ? (
-                <div className="flex items-center gap-2 text-green-400 font-semibold">
-                  <CheckCircle2 size={20} />
-                  Ready
-                </div>
-              ) : (
-                <div className="flex items-center gap-2 text-yellow-400 font-semibold">
-                  <Loader2 size={20} className="animate-spin" />
-                  Loading
-                </div>
-              )}
+              <div className="ml-3 shrink-0">
+                {isModelsLoaded ? (
+                  <div className="flex items-center gap-1.5 text-xs font-semibold text-green-400 sm:text-sm">
+                    <CheckCircle2 size={18} />
+                    Ready
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1.5 text-xs font-semibold text-yellow-400 sm:text-sm">
+                    <Loader2 size={18} className="animate-spin" />
+                    Loading
+                  </div>
+                )}
+              </div>
             </div>
+
+            {/* Message */}
+
             {message && (
               <div
-                className={`rounded-2xl p-4 border ${
+                className={`rounded-2xl border p-4 ${
                   message.includes("✅")
-                    ? "bg-green-500/10 border-green-500/30"
+                    ? "border-green-500/20 bg-green-500/10"
                     : message.includes("❌")
-                      ? "bg-red-500/10 border-red-500/30"
-                      : "bg-blue-500/10 border-blue-500/30"
+                      ? "border-red-500/20 bg-red-500/10"
+                      : "border-blue-500/20 bg-blue-500/10"
                 }`}
               >
-                <div className="flex items-center gap-3">
+                <div className="flex items-start gap-3">
                   {message.includes("✅") ? (
-                    <CheckCircle2 className="text-green-400" />
+                    <CheckCircle2
+                      className="mt-0.5 shrink-0 text-green-400"
+                      size={20}
+                    />
                   ) : message.includes("❌") ? (
-                    <XCircle className="text-red-400" />
+                    <XCircle
+                      className="mt-0.5 shrink-0 text-red-400"
+                      size={20}
+                    />
                   ) : (
-                    <Loader2 className="animate-spin text-blue-400" />
+                    <Loader2
+                      className="mt-0.5 shrink-0 animate-spin text-blue-400"
+                      size={20}
+                    />
                   )}
 
-                  <p className="text-white font-medium">{message}</p>
+                  <p className="text-sm font-medium text-white">{message}</p>
                 </div>
               </div>
             )}
-            {punchData && (
-              <div className="rounded-2xl border border-green-400/30 bg-green-500/10 p-5 space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-300">Name</span>
 
-                  <span className="text-white font-semibold">
+            {/* Punch Data */}
+
+            {punchData && (
+              <div className="space-y-3 rounded-2xl border border-green-400/20 bg-green-500/10 p-4 sm:p-5">
+                <div className="flex items-center justify-between gap-4">
+                  <span className="text-sm text-slate-400">Name</span>
+
+                  <span className="text-right text-sm font-semibold text-white">
                     {punchData.full_name}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-300">Module</span>
+                <div className="flex items-center justify-between gap-4">
+                  <span className="text-sm text-slate-400">Module</span>
 
-                  <span className="text-cyan-300 font-semibold capitalize">
+                  <span className="text-right text-sm font-semibold capitalize text-cyan-300">
                     {punchData.module_name}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-300">Punch Type</span>
+                <div className="flex items-center justify-between gap-4">
+                  <span className="text-sm text-slate-400">Punch Type</span>
 
                   <span
-                    className={`font-bold ${
+                    className={`text-sm font-bold ${
                       punchData.punch_type === "IN"
                         ? "text-green-400"
                         : "text-orange-400"
@@ -628,210 +723,321 @@ export default function FacePunch() {
               </div>
             )}
 
+            {/* =====================================================
+              START CAMERA BUTTON
+          ===================================================== */}
+
             {!cameraOpen && (
               <button
+                type="button"
                 disabled={!isModelsLoaded}
                 onClick={() => {
+                  setCameraOpen(true);
                   setCapturedPhoto("");
                   setShowConfirm(false);
                   setVerifiedUser(null);
+                  setMessage("");
+                  setPunchData(null);
+
                   punchedRef.current = false;
                   retryCountRef.current = 0;
                   processingRef.current = false;
-
-                  setMessage("");
-                  setPunchData(null);
-                  setCameraOpen(true);
                 }}
-                className="group w-full relative overflow-hidden rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 py-4 font-semibold text-white transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-[0_0_35px_rgba(6,182,212,.5)] disabled:opacity-40"
+                className="
+                group
+                relative
+                w-full
+                overflow-hidden
+                rounded-2xl
+                bg-gradient-to-r
+                from-cyan-500
+                to-blue-600
+                py-4
+                font-semibold
+                text-white
+                shadow-[0_10px_35px_rgba(6,182,212,.2)]
+                transition
+                hover:scale-[1.01]
+                hover:shadow-[0_15px_45px_rgba(6,182,212,.3)]
+                active:scale-[0.98]
+                disabled:cursor-not-allowed
+                disabled:opacity-40
+              "
               >
-                <span className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition" />
+                <span className="absolute inset-0 bg-white/10 opacity-0 transition group-hover:opacity-100" />
 
-                <span className="relative flex items-center justify-center gap-3">
-                  <Camera size={22} />
-                  Open Camera
+                <span className="relative flex items-center justify-center gap-2">
+                  <Camera size={20} />
+                  Start Face Scan
                 </span>
               </button>
             )}
 
-            {cameraOpen && (
-              <div className="space-y-6">
-                {/* <div className="relative rounded-3xl overflow-hidden border-4 border-cyan-400 shadow-[0_0_60px_rgba(34,211,238,.45)]">
-                  <div className="absolute top-0 left-0 right-0 h-1 bg-cyan-300 animate-[scan_2.5s_linear_infinite] z-20" />
+            {/* =====================================================
+              SECURITY FOOTER
+          ===================================================== */}
 
-                  <Webcam
-                    ref={webcamRef}
-                    mirrored
-                    audio={false}
-                    screenshotFormat="image/jpeg"
-                    className="w-full"
-                    videoConstraints={{
-                      facingMode: "user",
-                      width: 1280,
-                      height: 720,
-                    }}
-                  />
-                  <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-                    <div className="w-64 h-80 rounded-[40px] border-[3px] border-cyan-400 shadow-[0_0_35px_rgba(34,211,238,.6)]" />
-                  </div>
-
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-5">
-                    <div className="flex items-center justify-center gap-2 text-cyan-300">
-                      <ShieldCheck size={18} />
-
-                      <span className="text-sm font-medium">
-                        Keep your face inside the frame
-                      </span>
-                    </div>
-                  </div>
-                </div> */}
-
-                {/* <div className="relative w-full overflow-hidden rounded-3xl border-4 border-cyan-400">
-                  <Webcam
-                    ref={webcamRef}
-                    mirrored
-                    audio={false}
-                    screenshotFormat="image/jpeg"
-                    className="w-full h-auto object-cover"
-                    videoConstraints={{
-                      facingMode: "user",
-                      width: 1280,
-                      height: 720,
-                    }}
-                  /> */}
-
-                {/* <div className="relative w-full max-w-md mx-auto overflow-hidden rounded-3xl border-4 border-cyan-400">
-                  <Webcam
-                    ref={webcamRef}
-                    mirrored
-                    audio={false}
-                    screenshotFormat="image/jpeg"
-                    className="w-full aspect-3/4 object-cover"
-                    videoConstraints={{
-                      facingMode: "user",
-                      width: 720,
-                      height: 960,
-                    }}
-                  />
-                </div> */}
-
-                <div className="w-full max-w-6xl mx-auto">
-                  <div className="relative rounded-3xl overflow-hidden border-4 border-cyan-400 bg-black">
-                    <Webcam
-                      ref={webcamRef}
-                      mirrored
-                      audio={false}
-                      screenshotFormat="image/jpeg"
-                      videoConstraints={{
-                        width: 1280,
-                        height: 720,
-                        facingMode: "user",
-                      }}
-                      className="
-        w-full
-        aspect-3/4
-        sm:aspect-video
-        lg:aspect-auto
-        lg:h-[550px]
-        object-cover
-      "
-                    />
-
-                    {/* Face Guide */}
-                    {/* Face Guide */}
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-                      <div
-                        className="
-      relative
-      w-[55%]
-      aspect-[3/4]
-
-      min-w-[180px]
-      min-h-[240px]
-
-      max-w-[320px]
-      max-h-[430px]
-
-      rounded-[45%]
-      border-[5px]
-      border-cyan-400
-      transition-all
-      duration-300
-    "
-                      >
-                        {/* Corners */}
-                        <div className="absolute left-0 top-0 w-10 h-10 border-l-4 border-t-4 border-white rounded-tl-xl" />
-                        <div className="absolute right-0 top-0 w-10 h-10 border-r-4 border-t-4 border-white rounded-tr-xl" />
-                        <div className="absolute left-0 bottom-0 w-10 h-10 border-l-4 border-b-4 border-white rounded-bl-xl" />
-                        <div className="absolute right-0 bottom-0 w-10 h-10 border-r-4 border-b-4 border-white rounded-br-xl" />
-                      </div>
-                    </div>
-
-                    {loading && (
-                      <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center">
-                        <Loader2
-                          size={60}
-                          className="animate-spin text-white"
-                        />
-                        <p className="mt-4 text-white text-lg">
-                          Detecting Face...
-                        </p>
-                      </div>
-                    )}
-                  </div>
+            <div className="flex items-center justify-between rounded-2xl border border-white/5 bg-white/[0.02] px-4 py-3">
+              <div className="flex min-w-0 items-center gap-3">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-cyan-500/10">
+                  <ShieldCheck size={18} className="text-cyan-400" />
                 </div>
 
-                <button
-                  onClick={() => {
-                    setCameraOpen(false);
-                    setShowConfirm(false);
-                    setVerifiedUser(null);
-                    setCapturedPhoto("");
-                    setMessage("");
-                    setPunchData(null);
+                <div className="min-w-0">
+                  <p className="truncate text-xs font-medium text-white sm:text-sm">
+                    Secure Face Authentication
+                  </p>
 
-                    retryCountRef.current = 0;
-                    punchedRef.current = false;
-                    processingRef.current = false;
-                  }}
-                  disabled={loading}
-                  className="w-full rounded-2xl border border-red-400/30 bg-red-500/10 py-4 font-semibold text-red-300 transition-all duration-300 hover:scale-105 active:scale-95 hover:bg-red-500 hover:text-white"
-                >
-                  Close Camera
-                </button>
-              </div>
-            )}
-
-            <div className="rounded-2xl border border-white/10 bg-slate-900/40 px-5 py-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-cyan-500/20 flex items-center justify-center">
-                    <ShieldCheck size={20} className="text-cyan-400" />
-                  </div>
-
-                  <div>
-                    <p className="text-white font-medium">
-                      Secure Face Authentication
-                    </p>
-
-                    <p className="text-slate-400 text-xs">
-                      SCRFD • ArcFace • Passive Liveness
-                    </p>
-                  </div>
+                  <p className="hidden text-[10px] text-slate-500 sm:block">
+                    Liveness protected verification
+                  </p>
                 </div>
-
-                <div
-                  className={`h-3 w-3 rounded-full ${
-                    isModelsLoaded
-                      ? "bg-green-400 shadow-[0_0_15px_rgba(74,222,128,.9)]"
-                      : "bg-yellow-400 animate-pulse"
-                  }`}
-                />
               </div>
+
+              <div
+                className={`ml-3 h-2.5 w-2.5 shrink-0 rounded-full ${
+                  isModelsLoaded
+                    ? "bg-green-400 shadow-[0_0_12px_rgba(74,222,128,.9)]"
+                    : "animate-pulse bg-yellow-400"
+                }`}
+              />
             </div>
           </div>
         </div>
       </div>
+
+      {/* =========================================================
+        CAMERA POPUP
+        ONLY CAMERA + STATUS + CLOSE
+    ========================================================= */}
+
+      {cameraOpen && (
+        <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/75 px-4 py-6 backdrop-blur-md">
+          <div className="flex w-full max-w-sm flex-col items-center">
+            {/* Small popup heading */}
+
+            <div className="mb-5 text-center">
+              <h2 className="text-lg font-bold text-white sm:text-xl">
+                Face Verification
+              </h2>
+
+              <p className="mt-1 text-xs text-slate-400">
+                Position your face inside the scanner
+              </p>
+            </div>
+
+            {/* ===================================================
+              ROUND CAMERA
+          =================================================== */}
+
+            <div className="relative">
+              {/* Outer glow */}
+
+              <div
+                className={`
+                absolute
+                -inset-5
+                rounded-full
+                blur-2xl
+                transition-all
+                duration-500
+                ${loading ? "bg-blue-500/25" : "bg-cyan-400/20"}
+              `}
+              />
+
+              {/* Camera outer ring */}
+
+              <div
+                className="
+                relative
+                flex
+                h-[250px]
+                w-[250px]
+                items-center
+                justify-center
+                rounded-full
+                border-[3px]
+                border-cyan-400
+                bg-slate-950
+                shadow-[0_0_45px_rgba(6,182,212,.45)]
+                sm:h-[290px]
+                sm:w-[290px]
+                md:h-[320px]
+                md:w-[320px]
+              "
+              >
+                {/* Camera */}
+
+                <div
+                  className="
+                  relative
+                  h-[228px]
+                  w-[228px]
+                  overflow-hidden
+                  rounded-full
+                  bg-black
+                  sm:h-[268px]
+                  sm:w-[268px]
+                  md:h-[298px]
+                  md:w-[298px]
+                "
+                >
+                  <Webcam
+                    ref={webcamRef}
+                    mirrored
+                    audio={false}
+                    screenshotFormat="image/jpeg"
+                    videoConstraints={{
+                      width: 720,
+                      height: 720,
+                      facingMode: "user",
+                    }}
+                    className="absolute inset-0 h-full w-full object-cover"
+                  />
+
+                  {/* Camera darkness */}
+
+                  <div className="pointer-events-none absolute inset-0 bg-black/10" />
+
+                  {/* Face guide */}
+
+                  <div
+                    className="
+                    pointer-events-none
+                    absolute
+                    inset-[15%]
+                    rounded-[45%]
+                    border-2
+                    border-white/80
+                  "
+                  />
+
+                  {/* Face guide corners */}
+
+                  <div className="pointer-events-none absolute left-[15%] top-[15%] h-7 w-7 rounded-tl-lg border-l-2 border-t-2 border-cyan-300" />
+
+                  <div className="pointer-events-none absolute right-[15%] top-[15%] h-7 w-7 rounded-tr-lg border-r-2 border-t-2 border-cyan-300" />
+
+                  <div className="pointer-events-none absolute bottom-[15%] left-[15%] h-7 w-7 rounded-bl-lg border-b-2 border-l-2 border-cyan-300" />
+
+                  <div className="pointer-events-none absolute bottom-[15%] right-[15%] h-7 w-7 rounded-br-lg border-b-2 border-r-2 border-cyan-300" />
+
+                  {/* Scanning line */}
+
+                  {!loading && (
+                    <div
+                      className="
+                      pointer-events-none
+                      absolute
+                      left-[18%]
+                      right-[18%]
+                      top-1/2
+                      h-[2px]
+                      bg-cyan-400
+                      shadow-[0_0_15px_rgba(34,211,238,1)]
+                      animate-[scan_2s_ease-in-out_infinite]
+                    "
+                    />
+                  )}
+
+                  {/* Loading */}
+
+                  {loading && (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/65 backdrop-blur-[2px]">
+                      <Loader2 size={38} className="animate-spin text-white" />
+
+                      <p className="mt-3 text-xs font-semibold text-white">
+                        Scanning Face...
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Scanner dots */}
+
+                <span className="absolute -top-1 left-1/2 h-2 w-2 -translate-x-1/2 rounded-full bg-cyan-400 shadow-[0_0_12px_cyan]" />
+
+                <span className="absolute -bottom-1 left-1/2 h-2 w-2 -translate-x-1/2 rounded-full bg-cyan-400 shadow-[0_0_12px_cyan]" />
+
+                <span className="absolute -left-1 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-cyan-400 shadow-[0_0_12px_cyan]" />
+
+                <span className="absolute -right-1 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-cyan-400 shadow-[0_0_12px_cyan]" />
+              </div>
+
+              {/* Status pill */}
+
+              <div
+                className="
+                absolute
+                -bottom-4
+                left-1/2
+                -translate-x-1/2
+                whitespace-nowrap
+                rounded-full
+                border
+                border-cyan-400/30
+                bg-slate-950
+                px-4
+                py-1.5
+                text-[11px]
+                font-semibold
+                text-cyan-300
+                shadow-xl
+              "
+              >
+                <span className="mr-2 inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-cyan-400" />
+
+                {loading ? "Scanning Face..." : "Position Face Inside Circle"}
+              </div>
+            </div>
+
+            {/* Instruction */}
+
+            <p className="mt-9 text-center text-xs text-slate-400">
+              Look directly at the camera and stay still
+            </p>
+
+            {/* Close */}
+
+            <button
+              type="button"
+              onClick={() => {
+                setCameraOpen(false);
+                setShowConfirm(false);
+                setVerifiedUser(null);
+                setCapturedPhoto("");
+                setMessage("");
+                setPunchData(null);
+
+                retryCountRef.current = 0;
+                punchedRef.current = false;
+                processingRef.current = false;
+              }}
+              disabled={loading}
+              className="
+              mt-5
+              rounded-xl
+              border
+              border-white/10
+              bg-white/5
+              px-8
+              py-2.5
+              text-sm
+              font-semibold
+              text-slate-300
+              transition
+              hover:bg-white/10
+              hover:text-white
+              disabled:cursor-not-allowed
+              disabled:opacity-40
+            "
+            >
+              Close Camera
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
+
 }

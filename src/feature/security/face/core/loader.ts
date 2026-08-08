@@ -88,37 +88,69 @@ function configureRuntime(): void {
 /**
  * Create ONNX session
  */
+// async function createSession(
+//   modelPath: string
+// ): Promise<ort.InferenceSession> {
+
+//   logger.info(
+//     `Loading model: ${modelPath}`
+//   );
+
+
+//   const config = getConfig();
+
+
+//   const session =
+//     await ort.InferenceSession.create(
+//       modelPath,
+//       {
+//         executionProviders:
+//           config.executionProviders,
+
+//         graphOptimizationLevel:
+//           "basic",
+//       }
+//     );
+
+
+//   logger.info(
+//     `Loaded model: ${modelPath}`
+//   );
+
+
+//   return session;
+// }
+
+
 async function createSession(
   modelPath: string
 ): Promise<ort.InferenceSession> {
 
-  logger.info(
-    `Loading model: ${modelPath}`
-  );
-
+  console.log("================================");
+  console.log("Loading Model");
+  console.log("Path:", modelPath);
+  console.log("================================");
 
   const config = getConfig();
 
+  try {
 
-  const session =
-    await ort.InferenceSession.create(
-      modelPath,
-      {
-        executionProviders:
-          config.executionProviders,
+    const session = await ort.InferenceSession.create(modelPath, {
+      executionProviders: config.executionProviders,
+      graphOptimizationLevel: "basic",
+    });
 
-        graphOptimizationLevel:
-          "basic",
-      }
-    );
+    console.log("✅ Model Loaded:", modelPath);
 
+    return session;
 
-  logger.info(
-    `Loaded model: ${modelPath}`
-  );
+  } catch (err) {
 
+    console.error("❌ Failed Model:", modelPath);
+    console.error(err);
 
-  return session;
+    throw err;
+  }
 }
 
 
@@ -175,7 +207,7 @@ Promise<ort.InferenceSession> {
 
 
 /**
- * Load ArcFace Recognizer
+ * Load mobilefacenet Recognizer
  */
 export function loadRecognizer():
 Promise<ort.InferenceSession> {
@@ -332,13 +364,19 @@ startTimer("Total Model Loading");
         // ]);
 
 
+        console.log("================================");
+console.log("Detector Model:", getDetectorModelPath());
+console.log("Recognizer Model:", getRecognitionModelPath());
+console.log("Landmark Model:", getLandmarkModelPath());
+console.log("================================");
+
         console.time("SCRFD");
 await loadDetector();
 console.timeEnd("SCRFD");
 
-console.time("ArcFace");
+console.time("mobilefacenet");
 await loadRecognizer();
-console.timeEnd("ArcFace");
+console.timeEnd("mobilefacenet");
 
 
 await loadLandmarkModel();

@@ -415,12 +415,12 @@ export default function VoiceRegisterPage() {
 
       formRef.current = updated;
 
-      console.log("Updated Form:", updated);
+      // console.log("Updated Form:", updated);
 
-      console.log(
-        "Registration Embedding:",
-        updated.face_descriptor.slice(0, 10),
-      );
+      // console.log(
+      //   "Registration Embedding:",
+      //   updated.face_descriptor.slice(0, 10),
+      // );
       return updated;
     });
   };
