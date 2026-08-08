@@ -73,6 +73,20 @@ export default function Alert({ type, message, onClose }) {
     }
   }, [type, onClose]);
 
+  // Close alert when Enter or Escape is pressed
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === "Enter" || event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [onClose]);
+
   const styles =
     type === "success"
       ? {
