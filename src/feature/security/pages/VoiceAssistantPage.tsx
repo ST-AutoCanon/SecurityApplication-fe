@@ -118,6 +118,13 @@ export default function VoiceRegisterPage() {
 
   const [availableCategories, setAvailableCategories] = useState<string[]>([]);
 
+
+  const [captureStep, setCaptureStep] = useState(0);
+
+const [captureInstruction, setCaptureInstruction] = useState(
+  "Look straight at the camera",
+  );
+  
   const waitingForModuleSelectionRef = useRef(true);
   const capturedEmbeddingsRef = useRef<any[]>([]);
 
@@ -128,6 +135,15 @@ export default function VoiceRegisterPage() {
     type: "success",
     message: "",
   });
+
+  const captureInstructions = [
+  "Look straight at the camera",
+  "Turn your face slightly to the left",
+  "Turn your face slightly to the right",
+  "Move slightly farther from the camera",
+  "Look straight at the camera again",
+  ];
+  
 
   useEffect(() => {
     fieldsRef.current = fields;
@@ -1180,28 +1196,157 @@ export default function VoiceRegisterPage() {
       return;
     }
 
+    // // -------------------------
+    // // NORMAL FLOW
+    // // -------------------------
+    // const key = next.field_key.toLowerCase();
+
+    // // Face / Camera fields
+    // if (
+    //   key.includes("profile_photo") ||
+    //   key.includes("profile photo") ||
+    //   key.includes("face_descriptor") ||
+    //   key.includes("face descriptor")
+    // ) {
+    //   setFaceDetected(false);
+    //   setCaptured(false);
+
+    //   currentStepRef.current = nextStep;
+    //   setCurrentStep(nextStep);
+
+    //   setCameraOpen(true);
+    //   return;
+    // }
+
     // -------------------------
     // NORMAL FLOW
     // -------------------------
     const key = next.field_key.toLowerCase();
 
-    // Face / Camera fields
-    if (
-      key.includes("profile_photo") ||
-      key.includes("profile photo") ||
-      key.includes("face_descriptor") ||
-      key.includes("face descriptor")
-    ) {
-      setFaceDetected(false);
-      setCaptured(false);
+    // ------------------------------------
+    // FACE / PROFILE PHOTO
+    // ------------------------------------
+    if (isFaceFieldKey(key)) {
+      const hasProfilePhoto = allFields.some(
+        (field) => field.field_key.toLowerCase() === "profile_photo",
+      );
 
-      currentStepRef.current = nextStep;
-      setCurrentStep(nextStep);
+      const hasFaceDescriptor = allFields.some(
+        (field) => field.field_key.toLowerCase() === "face_descriptor",
+      );
 
-      setCameraOpen(true);
-      return;
+      const profilePhotoCaptured = !!formRef.current.profile_photo;
+
+      const faceDescriptorCaptured = !!formRef.current.face_descriptor;
+
+      console.log("========== FACE FIELD CHECK ==========");
+      console.log("Current field:", key);
+      console.log("Has profile_photo:", hasProfilePhoto);
+      console.log("Has face_descriptor:", hasFaceDescriptor);
+      console.log("Profile photo captured:", profilePhotoCaptured);
+      console.log("Face descriptor captured:", faceDescriptorCaptured);
+
+      // ------------------------------------
+      // CASE 1:
+      // BOTH FIELDS EXIST
+      // ------------------------------------
+      if (hasProfilePhoto && hasFaceDescriptor) {
+        // Both already captured.
+        // Do NOT open camera again.
+        if (profilePhotoCaptured && faceDescriptorCaptured) {
+          console.log("Both face fields already captured. Skipping camera.");
+
+          currentStepRef.current = nextStep;
+          setCurrentStep(nextStep);
+
+          setTimeout(async () => {
+            await askCurrentQuestion();
+          }, 300);
+
+          return;
+        }
+
+        // One or both are missing.
+        // Open camera ONCE.
+        console.log(
+          "Face fields exist and capture is incomplete. Opening camera.",
+        );
+
+        setFaceDetected(false);
+        setCaptured(false);
+
+        currentStepRef.current = nextStep;
+        setCurrentStep(nextStep);
+
+        setCameraOpen(true);
+
+        return;
+      }
+
+      // ------------------------------------
+      // CASE 2:
+      // ONLY PROFILE PHOTO EXISTS
+      // ------------------------------------
+      if (hasProfilePhoto && !hasFaceDescriptor) {
+        if (profilePhotoCaptured) {
+          console.log("Profile photo already captured. Skipping camera.");
+
+          currentStepRef.current = nextStep;
+          setCurrentStep(nextStep);
+
+          setTimeout(async () => {
+            await askCurrentQuestion();
+          }, 300);
+
+          return;
+        }
+
+        console.log("Only profile photo exists. Opening camera.");
+
+        setFaceDetected(false);
+        setCaptured(false);
+
+        currentStepRef.current = nextStep;
+        setCurrentStep(nextStep);
+
+        setCameraOpen(true);
+
+        return;
+      }
+
+      // ------------------------------------
+      // CASE 3:
+      // ONLY FACE DESCRIPTOR EXISTS
+      // ------------------------------------
+      if (!hasProfilePhoto && hasFaceDescriptor) {
+        if (faceDescriptorCaptured) {
+          console.log("Face descriptor already captured. Skipping camera.");
+
+          currentStepRef.current = nextStep;
+          setCurrentStep(nextStep);
+
+          setTimeout(async () => {
+            await askCurrentQuestion();
+          }, 300);
+
+          return;
+        }
+
+        console.log("Only face descriptor exists. Opening camera.");
+
+        setFaceDetected(false);
+        setCaptured(false);
+
+        currentStepRef.current = nextStep;
+        setCurrentStep(nextStep);
+
+        setCameraOpen(true);
+
+        return;
+      }
     }
 
+  
     // Normal Voice Question
     currentStepRef.current = nextStep;
     setCurrentStep(nextStep);
@@ -1210,7 +1355,7 @@ export default function VoiceRegisterPage() {
     setTimeout(async () => {
       await askCurrentQuestion();
     }, 300);
-  };
+  };;
 
   useEffect(() => {
     const SpeechRecognition =
@@ -1323,29 +1468,246 @@ export default function VoiceRegisterPage() {
 
 
 
+// const captureMultipleFaceVectors = async () => {
+//   const vectors: number[][] = [];
+//   const scores: number[] = [];
+
+//   for (let i = 0; i < 5; i++) {
+//     try {
+//       console.log(`========== Capture ${i + 1}/5 ==========`);
+
+//       const video = webcamRef.current?.video;
+
+//       if (!video || video.videoWidth === 0 || video.videoHeight === 0) {
+//         console.log("Video not ready");
+//         continue;
+//       }
+
+//       // -------------------------
+//       // Detect Face
+//       // -------------------------
+
+//       const result = await faceDetector.detect(video);
+
+//       if (!result || result.length === 0) {
+//         console.log("No face detected");
+
+//         continue;
+//       }
+
+//       const face = result[0];
+
+//       console.log("Face Detection:", {
+//         score: face.score,
+//         bbox: face.bbox,
+//       });
+
+//       // -------------------------
+//       // Face Quality
+//       // -------------------------
+
+//       const quality = faceQuality.evaluate(video, face);
+
+//       console.log("Face Quality:", quality);
+
+//       if (!quality.passed) {
+//         console.log("Skipped - Low quality");
+
+//         await new Promise((r) => setTimeout(r, 500));
+
+//         continue;
+//       }
+
+//       if (!face.landmarks) {
+//         console.log("No landmarks");
+
+//         continue;
+//       }
+
+//       // -------------------------
+//       // Calculate Quality Score
+//       // -------------------------
+
+//       const faceArea = face.bbox.width * face.bbox.height;
+
+//       const frameArea = video.videoWidth * video.videoHeight;
+
+//       const coverage = faceArea / frameArea;
+
+//       // Bigger face = better
+//       const sizeScore = Math.min(coverage * 5, 1);
+
+//       // SCRFD confidence
+//       const confidenceScore = face.score || 0;
+
+//       // If your quality module gives score use it
+//       let qualityScore = 0.5;
+
+//       if (typeof quality.score === "number") {
+//         qualityScore = quality.score;
+//       }
+
+//       const finalScore =
+//         confidenceScore * 0.4 + sizeScore * 0.4 + qualityScore * 0.2;
+
+//       console.log("Frame Score:", {
+//         confidenceScore,
+//         coverage,
+//         sizeScore,
+//         qualityScore,
+//         finalScore,
+//       });
+
+//       // -------------------------
+//       // Generate Embedding
+//       // -------------------------
+
+//       const aligned = faceAligner.align(video, face.landmarks);
+
+//       const embedding = await faceRecognizer.embeddingFromAligned(aligned);
+
+//       const embeddingArray = Array.from(embedding);
+
+//       console.log("Embedding Length:", embeddingArray.length);
+
+//       vectors.push(embeddingArray);
+
+//       scores.push(finalScore);
+
+//       console.log(`Vector ${i + 1} stored`, {
+//         score: finalScore,
+//       });
+
+//       await new Promise((r) => setTimeout(r, 500));
+//     } catch (err) {
+//       console.error(`Capture ${i + 1} failed`, err);
+//     }
+//   }
+
+//   if (vectors.length === 0) {
+//     throw new Error("Could not capture good face samples");
+//   }
+
+//   console.log("==============================");
+
+//   console.log("Captured vectors:", vectors.length);
+
+//   console.log("All Scores:", JSON.stringify(scores, null, 2));
+
+//   console.log("==============================");
+
+//   // --------------------------------
+//   // Pick Top 3 Quality Embeddings
+//   // --------------------------------
+
+//   const ranked = vectors
+//     .map((vector, index) => ({
+//       vector,
+//       score: scores[index],
+//     }))
+//     .sort((a, b) => b.score - a.score);
+
+//   const bestVectors = ranked
+//     .slice(0, Math.min(3, ranked.length))
+//     .map((item) => item.vector);
+
+//   console.log("Top vectors used:", bestVectors.length);
+
+//   // --------------------------------
+//   // Average Embeddings
+//   // --------------------------------
+
+//   const length = bestVectors[0].length;
+
+//   const averaged = new Array(length).fill(0);
+
+//   bestVectors.forEach((vector) => {
+//     vector.forEach((value, index) => {
+//       averaged[index] += value;
+//     });
+//   });
+
+//   const averageEmbedding = averaged.map((value) => value / bestVectors.length);
+
+//   // --------------------------------
+//   // Normalize ArcFace Vector
+//   // --------------------------------
+
+//   const norm = Math.sqrt(
+//     averageEmbedding.reduce((sum, value) => sum + value * value, 0),
+//   );
+
+//   const finalEmbedding = averageEmbedding.map((value) => value / norm);
+
+//   console.log("Final Embedding Length:", finalEmbedding.length);
+
+//   console.log(
+//     "Final Embedding Norm:",
+//     Math.sqrt(finalEmbedding.reduce((s, v) => s + v * v, 0)),
+//   );
+
+//   console.log("Final Embedding Sample:", finalEmbedding.slice(0, 10));
+
+//   return finalEmbedding;
+// };
+  
+  // =====================================
+  // Capture Face
+  // =====================================
+
+
 const captureMultipleFaceVectors = async () => {
   const vectors: number[][] = [];
   const scores: number[] = [];
 
+  const wait = (ms: number) =>
+    new Promise<void>((resolve) => setTimeout(resolve, ms));
+
   for (let i = 0; i < 5; i++) {
     try {
-      console.log(`========== Capture ${i + 1}/5 ==========`);
+      const step = i + 1;
+
+      console.log(`========== FACE CAPTURE ${step}/5 ==========`);
+
+      // ------------------------------------
+      // Update UI
+      // ------------------------------------
+
+      setCaptureStep(step);
+
+      setCaptureInstruction(captureInstructions[i]);
+
+      // Give user time to read/move
+      await wait(300);
+
+      // ------------------------------------
+      // Get video
+      // ------------------------------------
 
       const video = webcamRef.current?.video;
 
       if (!video || video.videoWidth === 0 || video.videoHeight === 0) {
         console.log("Video not ready");
+
+        i--;
+
+        await wait(500);
+
         continue;
       }
 
-      // -------------------------
-      // Detect Face
-      // -------------------------
+      // ------------------------------------
+      // Detect face
+      // ------------------------------------
 
       const result = await faceDetector.detect(video);
 
       if (!result || result.length === 0) {
-        console.log("No face detected");
+        console.log(`No face detected for sample ${step}`);
+
+        i--;
+
+        await wait(500);
 
         continue;
       }
@@ -1357,31 +1719,41 @@ const captureMultipleFaceVectors = async () => {
         bbox: face.bbox,
       });
 
-      // -------------------------
+      // ------------------------------------
       // Face Quality
-      // -------------------------
+      // ------------------------------------
 
       const quality = faceQuality.evaluate(video, face);
 
-      console.log("Face Quality:", quality);
+      console.log(`Face Quality ${step}:`, quality);
 
       if (!quality.passed) {
-        console.log("Skipped - Low quality");
+        console.log(`Sample ${step} rejected - low quality`);
 
-        await new Promise((r) => setTimeout(r, 500));
+        i--;
+
+        await wait(500);
 
         continue;
       }
+
+      // ------------------------------------
+      // Landmarks
+      // ------------------------------------
 
       if (!face.landmarks) {
-        console.log("No landmarks");
+        console.log(`No landmarks for sample ${step}`);
+
+        i--;
+
+        await wait(500);
 
         continue;
       }
 
-      // -------------------------
-      // Calculate Quality Score
-      // -------------------------
+      // ------------------------------------
+      // Quality Score
+      // ------------------------------------
 
       const faceArea = face.bbox.width * face.bbox.height;
 
@@ -1389,13 +1761,10 @@ const captureMultipleFaceVectors = async () => {
 
       const coverage = faceArea / frameArea;
 
-      // Bigger face = better
       const sizeScore = Math.min(coverage * 5, 1);
 
-      // SCRFD confidence
       const confidenceScore = face.score || 0;
 
-      // If your quality module gives score use it
       let qualityScore = 0.5;
 
       if (typeof quality.score === "number") {
@@ -1405,7 +1774,7 @@ const captureMultipleFaceVectors = async () => {
       const finalScore =
         confidenceScore * 0.4 + sizeScore * 0.4 + qualityScore * 0.2;
 
-      console.log("Frame Score:", {
+      console.log(`Sample ${step} Score:`, {
         confidenceScore,
         coverage,
         sizeScore,
@@ -1413,320 +1782,486 @@ const captureMultipleFaceVectors = async () => {
         finalScore,
       });
 
-      // -------------------------
-      // Generate Embedding
-      // -------------------------
+      // ------------------------------------
+      // Align
+      // ------------------------------------
 
       const aligned = faceAligner.align(video, face.landmarks);
+
+      // ------------------------------------
+      // Generate Embedding
+      // ------------------------------------
 
       const embedding = await faceRecognizer.embeddingFromAligned(aligned);
 
       const embeddingArray = Array.from(embedding);
 
-      console.log("Embedding Length:", embeddingArray.length);
+      console.log(`Embedding ${step} length:`, embeddingArray.length);
+
+      // ------------------------------------
+      // Store independently
+      // ------------------------------------
 
       vectors.push(embeddingArray);
 
       scores.push(finalScore);
 
-      console.log(`Vector ${i + 1} stored`, {
-        score: finalScore,
-      });
+      console.log(`VECTOR ${step}/5 STORED`);
 
-      await new Promise((r) => setTimeout(r, 500));
+      // ------------------------------------
+      // Small delay
+      // ------------------------------------
+
+      await wait(100);
     } catch (err) {
       console.error(`Capture ${i + 1} failed`, err);
+
+      // Retry same step
+      i--;
+
+      await wait(500);
     }
   }
 
-  if (vectors.length === 0) {
-    throw new Error("Could not capture good face samples");
+  // ------------------------------------
+  // Validate
+  // ------------------------------------
+
+  if (vectors.length !== 5) {
+    throw new Error(`Could only capture ${vectors.length}/5 face samples`);
   }
 
-  console.log("==============================");
+  console.log("================================");
 
-  console.log("Captured vectors:", vectors.length);
+  console.log("ALL 5 FACE VECTORS CAPTURED");
 
-  console.log("All Scores:", JSON.stringify(scores, null, 2));
+  console.log("================================");
 
-  console.log("==============================");
-
-  // --------------------------------
-  // Pick Top 3 Quality Embeddings
-  // --------------------------------
+  // ------------------------------------
+  // Rank by quality
+  // ------------------------------------
 
   const ranked = vectors
     .map((vector, index) => ({
       vector,
       score: scores[index],
+      originalIndex: index,
     }))
     .sort((a, b) => b.score - a.score);
 
-  const bestVectors = ranked
-    .slice(0, Math.min(3, ranked.length))
-    .map((item) => item.vector);
+  console.log(
+    "Vector ranking:",
+    ranked.map((item) => ({
+      originalCapture: item.originalIndex + 1,
+      score: item.score,
+    })),
+  );
 
-  console.log("Top vectors used:", bestVectors.length);
+  // ------------------------------------
+  // IMPORTANT
+  //
+  // DO NOT AVERAGE
+  // KEEP ALL 5
+  // ------------------------------------
 
-  // --------------------------------
-  // Average Embeddings
-  // --------------------------------
+  const finalVectors = ranked.map((item) => item.vector);
 
-  const length = bestVectors[0].length;
+  console.log("Final vector count:", finalVectors.length);
 
-  const averaged = new Array(length).fill(0);
-
-  bestVectors.forEach((vector) => {
-    vector.forEach((value, index) => {
-      averaged[index] += value;
+  finalVectors.forEach((vector, index) => {
+    console.log(`Vector ${index + 1}:`, {
+      length: vector.length,
+      sample: vector.slice(0, 5),
     });
   });
 
-  const averageEmbedding = averaged.map((value) => value / bestVectors.length);
-
-  // --------------------------------
-  // Normalize ArcFace Vector
-  // --------------------------------
-
-  const norm = Math.sqrt(
-    averageEmbedding.reduce((sum, value) => sum + value * value, 0),
-  );
-
-  const finalEmbedding = averageEmbedding.map((value) => value / norm);
-
-  console.log("Final Embedding Length:", finalEmbedding.length);
-
-  console.log(
-    "Final Embedding Norm:",
-    Math.sqrt(finalEmbedding.reduce((s, v) => s + v * v, 0)),
-  );
-
-  console.log("Final Embedding Sample:", finalEmbedding.slice(0, 10));
-
-  return finalEmbedding;
+  return finalVectors;
 };
-  
-  // =====================================
-  // Capture Face
-  // =====================================
 
+  // const captureFace = async () => {
+  //   try {
+  //     if (!isModelsLoaded) {
+  //       alert("Face models are loading. Please wait.");
+  //       return;
+  //     }
 
-  const captureFace = async () => {
-    try {
-      if (!isModelsLoaded) {
-        alert("Face models are loading. Please wait.");
-        return;
-      }
+  //     setLoading(true);
 
-      setLoading(true);
+  //     const video = webcamRef.current?.video;
 
-      const video = webcamRef.current?.video;
+  //     if (!video) {
+  //       throw new Error("Camera not ready");
+  //     }
 
-      if (!video) {
-        throw new Error("Camera not ready");
-      }
+  //     // ------------------------------------
+  //     // Check what fields exist in this template
+  //     // ------------------------------------
 
-      // ------------------------------------
-      // Check what fields exist in this template
-      // ------------------------------------
+  //     const hasProfilePhoto = fieldsRef.current.some(
+  //       (f) => f.field_key.toLowerCase() === "profile_photo",
+  //     );
 
-      const hasProfilePhoto = fieldsRef.current.some(
-        (f) => f.field_key.toLowerCase() === "profile_photo",
-      );
+  //     const hasFaceDescriptor = fieldsRef.current.some(
+  //       (f) => f.field_key.toLowerCase() === "face_descriptor",
+  //     );
 
-      const hasFaceDescriptor = fieldsRef.current.some(
-        (f) => f.field_key.toLowerCase() === "face_descriptor",
-      );
+  //     console.log("Has Profile Photo:", hasProfilePhoto);
+  //     console.log("Has Face Descriptor:", hasFaceDescriptor);
 
-      console.log("Has Profile Photo:", hasProfilePhoto);
-      console.log("Has Face Descriptor:", hasFaceDescriptor);
+  //     console.log("======================================");
+  //     console.log("VIDEO");
+  //     console.log("Width :", video.videoWidth);
+  //     console.log("Height:", video.videoHeight);
+  //     console.log("======================================");
 
-      console.log("======================================");
-      console.log("VIDEO");
-      console.log("Width :", video.videoWidth);
-      console.log("Height:", video.videoHeight);
-      console.log("======================================");
+  //     // ------------------------------------
+  //     // Detect Face
+  //     // ------------------------------------
 
-      // ------------------------------------
-      // Detect Face
-      // ------------------------------------
+  //     const result = await faceDetector.detect(video);
 
-      const result = await faceDetector.detect(video);
+  //     console.log("======================================");
+  //     console.log("Detection Result");
+  //     console.log(result);
+  //     console.log("======================================");
 
-      console.log("======================================");
-      console.log("Detection Result");
-      console.log(result);
-      console.log("======================================");
+  //     if (!result || result.length === 0) {
+  //       setAlertData({
+  //         open: true,
+  //         type: "warning",
+  //         message: "Face not detected. Please look at the camera.",
+  //       });
 
-      if (!result || result.length === 0) {
-        setAlertData({
-          open: true,
-          type: "warning",
-          message: "Face not detected. Please look at the camera.",
-        });
+  //       setTimeout(() => {
+  //         setAlertData((prev) => ({
+  //           ...prev,
+  //           open: false,
+  //         }));
+  //       }, 1500);
 
-        setTimeout(() => {
-          setAlertData((prev) => ({
-            ...prev,
-            open: false,
-          }));
-        }, 1500);
+  //       return;
+  //     }
 
-        return;
-      }
+  //     const face = result[0];
 
-      const face = result[0];
+  //     console.log("========== REGISTRATION ==========");
 
-      console.log("========== REGISTRATION ==========");
+  //     const { x, y, width, height } = face.bbox;
 
-      const { x, y, width, height } = face.bbox;
+  //     console.log({
+  //       x,
+  //       y,
+  //       width,
+  //       height,
+  //     });
+  //     console.log("Video Size:", {
+  //       width: video.videoWidth,
+  //       height: video.videoHeight,
+  //     });
 
-      console.log({
-        x,
-        y,
-        width,
-        height,
-      });
-      console.log("Video Size:", {
-        width: video.videoWidth,
-        height: video.videoHeight,
-      });
+  //     console.log("Face BBox:", face.bbox);
 
-      console.log("Face BBox:", face.bbox);
+  //     console.log("Face Size:", {
+  //       width: width,
+  //       height: height,
+  //     });
 
-      console.log("Face Size:", {
-        width: width,
-        height: height,
-      });
+  //     console.log(
+  //       "Face Coverage:",
+  //       (
+  //         ((width * height) / (video.videoWidth * video.videoHeight)) *
+  //         100
+  //       ).toFixed(2) + "%",
+  //     );
 
-      console.log(
-        "Face Coverage:",
-        (
-          ((width * height) / (video.videoWidth * video.videoHeight)) *
-          100
-        ).toFixed(2) + "%",
-      );
+  //     console.log("Landmarks:", face.landmarks);
 
-      console.log("Landmarks:", face.landmarks);
+  //     console.log("======================================");
+  //     console.log("FACE");
+  //     console.log(face);
+  //     console.log("Score:", face.score);
+  //     console.log("BBox:", face.bbox);
+  //     console.log("Landmarks:", face.landmarks);
+  //     console.log("======================================");
 
-      console.log("======================================");
-      console.log("FACE");
-      console.log(face);
-      console.log("Score:", face.score);
-      console.log("BBox:", face.bbox);
-      console.log("Landmarks:", face.landmarks);
-      console.log("======================================");
+  //     // ------------------------------------
+  //     // Face Quality
+  //     // ------------------------------------
 
-      // ------------------------------------
-      // Face Quality
-      // ------------------------------------
+  //     const quality = faceQuality.evaluate(video, face);
 
-      const quality = faceQuality.evaluate(video, face);
+  //     console.log("======================================");
+  //     console.log("FACE QUALITY");
+  //     console.log(quality);
+  //     console.log("======================================");
 
-      console.log("======================================");
-      console.log("FACE QUALITY");
-      console.log(quality);
-      console.log("======================================");
+  //     if (!quality.passed) {
+  //       setAlertData({
+  //         open: true,
+  //         type: "warning",
+  //         message: "Please adjust your face position",
+  //       });
 
-      if (!quality.passed) {
-        setAlertData({
-          open: true,
-          type: "warning",
-          message: "Please adjust your face position",
-        });
+  //       setTimeout(() => {
+  //         setAlertData((prev) => ({
+  //           ...prev,
+  //           open: false,
+  //         }));
+  //       }, 1500);
 
-        setTimeout(() => {
-          setAlertData((prev) => ({
-            ...prev,
-            open: false,
-          }));
-        }, 1500);
+  //       return;
+  //     }
 
-        return;
-      }
+  //     // ------------------------------------
+  //     // Save Face Descriptor (Only if needed)
+  //     // ------------------------------------
 
-      // ------------------------------------
-      // Save Face Descriptor (Only if needed)
-      // ------------------------------------
+  //     if (hasFaceDescriptor) {
+  //       console.log("======================================");
+  //       console.log("Aligning Face...");
+  //       console.log("======================================");
 
-      if (hasFaceDescriptor) {
-        console.log("======================================");
-        console.log("Aligning Face...");
-        console.log("======================================");
+  //       const aligned = faceAligner.align(video, face.landmarks);
 
-        const aligned = faceAligner.align(video, face.landmarks);
+  //       console.log("Aligned Canvas:", aligned);
+  //       console.log("Canvas Width :", aligned.width);
+  //       console.log("Canvas Height:", aligned.height);
 
-        console.log("Aligned Canvas:", aligned);
-        console.log("Canvas Width :", aligned.width);
-        console.log("Canvas Height:", aligned.height);
+  //       console.log("======================================");
+  //       console.log("Generating Embedding...");
+  //       console.log("======================================");
 
-        console.log("======================================");
-        console.log("Generating Embedding...");
-        console.log("======================================");
+  //       // const embedding = await faceRecognizer.embeddingFromAligned(aligned);
 
-        // const embedding = await faceRecognizer.embeddingFromAligned(aligned);
+  //       // console.log("REGISTRATION Embedding:", embedding.slice(0, 10));
 
-        // console.log("REGISTRATION Embedding:", embedding.slice(0, 10));
+  //       // const embeddingArray = Array.from(embedding);
 
-        // const embeddingArray = Array.from(embedding);
+  //       // const norm = Math.sqrt(
+  //       //   embeddingArray.reduce((sum, value) => sum + value * value, 0),
+  //       // );
 
-        // const norm = Math.sqrt(
-        //   embeddingArray.reduce((sum, value) => sum + value * value, 0),
-        // );
+  //       // console.log("Embedding Length:", embedding.length);
+  //       // console.log("Embedding Norm:", norm);
 
-        // console.log("Embedding Length:", embedding.length);
-        // console.log("Embedding Norm:", norm);
+  //       // console.log("Embedding Sample:", Array.from(embedding.slice(0, 10)));
 
-        // console.log("Embedding Sample:", Array.from(embedding.slice(0, 10)));
+  //       // updateForm("face_descriptor", Array.from(embedding));
 
-        // updateForm("face_descriptor", Array.from(embedding));
+  //       console.log("Capturing multiple face vectors...");
 
-        console.log("Capturing multiple face vectors...");
+  //       const bestEmbedding = await captureMultipleFaceVectors();
 
-        const bestEmbedding = await captureMultipleFaceVectors();
+  //       console.log("BEST REGISTRATION VECTOR", bestEmbedding.slice(0, 10));
 
-        console.log("BEST REGISTRATION VECTOR", bestEmbedding.slice(0, 10));
+  //       updateForm("face_descriptor", bestEmbedding);
+  //     }
 
-        updateForm("face_descriptor", bestEmbedding);
-      }
+  //     // ------------------------------------
+  //     // Save Profile Photo (Only if needed)
+  //     // ------------------------------------
 
-      // ------------------------------------
-      // Save Profile Photo (Only if needed)
-      // ------------------------------------
+  //     if (hasProfilePhoto) {
+  //       const photo = webcamRef.current?.getScreenshot();
 
-      if (hasProfilePhoto) {
-        const photo = webcamRef.current?.getScreenshot();
+  //       if (photo) {
+  //         updateForm("profile_photo", photo);
+  //       }
+  //     }
 
-        if (photo) {
-          updateForm("profile_photo", photo);
-        }
-      }
+  //     // ------------------------------------
+  //     // Finish
+  //     // ------------------------------------
 
-      // ------------------------------------
-      // Finish
-      // ------------------------------------
+  //     setFaceDetected(true);
+  //     setCaptured(true);
+  //     setCameraOpen(false);
 
-      setFaceDetected(true);
-      setCaptured(true);
-      setCameraOpen(false);
+  //     nextQuestion();
+  //   } catch (err) {
+  //     console.error("======================================");
+  //     console.error("FACE CAPTURE ERROR");
+  //     console.error(err);
+  //     console.error("======================================");
 
-      nextQuestion();
-    } catch (err) {
-      console.error("======================================");
-      console.error("FACE CAPTURE ERROR");
-      console.error(err);
-      console.error("======================================");
-
-      alert("Face registration failed");
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     alert("Face registration failed");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   // =====================================
   // Submit
   // =====================================
 
+
+const captureFace = async () => {
+  try {
+    if (!isModelsLoaded) {
+      alert("Face models are loading. Please wait.");
+
+      return;
+    }
+
+    setLoading(true);
+
+    const video = webcamRef.current?.video;
+
+    if (!video) {
+      throw new Error("Camera not ready");
+    }
+
+    // ------------------------------------
+    // Reset capture state
+    // ------------------------------------
+
+    setCaptureStep(0);
+
+    setCaptureInstruction("Look straight at the camera");
+
+    // ------------------------------------
+    // Check fields
+    // ------------------------------------
+
+    const hasProfilePhoto = fieldsRef.current.some(
+      (f) => f.field_key.toLowerCase() === "profile_photo",
+    );
+
+    const hasFaceDescriptor = fieldsRef.current.some(
+      (f) => f.field_key.toLowerCase() === "face_descriptor",
+    );
+
+    console.log("Has Profile Photo:", hasProfilePhoto);
+
+    console.log("Has Face Descriptor:", hasFaceDescriptor);
+
+    // ------------------------------------
+    // Initial face detection
+    // ------------------------------------
+
+    const result = await faceDetector.detect(video);
+
+    if (!result || result.length === 0) {
+      setAlertData({
+        open: true,
+        type: "warning",
+        message: "Face not detected. Please look at the camera.",
+      });
+
+      setTimeout(() => {
+        setAlertData((prev) => ({
+          ...prev,
+          open: false,
+        }));
+      }, 1500);
+
+      return;
+    }
+
+    const face = result[0];
+
+    // ------------------------------------
+    // Initial quality check
+    // ------------------------------------
+
+    const quality = faceQuality.evaluate(video, face);
+
+    if (!quality.passed) {
+      setAlertData({
+        open: true,
+        type: "warning",
+        message: "Please adjust your face position",
+      });
+
+      setTimeout(() => {
+        setAlertData((prev) => ({
+          ...prev,
+          open: false,
+        }));
+      }, 1500);
+
+      return;
+    }
+
+    // ====================================
+    // FACE DESCRIPTOR
+    // ====================================
+
+    if (hasFaceDescriptor) {
+      console.log("================================");
+
+      console.log("STARTING 5 FACE VECTOR CAPTURE");
+
+      console.log("================================");
+
+      const faceEmbeddings = await captureMultipleFaceVectors();
+
+      console.log("5 vectors captured:", faceEmbeddings.length);
+
+      // ------------------------------------
+      // Store ALL 5 vectors
+      // ------------------------------------
+
+      updateForm("face_descriptor", faceEmbeddings);
+
+      console.log("5 face vectors stored in form");
+    }
+
+    // ====================================
+    // PROFILE PHOTO
+    //
+    // ONLY ONE PHOTO
+    // ====================================
+
+    if (hasProfilePhoto) {
+      console.log("Capturing ONE profile photo...");
+
+      const photo = webcamRef.current?.getScreenshot();
+
+      if (photo) {
+        updateForm("profile_photo", photo);
+
+        console.log("ONE profile photo captured");
+      }
+    }
+
+    // ====================================
+    // COMPLETE
+    // ====================================
+
+    setCaptureStep(5);
+
+    setCaptureInstruction("Face data captured successfully");
+
+    setFaceDetected(true);
+
+    setCaptured(true);
+
+    // Small delay so user can see success
+    await new Promise<void>((resolve) => setTimeout(resolve, 500));
+
+    setCameraOpen(false);
+
+    nextQuestion();
+  } catch (err) {
+    console.error("================================");
+
+    console.error("FACE CAPTURE ERROR");
+
+    console.error(err);
+
+    console.error("================================");
+
+    setAlertData({
+      open: true,
+      type: "error",
+      message: "Face registration failed. Please try again.",
+    });
+  } finally {
+    setLoading(false);
+  }
+};
+  
   const submitRegistration = async () => {
     if (!selectedModule) return;
 
@@ -1861,6 +2396,14 @@ const captureMultipleFaceVectors = async () => {
     );
   };
 
+  const isFaceFieldKey = (key: string) => {
+    const normalizedKey = key.toLowerCase();
+
+    return (
+      normalizedKey === "profile_photo" || normalizedKey === "face_descriptor"
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-cyan-100">
       <div
@@ -1949,6 +2492,8 @@ space-y-6"
             modelsLoaded={isModelsLoaded}
             detected={faceDetected}
             captured={captured}
+            captureStep={captureStep}
+            captureInstruction={captureInstruction}
             onCapture={captureFace}
             onCancel={() => {
               setCameraOpen(false);
