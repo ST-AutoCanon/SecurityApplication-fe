@@ -60,6 +60,8 @@ export default function FacePunch() {
 
   const [capturedPhoto, setCapturedPhoto] = useState("");
 
+  const [showRegisterConfirm, setShowRegisterConfirm] = useState(false);
+  
   const processFrame = useCallback(async () => {
     if (
       !webcamRef.current ||
@@ -192,20 +194,6 @@ export default function FacePunch() {
       console.log("First 10 Values:", emb.slice(0, 10));
       const descriptor = Array.from(embedding);
 
-      // const photo = capture.image.toDataURL("image/jpeg", 0.9);
-
-      // const res = await axios.post(
-      //   `${API_URL}/punch-data/face-punch`,
-      //   {
-      //     descriptor,
-      //     photo,
-      //   },
-      //   {
-      //     withCredentials: true,
-      //   },
-      // );
-      // console.log("FACE PUNCH RESPONSE:", res.data);
-
       const photo = capture.image.toDataURL("image/jpeg", 0.9);
 
       setCapturedPhoto(photo);
@@ -221,41 +209,6 @@ export default function FacePunch() {
       );
 
       console.log("res punch data:", res.data);
-
-      // if (res.data?.success) {
-      //   punchedRef.current = true;
-
-      //   retryCountRef.current = 0;
-
-      //   const punch = res.data.data;
-
-      //   setPunchData({
-      //     full_name: punch.full_name,
-      //     module_name: punch.module_name,
-      //     punch_type: punch.punch_type,
-      //   });
-
-      //   // setAlertType("success");
-
-      //   // setAlertMessage(`Punch ${punch.punch_type} Successful : ${punch.full_name}`);
-
-      //   // setShowAlert(true);
-
-      //   setMessage(`✅ Punch ${punch.punch_type} - Welcome ${punch.full_name}`);
-
-      //   setCameraOpen(false);
-      //   // Clear UI after 3 seconds
-      //   setTimeout(() => {
-      //     setPunchData(null);
-      //     setMessage("");
-
-      //     punchedRef.current = false;
-      //     retryCountRef.current = 0;
-      //     processingRef.current = false;
-      //   }, 3000);
-
-      //   return;
-      // }
 
       if (res.data.success) {
         // stop scanning
@@ -273,30 +226,28 @@ export default function FacePunch() {
         return;
       }
 
-      // retryCountRef.current++;
-
-      // if (retryCountRef.current >= MAX_RETRIES) {
-      //   setAlertType("error");
-
-      //   setAlertMessage(
-      //     "Face not recognized after 3 attempts. Please register your face.",
-      //   );
-
-      //   setShowAlert(true);
-
-      //   setCameraOpen(false);
-
-      //   return;
-      // }
-
-      // setMessage(
-      //   `❌ Face not recognized. Retrying (${retryCountRef.current}/${MAX_RETRIES})...`,
-      // );
-
       retryCountRef.current++;
 
       const backendMessage = res.data?.message || "Face verification failed.";
 
+      const backendCode = res.data?.code || res.data?.errorCode || "";
+
+      
+      if (
+        backendCode === "FACE_NOT_FOUND" ||
+        backendMessage === "user record was not found."
+      ) {
+        console.log("User record not found.");
+
+        setCameraOpen(false);
+
+        punchedRef.current = true;
+        processingRef.current = false;
+
+        setShowRegisterConfirm(true);
+
+        return;
+      }
       setErrorCode(res.data?.code || "");
 
       if (retryCountRef.current >= MAX_RETRIES) {
@@ -319,6 +270,27 @@ export default function FacePunch() {
 
       console.log("ERROR RESPONSE:", err?.response?.data);
 
+      const backendMessage =
+        err?.response?.data?.message || "Face verification failed.";
+
+      const backendCode =
+        err?.response?.data?.code || err?.response?.data?.errorCode || "";
+
+     if (
+       backendCode === "FACE_NOT_FOUND" ||
+       backendMessage === "user record was not found."
+     ) {
+       console.log("User record not found.");
+
+       setCameraOpen(false);
+
+       punchedRef.current = true;
+       processingRef.current = false;
+
+       setShowRegisterConfirm(true);
+
+       return;
+     }
       retryCountRef.current++;
 
       if (retryCountRef.current >= MAX_RETRIES) {
@@ -486,10 +458,37 @@ export default function FacePunch() {
 
             punchedRef.current = false;
             retryCountRef.current = 0;
+            processingRef.current = false;
+          }}
+        />
+      )}
 
-            if (alertType === "error" && errorCode === "FACE_NOT_FOUND") {
-              navigate("/security/organisation/manage_registration");
-            }
+      {showRegisterConfirm && (
+        <Alert
+          type="warning"
+          confirm={true}
+          message="user record was not found. Do you want to register this user?"
+          confirmText="Yes"
+          cancelText="No"
+          onClose={() => {
+            // NO
+            setShowRegisterConfirm(false);
+
+            punchedRef.current = false;
+            processingRef.current = false;
+            retryCountRef.current = 0;
+
+            setMessage("Please look at the camera again.");
+            setCameraOpen(true);
+          }}
+          onConfirm={() => {
+            // YES
+            setShowRegisterConfirm(false);
+
+            punchedRef.current = true;
+            processingRef.current = false;
+
+            navigate("/security/organisation/manage_registration");
           }}
         />
       )}
