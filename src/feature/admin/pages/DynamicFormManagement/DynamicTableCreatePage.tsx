@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
-import { AuthContext } from "../../../context/AuthContext";
-import Alert from "../../../components/Aleartmessage"; // adjust the path
+import { AuthContext } from "../../../../context/AuthContext";
+import Alert from "../../../../components/Aleartmessage"; // adjust the path
 const API = `${import.meta.env.VITE_BACKEND_URL}`;
 
 type Template = {
@@ -150,7 +150,7 @@ if (selectedFields.length === 0) {
     } catch (err: any) {
       setAlertData({
         type: "error",
-        message: err?.response?.data?.message || "Error creating table",
+        message: err?.response?.data?.message || "Error creating Form",
       });
     } finally {
       setLoading(false);
@@ -161,7 +161,7 @@ if (selectedFields.length === 0) {
     <>
       <div className="max-w-4xl mx-auto p-6">
         <div className="bg-white shadow rounded-xl p-8">
-          <h1 className="text-3xl font-bold mb-6">Create Dynamic Table</h1>
+          <h1 className="text-3xl font-bold mb-6">Create Dynamic Form</h1>
 
           {/* ---------------- TEMPLATE SELECT ---------------- */}
           <div className="mb-6">

@@ -3,8 +3,11 @@ import Sidebar from "../components/Sidebar";
 import TopNav from "../components/TopNav";
 
 import SecurityManagement from "./orgs/all/SecurityManagement";
-import DynamicTableCreatePage from "./DynamicTableCreatePage";
-import DynamicTableUpdatePage from "./DynamicTableUpdatePage";
+// import DynamicTableCreatePage from "./DynamicTableCreatePage";
+
+import FormManagement from "./DynamicFormManagement/FormManagement";
+
+// import DynamicTableUpdatePage from "./DynamicTableUpdatePage";
 import BusinessDataPage from "./BusinessDataPage";
 import BusinessDataEditPage from "./BusinessDataEditPage";
 import ApartmentMembers from "./apartment/pages/Members/ApartmentMembers";
@@ -14,6 +17,8 @@ import ApartmentMemberDetails from "./apartment/pages/Members/ApartmentMemberDet
 import ImportMembers from "./apartment/pages/Members/ImportMembers";
 import FormBuilder from "./orgs/all/Formify/FormBuilder"; // ← add this
 
+import AssignGatesManagement from "./gates/AssignGatesManagement";
+
 export default function SuperAdminDashboard() {
   const { pathname } = useLocation();
 
@@ -21,12 +26,25 @@ export default function SuperAdminDashboard() {
 
   if (pathname.includes("create_security")) {
     activePage = "Create Security";
-  } else if (pathname.includes("manage_organisation")) {
+  }
+  else if (pathname.includes("gates")) {
+    activePage = "Gates";
+  }
+  else if (pathname.includes("manage_organisation")) {
     activePage = "Manage Organisation";
-  } else if (pathname.includes("manage_tables")) {
-    activePage = "Manage Tables";
-  } else if (pathname.includes("update_tables")) {
-    activePage = "Update Tables";
+  }
+  
+  // else if (pathname.includes("manage_tables")) {
+  //   activePage = "Manage Tables";
+  // } else if (pathname.includes("update_tables")) {
+  //   activePage = "Update Tables";
+  else if (
+  pathname.includes("manage_forms") ||
+  pathname.includes("update_forms") ||
+  pathname.includes("create_forms")
+) {
+  activePage = "Form Management";
+
   } else if (pathname.includes("form_builder") || pathname.includes("forms")) {
     activePage = "Form Builder";
   } else if (
@@ -72,9 +90,12 @@ const pageComponents: Record<string, React.ReactElement> = {
 
   "Create Security": <SecurityManagement />,
 
-  "Manage Tables": <DynamicTableCreatePage />,
+  Gates: <AssignGatesManagement />,
 
-  "Update Tables": <DynamicTableUpdatePage />,
+  // "Manage Tables": <DynamicTableCreatePage />,
+
+  // "Update Tables": <DynamicTableUpdatePage />,
+  "Form Management": <FormManagement />,
 
   "Business Data": <BusinessDataPage />,
   "Business Data Edit": <BusinessDataEditPage />,

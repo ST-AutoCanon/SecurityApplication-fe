@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { AuthContext } from "../../../context/AuthContext";
-import Alert from "../../../components/Aleartmessage";
+import { AuthContext } from "../../../../context/AuthContext";
+import Alert from "../../../../components/Aleartmessage";
 const API = `${import.meta.env.VITE_BACKEND_URL}`;
 
 type Template = {
@@ -85,7 +85,7 @@ export default function DynamicTableUpdatePage() {
         if (!configRes.data.exists) {
           setAlertData({
             type: "error",
-            message: "No Dynamic Table found.",
+            message: "No Dynamic Form found.",
           });
 
           setTableExists(false);
@@ -195,7 +195,7 @@ if (selectedFields.length === 0) {
     <>
       <div className="max-w-5xl mx-auto p-6">
         <div className="bg-white shadow-lg rounded-xl p-8">
-          <h1 className="text-3xl font-bold mb-8">Update Dynamic Table</h1>
+          <h1 className="text-3xl font-bold mb-8">Update Dynamic Form</h1>
 
           <form onSubmit={handleUpdate}>
             {/* Template */}
@@ -260,7 +260,7 @@ if (selectedFields.length === 0) {
               type="submit"
               className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-8 py-3 rounded-lg"
             >
-              {loading ? "Updating..." : "Update Table"}
+              {loading ? "Updating..." : "Update Form"}
             </button>
           </form>
         </div>

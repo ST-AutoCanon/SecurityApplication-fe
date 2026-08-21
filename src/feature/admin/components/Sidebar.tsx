@@ -23,13 +23,23 @@ const { user } = useContext(AuthContext);
       icon: <Building2 size={22} />,
     },
     {
-      name: "Manage Tables",
-      path: "/admin/organisation/manage_tables",
-      icon: <LayoutDashboard size={22} />,
+      name: "Gates",
+      path: "/admin/organisation/gates",
+      icon: <Users size={22} />,
     },
+    // {
+    //   name: "Manage Tables",
+    //   path: "/admin/organisation/manage_tables",
+    //   icon: <LayoutDashboard size={22} />,
+    // },
+    // {
+    //   name: "Update Tables",
+    //   path: "/admin/organisation/update_tables",
+    //   icon: <LayoutDashboard size={22} />,
+    // },
     {
-      name: "Update Tables",
-      path: "/admin/organisation/update_tables",
+      name: "Form Management",
+      path: "/admin/organisation/manage_forms",
       icon: <LayoutDashboard size={22} />,
     },
     {
@@ -37,11 +47,11 @@ const { user } = useContext(AuthContext);
       path: "/admin/organisation/buisness_data",
       icon: <LayoutDashboard size={22} />,
     },
-  {
-    name: "Form Builder",
-    path: "/admin/organisation/form_builder",
-    icon: <LayoutDashboard size={22} />,
-  },
+    {
+      name: "Form Builder",
+      path: "/admin/organisation/form_builder",
+      icon: <LayoutDashboard size={22} />,
+    },
     // {
     //   name: "Apartment",
     //   path: "/admin/organisation/apartment/members",
