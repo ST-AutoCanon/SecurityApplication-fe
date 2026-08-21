@@ -15,7 +15,8 @@ import AddApartmentMember from "./apartment/pages/Members/AddApartmentMember";
 import EditApartmentMember from "./apartment/pages/Members/EditApartmentMember";
 import ApartmentMemberDetails from "./apartment/pages/Members/ApartmentMemberDetails";
 import ImportMembers from "./apartment/pages/Members/ImportMembers";
-import FormBuilder from "./orgs/all/Formify/FormBuilder"; // ← add this
+import FormBuilder from "./orgs/all/Formify/FormBuilder";
+import Campaign from "./orgs/all/Comapaign/Compaign";
 
 import AssignGatesManagement from "./gates/AssignGatesManagement";
 
@@ -47,6 +48,8 @@ export default function SuperAdminDashboard() {
 
   } else if (pathname.includes("form_builder") || pathname.includes("forms")) {
     activePage = "Form Builder";
+  } else if (pathname.toLowerCase().includes("campaign")) {
+    activePage = "Campaign";
   } else if (
     pathname.includes("/business-data/") &&
     pathname.includes("/edit")
@@ -100,6 +103,7 @@ const pageComponents: Record<string, React.ReactElement> = {
   "Business Data": <BusinessDataPage />,
   "Business Data Edit": <BusinessDataEditPage />,
   "Form Builder": <FormBuilder />,
+  Campaign: <Campaign />,
 
   /**
    * Apartment Module
