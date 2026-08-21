@@ -1186,6 +1186,84 @@ const [captureInstruction, setCaptureInstruction] = useState(
     }, 300);
   };;
 
+  // useEffect(() => {
+  //   const SpeechRecognition =
+  //     window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  //   if (!SpeechRecognition) {
+  //     alert("Speech Recognition is not supported in this browser.");
+  //     return;
+  //   }
+
+  //   const recognition = new SpeechRecognition();
+
+  //   recognition.lang = "en-IN";
+  //   recognition.continuous = false;
+  //   recognition.interimResults = false;
+  //   recognition.maxAlternatives = 1;
+
+  //   recognition.onstart = () => {
+  //     console.log("Speech recognition STARTED");
+  //     setListening(true);
+  //   };
+
+  //   recognition.onaudiostart = () => {
+  //     console.log("Audio capture started");
+  //   };
+
+  //   recognition.onsoundstart = () => {
+  //     console.log("Sound detected");
+  //   };
+
+  //   recognition.onspeechstart = () => {
+  //     console.log("Speech detected");
+  //   };
+
+  //   recognition.onspeechend = () => {
+  //     console.log("Speech ended");
+  //   };
+
+  //   recognition.onresult = (event: any) => {
+  //     console.log("RESULT EVENT:", event);
+
+  //     const text = event.results[0][0].transcript;
+
+  //     console.log("Speech Received:", text);
+
+  //     if (waitingForModuleSelectionRef.current) {
+  //       processModuleVoice(text);
+  //       return;
+  //     }
+
+  //     const field = isReviewModeRef.current
+  //       ? reviewFieldRef.current
+  //       : fieldsRef.current[currentStepRef.current];
+
+  //     processVoiceAnswer(text, field);
+  //   };
+
+  //   recognition.onnomatch = () => {
+  //     console.log("NO MATCH FROM SPEECH ENGINE");
+  //   };
+
+  //   recognition.onend = () => {
+  //     console.log("Speech recognition ENDED");
+  //     setListening(false);
+  //   };
+
+  //   recognition.onerror = (event: any) => {
+  //     console.error("Speech recognition ERROR:", event.error);
+  //     setListening(false);
+  //   };
+
+  //   recognitionRef.current = recognition;
+  // }, []);
+
+  // =====================================
+  // Start Listening
+  // =====================================
+
+
   useEffect(() => {
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -1257,12 +1335,39 @@ const [captureInstruction, setCaptureInstruction] = useState(
     };
 
     recognitionRef.current = recognition;
+
+    // 🔴 IMPORTANT: cleanup when VoiceRegisterPage unmounts
+    return () => {
+      console.log("🛑 Cleaning up Speech Recognition");
+
+      try {
+        recognition.stop();
+      } catch (error) {
+        console.log("Recognition already stopped");
+      }
+
+      // Remove event handlers
+      recognition.onstart = null;
+      recognition.onaudiostart = null;
+      recognition.onsoundstart = null;
+      recognition.onspeechstart = null;
+      recognition.onspeechend = null;
+      recognition.onresult = null;
+      recognition.onnomatch = null;
+      recognition.onend = null;
+      recognition.onerror = null;
+
+      if (recognitionRef.current === recognition) {
+        recognitionRef.current = null;
+      }
+
+      setListening(false);
+
+      // 🔴 Also stop any text-to-speech
+      window.speechSynthesis.cancel();
+      setSpeaking(false);
+    };
   }, []);
-
-  // =====================================
-  // Start Listening
-  // =====================================
-
   const startListening = () => {
     if (!recognitionRef.current) return;
 
@@ -1485,12 +1590,59 @@ const [captureInstruction, setCaptureInstruction] = useState(
   // =====================================
 
 
+  const waitForVideoReady = async (
+  timeout = 5000
+): Promise<HTMLVideoElement> => {
+  const start = Date.now();
+
+  while (Date.now() - start < timeout) {
+    const video = webcamRef.current?.video;
+
+    if (
+      video &&
+      video.readyState >= 2 &&
+      video.videoWidth > 0 &&
+      video.videoHeight > 0
+    ) {
+      console.log("VIDEO READY:", {
+        readyState: video.readyState,
+        width: video.videoWidth,
+        height: video.videoHeight,
+      });
+
+      return video;
+    }
+
+    console.log("Waiting for video...", {
+      exists: !!video,
+      readyState: video?.readyState,
+      width: video?.videoWidth,
+      height: video?.videoHeight,
+    });
+
+    await new Promise<void>((resolve) =>
+      setTimeout(resolve, 200)
+    );
+  }
+
+  throw new Error(
+    "Camera video did not become ready within 5 seconds"
+  );
+  };
+  
+
 const captureMultipleFaceVectors = async () => {
   const vectors: number[][] = [];
   const scores: number[] = [];
 
   const wait = (ms: number) =>
     new Promise<void>((resolve) => setTimeout(resolve, ms));
+
+   // WAIT FOR CAMERA
+  const video = await waitForVideoReady(5000);
+
+  console.log("VIDEO IS READY FOR 5 VECTOR CAPTURE");
+
 
   for (let i = 0; i < 5; i++) {
     try {
@@ -1513,17 +1665,7 @@ const captureMultipleFaceVectors = async () => {
       // Get video
       // ------------------------------------
 
-      const video = webcamRef.current?.video;
 
-      if (!video || video.videoWidth === 0 || video.videoHeight === 0) {
-        console.log("Video not ready");
-
-        i--;
-
-        await wait(500);
-
-        continue;
-      }
 
       // ------------------------------------
       // Detect face
@@ -1782,7 +1924,7 @@ const captureFace = async () => {
     setCaptured(false);
 
     capturedEmbeddingsRef.current = [];
-    isCapturingRef.current = false;
+    // isCapturingRef.current = false;
 
     // ============================================================
     // FACE DETECTION
@@ -1997,13 +2139,46 @@ const captureFace = async () => {
         formData.append("profile_photo", file);
       }
 
+      // const res = await axios.post(
+      //   `${API}/dynamic-data/${organisationId}/${selectedModule.template_id}/${selectedModule.table_name}`,
+      //   formData,
+      //   {
+      //     headers: {
+      //       "Content-Type": "multipart/form-data",
+      //     },
+      //     withCredentials: true,
+      //   },
+      // );
+
+      console.log("========== FORM DATA ==========");
+
+for (const [key, value] of formData.entries()) {
+  if (key === "face_descriptor") {
+    console.log("face_descriptor raw:", value);
+
+    try {
+      const parsed = JSON.parse(value as string);
+
+      console.log("face_descriptor parsed:", {
+        isArray: Array.isArray(parsed),
+        vectorCount: parsed.length,
+        vectorLengths: parsed.map((v: unknown) =>
+          Array.isArray(v) ? v.length : "NOT_ARRAY"
+        ),
+      });
+    } catch (err) {
+      console.error("face_descriptor JSON parse failed:", err);
+    }
+  } else {
+    console.log(key, value);
+  }
+}
+
+console.log("==============================");
       const res = await axios.post(
         `${API}/dynamic-data/${organisationId}/${selectedModule.template_id}/${selectedModule.table_name}`,
         formData,
         {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
           withCredentials: true,
         },
       );
