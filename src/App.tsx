@@ -3,13 +3,13 @@ import AuthLayout from "./components/layout/AuthLayout";
 import { useAuth } from "./feature/auth/hooks/useAuth";
 
 import SuperAdminDashboard from "./feature/superadmin/pages/SuperAdminDashboard";
-import AdminDashboard from "./feature/admin/pages/AdminDashboard";
 import SecurityDashboard from "./feature/security/pages/SecurityDashboard";
 import Apartment from "./pages/Apartment";
 import Event from "./pages/Event";
 import Hospital from "./pages/Hospital";
 import HomePage from "./HomePages.tsx/HomePage";
 import Navbar from "./components/Navbar";
+import AdminDashboard from "./feature/admin/pages/AdminDashboard";
 
 import SetPasswordPage from "./pages/SetPasswordPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
