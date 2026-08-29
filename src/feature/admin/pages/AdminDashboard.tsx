@@ -19,6 +19,8 @@ import FormBuilder from "./orgs/all/Formify/FormBuilder";
 import Campaign from "./orgs/all/Comapaign/Compaign";
 
 import AssignGatesManagement from "./gates/AssignGatesManagement";
+import Dashboard from "./AdminDashboard/AdminDashboardHome";
+
 
 export default function SuperAdminDashboard() {
   const { pathname } = useLocation();
@@ -34,7 +36,9 @@ export default function SuperAdminDashboard() {
   else if (pathname.includes("manage_organisation")) {
     activePage = "Manage Organisation";
   }
-  
+  else if (pathname.includes("Dashboard")) {
+    activePage = "Dashboard";
+  }
   // else if (pathname.includes("manage_tables")) {
   //   activePage = "Manage Tables";
   // } else if (pathname.includes("update_tables")) {
@@ -74,24 +78,27 @@ export default function SuperAdminDashboard() {
     activePage = "Apartment Members";
   }
 
-const pageComponents: Record<string, React.ReactElement> = {
-  Dashboard: (
-    <div className="w-full h-full bg-gradient-to-r from-[#4b1b7a] to-[#2d2a8c] text-white min-h-[80vh]">
-      <div className="w-full px-4 sm:px-6 md:px-10 pt-5 md:pt-8 flex flex-wrap gap-4">
-        <div className="bg-white rounded-2xl shadow-md p-5 sm:p-8 w-full">
-          <h2 className="text-2xl font-semibold mb-4 text-gray-800">
-            Welcome to Admin Dashboard
-          </h2>
+ const pageComponents: Record<string, React.ReactElement> = {
+//   Dashboard: (
+//     <div className="w-full h-full bg-gradient-to-r from-[#4b1b7a] to-[#2d2a8c] text-white min-h-[80vh]">
+//       <div className="w-full px-4 sm:px-6 md:px-10 pt-5 md:pt-8 flex flex-wrap gap-4">
+//         <div className="bg-white rounded-2xl shadow-md p-5 sm:p-8 w-full">
+//           <h2 className="text-2xl font-semibold mb-4 text-gray-800">
+//             Welcome to Admin Dashboard
+//           </h2>
 
-          <p className="text-gray-700">
-            Use the sidebar to navigate to different sections.
-          </p>
-        </div>
-      </div>
-    </div>
-  ),
+//           <p className="text-gray-700">
+//             Use the sidebar to navigate to different sections.
+//           </p>
+//         </div>
+//       </div>
+//     </div>
+//   ),
 
   "Create Security": <SecurityManagement />,
+  "Dashboard": <Dashboard />,
+  
+
 
   Gates: <AssignGatesManagement />,
 
