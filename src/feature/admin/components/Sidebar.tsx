@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Building2, Menu, Building, Users } from "lucide-react";
+import { LayoutDashboard, Building2, Menu, Building, Users,ClipboardEdit,   // for Form Builder
+  Megaphone, } from "lucide-react";
 import { AuthContext } from "../../../context/AuthContext";
 export default function Sidebar() {
   const location = useLocation();
@@ -47,16 +48,16 @@ const { user } = useContext(AuthContext);
       path: "/admin/organisation/buisness_data",
       icon: <LayoutDashboard size={22} />,
     },
-  {
-    name: "Form Builder",
-    path: "/admin/organisation/form_builder",
-    icon: <LayoutDashboard size={22} />,
-  },
-  {
-    name: "Campaign",
-    path: "/admin/organisation/Campaign",
-    icon: <LayoutDashboard size={22} />,
-  },
+   {
+      name: "Form Builder",
+      path: "/admin/organisation/form_builder",
+      icon: <ClipboardEdit size={22} />,
+    },
+    {
+      name: "Campaign",
+      path: "/admin/organisation/Campaign",
+      icon: <Megaphone size={22} />,
+    },
     // {
     //   name: "Apartment",
     //   path: "/admin/organisation/apartment/members",
