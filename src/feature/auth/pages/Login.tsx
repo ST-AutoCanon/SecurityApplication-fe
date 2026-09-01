@@ -61,8 +61,8 @@ export default function LoginPage({ onSuccess }: LoginPageProps) {
         case "manager":
           navigate("/manager");
           break;
-        case "employee":
-          navigate("/employee");
+        case "user":
+          navigate("/user/organisation/dashboard");
           break;
         default:
           navigate("/dashboard");
