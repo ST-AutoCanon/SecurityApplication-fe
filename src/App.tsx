@@ -21,6 +21,7 @@ import Features from "./pages/Features";
 import ComingSoon from "./pages/ComingSoon";
 import LoginPage from "./feature/auth/pages/Login";
 import PublicForm from "./feature/admin/pages/orgs/all/Formify/PublicForm";
+import UserDashboard from "./feature/user/pages/UserDashboard";
 
 const RequireAuth = ({
   children,
@@ -32,6 +33,16 @@ const RequireAuth = ({
   const { user, isInitializing } = useAuth();
   console.log("RequireAuth user:", user);
   console.log("RequireAuth role:", user?.role);
+
+
+   console.log("========== RequireAuth ==========");
+   console.log("user:", user);
+   console.log("user role:", user?.role);
+   console.log("required roles:", roles);
+   console.log("role matches:", user ? roles.includes(user.role) : false);
+   console.log("isInitializing:", isInitializing);
+  console.log("=================================");
+  
   if (isInitializing) {
     return <h3 style={{ padding: 20 }}>Restoring session...</h3>;
   }
@@ -97,6 +108,16 @@ export default function App() {
           element={
             <RequireAuth roles={["security"]}>
               <SecurityDashboard />
+            </RequireAuth>
+          }
+        />
+
+        {/* User */}
+        <Route
+          path="/user/organisation/*"
+          element={
+            <RequireAuth roles={["user"]}>
+              <UserDashboard />
             </RequireAuth>
           }
         />
