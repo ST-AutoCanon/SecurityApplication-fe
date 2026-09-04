@@ -80,6 +80,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.error("Logout failed:", error);
     } finally {
       setUser(null);
+      // Clear selected gate/session data
+      sessionStorage.removeItem("selectedGate");
+      sessionStorage.removeItem("selectedGateId");
     }
   };
 

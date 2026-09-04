@@ -44,6 +44,23 @@ export default function FacePunch() {
   const { isModelsLoaded, isLoadingModels } = useFace();
 
   // ============================================================
+  // SELECTED GATE
+  // ============================================================
+
+  const selectedGate = sessionStorage.getItem("selectedGate");
+
+  let gateName = "";
+
+  if (selectedGate) {
+    try {
+      const gate = JSON.parse(selectedGate);
+      gateName = gate?.name || "";
+    } catch (error) {
+      console.error("Failed to parse selectedGate:", error);
+    }
+  }
+
+  // ============================================================
   // FACE PUNCH REFS
   // ============================================================
 
@@ -809,6 +826,8 @@ export default function FacePunch() {
           apartment_number: apartmentNumber.trim() || null,
 
           vehicle_number: vehicleNumber.trim().toUpperCase() || null,
+
+          gate_name: gateName,
         },
         {
           withCredentials: true,
