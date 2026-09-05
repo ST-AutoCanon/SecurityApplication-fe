@@ -98,7 +98,10 @@ export default function App() {
           path="/admin/organisation/*"
           element={
             <RequireAuth roles={["admin"]}>
+                  <div className="flex-1 min-w-0 overflow-y-auto pb-0">
+
               <AdminDashboard />
+              </div>
             </RequireAuth>
           }
         />
@@ -122,7 +125,10 @@ export default function App() {
           }
         />
       </Routes>
+        <div className="shrink-0 h-16">
+
       <Footer />
+      </div>
     </BrowserRouter>
   );
 }

@@ -90,17 +90,25 @@ const API =
 
   return (
 
-    <div
-      className="
-        flex
-        h-screen
-        bg-gradient-to-br
-        from-slate-50
-        via-blue-50
-        to-indigo-50
-      "
-    >
-
+    // <div
+    //   className="
+    //     flex
+    //     h-screen
+    //     bg-gradient-to-br
+    //     from-slate-50
+    //     via-blue-50
+    //     to-indigo-50
+    //   "
+    // >
+<div
+  className="
+    min-h-screen
+    bg-gradient-to-br
+    from-slate-50
+    via-blue-50
+    to-indigo-50
+  "
+>
       {/* =====================================================
           SIDEBAR
       ===================================================== */}
@@ -118,7 +126,7 @@ const API =
         "
       >
 
-        <main
+        {/* <main
           className="
             flex-1
             overflow-y-auto
@@ -126,9 +134,19 @@ const API =
             sm:p-5
             lg:p-6
           "
-        >
+        > */}
 
-          {/* =================================================
+<main
+  className="
+    min-h-screen
+    p-4
+    pb-24
+    sm:p-5
+    sm:pb-24
+    lg:p-6
+    lg:pb-24
+  "
+>          {/* =================================================
               DASHBOARD HEADER
           ================================================= */}
 
