@@ -4,6 +4,7 @@ import TopNav from "../components/TopNav";
 import DashboardHome from "./DashboardHome";
 import Profile from "./Profile";
 import UserData from "./UserData";
+import MemberQuickRequest from "./MemberQuickRequest";
 
 export default function UserDashboard() {
   const { pathname } = useLocation();
@@ -14,7 +15,13 @@ export default function UserDashboard() {
   if (pathname.includes("/profile")) {
     pageTitle = "Profile";
     pageContent = <Profile />;
-  } else if (pathname.includes("/user-data")) {
+
+  }
+   else if (pathname.includes("/quick_request")) {
+    pageTitle = "quick_request";
+    pageContent = <MemberQuickRequest />;
+  }
+   else if (pathname.includes("/user-data")) {
     pageTitle = "User Data";
     pageContent = <UserData />;
   }
