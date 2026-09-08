@@ -17,6 +17,7 @@ import ApartmentMemberDetails from "./apartment/pages/Members/ApartmentMemberDet
 import ImportMembers from "./apartment/pages/Members/ImportMembers";
 import FormBuilder from "./orgs/all/Formify/FormBuilder";
 import Campaign from "./orgs/all/Comapaign/Compaign";
+import QuickRequest from "./orgs/all/QuickRequest/QuickRequest";
 
 import AssignGatesManagement from "./gates/AssignGatesManagement";
 import Dashboard from "./AdminDashboard/AdminDashboardHome";
@@ -54,7 +55,12 @@ export default function SuperAdminDashboard() {
     activePage = "Form Builder";
   } else if (pathname.toLowerCase().includes("campaign")) {
     activePage = "Campaign";
-  } else if (
+    
+  }
+   else if (pathname.includes("quick_request")) {
+  activePage = "Quick Request";
+}
+  else if (
     pathname.includes("/business-data/") &&
     pathname.includes("/edit")
   ) {
@@ -111,6 +117,7 @@ export default function SuperAdminDashboard() {
   "Business Data Edit": <BusinessDataEditPage />,
   "Form Builder": <FormBuilder />,
   Campaign: <Campaign />,
+  "Quick Request": <QuickRequest />,
 
   /**
    * Apartment Module

@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { LayoutDashboard, Building2, Menu, Building, Users,ClipboardEdit,   // for Form Builder
-  Megaphone, } from "lucide-react";
+  Megaphone,MessageSquarePlus } from "lucide-react";
 import { AuthContext } from "../../../context/AuthContext";
 export default function Sidebar() {
   const location = useLocation();
@@ -58,6 +58,11 @@ const { user } = useContext(AuthContext);
       path: "/admin/organisation/Campaign",
       icon: <Megaphone size={22} />,
     },
+     {
+  name: "Quick Request",
+  path: "/admin/organisation/quick_request",
+  icon: <MessageSquarePlus size={22} />,
+},
     // {
     //   name: "Apartment",
     //   path: "/admin/organisation/apartment/members",

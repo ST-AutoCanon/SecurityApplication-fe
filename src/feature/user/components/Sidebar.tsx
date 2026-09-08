@@ -175,8 +175,13 @@
 
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, User, Users, Menu } from "lucide-react";
-
+import {
+  LayoutDashboard,
+  User,
+  Users,
+  Menu,
+  MessageSquarePlus,
+} from "lucide-react";
 export default function Sidebar() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -190,6 +195,12 @@ export default function Sidebar() {
       path: "/user/organisation/dashboard",
       icon: <LayoutDashboard size={22} />,
     },
+     {
+  
+  name: "Quick Request",
+  path: "/user/organisation/quick_request",
+  icon: <MessageSquarePlus size={22} />,
+},
     {
       name: "Profile",
       path: "/user/organisation/profile",
