@@ -1,6 +1,8 @@
 
 
 
+
+
 "use client";
 
 import React, { useState, useEffect, useContext, useCallback, useRef } from "react";
@@ -25,6 +27,10 @@ import {
   Loader2,
   Check,
   Plus,
+  CheckCircle,
+  XCircle,
+  AlertTriangle,
+  X,
 } from "lucide-react";
 import {
   FaFacebook,
@@ -35,6 +41,169 @@ import {
 } from "react-icons/fa";
 
 const API = String(import.meta.env.VITE_BACKEND_URL);
+
+// ===================== ALERT MODAL =====================
+type AlertType = "success" | "warning" | "error";
+
+interface AlertState {
+  type: AlertType;
+  message: string;
+}
+
+const AlertModal = ({
+  type,
+  message,
+  onClose,
+}: {
+  type: AlertType;
+  message: string;
+  onClose: () => void;
+}) => {
+  useEffect(() => {
+    if (type === "warning") {
+      const timer = setTimeout(onClose, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [type, onClose]);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Enter" || event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
+  const config =
+    type === "success"
+      ? {
+          borderColor: "#10b981",
+          iconColor: "#10b981",
+          buttonBg: "#10b981",
+          title: "Success",
+          Icon: CheckCircle,
+        }
+      : type === "warning"
+        ? {
+            borderColor: "#eab308",
+            iconColor: "#eab308",
+            buttonBg: "#eab308",
+            title: "Warning",
+            Icon: AlertTriangle,
+          }
+        : {
+            borderColor: "#f43f5e",
+            iconColor: "#f43f5e",
+            buttonBg: "#f43f5e",
+            title: "Error",
+            Icon: XCircle,
+          };
+
+  const Icon = config.Icon;
+
+  return (
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 9999,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "rgba(15, 23, 42, 0.45)",
+      }}
+    >
+      <div
+        style={{
+          width: 380,
+          overflow: "hidden",
+          borderRadius: 12,
+          background: "#fff",
+          boxShadow: "0 25px 50px rgba(0,0,0,0.25)",
+          borderLeft: `4px solid ${config.borderColor}`,
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            background: "#020b3d",
+            padding: "14px 20px",
+            color: "#fff",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <Icon size={24} color={config.iconColor} />
+            <h2 style={{ margin: 0, fontSize: 17, fontWeight: 600 }}>
+              {config.title}
+            </h2>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            style={{
+              background: "transparent",
+              border: "none",
+              color: "#fff",
+              cursor: "pointer",
+              padding: 4,
+              borderRadius: 4,
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <X size={18} />
+          </button>
+        </div>
+
+        <div style={{ padding: "22px 20px" }}>
+          <p
+            style={{
+              margin: 0,
+              fontSize: 14,
+              lineHeight: 1.6,
+              color: "#475569",
+            }}
+          >
+            {message}
+          </p>
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            gap: 10,
+            borderTop: "1px solid #e2e8f0",
+            background: "#f8fafc",
+            padding: "14px 20px",
+          }}
+        >
+          <button
+            type="button"
+            onClick={onClose}
+            style={{
+              border: "none",
+              borderRadius: 8,
+              padding: "8px 20px",
+              fontSize: 13,
+              fontWeight: 500,
+              color: "#fff",
+              background: config.buttonBg,
+              cursor: "pointer",
+            }}
+          >
+            OK
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // ===================== TYPES =====================
 type BlockType = "text" | "image" | "button" | "logo" | "divider";
@@ -212,47 +381,56 @@ const ImageBlockEditor = ({
 
   return (
     <div>
-      {block.url ? (
-        <div style={{ position: "relative", textAlign: isLogo ? "center" : "left" }}>
-          <img
-            src={block.url}
-            alt={isLogo ? "Logo" : "Banner"}
-            style={
-              isLogo
-                ? {
-                    maxHeight: 80,
-                    maxWidth: 200,
-                    objectFit: "contain",
-                    display: "block",
-                    margin: "0 auto",
-                  }
-                : {
-                    width: "100%",
-                    borderRadius: 8,
-                    maxHeight: 220,
-                    objectFit: "cover",
-                  }
+  {block.url ? (
+  <div style={{ textAlign: isLogo ? "center" : "left" }}>
+    <img
+      src={block.url}
+      alt={isLogo ? "Logo" : "Banner"}
+      style={
+        isLogo
+          ? {
+              maxHeight: 80,
+              maxWidth: 200,
+              objectFit: "contain",
+              display: "block",
+              margin: "0 auto",
             }
-          />
-          <button
-            type="button"
-            onClick={() => onUpdate({ url: "" })}
-            style={{
-              position: "absolute",
-              top: 30,
-              right: 8,
-              background: "rgba(0,0,0,0.65)",
-              color: "#fff",
-              border: "none",
-              borderRadius: 6,
-              padding: "4px 10px",
-              fontSize: 12,
-              cursor: "pointer",
-            }}
-          >
-            Remove
-          </button>
-        </div>
+          : {
+              width: "100%",
+              borderRadius: 8,
+              maxHeight: 220,
+              objectFit: "cover",
+            }
+      }
+    />
+    <div
+      style={{
+        display: "flex",
+        justifyContent: isLogo ? "center" : "flex-end",
+        marginTop: 8,
+      }}
+    >
+      <button
+        type="button"
+        onClick={() => onUpdate({ url: "" })}
+        style={{
+          background: "#fef2f2",
+          color: "#dc2626",
+          border: "1px solid #fecaca",
+          borderRadius: 6,
+          padding: "6px 12px",
+          fontSize: 12,
+          fontWeight: 500,
+          cursor: "pointer",
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 4,
+        }}
+      >
+        <Trash2 size={12} /> Remove image
+      </button>
+    </div>
+  </div>
       ) : (
         <div
           ref={dropRef}
@@ -302,19 +480,7 @@ const ImageBlockEditor = ({
         }}
       />
 
-      {/* Still allow pasting a URL if preferred */}
-      <input
-        style={{
-          ...styles.input,
-          marginTop: 8,
-          marginBottom: 0,
-          maxWidth: isLogo ? 320 : undefined,
-        }}
-        placeholder="Or paste image URL here..."
-        value={block.url || ""}
-        onChange={(e) => onUpdate({ url: e.target.value })}
-      />
-    </div>
+      </div>
   );
 };
 
@@ -666,7 +832,7 @@ const TextBlockEditor = ({
         value={block.content}
         onChange={(e) => onUpdate({ content: e.target.value })}
         rows={4}
-        placeholder={placeholder || "Type your text here..."}
+        placeholder={placeholder || "Hi {{Name}},\n\nType your message here..."}
       />
     </div>
   );
@@ -693,7 +859,7 @@ const Campaign = ({ onBack }: Props) => {
 
   // Campaign meta
   const [campaignId, setCampaignId] = useState<string | null>(null);
-  const [campaignName, setCampaignName] = useState("Untitled Campaign");
+  const [campaignName, setCampaignName] = useState("");
   const [category, setCategory] = useState("Event");
   const [subject, setSubject] = useState("");
   const [preheader, setPreheader] = useState(false);
@@ -708,7 +874,7 @@ const Campaign = ({ onBack }: Props) => {
     {
       id: "1",
       type: "text",
-      content: "Hi {{Name}},\n\nType your message here...",
+      content: "",
       color: "#334155",
       backgroundColor: "transparent",
       fontSize: 14,
@@ -722,8 +888,11 @@ const Campaign = ({ onBack }: Props) => {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [sending, setSending] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [alert, setAlert] = useState<AlertState | null>(null);
+
+  const showAlert = (type: AlertType, message: string) => {
+    setAlert({ type, message });
+  };
 
   // ---------- LOAD TEMPLATES ----------
   const loadTemplates = useCallback(async () => {
@@ -748,7 +917,6 @@ const Campaign = ({ onBack }: Props) => {
   const loadCampaign = useCallback(async (id: string) => {
     try {
       setLoading(true);
-      setError(null);
 
       const [campRes, blocksRes] = await Promise.all([
         axios.get(`${API}/api/campaigns/${id}`, { withCredentials: true }),
@@ -773,7 +941,7 @@ const Campaign = ({ onBack }: Props) => {
       setBlocks(apiBlocks.length ? apiBlocks.map(apiBlockToUi) : []);
     } catch (err: any) {
       console.error(err);
-      setError(err?.response?.data?.message || "Failed to load campaign");
+      showAlert("error", err?.response?.data?.message || "Failed to load campaign");
     } finally {
       setLoading(false);
     }
@@ -787,7 +955,7 @@ const Campaign = ({ onBack }: Props) => {
   const startNewCampaign = () => {
     setShowTemplates(false);
     setCampaignId(null);
-    setCampaignName("Untitled Campaign");
+    setCampaignName("");
     setCategory("Event");
     setSubject("");
     setPreheader(false);
@@ -799,7 +967,7 @@ const Campaign = ({ onBack }: Props) => {
       {
         id: generateId(),
         type: "text",
-        content: "Hi {{Name}},\n\nType your message here...",
+        content: "",
         color: "#334155",
         backgroundColor: "transparent",
         fontSize: 14,
@@ -808,8 +976,7 @@ const Campaign = ({ onBack }: Props) => {
         textAlign: "left",
       },
     ]);
-    setError(null);
-    setSuccessMessage(null);
+    setAlert(null);
   };
 
   // ---------- FILE UPLOAD (CSV / Excel) ----------
@@ -844,17 +1011,16 @@ const Campaign = ({ onBack }: Props) => {
         const uniqueEmails = [...new Set(emails)];
 
         if (uniqueEmails.length === 0) {
-          setError("No valid email addresses found in the file");
+          showAlert("warning", "No valid email addresses found in the file");
           return;
         }
 
         setRecipients(uniqueEmails.join("\n"));
         setRecipientsTab("enter");
-        setSuccessMessage(`${uniqueEmails.length} emails loaded from file`);
-        setTimeout(() => setSuccessMessage(null), 3000);
+        showAlert("success", `${uniqueEmails.length} emails loaded from file`);
       } catch (err) {
         console.error(err);
-        setError("Failed to read the file. Please upload a valid CSV or Excel file.");
+        showAlert("error", "Failed to read the file. Please upload a valid CSV or Excel file.");
       }
     };
 
@@ -867,10 +1033,10 @@ const Campaign = ({ onBack }: Props) => {
     const newBlock: Block = {
       id: generateId(),
       type,
-      content: type === "text" ? "Type your text here..." : "",
+      content: type === "text" ? "" : "",
       url: type === "image" || type === "logo" ? "" : undefined,
-      buttonText: type === "button" ? "Click Here" : undefined,
-      buttonLink: type === "button" ? "#" : undefined,
+      buttonText: type === "button" ? "" : undefined,
+      buttonLink: type === "button" ? "" : undefined,
       align: "center",
       color: type === "text" ? "#334155" : undefined,
       backgroundColor: type === "text" ? "transparent" : undefined,
@@ -902,12 +1068,16 @@ const Campaign = ({ onBack }: Props) => {
 
   // ---------- SAVE DRAFT ----------
   const handleSaveDraft = async () => {
+    if (!campaignName.trim()) {
+      showAlert("warning", "Please enter a campaign name");
+      return;
+    }
+
     try {
       setSaving(true);
-      setError(null);
 
       const payload = {
-        campaign_name: campaignName.trim() || "Untitled Campaign",
+        campaign_name: campaignName.trim(),
         channel:
           channel === "WhatsApp"
             ? "WhatsApp"
@@ -962,12 +1132,11 @@ const Campaign = ({ onBack }: Props) => {
       });
       setBlocks((refreshed.data.data || []).map(apiBlockToUi));
 
-      setSuccessMessage("Campaign saved as draft");
-      setTimeout(() => setSuccessMessage(null), 2500);
+      showAlert("success", "Campaign saved as draft");
       loadTemplates();
     } catch (err: any) {
       console.error(err);
-      setError(err?.response?.data?.message || "Failed to save campaign");
+      showAlert("error", err?.response?.data?.message || "Failed to save campaign");
     } finally {
       setSaving(false);
     }
@@ -975,8 +1144,13 @@ const Campaign = ({ onBack }: Props) => {
 
   // ---------- SEND ----------
   const handleSend = async () => {
+    if (!campaignName.trim()) {
+      showAlert("warning", "Please enter a campaign name");
+      return;
+    }
+
     if (channel !== "Email") {
-      setError("Sending is currently only supported for Email campaigns");
+      showAlert("warning", "Sending is currently only supported for Email campaigns");
       return;
     }
 
@@ -986,18 +1160,17 @@ const Campaign = ({ onBack }: Props) => {
       .filter(Boolean);
 
     if (emails.length === 0) {
-      setError("Please enter at least one recipient email or upload a file");
+      showAlert("warning", "Please enter at least one recipient email or upload a file");
       return;
     }
 
     try {
       setSending(true);
-      setError(null);
 
       let id = campaignId;
 
       const payload = {
-        campaign_name: campaignName.trim() || "Untitled Campaign",
+        campaign_name: campaignName.trim(),
         channel: "Email",
         category: category || "Others",
         subject: subject || null,
@@ -1047,12 +1220,11 @@ const Campaign = ({ onBack }: Props) => {
         { withCredentials: true }
       );
 
-      setSuccessMessage(`Campaign sent to ${emails.length} recipient(s)`);
-      setTimeout(() => setSuccessMessage(null), 3000);
+      showAlert("success", `Campaign sent to ${emails.length} recipient(s)`);
       loadTemplates();
     } catch (err: any) {
       console.error(err);
-      setError(err?.response?.data?.message || "Failed to send campaign");
+      showAlert("error", err?.response?.data?.message || "Failed to send campaign");
     } finally {
       setSending(false);
     }
@@ -1061,9 +1233,9 @@ const Campaign = ({ onBack }: Props) => {
   // ---------- HELPERS ----------
   const editorPlaceholder =
     activeTab === "Email"
-      ? "Type your email content here..."
+      ? "Hi {{Name}},\n\nType your message here..."
       : activeTab === "WhatsApp Message"
-        ? "Type your WhatsApp message here..."
+        ? "Hi {{Name}},\n\nType your WhatsApp message here..."
         : "Type your social post caption here...";
 
   const designTitle =
@@ -1095,20 +1267,13 @@ const Campaign = ({ onBack }: Props) => {
   // ---------- RENDER ----------
   return (
     <div style={styles.page}>
-      {/* Messages */}
-      {successMessage && (
-        <div style={styles.successMsg}>
-          <Check size={15} />
-          {successMessage}
-        </div>
-      )}
-      {error && (
-        <div style={styles.errorMsg}>
-          {error}
-          <button onClick={() => setError(null)} style={styles.dismissBtn}>
-            Dismiss
-          </button>
-        </div>
+      {/* Alert Modal */}
+      {alert && (
+        <AlertModal
+          type={alert.type}
+          message={alert.message}
+          onClose={() => setAlert(null)}
+        />
       )}
 
       {/* ===================== TEMPLATES VIEW ===================== */}
@@ -1296,15 +1461,30 @@ const Campaign = ({ onBack }: Props) => {
               {/* Audience */}
               <div style={styles.card}>
                 <h3 style={styles.sectionTitle}>2. Select Audience</h3>
-                <p style={styles.sectionHint}>Choose audience or upload list</p>
+                <p style={styles.sectionHint}>Enter emails or upload a list</p>
 
-                <select style={styles.select}>
-                  <option>-- Select Contact List --</option>
-                  <option>Education Expo Leads</option>
-                  <option>Parents & Students 2024</option>
-                </select>
+                {/* Manual Email Entry */}
+                <label style={styles.label}>Recipient Emails</label>
+                <textarea
+                  style={{
+                    ...styles.input,
+                    minHeight: "100px",
+                    resize: "vertical",
+                    marginBottom: 6,
+                  }}
+                  value={recipients}
+                  onChange={(e) => setRecipients(e.target.value)}
+                  placeholder={`Enter emails separated by comma or new line
 
-                <p style={{ fontSize: 13, color: "#64748b", margin: "12px 0 8px" }}>
+test1@example.com
+test2@example.com
+test3@example.com`}
+                />
+                <p style={{ fontSize: 12, color: "#64748b", margin: "0 0 14px" }}>
+                  Enter one or multiple email addresses.
+                </p>
+
+                <p style={{ fontSize: 13, color: "#64748b", margin: "0 0 8px" }}>
                   Or upload file (CSV/Excel)
                 </p>
 
@@ -1327,45 +1507,28 @@ const Campaign = ({ onBack }: Props) => {
                     Supports .csv, .xls, .xlsx
                   </p>
                 </div>
-                {/* Manual Email Entry */}
-<label style={styles.label}>Recipient Emails</label>
 
-<textarea
-  style={{
-    ...styles.input,
-    minHeight: "100px",
-    resize: "vertical",
-  }}
-  value={recipients}
-  onChange={(e) => setRecipients(e.target.value)}
-  placeholder={`Enter emails separated by comma or new line
-
-test1@example.com
-test2@example.com
-test3@example.com`}
-></textarea>
-
-<p style={{ fontSize: 12, color: "#64748b", marginTop: 6 }}>
-  Enter one or multiple email addresses.
-</p>
-
-<div style={{ display: "flex", gap: 10, marginTop: 16 }}>
-  <button
-    style={styles.secondaryBtn}
-    onClick={handleSaveDraft}
-    disabled={saving || sending}
-  >
-    Save
-  </button>
-
-  <button
-    style={styles.primaryBtn}
-    onClick={handleSend}
-    disabled={saving || sending}
-  >
-    {sending ? "Sending..." : "Send Campaign"}
-  </button>
-</div>
+                <button
+                  type="button"
+                  style={{
+                    ...styles.primaryBtn,
+                    width: "100%",
+                    marginTop: 16,
+                    opacity: saving || sending ? 0.6 : 1,
+                    cursor: saving || sending ? "not-allowed" : "pointer",
+                  }}
+                  onClick={handleSend}
+                  disabled={saving || sending}
+                >
+                  {sending ? (
+                    <>
+                      <Loader2 size={14} className="animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    "Send Campaign"
+                  )}
+                </button>
               </div>
 
               {/* Details */}
@@ -1380,23 +1543,26 @@ test3@example.com`}
                   placeholder="e.g. Education Expo 2024"
                 />
 
-                <label style={styles.label}>Category</label>
-                <select
-                  style={styles.select}
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
+                <button
+                  type="button"
+                  style={{
+                    ...styles.secondaryBtn,
+                    width: "100%",
+                    marginTop: 4,
+                    opacity: saving || sending ? 0.6 : 1,
+                    cursor: saving || sending ? "not-allowed" : "pointer",
+                  }}
+                  onClick={handleSaveDraft}
+                  disabled={saving || sending}
                 >
-                  <option value="Event">Event</option>
-                  <option value="Webinar">Webinar</option>
-                  <option value="Promotion">Promotion</option>
-                  <option value="Newsletter">Newsletter</option>
-                  <option value="Others">Others</option>
-                </select>
-
-                <label style={styles.label}>Schedule (Optional)</label>
-                <button style={styles.dateBtn}>
-                  <Calendar size={16} />
-                  Pick date & time
+                  {saving ? (
+                    <>
+                      <Loader2 size={14} className="animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    "Save"
+                  )}
                 </button>
               </div>
 
@@ -1554,28 +1720,47 @@ test3@example.com`}
                     </div>
                   )}
 
-                  {blocks.map((block, index) => (
-                    <div key={block.id} style={styles.blockWrapper}>
-                      <div style={styles.blockControls}>
-                        <button
-                          style={styles.controlBtn}
-                          onClick={() => moveBlock(index, "up")}
-                        >
-                          ↑
-                        </button>
-                        <button
-                          style={styles.controlBtn}
-                          onClick={() => moveBlock(index, "down")}
-                        >
-                          ↓
-                        </button>
-                        <button
-                          style={{ ...styles.controlBtn, color: "#ef4444" }}
-                          onClick={() => removeBlock(block.id)}
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
+                {blocks.map((block, index) => (
+  <div key={block.id} style={styles.blockWrapper}>
+    <div style={styles.blockControls}>
+      <span style={styles.blockTypeLabel}>
+        {block.type === "text"
+          ? "Text"
+          : block.type === "image"
+            ? "Banner / Image"
+            : block.type === "logo"
+              ? "Logo"
+              : block.type === "button"
+                ? "Button"
+                : "Divider"}
+      </span>
+      <div style={styles.blockControlButtons}>
+        <button
+          type="button"
+          style={styles.controlBtn}
+          onClick={() => moveBlock(index, "up")}
+          title="Move up"
+        >
+          ↑
+        </button>
+        <button
+          type="button"
+          style={styles.controlBtn}
+          onClick={() => moveBlock(index, "down")}
+          title="Move down"
+        >
+          ↓
+        </button>
+        <button
+          type="button"
+          style={{ ...styles.controlBtn, color: "#ef4444" }}
+          onClick={() => removeBlock(block.id)}
+          title="Delete block"
+        >
+          <Trash2 size={14} />
+        </button>
+      </div>
+    </div>
 
                       {block.type === "text" && (
                         <TextBlockEditor
@@ -1589,7 +1774,7 @@ test3@example.com`}
                         <ImageBlockEditor
                           block={block}
                           onUpdate={(updates) => updateBlock(block.id, updates)}
-                          onError={setError}
+                          onError={(msg) => msg && showAlert("error", msg)}
                         />
                       )}
 
@@ -1597,7 +1782,7 @@ test3@example.com`}
                         <ImageBlockEditor
                           block={block}
                           onUpdate={(updates) => updateBlock(block.id, updates)}
-                          onError={setError}
+                          onError={(msg) => msg && showAlert("error", msg)}
                           isLogo
                         />
                       )}
@@ -2033,10 +2218,10 @@ test3@example.com`}
               </div>
             </div>
           </div>
-
           {/* Bottom Bar */}
-          {/* <div style={styles.bottomBar}>
+          <div style={styles.bottomBar}>
             <button
+              type="button"
               style={styles.bottomSecondary}
               onClick={() => {
                 setShowTemplates(true);
@@ -2045,75 +2230,7 @@ test3@example.com`}
             >
               <ArrowLeft size={16} /> Back to Templates
             </button>
-
-            <div style={{ display: "flex", gap: 12 }}>
-              <button
-                style={styles.bottomSecondary}
-                onClick={handleSaveDraft}
-                disabled={saving || sending}
-              >
-                {saving ? (
-                  <Loader2 size={16} className="animate-spin" />
-                ) : (
-                  <FileText size={16} />
-                )}
-                {saving ? " Saving..." : " Save Draft"}
-              </button>
-
-              <button
-                style={styles.bottomPrimary}
-                onClick={handleSend}
-                disabled={saving || sending}
-              >
-                {sending ? (
-                  <Loader2 size={16} className="animate-spin" />
-                ) : (
-                  <Send size={16} />
-                )}
-                {sending ? " Sending..." : " Send Campaign"}
-              </button>
-            </div>
-          </div> */}
-          {/* Bottom Bar */}
-<div style={styles.bottomBar}>
-  <button
-    style={styles.bottomSecondary}
-    onClick={() => {
-      setShowTemplates(true);
-      loadTemplates();
-    }}
-  >
-    <ArrowLeft size={16} /> Back to Templates
-  </button>
-
-  <div style={{ display: "flex", gap: 12 }}>
-    <button
-      style={styles.bottomSecondary}
-      onClick={handleSaveDraft}
-      disabled={saving || sending}
-    >
-      {saving ? (
-        <Loader2 size={16} className="animate-spin" />
-      ) : (
-        <FileText size={16} />
-      )}
-      {saving ? " Saving..." : " Save"}
-    </button>
-
-    <button
-      style={styles.bottomPrimary}
-      onClick={handleSend}
-      disabled={saving || sending}
-    >
-      {sending ? (
-        <Loader2 size={16} className="animate-spin" />
-      ) : (
-        <Send size={16} />
-      )}
-      {sending ? " Sending..." : " Send Campaign"}
-    </button>
-  </div>
-</div>
+          </div>
         </>
       )}
     </div>
@@ -2410,34 +2527,45 @@ const styles: any = {
     padding: "60px 20px",
     color: "#94a3b8",
   },
-  blockWrapper: {
-    position: "relative",
-    marginBottom: 16,
-    padding: 12,
-    background: "#fff",
-    borderRadius: 8,
-    border: "1px solid #e2e8f0",
-  },
-  blockControls: {
-    position: "absolute",
-    top: 8,
-    right: 8,
-    display: "flex",
-    gap: 4,
-    zIndex: 5,
-  },
-  controlBtn: {
-    width: 26,
-    height: 26,
-    border: "1px solid #e2e8f0",
-    borderRadius: 4,
-    background: "#fff",
-    cursor: "pointer",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    fontSize: 12,
-  },
+ blockWrapper: {
+  marginBottom: 16,
+  padding: 12,
+  background: "#fff",
+  borderRadius: 8,
+  border: "1px solid #e2e8f0",
+},
+blockControls: {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  marginBottom: 10,
+  paddingBottom: 8,
+  borderBottom: "1px solid #f1f5f9",
+},
+blockTypeLabel: {
+  fontSize: 11,
+  fontWeight: 600,
+  color: "#64748b",
+  textTransform: "uppercase",
+  letterSpacing: "0.04em",
+},
+blockControlButtons: {
+  display: "flex",
+  gap: 4,
+},
+controlBtn: {
+  width: 28,
+  height: 28,
+  border: "1px solid #e2e8f0",
+  borderRadius: 6,
+  background: "#fff",
+  cursor: "pointer",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  fontSize: 12,
+  color: "#475569",
+},
   textBlock: {
     width: "100%",
     minHeight: 80,
@@ -2619,16 +2747,19 @@ const styles: any = {
     color: "#64748b",
   },
   bottomBar: {
-  marginTop: 24,
-  background: "#fff",
-  border: "1px solid #e2e8f0",
-  borderRadius: 12,
-  padding: "14px 20px",
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
-},
+    margin: "0 auto",
+    marginTop: 8,
+    maxWidth: 1600,
+    width: "calc(100% - 48px)",
+    background: "#fff",
+    border: "1px solid #e2e8f0",
+    borderRadius: 12,
+    padding: "14px 24px",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+  },
   bottomSecondary: {
     display: "flex",
     alignItems: "center",

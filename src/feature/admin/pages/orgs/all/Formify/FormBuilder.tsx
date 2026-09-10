@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import React, {
@@ -10,7 +11,6 @@ import React, {
 import axios from "axios";
 import * as XLSX from "xlsx";
 import { AuthContext } from "../../../../../../../src/context/AuthContext";
-import { Download } from "lucide-react";   // add this in the import list
 import {
   Plus,
   Save,
@@ -28,6 +28,7 @@ import {
   Mail,
   MessageCircle,
   Inbox,
+  Download,
 } from "lucide-react";
 
 import Alert from "../../../../../../components/Aleartmessage";
@@ -85,13 +86,9 @@ interface FormResponse {
 
 // ===================== CONSTANTS =====================
 
-const generateId = () =>
-  Math.random().toString(36).slice(2, 11);
+const generateId = () => Math.random().toString(36).slice(2, 11);
 
-const FIELD_TYPES: {
-  value: FieldType;
-  label: string;
-}[] = [
+const FIELD_TYPES: { value: FieldType; label: string }[] = [
   { value: "text", label: "📝 Text" },
   { value: "email", label: "📧 Email" },
   { value: "tel", label: "📱 Mobile Number" },
@@ -115,10 +112,13 @@ export default function FormBuilder() {
 
   const [forms, setForms] = useState<FormSchema[]>([]);
   const [activeFormId, setActiveFormId] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<"edit" | "preview" | "responses">("edit");
+  const [viewMode, setViewMode] = useState<"edit" | "preview" | "responses">(
+    "edit"
+  );
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [creating, setCreating] = useState(false);
 
   const [alert, setAlert] = useState<{
     type: "success" | "warning" | "error";
@@ -256,7 +256,7 @@ export default function FormBuilder() {
 
   const doCreateNewForm = async () => {
     try {
-      setSaving(true);
+      setCreating(true);
       setAlert(null);
       setPendingAction(null);
 
@@ -281,7 +281,7 @@ export default function FormBuilder() {
         message: err?.response?.data?.message || "Failed to create form",
       });
     } finally {
-      setSaving(false);
+      setCreating(false);
     }
   };
 
@@ -650,12 +650,13 @@ export default function FormBuilder() {
 
           <div className="flex flex-col items-end gap-2 shrink-0">
             <div className="flex flex-wrap justify-end gap-2">
+              {/* NEW FORM – uses creating state */}
               <button
                 onClick={createNewForm}
-                disabled={saving}
+                disabled={creating || saving}
                 className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition disabled:opacity-60"
               >
-                {saving ? (
+                {creating ? (
                   <Loader2 size={15} className="animate-spin" />
                 ) : (
                   <Plus size={15} />
@@ -665,6 +666,7 @@ export default function FormBuilder() {
 
               {activeForm && (
                 <>
+                  {/* PREVIEW BUTTON */}
                   <button
                     onClick={() =>
                       setViewMode(viewMode === "preview" ? "edit" : "preview")
@@ -679,6 +681,7 @@ export default function FormBuilder() {
                     {viewMode === "preview" ? "Edit" : "Preview"}
                   </button>
 
+                  {/* RESPONSES BUTTON */}
                   <button
                     onClick={() =>
                       setViewMode(
@@ -695,10 +698,11 @@ export default function FormBuilder() {
                     Responses
                   </button>
 
+                  {/* SAVE BUTTON – uses saving state only */}
                   {viewMode === "edit" && (
                     <button
                       onClick={saveForm}
-                      disabled={saving}
+                      disabled={saving || creating}
                       className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition disabled:opacity-60"
                     >
                       {saving ? (
@@ -748,7 +752,6 @@ export default function FormBuilder() {
                 ))}
 
                 <div className="flex items-center gap-2 shrink-0">
-                  
                   <button
                     type="button"
                     onClick={() => setShareEmails([...shareEmails, ""])}
@@ -789,10 +792,14 @@ export default function FormBuilder() {
                 </p>
                 <button
                   onClick={createNewForm}
-                  disabled={saving}
+                  disabled={creating}
                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition"
                 >
-                  <Plus size={15} />
+                  {creating ? (
+                    <Loader2 size={15} className="animate-spin" />
+                  ) : (
+                    <Plus size={15} />
+                  )}
                   Create Form
                 </button>
               </div>
@@ -1214,557 +1221,6 @@ export default function FormBuilder() {
 // RESPONSES
 // ======================================================
 
-// function FormResponses({
-//   formTitle,
-//   fields,
-//   responses,
-//   loading,
-//   error,
-//   onRefresh,
-//   onBack,
-// }: {
-//   formTitle: string;
-//   fields: FormField[];
-//   responses: FormResponse[];
-//   loading: boolean;
-//   error: string | null;
-//   onRefresh: () => void;
-//   onBack: () => void;
-// }) {
-//   const formatValue = (val: any) => {
-//     if (val == null || val === "") return "—";
-//     if (Array.isArray(val)) return val.length ? val.join(", ") : "—";
-//     if (typeof val === "object" && ("start" in val || "end" in val)) {
-//       return `Start Date: ${val.start || "—"} | End Date: ${val.end || "—"}`;
-//     }
-//     if (typeof val === "object") return JSON.stringify(val);
-//     return String(val);
-//   };
-
-//   const visibleFields = fields.filter((f) => f.type !== "reference-image");
-
-//   const columns =
-//     visibleFields.length > 0
-//       ? visibleFields.map((f) => ({ key: f.id, label: f.label }))
-//       : (() => {
-//           const first = responses[0]?.values;
-//           if (!first || typeof first !== "object") return [];
-//           return Object.keys(first).map((key) => ({ key, label: key }));
-//         })();
-
-//   if (loading) {
-//     return (
-//       <div className="bg-white rounded-xl border border-slate-200 h-full flex items-center justify-center gap-2 text-slate-500">
-//         <Loader2 size={18} className="animate-spin" />
-//         Loading responses...
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className="bg-white rounded-xl border border-slate-200 overflow-hidden h-full min-h-0 flex flex-col">
-//       <div className="px-5 sm:px-6 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
-//         <div className="min-w-0">
-//           <h2 className="text-lg font-bold text-slate-900">Responses</h2>
-//           <p className="text-xs text-slate-500 mt-0.5 truncate">
-//             {formTitle} · {responses.length} response
-//             {responses.length !== 1 ? "s" : ""}
-//           </p>
-//         </div>
-//         <div className="flex items-center gap-2 shrink-0">
-//           <button
-//             onClick={onRefresh}
-//             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 transition"
-//           >
-//             Refresh
-//           </button>
-//           <button
-//             onClick={onBack}
-//             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 transition"
-//           >
-//             ← Back to editor
-//           </button>
-//         </div>
-//       </div>
-
-//       {error && (
-//         <div className="mx-5 mt-4 px-3 py-2 bg-red-50 border border-red-200 text-red-800 rounded-lg text-sm shrink-0">
-//           {error}
-//         </div>
-//       )}
-
-//       {responses.length === 0 ? (
-//         <div className="flex-1 flex flex-col items-center justify-center text-center min-h-0">
-//           <Inbox size={32} className="mx-auto text-slate-300 mb-2" />
-//           <p className="text-sm text-slate-500">No responses yet</p>
-//           <p className="text-xs text-slate-400 mt-1">
-//             Share the form link to start collecting answers
-//           </p>
-//         </div>
-//       ) : columns.length === 0 ? (
-//         <div className="flex-1 min-h-0 overflow-auto p-5 space-y-3">
-//           <p className="text-xs text-slate-500 mb-2">
-//             Could not map field labels — showing raw response data
-//           </p>
-//           {responses.map((r, idx) => (
-//             <pre
-//               key={r.id}
-//               className="text-xs bg-slate-50 border border-slate-200 rounded-lg p-3 overflow-x-auto"
-//             >
-//               #{responses.length - idx}
-//               {"\n"}
-//               {JSON.stringify(r.values, null, 2)}
-//             </pre>
-//           ))}
-//         </div>
-//       ) : (
-//         <div className="flex-1 min-h-0 min-w-0 overflow-auto overscroll-contain">
-//           <table className="min-w-max w-full text-sm border-collapse">
-//             <thead className="sticky top-0 z-20">
-//               <tr className="bg-slate-50 border-b border-slate-200">
-//                 <th className="sticky left-0 top-0 z-30 bg-slate-50 text-left px-4 py-3 font-semibold text-slate-600 whitespace-nowrap border-r border-slate-100">
-//                   #
-//                 </th>
-//                 {columns.map((col) => (
-//                   <th
-//                     key={col.key}
-//                     className="text-left px-4 py-3 font-semibold text-slate-600 whitespace-nowrap min-w-[180px] max-w-[320px]"
-//                   >
-//                     {col.label}
-//                   </th>
-//                 ))}
-//               </tr>
-//             </thead>
-//             <tbody>
-//               {responses.map((r, idx) => (
-//                 <tr
-//                   key={r.id}
-//                   className="border-b border-slate-100 hover:bg-slate-50/80 transition"
-//                 >
-//                   <td className="sticky left-0 z-10 bg-white px-4 py-3 text-slate-400 tabular-nums align-top border-r border-slate-100">
-//                     {responses.length - idx}
-//                   </td>
-
-//                   {columns.map((col) => {
-//                     const value = r.values?.[col.key];
-//                     const field = visibleFields.find((f) => f.id === col.key);
-//                     const isImageField = field?.type === "image";
-//                     const isDocumentField = field?.type === "document";
-
-//                     const imageUrl =
-//                       typeof value === "string" ? value : value?.url || "";
-
-//                     return (
-//                       <td
-//                         key={col.key}
-//                         className="px-4 py-3 text-slate-800 align-top min-w-[180px] max-w-[320px] whitespace-normal break-words"
-//                         title={
-//                           typeof value === "object"
-//                             ? JSON.stringify(value)
-//                             : formatValue(value)
-//                         }
-//                       >
-//                         {isImageField && value ? (
-//                           <div className="flex flex-col gap-2">
-//                             <img
-//                               src={imageUrl}
-//                               alt={
-//                                 typeof value === "string"
-//                                   ? "Uploaded image"
-//                                   : value?.name || "Uploaded image"
-//                               }
-//                               className="h-20 w-20 object-cover rounded-lg border border-slate-200 bg-slate-50"
-//                             />
-//                             <div className="flex items-center gap-3">
-//                               <a
-//                                 href={imageUrl}
-//                                 target="_blank"
-//                                 rel="noreferrer"
-//                                 className="inline-flex text-xs text-purple-600 hover:text-purple-700 underline"
-//                               >
-//                                 View
-//                               </a>
-//                               <a
-//                                 href={imageUrl}
-//                                 target="_blank"
-//                                 rel="noreferrer"
-//                                 download
-//                                 className="inline-flex text-xs text-slate-600 hover:text-slate-800 underline"
-//                               >
-//                                 Download
-//                               </a>
-//                             </div>
-//                           </div>
-//                         ) : isDocumentField && value ? (
-//                           <div className="flex flex-col gap-2">
-//                             {(Array.isArray(value) ? value : [value]).map(
-//                               (file: any, i: number) => {
-//                                 const url =
-//                                   typeof file === "string"
-//                                     ? file
-//                                     : file.url || file.path || "";
-//                                 const name =
-//                                   typeof file === "string"
-//                                     ? "Document"
-//                                     : file.name ||
-//                                       file.originalname ||
-//                                       "Document";
-//                                 return (
-//                                   <div
-//                                     key={i}
-//                                     className="flex items-center gap-2"
-//                                   >
-//                                     <FileText
-//                                       size={16}
-//                                       className="text-purple-600 shrink-0"
-//                                     />
-//                                     <span className="text-xs truncate max-w-[140px]">
-//                                       {name}
-//                                     </span>
-//                                     <a
-//                                       href={url}
-//                                       target="_blank"
-//                                       rel="noreferrer"
-//                                       className="text-xs text-purple-600 underline"
-//                                     >
-//                                       View
-//                                     </a>
-//                                     <a
-//                                       href={url}
-//                                       download
-//                                       className="text-xs text-slate-600 underline"
-//                                     >
-//                                       Download
-//                                     </a>
-//                                   </div>
-//                                 );
-//                               }
-//                             )}
-//                           </div>
-//                         ) : (
-//                           <div className="max-w-[320px] whitespace-normal break-words leading-5">
-//                             {formatValue(value)}
-//                           </div>
-//                         )}
-//                       </td>
-//                     );
-//                   })}
-//                 </tr>
-//               ))}
-//             </tbody>
-//           </table>
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
-// function FormResponses({
-//   formTitle,
-//   fields,
-//   responses,
-//   loading,
-//   error,
-//   onRefresh,
-//   onBack,
-// }: {
-//   formTitle: string;
-//   fields: FormField[];
-//   responses: FormResponse[];
-//   loading: boolean;
-//   error: string | null;
-//   onRefresh: () => void;
-//   onBack: () => void;
-// }) {
-//   const formatValue = (val: any) => {
-//     if (val == null || val === "") return "—";
-//     if (Array.isArray(val)) return val.length ? val.join(", ") : "—";
-//     if (typeof val === "object" && ("start" in val || "end" in val)) {
-//       return `Start Date: ${val.start || "—"} | End Date: ${val.end || "—"}`;
-//     }
-//     if (typeof val === "object") {
-//       // Handle file/image objects
-//       if (val.url || val.name || val.originalname) {
-//         return val.name || val.originalname || val.url || "File";
-//       }
-//       return JSON.stringify(val);
-//     }
-//     return String(val);
-//   };
-
-//   const visibleFields = fields.filter((f) => f.type !== "reference-image");
-
-//   const columns =
-//     visibleFields.length > 0
-//       ? visibleFields.map((f) => ({ key: f.id, label: f.label }))
-//       : (() => {
-//           const first = responses[0]?.values;
-//           if (!first || typeof first !== "object") return [];
-//           return Object.keys(first).map((key) => ({ key, label: key }));
-//         })();
-
-//   // ===================== DOWNLOAD EXCEL =====================
-//   const downloadExcel = () => {
-//     if (responses.length === 0) {
-//       alert("No responses to download");
-//       return;
-//     }
-
-//     // Prepare data
-//     const excelData = responses.map((r, index) => {
-//       const row: any = {
-//         "#": responses.length - index,
-//       };
-
-//       columns.forEach((col) => {
-//         const value = r.values?.[col.key];
-//         row[col.label] = formatValue(value);
-//       });
-
-//       return row;
-//     });
-
-//     // Create worksheet
-//     const worksheet = XLSX.utils.json_to_sheet(excelData);
-
-//     // Auto column width
-//     const colWidths = Object.keys(excelData[0] || {}).map((key) => ({
-//       wch: Math.max(key.length + 2, 20),
-//     }));
-//     worksheet["!cols"] = colWidths;
-
-//     // Create workbook
-//     const workbook = XLSX.utils.book_new();
-//     XLSX.utils.book_append_sheet(workbook, worksheet, "Responses");
-
-//     // Download
-//     const fileName = `${formTitle || "Form"}_Responses_${new Date()
-//       .toISOString()
-//       .slice(0, 10)}.xlsx`;
-
-//     XLSX.writeFile(workbook, fileName);
-//   };
-
-//   // ===================== LOADING =====================
-//   if (loading) {
-//     return (
-//       <div className="bg-white rounded-xl border border-slate-200 h-full flex items-center justify-center gap-2 text-slate-500">
-//         <Loader2 size={18} className="animate-spin" />
-//         Loading responses...
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className="bg-white rounded-xl border border-slate-200 overflow-hidden h-full min-h-0 flex flex-col">
-//       {/* HEADER */}
-//       <div className="px-5 sm:px-6 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
-//         <div className="min-w-0">
-//           <h2 className="text-lg font-bold text-slate-900">Responses</h2>
-//           <p className="text-xs text-slate-500 mt-0.5 truncate">
-//             {formTitle} · {responses.length} response
-//             {responses.length !== 1 ? "s" : ""}
-//           </p>
-//         </div>
-
-//         <div className="flex items-center gap-2 shrink-0">
-//           {/* DOWNLOAD EXCEL BUTTON */}
-//           <button
-//             onClick={downloadExcel}
-//             disabled={responses.length === 0}
-//             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-//           >
-//             📥 Download Excel
-//           </button>
-
-//           <button
-//             onClick={onRefresh}
-//             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 transition"
-//           >
-//             Refresh
-//           </button>
-
-//           <button
-//             onClick={onBack}
-//             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 transition"
-//           >
-//             ← Back to editor
-//           </button>
-//         </div>
-//       </div>
-
-//       {/* ERROR */}
-//       {error && (
-//         <div className="mx-5 mt-4 px-3 py-2 bg-red-50 border border-red-200 text-red-800 rounded-lg text-sm shrink-0">
-//           {error}
-//         </div>
-//       )}
-
-//       {/* NO RESPONSES */}
-//       {responses.length === 0 ? (
-//         <div className="flex-1 flex flex-col items-center justify-center text-center min-h-0">
-//           <Inbox size={32} className="mx-auto text-slate-300 mb-2" />
-//           <p className="text-sm text-slate-500">No responses yet</p>
-//           <p className="text-xs text-slate-400 mt-1">
-//             Share the form link to start collecting answers
-//           </p>
-//         </div>
-//       ) : columns.length === 0 ? (
-//         <div className="flex-1 min-h-0 overflow-auto p-5 space-y-3">
-//           <p className="text-xs text-slate-500 mb-2">
-//             Could not map field labels — showing raw response data
-//           </p>
-//           {responses.map((r, idx) => (
-//             <pre
-//               key={r.id}
-//               className="text-xs bg-slate-50 border border-slate-200 rounded-lg p-3 overflow-x-auto"
-//             >
-//               #{responses.length - idx}
-//               {"\n"}
-//               {JSON.stringify(r.values, null, 2)}
-//             </pre>
-//           ))}
-//         </div>
-//       ) : (
-//         <div className="flex-1 min-h-0 min-w-0 overflow-auto overscroll-contain">
-//           <table className="min-w-max w-full text-sm border-collapse">
-//             <thead className="sticky top-0 z-20">
-//               <tr className="bg-slate-50 border-b border-slate-200">
-//                 <th className="sticky left-0 top-0 z-30 bg-slate-50 text-left px-4 py-3 font-semibold text-slate-600 whitespace-nowrap border-r border-slate-100">
-//                   #
-//                 </th>
-//                 {columns.map((col) => (
-//                   <th
-//                     key={col.key}
-//                     className="text-left px-4 py-3 font-semibold text-slate-600 whitespace-nowrap min-w-[180px] max-w-[320px]"
-//                   >
-//                     {col.label}
-//                   </th>
-//                 ))}
-//               </tr>
-//             </thead>
-//             <tbody>
-//               {responses.map((r, idx) => (
-//                 <tr
-//                   key={r.id}
-//                   className="border-b border-slate-100 hover:bg-slate-50/80 transition"
-//                 >
-//                   <td className="sticky left-0 z-10 bg-white px-4 py-3 text-slate-400 tabular-nums align-top border-r border-slate-100">
-//                     {responses.length - idx}
-//                   </td>
-
-//                   {columns.map((col) => {
-//                     const value = r.values?.[col.key];
-//                     const field = visibleFields.find((f) => f.id === col.key);
-//                     const isImageField = field?.type === "image";
-//                     const isDocumentField = field?.type === "document";
-
-//                     const imageUrl =
-//                       typeof value === "string" ? value : value?.url || "";
-
-//                     return (
-//                       <td
-//                         key={col.key}
-//                         className="px-4 py-3 text-slate-800 align-top min-w-[180px] max-w-[320px] whitespace-normal break-words"
-//                         title={
-//                           typeof value === "object"
-//                             ? JSON.stringify(value)
-//                             : formatValue(value)
-//                         }
-//                       >
-//                         {isImageField && value ? (
-//                           <div className="flex flex-col gap-2">
-//                             <img
-//                               src={imageUrl}
-//                               alt={
-//                                 typeof value === "string"
-//                                   ? "Uploaded image"
-//                                   : value?.name || "Uploaded image"
-//                               }
-//                               className="h-20 w-20 object-cover rounded-lg border border-slate-200 bg-slate-50"
-//                             />
-//                             <div className="flex items-center gap-3">
-//                               <a
-//                                 href={imageUrl}
-//                                 target="_blank"
-//                                 rel="noreferrer"
-//                                 className="inline-flex text-xs text-purple-600 hover:text-purple-700 underline"
-//                               >
-//                                 View
-//                               </a>
-//                               <a
-//                                 href={imageUrl}
-//                                 target="_blank"
-//                                 rel="noreferrer"
-//                                 download
-//                                 className="inline-flex text-xs text-slate-600 hover:text-slate-800 underline"
-//                               >
-//                                 Download
-//                               </a>
-//                             </div>
-//                           </div>
-//                         ) : isDocumentField && value ? (
-//                           <div className="flex flex-col gap-2">
-//                             {(Array.isArray(value) ? value : [value]).map(
-//                               (file: any, i: number) => {
-//                                 const url =
-//                                   typeof file === "string"
-//                                     ? file
-//                                     : file.url || file.path || "";
-//                                 const name =
-//                                   typeof file === "string"
-//                                     ? "Document"
-//                                     : file.name ||
-//                                       file.originalname ||
-//                                       "Document";
-//                                 return (
-//                                   <div
-//                                     key={i}
-//                                     className="flex items-center gap-2"
-//                                   >
-//                                     <FileText
-//                                       size={16}
-//                                       className="text-purple-600 shrink-0"
-//                                     />
-//                                     <span className="text-xs truncate max-w-[140px]">
-//                                       {name}
-//                                     </span>
-//                                     <a
-//                                       href={url}
-//                                       target="_blank"
-//                                       rel="noreferrer"
-//                                       className="text-xs text-purple-600 underline"
-//                                     >
-//                                       View
-//                                     </a>
-//                                     <a
-//                                       href={url}
-//                                       download
-//                                       className="text-xs text-slate-600 underline"
-//                                     >
-//                                       Download
-//                                     </a>
-//                                   </div>
-//                                 );
-//                               }
-//                             )}
-//                           </div>
-//                         ) : (
-//                           <div className="max-w-[320px] whitespace-normal break-words leading-5">
-//                             {formatValue(value)}
-//                           </div>
-//                         )}
-//                       </td>
-//                     );
-//                   })}
-//                 </tr>
-//               ))}
-//             </tbody>
-//           </table>
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
 function FormResponses({
   formTitle,
   fields,
@@ -1808,7 +1264,6 @@ function FormResponses({
           return Object.keys(first).map((key) => ({ key, label: key }));
         })();
 
-  // ===================== DOWNLOAD EXCEL =====================
   const downloadExcel = () => {
     if (responses.length === 0) {
       alert("No responses to download");
@@ -1830,7 +1285,6 @@ function FormResponses({
 
     const worksheet = XLSX.utils.json_to_sheet(excelData);
 
-    // Auto column width
     const colWidths = Object.keys(excelData[0] || {}).map((key) => ({
       wch: Math.max(key.length + 2, 18),
     }));
@@ -1868,15 +1322,14 @@ function FormResponses({
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
-          {/* DOWNLOAD EXCEL BUTTON */}
-    <button
-  onClick={downloadExcel}
-  disabled={responses.length === 0}
-  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
->
-  <Download size={14} />
-  Download Excel
-</button>
+          <button
+            onClick={downloadExcel}
+            disabled={responses.length === 0}
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Download size={14} />
+            Download Excel
+          </button>
 
           <button
             onClick={onRefresh}
@@ -2065,8 +1518,9 @@ function FormResponses({
     </div>
   );
 }
+
 // ======================================================
-// PREVIEW
+// PREVIEW (view-only – no submit, no data entry)
 // ======================================================
 
 function FormPreview({
@@ -2076,520 +1530,178 @@ function FormPreview({
   schema: FormSchema;
   onBack: () => void;
 }) {
-  const [values, setValues] = useState<Record<string, any>>({});
-  const [submitted, setSubmitted] = useState(false);
-  const [uploadingFieldId, setUploadingFieldId] = useState<string | null>(null);
-  const [uploadError, setUploadError] = useState<string | null>(null);
-
   const visibleFields = (schema.fields || []).filter(
     (field: any) => field.type !== "reference-image"
   );
-
-  const uploadImageFile = async (fieldId: string, file: File) => {
-    const formData = new FormData();
-    formData.append("image", file);
-
-    try {
-      setUploadingFieldId(fieldId);
-      setUploadError(null);
-
-      const res = await axios.post(
-        `${API}/api/forms/upload-image`,
-        formData,
-        {
-          withCredentials: true,
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
-
-      const url = res.data?.url;
-      if (!url) throw new Error("Image upload did not return a URL");
-
-      setValues((prev) => ({
-        ...prev,
-        [fieldId]: { url, name: file.name, size: file.size },
-      }));
-    } catch (err: any) {
-      console.error(err);
-      setUploadError(err?.response?.data?.message || "Image upload failed");
-    } finally {
-      setUploadingFieldId(null);
-    }
-  };
-
-  const uploadDocumentFile = async (fieldId: string, file: File) => {
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      setUploadingFieldId(fieldId);
-      setUploadError(null);
-
-      const res = await axios.post(
-        `${API}/api/forms/upload-file`,
-        formData,
-        {
-          withCredentials: true,
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
-
-      const url = res.data?.url;
-      if (!url) throw new Error("Document upload did not return a URL");
-
-      setValues((prev) => ({
-        ...prev,
-        [fieldId]: {
-          url,
-          name: file.name,
-          size: file.size,
-          mimetype: file.type,
-        },
-      }));
-    } catch (err: any) {
-      console.error(err);
-      setUploadError(
-        err?.response?.data?.message || "Document upload failed"
-      );
-    } finally {
-      setUploadingFieldId(null);
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitted(true);
-  };
-
-  if (submitted) {
-    return (
-      <div className="bg-white rounded-xl border border-slate-200 p-8 sm:p-12 text-center">
-        <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-emerald-100 flex items-center justify-center">
-          <Check size={24} className="text-emerald-600" />
-        </div>
-        <h2 className="text-xl font-bold text-slate-900">Thank you!</h2>
-        <p className="text-slate-500 mt-1.5 text-sm">
-          Your response has been recorded.
-        </p>
-        <button
-          onClick={() => {
-            setSubmitted(false);
-            setValues({});
-          }}
-          className="mt-5 inline-flex px-5 py-2.5 rounded-lg bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition"
-        >
-          Submit another response
-        </button>
-        <div className="mt-3">
-          <button
-            onClick={onBack}
-            className="text-xs text-slate-500 hover:text-slate-700"
-          >
-            Back to editor
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 overflow-hidden w-full max-w-full">
       <div className="px-5 sm:px-8 pt-6 pb-5 border-b border-slate-100 text-center">
         <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
-          {schema.title}
+          {schema.title || "Untitled Form"}
         </h2>
         {schema.description && (
           <p className="text-slate-500 text-sm mt-1.5 max-w-xl mx-auto">
             {schema.description}
           </p>
         )}
+        <p className="text-[11px] text-purple-600 font-medium mt-2 uppercase tracking-wide">
+          Preview Mode · View Only
+        </p>
       </div>
 
-      <form
-        onSubmit={handleSubmit}
-        className="p-5 sm:p-8 space-y-5 max-w-2xl mx-auto"
-      >
-        {uploadError && (
-          <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-            {uploadError}
-          </div>
-        )}
-
-        {visibleFields.map((field: any) => (
-          <div key={field.id}>
-            <label className="block text-sm font-semibold text-slate-800 mb-1.5">
-              {field.label}
-              {field.required && <span className="text-red-500 ml-1">*</span>}
-            </label>
-
-            {field.referenceUrl && (
-              <div className="mb-3 overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
-                <img
-                  src={field.referenceUrl}
-                  alt={field.label}
-                  className="max-h-64 w-full object-cover"
-                />
-              </div>
-            )}
-
-            {field.type === "image" ? (
-              <div className="space-y-3">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) uploadImageFile(field.id, file);
-                  }}
-                  className="block w-full text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-purple-600 file:px-3 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-purple-700"
-                />
-                {uploadingFieldId === field.id && (
-                  <div className="inline-flex items-center gap-2 text-xs text-slate-500">
-                    <Loader2 size={14} className="animate-spin" />
-                    Uploading image...
-                  </div>
-                )}
-                {values[field.id] && (
-                  <div className="space-y-2 rounded-lg border border-slate-200 bg-slate-50 p-3">
-                    <img
-                      src={values[field.id]?.url}
-                      alt={values[field.id]?.name || field.label}
-                      className="h-32 w-full rounded-md object-cover border border-slate-200"
-                    />
-                    <div className="flex items-center justify-between gap-3">
-                      <span className="text-xs text-slate-600 truncate">
-                        {values[field.id]?.name}
-                      </span>
-                      <div className="flex items-center gap-3">
-                        <a
-                          href={values[field.id]?.url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-xs text-purple-600 hover:text-purple-700 underline"
-                        >
-                          View
-                        </a>
-                        <a
-                          href={values[field.id]?.url}
-                          target="_blank"
-                          rel="noreferrer"
-                          download
-                          className="text-xs text-slate-600 hover:text-slate-800 underline"
-                        >
-                          Download
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            ) : field.type === "document" ? (
-              <div className="space-y-3">
-                <input
-                  type="file"
-                  accept={
-                    field.accept ||
-                    ".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip"
-                  }
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) uploadDocumentFile(field.id, file);
-                  }}
-                  className="block w-full text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-purple-600 file:px-3 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-purple-700"
-                />
-                {uploadingFieldId === field.id && (
-                  <div className="inline-flex items-center gap-2 text-xs text-slate-500">
-                    <Loader2 size={14} className="animate-spin" />
-                    Uploading document...
-                  </div>
-                )}
-                {values[field.id] && (
-                  <div className="space-y-2 rounded-lg border border-slate-200 bg-slate-50 p-3">
-                    <div className="flex items-center gap-3">
-                      <FileText size={20} className="text-purple-600 shrink-0" />
-                      <span className="text-sm text-slate-700 truncate">
-                        {values[field.id]?.name || "Document"}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <a
-                        href={values[field.id]?.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-xs text-purple-600 hover:text-purple-700 underline"
-                      >
-                        View / Download
-                      </a>
-                    </div>
-                  </div>
-                )}
-              </div>
-            ) : field.type === "textarea" ? (
-              <textarea
-                required={field.required}
-                value={values[field.id] || ""}
-                onChange={(e) =>
-                  setValues((p) => ({ ...p, [field.id]: e.target.value }))
-                }
-                placeholder={field.placeholder}
-                className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition resize-y"
-                rows={3}
-              />
-            ) : field.type === "select" ? (
-              <select
-                required={field.required}
-                value={values[field.id] || ""}
-                onChange={(e) =>
-                  setValues((p) => ({ ...p, [field.id]: e.target.value }))
-                }
-                className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
-              >
-                <option value="">-- Select --</option>
-                {field.options?.map((opt: string) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
-            ) : field.type === "radio" ? (
-              <div className="space-y-2">
-                {field.options?.map((opt: string) => (
-                  <label
-                    key={opt}
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer hover:bg-slate-50 transition text-sm text-slate-700"
-                  >
-                    <input
-                      type="radio"
-                      name={field.id}
-                      value={opt}
-                      required={field.required}
-                      checked={values[field.id] === opt}
-                      onChange={() =>
-                        setValues((p) => ({ ...p, [field.id]: opt }))
-                      }
-                      className="accent-purple-600"
-                    />
-                    {opt}
-                  </label>
-                ))}
-              </div>
-            ) : field.type === "checkbox-group" ? (
-              <div className="space-y-2">
-                {field.options?.map((opt: string) => (
-                  <label
-                    key={opt}
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer hover:bg-slate-50 transition text-sm text-slate-700"
-                  >
-                    <input
-                      type="checkbox"
-                      value={opt}
-                      checked={(values[field.id] || []).includes(opt)}
-                      onChange={(e) => {
-                        const current: string[] = values[field.id] || [];
-                        const next = e.target.checked
-                          ? [...current, opt]
-                          : current.filter((v) => v !== opt);
-                        setValues((p) => ({ ...p, [field.id]: next }));
-                      }}
-                      className="rounded accent-purple-600"
-                    />
-                    {opt}
-                  </label>
-                ))}
-              </div>
-            ) : field.type === "checkbox" ? (
-              <label className="flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer hover:bg-slate-50 transition text-sm text-slate-700">
-                <input
-                  type="checkbox"
-                  checked={Boolean(values[field.id])}
-                  required={field.required}
-                  onChange={(e) =>
-                    setValues((p) => ({
-                      ...p,
-                      [field.id]: e.target.checked,
-                    }))
-                  }
-                  className="rounded accent-purple-600"
-                />
-                {field.placeholder || "Yes"}
+      <div className="p-5 sm:p-8 space-y-5 max-w-2xl mx-auto">
+        {visibleFields.length === 0 ? (
+          <p className="text-center text-sm text-slate-400 py-8">
+            No fields added yet
+          </p>
+        ) : (
+          visibleFields.map((field: any) => (
+            <div key={field.id}>
+              <label className="block text-sm font-semibold text-slate-800 mb-1.5">
+                {field.label}
+                {field.required && <span className="text-red-500 ml-1">*</span>}
               </label>
-            ) : field.type === "rating" ? (
-              <div className="flex flex-wrap items-center gap-3">
-                <div className="flex items-center gap-1">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <button
-                      key={star}
-                      type="button"
-                      onClick={() => {
-                        setValues((p) => ({
-                          ...p,
-                          [field.id]:
-                            p[field.id] === star ? undefined : star,
-                        }));
-                      }}
-                      className={`text-2xl leading-none transition hover:scale-110 ${
-                        (values[field.id] || 0) >= star
-                          ? "text-amber-400"
-                          : "text-slate-300 hover:text-amber-200"
-                      }`}
+
+              {field.referenceUrl && (
+                <div className="mb-3 overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
+                  <img
+                    src={field.referenceUrl}
+                    alt={field.label}
+                    className="max-h-64 w-full object-cover"
+                  />
+                </div>
+              )}
+
+              {/* Read-only field renderings */}
+              {field.type === "image" ? (
+                <div className="rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-xs text-slate-400">
+                  Image upload field
+                </div>
+              ) : field.type === "document" ? (
+                <div className="rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-xs text-slate-400">
+                  Document upload field
+                </div>
+              ) : field.type === "textarea" ? (
+                <textarea
+                  disabled
+                  placeholder={field.placeholder || ""}
+                  className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-100 text-sm text-slate-500 cursor-not-allowed resize-none"
+                  rows={3}
+                />
+              ) : field.type === "select" ? (
+                <select
+                  disabled
+                  className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-100 text-sm text-slate-500 cursor-not-allowed"
+                >
+                  <option>-- Select --</option>
+                  {field.options?.map((opt: string) => (
+                    <option key={opt}>{opt}</option>
+                  ))}
+                </select>
+              ) : field.type === "radio" ? (
+                <div className="space-y-2">
+                  {field.options?.map((opt: string) => (
+                    <label
+                      key={opt}
+                      className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-slate-500 cursor-not-allowed"
                     >
-                      ★
-                    </button>
+                      <input
+                        type="radio"
+                        disabled
+                        className="accent-purple-600"
+                      />
+                      {opt}
+                    </label>
                   ))}
                 </div>
-                {values[field.id] ? (
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-medium text-slate-600">
-                      {values[field.id]} / 5
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setValues((p) => {
-                          const next = { ...p };
-                          delete next[field.id];
-                          return next;
-                        })
-                      }
-                      className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-xs font-medium text-slate-600 hover:border-red-300 hover:bg-red-50 hover:text-red-600 transition"
+              ) : field.type === "checkbox-group" ? (
+                <div className="space-y-2">
+                  {field.options?.map((opt: string) => (
+                    <label
+                      key={opt}
+                      className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-slate-500 cursor-not-allowed"
                     >
-                      Clear
-                    </button>
+                      <input
+                        type="checkbox"
+                        disabled
+                        className="rounded accent-purple-600"
+                      />
+                      {opt}
+                    </label>
+                  ))}
+                </div>
+              ) : field.type === "checkbox" ? (
+                <label className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-slate-500 cursor-not-allowed">
+                  <input
+                    type="checkbox"
+                    disabled
+                    className="rounded accent-purple-600"
+                  />
+                  {field.placeholder || "Yes"}
+                </label>
+              ) : field.type === "rating" ? (
+                <div className="flex items-center gap-1">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <span key={star} className="text-2xl text-slate-300">
+                      ★
+                    </span>
+                  ))}
+                  <span className="ml-2 text-xs text-slate-400">Rating</span>
+                </div>
+              ) : field.type === "daterange" ? (
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div>
+                    <label className="mb-1 block text-xs font-medium text-slate-500">
+                      Start date
+                    </label>
+                    <input
+                      type="date"
+                      disabled
+                      className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-100 text-sm text-slate-500 cursor-not-allowed"
+                    />
                   </div>
-                ) : (
-                  <span className="text-xs text-slate-400">
-                    Click a star to rate
-                  </span>
-                )}
-              </div>
-            ) : field.type === "daterange" ? (
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div>
-                  <label className="mb-1 block text-xs font-medium text-slate-500">
-                    Start date
-                  </label>
-                  <input
-                    type="date"
-                    value={values[field.id]?.start || ""}
-                    onChange={(e) => {
-                      const current = values[field.id] || {
-                        start: "",
-                        end: "",
-                      };
-                      setValues((p) => ({
-                        ...p,
-                        [field.id]: { ...current, start: e.target.value },
-                      }));
-                    }}
-                    className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
-                  />
+                  <div>
+                    <label className="mb-1 block text-xs font-medium text-slate-500">
+                      End date
+                    </label>
+                    <input
+                      type="date"
+                      disabled
+                      className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-100 text-sm text-slate-500 cursor-not-allowed"
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label className="mb-1 block text-xs font-medium text-slate-500">
-                    End date
-                  </label>
-                  <input
-                    type="date"
-                    value={values[field.id]?.end || ""}
-                    onChange={(e) => {
-                      const current = values[field.id] || {
-                        start: "",
-                        end: "",
-                      };
-                      setValues((p) => ({
-                        ...p,
-                        [field.id]: { ...current, end: e.target.value },
-                      }));
-                    }}
-                    className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
-                  />
-                </div>
-              </div>
-            ) : (
-              <input
-                type={
-                  field.type === "email"
-                    ? "email"
-                    : field.type === "tel"
-                    ? "tel"
-                    : field.type === "number"
-                    ? "number"
-                    : field.type === "date"
-                    ? "date"
-                    : "text"
-                }
-                inputMode={field.type === "tel" ? "numeric" : undefined}
-                pattern={field.type === "tel" ? "[0-9]{10,15}" : undefined}
-                maxLength={field.type === "tel" ? 15 : undefined}
-                required={field.required}
-                value={values[field.id] || ""}
-                onChange={(e) => {
-                  let value = e.target.value;
-                  if (field.type === "tel") {
-                    value = value.replace(/\D/g, "").slice(0, 15);
+              ) : (
+                <input
+                  type={
+                    field.type === "email"
+                      ? "email"
+                      : field.type === "tel"
+                      ? "tel"
+                      : field.type === "number"
+                      ? "number"
+                      : field.type === "date"
+                      ? "date"
+                      : "text"
                   }
-                  setValues((p) => ({ ...p, [field.id]: value }));
-                }}
-                onKeyDown={
-                  field.type === "tel"
-                    ? (e) => {
-                        const allowed = [
-                          "Backspace",
-                          "Delete",
-                          "Tab",
-                          "Escape",
-                          "Enter",
-                          "ArrowLeft",
-                          "ArrowRight",
-                          "ArrowUp",
-                          "ArrowDown",
-                          "Home",
-                          "End",
-                        ];
-                        if (allowed.includes(e.key)) return;
-                        if (e.ctrlKey || e.metaKey) return;
-                        if (!/^\d$/.test(e.key)) e.preventDefault();
-                      }
-                    : undefined
-                }
-                onPaste={
-                  field.type === "tel"
-                    ? (e) => {
-                        e.preventDefault();
-                        const pasted = (
-                          e.clipboardData?.getData("text") || ""
-                        )
-                          .replace(/\D/g, "")
-                          .slice(0, 15);
-                        setValues((p) => ({ ...p, [field.id]: pasted }));
-                      }
-                    : undefined
-                }
-                placeholder={
-                  field.placeholder ||
-                  (field.type === "tel" ? "e.g. 9876543210" : undefined)
-                }
-                className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
-              />
-            )}
-          </div>
-        ))}
-
-        <button
-          type="submit"
-          className="w-full py-3 rounded-lg bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition"
-        >
-          Submit
-        </button>
-      </form>
+                  disabled
+                  placeholder={field.placeholder || ""}
+                  className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-100 text-sm text-slate-500 cursor-not-allowed"
+                />
+              )}
+            </div>
+          ))
+        )}
+      </div>
 
       <div className="px-5 sm:px-8 pb-6 text-center">
-       <button
-  onClick={onBack}
-  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-purple-600 text-white text-sm font-medium hover:bg-purple-700 transition"
->
-  ← Back to editor
-</button>
+        <button
+          onClick={onBack}
+          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-purple-600 text-white text-sm font-medium hover:bg-purple-700 transition"
+        >
+          ← Back to editor
+        </button>
       </div>
     </div>
   );

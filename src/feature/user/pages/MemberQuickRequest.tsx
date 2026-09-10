@@ -188,7 +188,24 @@ interface Question {
   required: boolean;
   options?: string[];
 }
-
+interface RequestResponse {
+  id: number | string;
+  requestTypeId?: number | string;
+  requestName: string;
+  requestedBy: string | number;
+  date: string;
+  status: "Pending" | "Approved" | "Rejected" | "In Progress" | "Completed" | "Cancelled";
+  answers?: Record<string, any>;
+  questions?: Array<{ id: number | string; question: string }>;
+  reviewedBy?: string | number | null;
+  reviewedAt?: string | null;
+  rejectionReason?: string | null;
+  approvalComment?: string | null;   // ← add this
+  description?: string;
+  expectedResolution?: string;
+  requestId?: string;
+  icon?: string;
+}
 interface QuickRequestItem {
   id: number | string;
   name: string;
@@ -325,22 +342,23 @@ export default function MemberQuickRequest() {
         return;
       }
 
-      const data: RequestResponse[] = (res.data.data || []).map((item: any) => ({
-        id: item.id,
-        requestTypeId: item.requestTypeId,
-        requestName: item.requestName || "Unknown",
-        requestedBy: item.requestedBy,
-        date: formatDate(item.date || item.submittedAt),
-        status: item.status || "Pending",
-        answers: item.answers || {},
-        reviewedBy: item.reviewedBy,
-        reviewedAt: item.reviewedAt,
-        rejectionReason: item.rejectionReason,
-        description: item.description || item.answers?.description || "",
-        requestId: item.requestId || `REQ-${item.id}`,
-        icon: item.icon || undefined,
-        questions: Array.isArray(item.questions) ? item.questions : [],
-      }));
+     const data: RequestResponse[] = (res.data.data || []).map((item: any) => ({
+  id: item.id,
+  requestTypeId: item.requestTypeId,
+  requestName: item.requestName || "Unknown",
+  requestedBy: item.requestedBy,
+  date: formatDate(item.date || item.submittedAt),
+  status: item.status || "Pending",
+  answers: item.answers || {},
+  reviewedBy: item.reviewedBy,
+  reviewedAt: item.reviewedAt,
+  rejectionReason: item.rejectionReason,
+  approvalComment: item.approvalComment,   // ← add this
+  description: item.description || item.answers?.description || "",
+  requestId: item.requestId || `REQ-${item.id}`,
+  icon: item.icon || undefined,
+  questions: Array.isArray(item.questions) ? item.questions : [],
+}));
 
       setMyResponses(data);
     } catch (err) {
@@ -900,14 +918,24 @@ export default function MemberQuickRequest() {
                 </div>
               )}
 
-              {getDisplayStatus(viewResponse.status) === "Cancelled" && viewResponse.rejectionReason && (
-                <div>
-                  <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
-                    Cancellation Reason
-                  </p>
-                  <p className="mt-1 text-sm text-rose-700">{viewResponse.rejectionReason}</p>
-                </div>
-              )}
+             {/* Admin comments */}
+{(String(viewResponse.status || "").toLowerCase() === "rejected" || String(viewResponse.status || "").toLowerCase() === "cancelled") && viewResponse.rejectionReason && (
+  <div>
+    <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+      Cancellation Reason
+    </p>
+    <p className="mt-1 text-sm text-rose-700">{viewResponse.rejectionReason}</p>
+  </div>
+)}
+
+{(String(viewResponse.status || "").toLowerCase() === "approved" || String(viewResponse.status || "").toLowerCase() === "completed") && viewResponse.approvalComment && (
+  <div>
+    <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+      Approval Comment
+    </p>
+    <p className="mt-1 text-sm text-emerald-700">{viewResponse.approvalComment}</p>
+  </div>
+)}
             </div>
 
             <div className="border-t border-slate-100 p-4">
