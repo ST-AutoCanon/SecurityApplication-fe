@@ -1,9 +1,632 @@
 
 
+// import React, { useEffect, useState } from "react";
+// import { useParams } from "react-router-dom";
+// import axios from "axios";
+// import { Check, Loader2, FileText } from "lucide-react";
+
+// const API = `${import.meta.env.VITE_BACKEND_URL}`;
+
+// export default function PublicForm() {
+//   const params = useParams();
+//   const orgId = params.orgId;
+//   const formId = params.formId;
+
+//   const [form, setForm] = useState<any>(null);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState<string | null>(null);
+//   const [values, setValues] = useState<Record<string, any>>({});
+//   const [submitted, setSubmitted] = useState(false);
+//   const [submitting, setSubmitting] = useState(false);
+//   const [uploadingFieldId, setUploadingFieldId] = useState<string | null>(null);
+//   const [uploadError, setUploadError] = useState<string | null>(null);
+
+//   const visibleFields = (form?.fields || []).filter(
+//     (field: any) => field.type !== "reference-image"
+//   );
+
+//   const referenceImage =
+//     (form?.fields || []).find((field: any) => field.type === "reference-image")
+//       ?.referenceUrl || "";
+
+//   // ===================== IMAGE UPLOAD =====================
+//   const uploadImageFile = async (fieldId: string, file: File) => {
+//     const formData = new FormData();
+//     formData.append("image", file);
+
+//     try {
+//       setUploadingFieldId(fieldId);
+//       setUploadError(null);
+
+//       const res = await axios.post(
+//         `${API}/api/forms/public/${orgId}/${formId}/upload-image`,
+//         formData,
+//         {
+//           headers: { "Content-Type": "multipart/form-data" },
+//         }
+//       );
+
+//       const url = res.data?.url;
+//       if (!url) throw new Error("Image upload did not return a URL");
+
+//       setValues((prev) => ({
+//         ...prev,
+//         [fieldId]: {
+//           url,
+//           name: file.name,
+//           size: file.size,
+//         },
+//       }));
+//     } catch (err: any) {
+//       console.error(err);
+//       setUploadError(
+//         err?.response?.data?.message || err?.message || "Image upload failed"
+//       );
+//     } finally {
+//       setUploadingFieldId(null);
+//     }
+//   };
+
+//   // ===================== DOCUMENT UPLOAD =====================
+//   const uploadDocumentFile = async (fieldId: string, file: File) => {
+//     const formData = new FormData();
+//     formData.append("file", file);
+
+//     try {
+//       setUploadingFieldId(fieldId);
+//       setUploadError(null);
+
+//       const res = await axios.post(
+//         `${API}/api/forms/public/${orgId}/${formId}/upload-file`,
+//         formData,
+//         {
+//           headers: { "Content-Type": "multipart/form-data" },
+//         }
+//       );
+
+//       const url = res.data?.url;
+//       if (!url) throw new Error("Document upload did not return a URL");
+
+//       setValues((prev) => ({
+//         ...prev,
+//         [fieldId]: {
+//           url,
+//           name: file.name,
+//           size: file.size,
+//           mimetype: file.type,
+//         },
+//       }));
+//     } catch (err: any) {
+//       console.error(err);
+//       setUploadError(
+//         err?.response?.data?.message || err?.message || "Document upload failed"
+//       );
+//     } finally {
+//       setUploadingFieldId(null);
+//     }
+//   };
+
+//   // ===================== LOAD FORM =====================
+//   useEffect(() => {
+//     if (!orgId || !formId) {
+//       setError(
+//         `Invalid link. Need /form/ORG_ID/FORM_ID — got orgId=${orgId}, formId=${formId}`
+//       );
+//       setLoading(false);
+//       return;
+//     }
+
+//     const load = async () => {
+//       try {
+//         setLoading(true);
+//         setError(null);
+
+//         const res = await axios.get(
+//           `${API}/api/forms/public/${orgId}/${formId}`
+//         );
+
+//         if (!res.data?.success) {
+//           throw new Error(res.data?.message || "Form not found");
+//         }
+
+//         setForm(res.data.data);
+//       } catch (err: any) {
+//         console.error(err);
+//         setError(
+//           err?.response?.data?.message ||
+//             err?.message ||
+//             "Failed to load form"
+//         );
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     load();
+//   }, [orgId, formId]);
+
+//   // ===================== SUBMIT =====================
+//   const handleSubmit = async (e: React.FormEvent) => {
+//     e.preventDefault();
+//     try {
+//       setSubmitting(true);
+//       await axios.post(`${API}/api/forms/public/${orgId}/${formId}/submit`, {
+//         values,
+//       });
+//       setSubmitted(true);
+//     } catch (err: any) {
+//       alert(err?.response?.data?.message || "Submit failed");
+//     } finally {
+//       setSubmitting(false);
+//     }
+//   };
+
+//   // ===================== LOADING =====================
+//   if (loading) {
+//     return (
+//       <div className="min-h-screen flex flex-col items-center justify-center gap-2 bg-slate-50">
+//         <Loader2 className="animate-spin text-slate-400" size={28} />
+//         <p className="text-sm text-slate-500">Loading form...</p>
+//       </div>
+//     );
+//   }
+
+//   // ===================== ERROR =====================
+//   if (error || !form) {
+//     return (
+//       <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
+//         <div className="bg-white rounded-xl border p-8 max-w-md w-full text-center">
+//           <h1 className="text-xl font-bold text-slate-900 mb-2">
+//             Form not found
+//           </h1>
+//           <p className="text-sm text-red-600 mb-3">{error}</p>
+//           <p className="text-xs text-slate-400">
+//             URL must be /form/ORG_ID/FORM_ID
+//           </p>
+//         </div>
+//       </div>
+//     );
+//   }
+
+//   // ===================== SUCCESS =====================
+//   if (submitted) {
+//     return (
+//       <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
+//         <div className="bg-white rounded-xl border p-10 max-w-md w-full text-center">
+//           <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-emerald-100 flex items-center justify-center">
+//             <Check className="text-emerald-600" />
+//           </div>
+//           <h2 className="text-xl font-bold">Thank you!</h2>
+//           <p className="text-sm text-slate-500 mt-1">Response recorded.</p>
+//         </div>
+//       </div>
+//     );
+//   }
+
+//   // ===================== FORM =====================
+//   return (
+//     <div className="min-h-screen bg-slate-50 py-10 px-4">
+//       <div className="max-w-2xl mx-auto bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+//         <div className="px-6 sm:px-8 pt-8 pb-6 border-b border-slate-100 text-center">
+//           <h1 className="text-2xl font-bold text-slate-900">{form.title}</h1>
+//           {form.description && (
+//             <p className="text-slate-500 text-sm mt-2">{form.description}</p>
+//           )}
+//         </div>
+
+//         <form
+//           onSubmit={handleSubmit}
+//           className="p-6 sm:p-8 grid gap-5"
+//           style={{
+//             gridTemplateColumns: `repeat(${form.layoutColumns || 2}, minmax(0, 1fr))`,
+//           }}
+//         >
+//           {referenceImage && (
+//             <div className="col-span-full overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
+//               <img
+//                 src={referenceImage}
+//                 alt="Reference guide"
+//                 className="max-h-72 w-full object-cover"
+//               />
+//             </div>
+//           )}
+
+//           {uploadError && (
+//             <div className="col-span-full rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+//               {uploadError}
+//             </div>
+//           )}
+
+//           {visibleFields.map((field: any) => (
+//             <div
+//               key={field.id}
+//               className={field.type === "textarea" ? "col-span-full" : ""}
+//             >
+//               <label className="block text-sm font-semibold text-slate-800 mb-1.5">
+//                 {field.label}
+//                 {field.required && <span className="text-red-500 ml-1">*</span>}
+//               </label>
+
+//               {field.referenceUrl && (
+//                 <div className="mb-3 overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
+//                   <img
+//                     src={field.referenceUrl}
+//                     alt={field.label}
+//                     className="max-h-64 w-full object-cover"
+//                   />
+//                 </div>
+//               )}
+
+//               {/* ========== IMAGE ========== */}
+//               {field.type === "image" ? (
+//                 <div className="space-y-3">
+//                   <input
+//                     type="file"
+//                     accept="image/*"
+//                     required={field.required && !values[field.id]}
+//                     onChange={(e) => {
+//                       const file = e.target.files?.[0];
+//                       if (file) uploadImageFile(field.id, file);
+//                     }}
+//                     className="block w-full text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-purple-600 file:px-3 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-purple-700"
+//                   />
+
+//                   {uploadingFieldId === field.id && (
+//                     <div className="inline-flex items-center gap-2 text-xs text-slate-500">
+//                       <Loader2 size={14} className="animate-spin" />
+//                       Uploading image...
+//                     </div>
+//                   )}
+
+//                   {values[field.id] && (
+//                     <div className="space-y-2 rounded-lg border border-slate-200 bg-slate-50 p-3">
+//                       <img
+//                         src={values[field.id]?.url}
+//                         alt={values[field.id]?.name || field.label}
+//                         className="h-32 w-full rounded-md object-cover border border-slate-200"
+//                       />
+//                       <div className="flex items-center justify-between gap-3">
+//                         <span className="text-xs text-slate-600 truncate">
+//                           {values[field.id]?.name || "Uploaded image"}
+//                         </span>
+//                         <a
+//                           href={values[field.id]?.url}
+//                           target="_blank"
+//                           rel="noreferrer"
+//                           download
+//                           className="text-xs text-purple-600 hover:text-purple-700 underline"
+//                         >
+//                           Download
+//                         </a>
+//                       </div>
+//                     </div>
+//                   )}
+//                 </div>
+//               ) : /* ========== DOCUMENT ========== */
+//               field.type === "document" ? (
+//                 <div className="space-y-3">
+//                   <input
+//                     type="file"
+//                     accept={
+//                       field.accept ||
+//                       ".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip"
+//                     }
+//                     required={field.required && !values[field.id]}
+//                     onChange={(e) => {
+//                       const file = e.target.files?.[0];
+//                       if (file) uploadDocumentFile(field.id, file);
+//                     }}
+//                     className="block w-full text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-purple-600 file:px-3 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-purple-700"
+//                   />
+
+//                   {uploadingFieldId === field.id && (
+//                     <div className="inline-flex items-center gap-2 text-xs text-slate-500">
+//                       <Loader2 size={14} className="animate-spin" />
+//                       Uploading document...
+//                     </div>
+//                   )}
+
+//                   {values[field.id] && (
+//                     <div className="space-y-2 rounded-lg border border-slate-200 bg-slate-50 p-3">
+//                       <div className="flex items-center gap-3">
+//                         <FileText
+//                           size={20}
+//                           className="text-purple-600 shrink-0"
+//                         />
+//                         <span className="text-sm text-slate-700 truncate">
+//                           {values[field.id]?.name || "Document"}
+//                         </span>
+//                       </div>
+//                       <div className="flex items-center gap-3">
+//                         <a
+//                           href={values[field.id]?.url}
+//                           target="_blank"
+//                           rel="noreferrer"
+//                           className="text-xs text-purple-600 hover:text-purple-700 underline"
+//                         >
+//                           View / Download
+//                         </a>
+//                       </div>
+//                     </div>
+//                   )}
+//                 </div>
+//               ) : field.type === "textarea" ? (
+//                 <textarea
+//                   required={field.required}
+//                   value={values[field.id] || ""}
+//                   onChange={(e) =>
+//                     setValues((p) => ({ ...p, [field.id]: e.target.value }))
+//                   }
+//                   placeholder={field.placeholder}
+//                   className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
+//                   rows={3}
+//                 />
+//               ) : field.type === "select" ? (
+//                 <select
+//                   required={field.required}
+//                   value={values[field.id] || ""}
+//                   onChange={(e) =>
+//                     setValues((p) => ({ ...p, [field.id]: e.target.value }))
+//                   }
+//                   className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
+//                 >
+//                   <option value="">-- Select --</option>
+//                   {field.options?.map((opt: string) => (
+//                     <option key={opt} value={opt}>
+//                       {opt}
+//                     </option>
+//                   ))}
+//                 </select>
+//               ) : field.type === "radio" ? (
+//                 <div className="space-y-2">
+//                   {field.options?.map((opt: string) => (
+//                     <label
+//                       key={opt}
+//                       className="flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer hover:bg-slate-50 transition text-sm text-slate-700"
+//                     >
+//                       <input
+//                         type="radio"
+//                         name={field.id}
+//                         value={opt}
+//                         required={field.required}
+//                         checked={values[field.id] === opt}
+//                         onChange={() =>
+//                           setValues((p) => ({ ...p, [field.id]: opt }))
+//                         }
+//                         className="accent-purple-600"
+//                       />
+//                       {opt}
+//                     </label>
+//                   ))}
+//                 </div>
+//               ) : field.type === "checkbox-group" ? (
+//                 <div className="space-y-2">
+//                   {field.options?.map((opt: string) => (
+//                     <label
+//                       key={opt}
+//                       className="flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer hover:bg-slate-50 transition text-sm text-slate-700"
+//                     >
+//                       <input
+//                         type="checkbox"
+//                         value={opt}
+//                         checked={(values[field.id] || []).includes(opt)}
+//                         onChange={(e) => {
+//                           const current: string[] = values[field.id] || [];
+//                           const next = e.target.checked
+//                             ? [...current, opt]
+//                             : current.filter((v) => v !== opt);
+//                           setValues((p) => ({ ...p, [field.id]: next }));
+//                         }}
+//                         className="rounded accent-purple-600"
+//                       />
+//                       {opt}
+//                     </label>
+//                   ))}
+//                 </div>
+//               ) : field.type === "checkbox" ? (
+//                 <label className="flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer hover:bg-slate-50 transition text-sm text-slate-700">
+//                   <input
+//                     type="checkbox"
+//                     checked={Boolean(values[field.id])}
+//                     required={field.required}
+//                     onChange={(e) =>
+//                       setValues((p) => ({
+//                         ...p,
+//                         [field.id]: e.target.checked,
+//                       }))
+//                     }
+//                     className="rounded accent-purple-600"
+//                   />
+//                   {field.placeholder || "Yes"}
+//                 </label>
+//               ) : field.type === "rating" ? (
+//                 <div className="flex flex-wrap items-center gap-3">
+//                   <div className="flex items-center gap-1">
+//                     {[1, 2, 3, 4, 5].map((star) => (
+//                       <button
+//                         key={star}
+//                         type="button"
+//                         onClick={() => {
+//                           setValues((p) => ({
+//                             ...p,
+//                             [field.id]:
+//                               p[field.id] === star ? undefined : star,
+//                           }));
+//                         }}
+//                         className={`text-2xl leading-none transition hover:scale-110 ${
+//                           (values[field.id] || 0) >= star
+//                             ? "text-amber-400"
+//                             : "text-slate-300 hover:text-amber-200"
+//                         }`}
+//                       >
+//                         ★
+//                       </button>
+//                     ))}
+//                   </div>
+
+//                   {values[field.id] ? (
+//                     <div className="flex items-center gap-2">
+//                       <span className="text-xs font-medium text-slate-600">
+//                         {values[field.id]} / 5
+//                       </span>
+//                       <button
+//                         type="button"
+//                         onClick={() =>
+//                           setValues((p) => {
+//                             const next = { ...p };
+//                             delete next[field.id];
+//                             return next;
+//                           })
+//                         }
+//                         className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-xs font-medium text-slate-600 hover:border-red-300 hover:bg-red-50 hover:text-red-600 transition"
+//                       >
+//                         Clear
+//                       </button>
+//                     </div>
+//                   ) : (
+//                     <span className="text-xs text-slate-400">
+//                       Click a star to rate
+//                     </span>
+//                   )}
+//                 </div>
+//               ) : field.type === "daterange" ? (
+//                 <div className="grid gap-3 sm:grid-cols-2">
+//                   <div>
+//                     <label className="mb-1 block text-xs font-medium text-slate-500">
+//                       Start date
+//                     </label>
+//                     <input
+//                       type="date"
+//                       value={values[field.id]?.start || ""}
+//                       onChange={(e) => {
+//                         const current = values[field.id] || {
+//                           start: "",
+//                           end: "",
+//                         };
+//                         setValues((p) => ({
+//                           ...p,
+//                           [field.id]: { ...current, start: e.target.value },
+//                         }));
+//                       }}
+//                       className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
+//                     />
+//                   </div>
+//                   <div>
+//                     <label className="mb-1 block text-xs font-medium text-slate-500">
+//                       End date
+//                     </label>
+//                     <input
+//                       type="date"
+//                       value={values[field.id]?.end || ""}
+//                       onChange={(e) => {
+//                         const current = values[field.id] || {
+//                           start: "",
+//                           end: "",
+//                         };
+//                         setValues((p) => ({
+//                           ...p,
+//                           [field.id]: { ...current, end: e.target.value },
+//                         }));
+//                       }}
+//                       className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
+//                     />
+//                   </div>
+//                 </div>
+//               ) : (
+//                 <input
+//                   type={
+//                     field.type === "email"
+//                       ? "email"
+//                       : field.type === "tel"
+//                       ? "tel"
+//                       : field.type === "number"
+//                       ? "number"
+//                       : field.type === "date"
+//                       ? "date"
+//                       : "text"
+//                   }
+//                   inputMode={field.type === "tel" ? "numeric" : undefined}
+//                   pattern={field.type === "tel" ? "[0-9]{10,15}" : undefined}
+//                   maxLength={field.type === "tel" ? 15 : undefined}
+//                   required={field.required}
+//                   value={values[field.id] || ""}
+//                   onChange={(e) => {
+//                     let value = e.target.value;
+//                     if (field.type === "tel") {
+//                       value = value.replace(/\D/g, "").slice(0, 15);
+//                     }
+//                     setValues((p) => ({ ...p, [field.id]: value }));
+//                   }}
+//                   onKeyDown={
+//                     field.type === "tel"
+//                       ? (e) => {
+//                           const allowed = [
+//                             "Backspace",
+//                             "Delete",
+//                             "Tab",
+//                             "Escape",
+//                             "Enter",
+//                             "ArrowLeft",
+//                             "ArrowRight",
+//                             "ArrowUp",
+//                             "ArrowDown",
+//                             "Home",
+//                             "End",
+//                           ];
+//                           if (allowed.includes(e.key)) return;
+//                           if (e.ctrlKey || e.metaKey) return;
+//                           if (!/^\d$/.test(e.key)) e.preventDefault();
+//                         }
+//                       : undefined
+//                   }
+//                   onPaste={
+//                     field.type === "tel"
+//                       ? (e) => {
+//                           e.preventDefault();
+//                           const pasted = (
+//                             e.clipboardData?.getData("text") || ""
+//                           )
+//                             .replace(/\D/g, "")
+//                             .slice(0, 15);
+//                           setValues((p) => ({ ...p, [field.id]: pasted }));
+//                         }
+//                       : undefined
+//                   }
+//                   placeholder={
+//                     field.placeholder ||
+//                     (field.type === "tel" ? "e.g. 9876543210" : undefined)
+//                   }
+//                   className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
+//                 />
+//               )}
+//             </div>
+//           ))}
+
+//           <button
+//             type="submit"
+//             disabled={submitting}
+//             className="col-span-full w-full py-3 rounded-lg bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition disabled:opacity-60"
+//           >
+//             {submitting ? "Submitting..." : "Submit"}
+//           </button>
+//         </form>
+//       </div>
+//     </div>
+//   );
+// }
+
+
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { Check, Loader2, FileText } from "lucide-react";
+import {
+  Check,
+  Loader2,
+  FileText,
+  Image as ImageIcon,
+  Paperclip,
+  Star,
+} from "lucide-react";
 
 const API = `${import.meta.env.VITE_BACKEND_URL}`;
 
@@ -41,9 +664,7 @@ export default function PublicForm() {
       const res = await axios.post(
         `${API}/api/forms/public/${orgId}/${formId}/upload-image`,
         formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
+        { headers: { "Content-Type": "multipart/form-data" } }
       );
 
       const url = res.data?.url;
@@ -51,11 +672,7 @@ export default function PublicForm() {
 
       setValues((prev) => ({
         ...prev,
-        [fieldId]: {
-          url,
-          name: file.name,
-          size: file.size,
-        },
+        [fieldId]: { url, name: file.name, size: file.size },
       }));
     } catch (err: any) {
       console.error(err);
@@ -79,9 +696,7 @@ export default function PublicForm() {
       const res = await axios.post(
         `${API}/api/forms/public/${orgId}/${formId}/upload-file`,
         formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
+        { headers: { "Content-Type": "multipart/form-data" } }
       );
 
       const url = res.data?.url;
@@ -99,7 +714,9 @@ export default function PublicForm() {
     } catch (err: any) {
       console.error(err);
       setUploadError(
-        err?.response?.data?.message || err?.message || "Document upload failed"
+        err?.response?.data?.message ||
+          err?.message ||
+          "Document upload failed"
       );
     } finally {
       setUploadingFieldId(null);
@@ -164,7 +781,7 @@ export default function PublicForm() {
   // ===================== LOADING =====================
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-2 bg-slate-50">
+      <div className="min-h-screen flex flex-col items-center justify-center gap-3 bg-slate-50">
         <Loader2 className="animate-spin text-slate-400" size={28} />
         <p className="text-sm text-slate-500">Loading form...</p>
       </div>
@@ -175,7 +792,7 @@ export default function PublicForm() {
   if (error || !form) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
-        <div className="bg-white rounded-xl border p-8 max-w-md w-full text-center">
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-8 max-w-md w-full text-center">
           <h1 className="text-xl font-bold text-slate-900 mb-2">
             Form not found
           </h1>
@@ -192,12 +809,14 @@ export default function PublicForm() {
   if (submitted) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
-        <div className="bg-white rounded-xl border p-10 max-w-md w-full text-center">
-          <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-emerald-100 flex items-center justify-center">
-            <Check className="text-emerald-600" />
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-10 max-w-md w-full text-center">
+          <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-emerald-50 flex items-center justify-center">
+            <Check className="text-emerald-600" size={28} />
           </div>
-          <h2 className="text-xl font-bold">Thank you!</h2>
-          <p className="text-sm text-slate-500 mt-1">Response recorded.</p>
+          <h2 className="text-xl font-bold text-slate-900">Thank you!</h2>
+          <p className="text-sm text-slate-500 mt-2">
+            Your response has been recorded.
+          </p>
         </div>
       </div>
     );
@@ -206,401 +825,462 @@ export default function PublicForm() {
   // ===================== FORM =====================
   return (
     <div className="min-h-screen bg-slate-50 py-10 px-4">
-      <div className="max-w-2xl mx-auto bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
-        <div className="px-6 sm:px-8 pt-8 pb-6 border-b border-slate-100 text-center">
-          <h1 className="text-2xl font-bold text-slate-900">{form.title}</h1>
-          {form.description && (
-            <p className="text-slate-500 text-sm mt-2">{form.description}</p>
-          )}
-        </div>
+      <div className="max-w-2xl mx-auto">
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          {/* Simple Header */}
+          <div className="px-6 sm:px-8 pt-8 pb-6 border-b border-slate-100">
+            <h1 className="text-2xl font-bold text-slate-900">
+              {form.title || "Untitled Form"}
+            </h1>
+            {form.description && (
+              <p className="text-slate-500 text-sm mt-2 leading-relaxed">
+                {form.description}
+              </p>
+            )}
+          </div>
 
-        <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-5">
-          {referenceImage && (
-            <div className="overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
-              <img
-                src={referenceImage}
-                alt="Reference guide"
-                className="max-h-72 w-full object-cover"
-              />
-            </div>
-          )}
-
-          {uploadError && (
-            <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-              {uploadError}
-            </div>
-          )}
-
-          {visibleFields.map((field: any) => (
-            <div key={field.id}>
-              <label className="block text-sm font-semibold text-slate-800 mb-1.5">
-                {field.label}
-                {field.required && <span className="text-red-500 ml-1">*</span>}
-              </label>
-
-              {field.referenceUrl && (
-                <div className="mb-3 overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
+          {/* Form Body */}
+          <form onSubmit={handleSubmit} className="px-6 sm:px-8 py-8">
+            <div
+              className="grid gap-6"
+              style={{
+                gridTemplateColumns: `repeat(${form.layoutColumns || 1}, minmax(0, 1fr))`,
+              }}
+            >
+              {/* Top-level reference image */}
+              {referenceImage && (
+                <div className="col-span-full overflow-hidden rounded-lg border border-slate-200">
                   <img
-                    src={field.referenceUrl}
-                    alt={field.label}
+                    src={referenceImage}
+                    alt="Reference guide"
                     className="max-h-64 w-full object-cover"
                   />
                 </div>
               )}
 
-              {/* ========== IMAGE ========== */}
-              {field.type === "image" ? (
-                <div className="space-y-3">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    required={field.required && !values[field.id]}
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) uploadImageFile(field.id, file);
-                    }}
-                    className="block w-full text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-purple-600 file:px-3 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-purple-700"
-                  />
-
-                  {uploadingFieldId === field.id && (
-                    <div className="inline-flex items-center gap-2 text-xs text-slate-500">
-                      <Loader2 size={14} className="animate-spin" />
-                      Uploading image...
-                    </div>
-                  )}
-
-                  {values[field.id] && (
-                    <div className="space-y-2 rounded-lg border border-slate-200 bg-slate-50 p-3">
-                      <img
-                        src={values[field.id]?.url}
-                        alt={values[field.id]?.name || field.label}
-                        className="h-32 w-full rounded-md object-cover border border-slate-200"
-                      />
-                      <div className="flex items-center justify-between gap-3">
-                        <span className="text-xs text-slate-600 truncate">
-                          {values[field.id]?.name || "Uploaded image"}
-                        </span>
-                        <a
-                          href={values[field.id]?.url}
-                          target="_blank"
-                          rel="noreferrer"
-                          download
-                          className="text-xs text-purple-600 hover:text-purple-700 underline"
-                        >
-                          Download
-                        </a>
-                      </div>
-                    </div>
-                  )}
+              {/* Upload error */}
+              {uploadError && (
+                <div className="col-span-full rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                  {uploadError}
                 </div>
-              ) : /* ========== DOCUMENT ========== */
-              field.type === "document" ? (
-                <div className="space-y-3">
-                  <input
-                    type="file"
-                    accept={
-                      field.accept ||
-                      ".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip"
-                    }
-                    required={field.required && !values[field.id]}
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) uploadDocumentFile(field.id, file);
-                    }}
-                    className="block w-full text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-purple-600 file:px-3 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-purple-700"
-                  />
+              )}
 
-                  {uploadingFieldId === field.id && (
-                    <div className="inline-flex items-center gap-2 text-xs text-slate-500">
-                      <Loader2 size={14} className="animate-spin" />
-                      Uploading document...
-                    </div>
-                  )}
-
-                  {values[field.id] && (
-                    <div className="space-y-2 rounded-lg border border-slate-200 bg-slate-50 p-3">
-                      <div className="flex items-center gap-3">
-                        <FileText
-                          size={20}
-                          className="text-purple-600 shrink-0"
-                        />
-                        <span className="text-sm text-slate-700 truncate">
-                          {values[field.id]?.name || "Document"}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <a
-                          href={values[field.id]?.url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-xs text-purple-600 hover:text-purple-700 underline"
-                        >
-                          View / Download
-                        </a>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ) : field.type === "textarea" ? (
-                <textarea
-                  required={field.required}
-                  value={values[field.id] || ""}
-                  onChange={(e) =>
-                    setValues((p) => ({ ...p, [field.id]: e.target.value }))
+              {visibleFields.map((field: any) => (
+                <div
+                  key={field.id}
+                  className={
+                    field.type === "textarea" ||
+                    field.type === "image" ||
+                    field.type === "document" ||
+                    field.type === "daterange" ||
+                    field.type === "checkbox-group" ||
+                    field.type === "radio"
+                      ? "col-span-full"
+                      : ""
                   }
-                  placeholder={field.placeholder}
-                  className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
-                  rows={3}
-                />
-              ) : field.type === "select" ? (
-                <select
-                  required={field.required}
-                  value={values[field.id] || ""}
-                  onChange={(e) =>
-                    setValues((p) => ({ ...p, [field.id]: e.target.value }))
-                  }
-                  className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
                 >
-                  <option value="">-- Select --</option>
-                  {field.options?.map((opt: string) => (
-                    <option key={opt} value={opt}>
-                      {opt}
-                    </option>
-                  ))}
-                </select>
-              ) : field.type === "radio" ? (
-                <div className="space-y-2">
-                  {field.options?.map((opt: string) => (
-                    <label
-                      key={opt}
-                      className="flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer hover:bg-slate-50 transition text-sm text-slate-700"
-                    >
-                      <input
-                        type="radio"
-                        name={field.id}
-                        value={opt}
-                        required={field.required}
-                        checked={values[field.id] === opt}
-                        onChange={() =>
-                          setValues((p) => ({ ...p, [field.id]: opt }))
-                        }
-                        className="accent-purple-600"
+                  {/* Label */}
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                    {field.label}
+                    {field.required && (
+                      <span className="text-red-500 ml-1">*</span>
+                    )}
+                  </label>
+
+                  {/* Field-level reference image */}
+                  {field.referenceUrl && (
+                    <div className="mb-3 overflow-hidden rounded-lg border border-slate-200">
+                      <img
+                        src={field.referenceUrl}
+                        alt={field.label}
+                        className="max-h-52 w-full object-cover"
                       />
-                      {opt}
-                    </label>
-                  ))}
-                </div>
-              ) : field.type === "checkbox-group" ? (
-                <div className="space-y-2">
-                  {field.options?.map((opt: string) => (
-                    <label
-                      key={opt}
-                      className="flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer hover:bg-slate-50 transition text-sm text-slate-700"
+                    </div>
+                  )}
+
+                  {/* ========== IMAGE ========== */}
+                  {field.type === "image" ? (
+                    <div className="space-y-3">
+                      <label className="flex flex-col items-center justify-center w-full h-32 border border-dashed border-slate-300 rounded-lg bg-slate-50 hover:bg-slate-100 hover:border-slate-400 transition cursor-pointer">
+                        <ImageIcon size={22} className="text-slate-400 mb-1.5" />
+                        <p className="text-sm text-slate-600">Click to upload image</p>
+                        <p className="text-xs text-slate-400 mt-0.5">PNG, JPG, WEBP</p>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          required={field.required && !values[field.id]}
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) uploadImageFile(field.id, file);
+                          }}
+                          className="hidden"
+                        />
+                      </label>
+
+                      {uploadingFieldId === field.id && (
+                        <div className="inline-flex items-center gap-2 text-xs text-slate-500">
+                          <Loader2 size={14} className="animate-spin" />
+                          Uploading...
+                        </div>
+                      )}
+
+                      {values[field.id] && (
+                        <div className="rounded-lg border border-slate-200 p-3">
+                          <img
+                            src={values[field.id]?.url}
+                            alt={values[field.id]?.name || field.label}
+                            className="h-36 w-full rounded-md object-cover"
+                          />
+                          <div className="flex items-center justify-between mt-2">
+                            <span className="text-xs text-slate-600 truncate">
+                              {values[field.id]?.name}
+                            </span>
+                            <a
+                              href={values[field.id]?.url}
+                              target="_blank"
+                              rel="noreferrer"
+                              download
+                              className="text-xs text-slate-600 underline hover:text-slate-900"
+                            >
+                              Download
+                            </a>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ) : /* ========== DOCUMENT ========== */
+                  field.type === "document" ? (
+                    <div className="space-y-3">
+                      <label className="flex flex-col items-center justify-center w-full h-28 border border-dashed border-slate-300 rounded-lg bg-slate-50 hover:bg-slate-100 hover:border-slate-400 transition cursor-pointer">
+                        <Paperclip size={20} className="text-slate-400 mb-1.5" />
+                        <p className="text-sm text-slate-600">Click to upload document</p>
+                        <p className="text-xs text-slate-400 mt-0.5">PDF, DOC, XLS, ZIP...</p>
+                        <input
+                          type="file"
+                          accept={
+                            field.accept ||
+                            ".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip"
+                          }
+                          required={field.required && !values[field.id]}
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) uploadDocumentFile(field.id, file);
+                          }}
+                          className="hidden"
+                        />
+                      </label>
+
+                      {uploadingFieldId === field.id && (
+                        <div className="inline-flex items-center gap-2 text-xs text-slate-500">
+                          <Loader2 size={14} className="animate-spin" />
+                          Uploading...
+                        </div>
+                      )}
+
+                      {values[field.id] && (
+                        <div className="flex items-center gap-3 rounded-lg border border-slate-200 p-3">
+                          <FileText size={18} className="text-slate-500 shrink-0" />
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm text-slate-800 truncate">
+                              {values[field.id]?.name || "Document"}
+                            </p>
+                            <a
+                              href={values[field.id]?.url}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-xs text-slate-600 underline hover:text-slate-900"
+                            >
+                              View / Download
+                            </a>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ) : field.type === "textarea" ? (
+                    <textarea
+                      required={field.required}
+                      value={values[field.id] || ""}
+                      onChange={(e) =>
+                        setValues((p) => ({ ...p, [field.id]: e.target.value }))
+                      }
+                      placeholder={field.placeholder || ""}
+                      className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 bg-white text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-200 transition resize-none"
+                      rows={4}
+                    />
+                  ) : field.type === "select" ? (
+                    <select
+                      required={field.required}
+                      value={values[field.id] || ""}
+                      onChange={(e) =>
+                        setValues((p) => ({ ...p, [field.id]: e.target.value }))
+                      }
+                      className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 bg-white text-sm text-slate-800 outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-200 transition"
                     >
+                      <option value="">-- Select --</option>
+                      {field.options?.map((opt: string) => (
+                        <option key={opt} value={opt}>
+                          {opt}
+                        </option>
+                      ))}
+                    </select>
+                  ) : field.type === "radio" ? (
+                    <div className="space-y-2">
+                      {field.options?.map((opt: string) => (
+                        <label
+                          key={opt}
+                          className="flex items-center gap-3 px-3.5 py-2.5 rounded-lg border border-slate-200 bg-white cursor-pointer hover:bg-slate-50 transition"
+                        >
+                          <input
+                            type="radio"
+                            name={field.id}
+                            value={opt}
+                            required={field.required}
+                            checked={values[field.id] === opt}
+                            onChange={() =>
+                              setValues((p) => ({ ...p, [field.id]: opt }))
+                            }
+                            className="accent-slate-700 w-4 h-4"
+                          />
+                          <span className="text-sm text-slate-700">{opt}</span>
+                        </label>
+                      ))}
+                    </div>
+                  ) : field.type === "checkbox-group" ? (
+                    <div className="space-y-2">
+                      {field.options?.map((opt: string) => {
+                        const checked = (values[field.id] || []).includes(opt);
+                        return (
+                          <label
+                            key={opt}
+                            className="flex items-center gap-3 px-3.5 py-2.5 rounded-lg border border-slate-200 bg-white cursor-pointer hover:bg-slate-50 transition"
+                          >
+                            <input
+                              type="checkbox"
+                              value={opt}
+                              checked={checked}
+                              onChange={(e) => {
+                                const current: string[] = values[field.id] || [];
+                                const next = e.target.checked
+                                  ? [...current, opt]
+                                  : current.filter((v) => v !== opt);
+                                setValues((p) => ({ ...p, [field.id]: next }));
+                              }}
+                              className="rounded accent-slate-700 w-4 h-4"
+                            />
+                            <span className="text-sm text-slate-700">{opt}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  ) : field.type === "checkbox" ? (
+                    <label className="flex items-center gap-3 px-3.5 py-2.5 rounded-lg border border-slate-200 bg-white cursor-pointer hover:bg-slate-50 transition">
                       <input
                         type="checkbox"
-                        value={opt}
-                        checked={(values[field.id] || []).includes(opt)}
-                        onChange={(e) => {
-                          const current: string[] = values[field.id] || [];
-                          const next = e.target.checked
-                            ? [...current, opt]
-                            : current.filter((v) => v !== opt);
-                          setValues((p) => ({ ...p, [field.id]: next }));
-                        }}
-                        className="rounded accent-purple-600"
-                      />
-                      {opt}
-                    </label>
-                  ))}
-                </div>
-              ) : field.type === "checkbox" ? (
-                <label className="flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer hover:bg-slate-50 transition text-sm text-slate-700">
-                  <input
-                    type="checkbox"
-                    checked={Boolean(values[field.id])}
-                    required={field.required}
-                    onChange={(e) =>
-                      setValues((p) => ({
-                        ...p,
-                        [field.id]: e.target.checked,
-                      }))
-                    }
-                    className="rounded accent-purple-600"
-                  />
-                  {field.placeholder || "Yes"}
-                </label>
-              ) : field.type === "rating" ? (
-                <div className="flex flex-wrap items-center gap-3">
-                  <div className="flex items-center gap-1">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <button
-                        key={star}
-                        type="button"
-                        onClick={() => {
+                        checked={Boolean(values[field.id])}
+                        required={field.required}
+                        onChange={(e) =>
                           setValues((p) => ({
                             ...p,
-                            [field.id]:
-                              p[field.id] === star ? undefined : star,
-                          }));
-                        }}
-                        className={`text-2xl leading-none transition hover:scale-110 ${
-                          (values[field.id] || 0) >= star
-                            ? "text-amber-400"
-                            : "text-slate-300 hover:text-amber-200"
-                        }`}
-                      >
-                        ★
-                      </button>
-                    ))}
-                  </div>
-
-                  {values[field.id] ? (
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-medium text-slate-600">
-                        {values[field.id]} / 5
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setValues((p) => {
-                            const next = { ...p };
-                            delete next[field.id];
-                            return next;
-                          })
+                            [field.id]: e.target.checked,
+                          }))
                         }
-                        className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-xs font-medium text-slate-600 hover:border-red-300 hover:bg-red-50 hover:text-red-600 transition"
-                      >
-                        Clear
-                      </button>
+                        className="rounded accent-slate-700 w-4 h-4"
+                      />
+                      <span className="text-sm text-slate-700">
+                        {field.placeholder || "Yes"}
+                      </span>
+                    </label>
+                  ) : field.type === "rating" ? (
+                    <div className="flex flex-wrap items-center gap-3">
+                      <div className="flex items-center gap-1">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <button
+                            key={star}
+                            type="button"
+                            onClick={() => {
+                              setValues((p) => ({
+                                ...p,
+                                [field.id]:
+                                  p[field.id] === star ? undefined : star,
+                              }));
+                            }}
+                            className={`text-2xl leading-none transition hover:scale-110 ${
+                              (values[field.id] || 0) >= star
+                                ? "text-amber-400"
+                                : "text-slate-300 hover:text-amber-200"
+                            }`}
+                          >
+                            ★
+                          </button>
+                        ))}
+                      </div>
+                      {values[field.id] ? (
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-medium text-slate-600">
+                            {values[field.id]} / 5
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setValues((p) => {
+                                const next = { ...p };
+                                delete next[field.id];
+                                return next;
+                              })
+                            }
+                            className="text-xs text-slate-500 hover:text-red-600"
+                          >
+                            Clear
+                          </button>
+                        </div>
+                      ) : (
+                        <span className="text-xs text-slate-400">
+                          Click a star to rate
+                        </span>
+                      )}
+                    </div>
+                  ) : field.type === "daterange" ? (
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <div>
+                        <label className="mb-1 block text-xs font-medium text-slate-500">
+                          Start date
+                        </label>
+                        <input
+                          type="date"
+                          value={values[field.id]?.start || ""}
+                          onChange={(e) => {
+                            const current = values[field.id] || {
+                              start: "",
+                              end: "",
+                            };
+                            setValues((p) => ({
+                              ...p,
+                              [field.id]: { ...current, start: e.target.value },
+                            }));
+                          }}
+                          className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 bg-white text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-200 transition"
+                        />
+                      </div>
+                      <div>
+                        <label className="mb-1 block text-xs font-medium text-slate-500">
+                          End date
+                        </label>
+                        <input
+                          type="date"
+                          value={values[field.id]?.end || ""}
+                          onChange={(e) => {
+                            const current = values[field.id] || {
+                              start: "",
+                              end: "",
+                            };
+                            setValues((p) => ({
+                              ...p,
+                              [field.id]: { ...current, end: e.target.value },
+                            }));
+                          }}
+                          className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 bg-white text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-200 transition"
+                        />
+                      </div>
                     </div>
                   ) : (
-                    <span className="text-xs text-slate-400">
-                      Click a star to rate
-                    </span>
+                    <input
+                      type={
+                        field.type === "email"
+                          ? "email"
+                          : field.type === "tel"
+                          ? "tel"
+                          : field.type === "number"
+                          ? "number"
+                          : field.type === "date"
+                          ? "date"
+                          : "text"
+                      }
+                      inputMode={field.type === "tel" ? "numeric" : undefined}
+                      pattern={
+                        field.type === "tel" ? "[0-9]{10,15}" : undefined
+                      }
+                      maxLength={field.type === "tel" ? 15 : undefined}
+                      required={field.required}
+                      value={values[field.id] || ""}
+                      onChange={(e) => {
+                        let value = e.target.value;
+                        if (field.type === "tel") {
+                          value = value.replace(/\D/g, "").slice(0, 15);
+                        }
+                        setValues((p) => ({ ...p, [field.id]: value }));
+                      }}
+                      onKeyDown={
+                        field.type === "tel"
+                          ? (e) => {
+                              const allowed = [
+                                "Backspace",
+                                "Delete",
+                                "Tab",
+                                "Escape",
+                                "Enter",
+                                "ArrowLeft",
+                                "ArrowRight",
+                                "ArrowUp",
+                                "ArrowDown",
+                                "Home",
+                                "End",
+                              ];
+                              if (allowed.includes(e.key)) return;
+                              if (e.ctrlKey || e.metaKey) return;
+                              if (!/^\d$/.test(e.key)) e.preventDefault();
+                            }
+                          : undefined
+                      }
+                      onPaste={
+                        field.type === "tel"
+                          ? (e) => {
+                              e.preventDefault();
+                              const pasted = (
+                                e.clipboardData?.getData("text") || ""
+                              )
+                                .replace(/\D/g, "")
+                                .slice(0, 15);
+                              setValues((p) => ({
+                                ...p,
+                                [field.id]: pasted,
+                              }));
+                            }
+                          : undefined
+                      }
+                      placeholder={
+                        field.placeholder ||
+                        (field.type === "tel"
+                          ? "e.g. 9876543210"
+                          : field.type === "email"
+                          ? "you@example.com"
+                          : undefined)
+                      }
+                      className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 bg-white text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-200 transition"
+                    />
                   )}
                 </div>
-              ) : field.type === "daterange" ? (
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <div>
-                    <label className="mb-1 block text-xs font-medium text-slate-500">
-                      Start date
-                    </label>
-                    <input
-                      type="date"
-                      value={values[field.id]?.start || ""}
-                      onChange={(e) => {
-                        const current = values[field.id] || {
-                          start: "",
-                          end: "",
-                        };
-                        setValues((p) => ({
-                          ...p,
-                          [field.id]: { ...current, start: e.target.value },
-                        }));
-                      }}
-                      className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
-                    />
-                  </div>
-                  <div>
-                    <label className="mb-1 block text-xs font-medium text-slate-500">
-                      End date
-                    </label>
-                    <input
-                      type="date"
-                      value={values[field.id]?.end || ""}
-                      onChange={(e) => {
-                        const current = values[field.id] || {
-                          start: "",
-                          end: "",
-                        };
-                        setValues((p) => ({
-                          ...p,
-                          [field.id]: { ...current, end: e.target.value },
-                        }));
-                      }}
-                      className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
-                    />
-                  </div>
-                </div>
-              ) : (
-                <input
-                  type={
-                    field.type === "email"
-                      ? "email"
-                      : field.type === "tel"
-                      ? "tel"
-                      : field.type === "number"
-                      ? "number"
-                      : field.type === "date"
-                      ? "date"
-                      : "text"
-                  }
-                  inputMode={field.type === "tel" ? "numeric" : undefined}
-                  pattern={field.type === "tel" ? "[0-9]{10,15}" : undefined}
-                  maxLength={field.type === "tel" ? 15 : undefined}
-                  required={field.required}
-                  value={values[field.id] || ""}
-                  onChange={(e) => {
-                    let value = e.target.value;
-                    if (field.type === "tel") {
-                      value = value.replace(/\D/g, "").slice(0, 15);
-                    }
-                    setValues((p) => ({ ...p, [field.id]: value }));
-                  }}
-                  onKeyDown={
-                    field.type === "tel"
-                      ? (e) => {
-                          const allowed = [
-                            "Backspace",
-                            "Delete",
-                            "Tab",
-                            "Escape",
-                            "Enter",
-                            "ArrowLeft",
-                            "ArrowRight",
-                            "ArrowUp",
-                            "ArrowDown",
-                            "Home",
-                            "End",
-                          ];
-                          if (allowed.includes(e.key)) return;
-                          if (e.ctrlKey || e.metaKey) return;
-                          if (!/^\d$/.test(e.key)) e.preventDefault();
-                        }
-                      : undefined
-                  }
-                  onPaste={
-                    field.type === "tel"
-                      ? (e) => {
-                          e.preventDefault();
-                          const pasted = (
-                            e.clipboardData?.getData("text") || ""
-                          )
-                            .replace(/\D/g, "")
-                            .slice(0, 15);
-                          setValues((p) => ({ ...p, [field.id]: pasted }));
-                        }
-                      : undefined
-                  }
-                  placeholder={
-                    field.placeholder ||
-                    (field.type === "tel" ? "e.g. 9876543210" : undefined)
-                  }
-                  className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
-                />
-              )}
+              ))}
             </div>
-          ))}
 
-          <button
-            type="submit"
-            disabled={submitting}
-            className="w-full py-3 rounded-lg bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition disabled:opacity-60"
-          >
-            {submitting ? "Submitting..." : "Submit"}
-          </button>
-        </form>
+            {/* Submit */}
+            <div className="mt-8 pt-2">
+              <button
+                type="submit"
+                disabled={submitting}
+                className="w-full py-3 rounded-lg bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800 transition disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {submitting ? (
+                  <>
+                    <Loader2 size={16} className="animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  "Submit"
+                )}
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );
