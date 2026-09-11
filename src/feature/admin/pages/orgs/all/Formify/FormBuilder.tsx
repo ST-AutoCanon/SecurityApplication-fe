@@ -2,7 +2,7 @@
 
 "use client";
 
-import React, {
+import {
   useState,
   useEffect,
   useContext,
@@ -73,6 +73,7 @@ interface FormSchema {
   title: string;
   description?: string;
   fields: FormField[];
+  layoutColumns?: 1 | 2 | 3;
   createdAt: string;
   updatedAt: string;
 }
@@ -144,6 +145,7 @@ export default function FormBuilder() {
   const [draftTitle, setDraftTitle] = useState("");
   const [draftDescription, setDraftDescription] = useState("");
   const [draftFields, setDraftFields] = useState<FormField[]>([]);
+  const [draftLayoutColumns, setDraftLayoutColumns] = useState<1 | 2 | 3>(2);
   const [fieldReferenceImageUrl, setFieldReferenceImageUrl] = useState("");
 
   const [shareEmails, setShareEmails] = useState<string[]>([""]);
@@ -188,15 +190,17 @@ export default function FormBuilder() {
   const getVisibleFields = (fields: FormField[] = []) =>
     fields.filter((field) => field.type !== "reference-image");
 
+  // Single clean useEffect (no duplicates)
   useEffect(() => {
-    if (activeForm) {
-      const formFields = getVisibleFields(activeForm.fields || []);
-      setDraftTitle(activeForm.title);
-      setDraftDescription(activeForm.description || "");
-      setDraftFields(formFields);
-      resetFieldBuilder();
-    }
-  }, [activeFormId]);
+    if (!activeForm || creating) return;
+
+    const formFields = getVisibleFields(activeForm.fields || []);
+    setDraftTitle(activeForm.title);
+    setDraftDescription(activeForm.description || "");
+    setDraftFields(formFields);
+    setDraftLayoutColumns(activeForm.layoutColumns || 2);
+    resetFieldBuilder();
+  }, [activeFormId, creating]);
 
   const loadResponses = useCallback(async () => {
     if (!activeFormId) return;
@@ -250,7 +254,8 @@ export default function FormBuilder() {
     return (
       draftTitle !== (activeForm.title || "") ||
       draftDescription !== (activeForm.description || "") ||
-      JSON.stringify(draftFields) !== JSON.stringify(currentFields)
+      JSON.stringify(draftFields) !== JSON.stringify(currentFields) ||
+      draftLayoutColumns !== (activeForm.layoutColumns || 2)
     );
   };
 
@@ -262,17 +267,19 @@ export default function FormBuilder() {
 
       const res = await axios.post(
         `${API}/api/forms`,
-        { title: "New Form", description: "", fields: [] },
+        { title: "New Form", description: "", fields: [], layoutColumns: 2 },
         { withCredentials: true }
       );
 
       const created: FormSchema = { ...res.data.data, title: "" };
+
       setForms((prev) => [created, ...prev]);
       setActiveFormId(created.id);
       setViewMode("edit");
       setDraftTitle("");
       setDraftDescription("");
       setDraftFields([]);
+      setDraftLayoutColumns(2);
       resetFieldBuilder();
     } catch (err: any) {
       console.error(err);
@@ -292,7 +299,21 @@ export default function FormBuilder() {
     resetFieldBuilder();
   };
 
-  const requestCreateNewForm = () => {
+  const requestCreateNewForm = (
+    event?: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    event?.preventDefault();
+    event?.stopPropagation();
+
+    if (activeForm && !draftTitle.trim()) {
+      setAlert({
+        type: "warning",
+        message:
+          "Please enter a form name and save the current form before creating a new form.",
+      });
+      return;
+    }
+
     if (hasUnsavedChanges()) {
       setPendingAction({ type: "create" });
       setAlert({
@@ -320,15 +341,18 @@ export default function FormBuilder() {
   };
 
   const handleUnsavedConfirm = async () => {
-    const ok = await saveForm();
+    const action = pendingAction;
+    const ok = await saveForm(false);
+
     if (!ok) {
       setPendingAction(null);
       return;
     }
-    if (pendingAction?.type === "create") {
+
+    if (action?.type === "create") {
       await doCreateNewForm();
-    } else if (pendingAction?.type === "switch") {
-      doSwitchForm(pendingAction.formId);
+    } else if (action?.type === "switch") {
+      doSwitchForm(action.formId);
     }
   };
 
@@ -345,7 +369,7 @@ export default function FormBuilder() {
 
   const createNewForm = requestCreateNewForm;
 
-  const saveForm = async (): Promise<boolean> => {
+  const saveForm = async (showLoading = true): Promise<boolean> => {
     if (!activeFormId) return false;
     if (!draftTitle.trim()) {
       setAlert({ type: "error", message: "Title is required" });
@@ -353,7 +377,7 @@ export default function FormBuilder() {
     }
 
     try {
-      setSaving(true);
+      if (showLoading) setSaving(true);
       setAlert(null);
 
       const res = await axios.put(
@@ -362,6 +386,7 @@ export default function FormBuilder() {
           title: draftTitle.trim(),
           description: draftDescription,
           fields: draftFields,
+          layoutColumns: draftLayoutColumns,
         },
         { withCredentials: true }
       );
@@ -381,7 +406,7 @@ export default function FormBuilder() {
       });
       return false;
     } finally {
-      setSaving(false);
+      if (showLoading) setSaving(false);
     }
   };
 
@@ -650,27 +675,33 @@ export default function FormBuilder() {
 
           <div className="flex flex-col items-end gap-2 shrink-0">
             <div className="flex flex-wrap justify-end gap-2">
-              {/* NEW FORM – uses creating state */}
-              <button
-                onClick={createNewForm}
-                disabled={creating || saving}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition disabled:opacity-60"
-              >
+              {/* NEW FORM */}
+            <button
+  type="button"
+  onClick={createNewForm}
+  disabled={creating}
+  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition disabled:opacity-60"
+>
                 {creating ? (
-                  <Loader2 size={15} className="animate-spin" />
+                  <>
+                    <Loader2 size={15} className="animate-spin" />
+                    Creating...
+                  </>
                 ) : (
-                  <Plus size={15} />
+                  <>
+                    <Plus size={15} />
+                    New Form
+                  </>
                 )}
-                New Form
               </button>
 
               {activeForm && (
                 <>
-                  {/* PREVIEW BUTTON */}
                   <button
                     onClick={() =>
                       setViewMode(viewMode === "preview" ? "edit" : "preview")
                     }
+                    disabled={saving || creating}
                     className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border text-sm font-medium transition ${
                       viewMode === "preview"
                         ? "bg-purple-50 border-purple-300 text-purple-700"
@@ -681,13 +712,13 @@ export default function FormBuilder() {
                     {viewMode === "preview" ? "Edit" : "Preview"}
                   </button>
 
-                  {/* RESPONSES BUTTON */}
                   <button
                     onClick={() =>
                       setViewMode(
                         viewMode === "responses" ? "edit" : "responses"
                       )
                     }
+                    disabled={saving || creating}
                     className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border text-sm font-medium transition ${
                       viewMode === "responses"
                         ? "bg-purple-50 border-purple-300 text-purple-700"
@@ -698,20 +729,25 @@ export default function FormBuilder() {
                     Responses
                   </button>
 
-                  {/* SAVE BUTTON – uses saving state only */}
                   {viewMode === "edit" && (
-                    <button
-                      onClick={saveForm}
-                      disabled={saving || creating}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition disabled:opacity-60"
-                    >
-                      {saving ? (
-                        <Loader2 size={14} className="animate-spin" />
-                      ) : (
-                        <Save size={14} />
-                      )}
-                      Save
-                    </button>
+                   <button
+  type="button"
+  onClick={() => saveForm()}
+  disabled={saving || creating}
+  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition disabled:opacity-60"
+>
+  {saving ? (
+    <>
+      <Loader2 size={14} className="animate-spin" />
+      Saving...
+    </>
+  ) : (
+    <>
+      <Save size={14} />
+      Save
+    </>
+  )}
+</button>
                   )}
                 </>
               )}
@@ -791,16 +827,22 @@ export default function FormBuilder() {
                   No form selected
                 </p>
                 <button
+                  type="button"
                   onClick={createNewForm}
-                  disabled={creating}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition"
+                  disabled={creating || saving}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition disabled:opacity-60"
                 >
                   {creating ? (
-                    <Loader2 size={15} className="animate-spin" />
+                    <>
+                      <Loader2 size={15} className="animate-spin" />
+                      Creating...
+                    </>
                   ) : (
-                    <Plus size={15} />
+                    <>
+                      <Plus size={15} />
+                      Create Form
+                    </>
                   )}
-                  Create Form
                 </button>
               </div>
             ) : viewMode === "preview" ? (
@@ -811,6 +853,7 @@ export default function FormBuilder() {
                     title: draftTitle,
                     description: draftDescription,
                     fields: draftFields,
+                    layoutColumns: draftLayoutColumns,
                   }}
                   onBack={() => setViewMode("edit")}
                 />
@@ -848,6 +891,25 @@ export default function FormBuilder() {
                           className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
                           placeholder="e.g. Employee Survey"
                         />
+                      </div>
+
+                      <div className="sm:w-[180px] shrink-0">
+                        <label className="block text-[11px] font-medium text-slate-500 mb-1">
+                          Fields per row
+                        </label>
+                        <select
+                          value={draftLayoutColumns}
+                          onChange={(e) =>
+                            setDraftLayoutColumns(
+                              Number(e.target.value) as 1 | 2 | 3
+                            )
+                          }
+                          className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
+                        >
+                          <option value={1}>1 column</option>
+                          <option value={2}>2 columns</option>
+                          <option value={3}>3 columns</option>
+                        </select>
                       </div>
 
                       <div className="flex-1 min-w-0">
@@ -1170,6 +1232,7 @@ export default function FormBuilder() {
                 <FileText size={24} className="mx-auto text-slate-300 mb-2" />
                 <p className="text-xs text-slate-400">No forms yet</p>
                 <button
+                  type="button"
                   onClick={createNewForm}
                   className="mt-2 text-xs font-medium text-purple-600 hover:underline"
                 >
@@ -1550,14 +1613,22 @@ function FormPreview({
         </p>
       </div>
 
-      <div className="p-5 sm:p-8 space-y-5 max-w-2xl mx-auto">
+      <div
+        className="p-5 sm:p-8 grid gap-5 max-w-4xl mx-auto"
+        style={{
+          gridTemplateColumns: `repeat(${schema.layoutColumns || 2}, minmax(0, 1fr))`,
+        }}
+      >
         {visibleFields.length === 0 ? (
-          <p className="text-center text-sm text-slate-400 py-8">
+          <p className="col-span-full text-center text-sm text-slate-400 py-8">
             No fields added yet
           </p>
         ) : (
           visibleFields.map((field: any) => (
-            <div key={field.id}>
+            <div
+              key={field.id}
+              className={field.type === "textarea" ? "col-span-full" : ""}
+            >
               <label className="block text-sm font-semibold text-slate-800 mb-1.5">
                 {field.label}
                 {field.required && <span className="text-red-500 ml-1">*</span>}
