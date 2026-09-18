@@ -39,7 +39,7 @@ const { user } = useContext(AuthContext);
     //   icon: <LayoutDashboard size={22} />,
     // },
     {
-      name: "Form Management",
+      name: "Manage Category",
       path: "/admin/organisation/manage_forms",
       icon: <LayoutDashboard size={22} />,
     },
@@ -48,7 +48,7 @@ const { user } = useContext(AuthContext);
       path: "/admin/organisation/buisness_data",
       icon: <LayoutDashboard size={22} />,
     },
-   {
+    {
       name: "Form Builder",
       path: "/admin/organisation/form_builder",
       icon: <ClipboardEdit size={22} />,
@@ -58,11 +58,11 @@ const { user } = useContext(AuthContext);
       path: "/admin/organisation/Campaign",
       icon: <Megaphone size={22} />,
     },
-     {
-  name: "Quick Request",
-  path: "/admin/organisation/quick_request",
-  icon: <MessageSquarePlus size={22} />,
-},
+    {
+      name: "Quick Request",
+      path: "/admin/organisation/quick_request",
+      icon: <MessageSquarePlus size={22} />,
+    },
     // {
     //   name: "Apartment",
     //   path: "/admin/organisation/apartment/members",

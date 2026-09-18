@@ -25,6 +25,7 @@ export default function TopNav({ pageTitle, onMenuClick }: TopNavProps) {
           </button>
         )}
         <h1 className="text-white text-lg sm:text-2xl font-semibold truncate">
+          
           {pageTitle}
         </h1>
       </div>
