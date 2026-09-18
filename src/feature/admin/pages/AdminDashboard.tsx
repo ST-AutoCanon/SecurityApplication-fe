@@ -1,4 +1,6 @@
 import { useLocation } from "react-router-dom";
+import { useContext } from "react";
+import { AuthContext } from "../../../context/AuthContext";
 import Sidebar from "../components/Sidebar";
 import TopNav from "../components/TopNav";
 
@@ -25,64 +27,66 @@ import Dashboard from "./AdminDashboard/AdminDashboardHome";
 
 export default function SuperAdminDashboard() {
   const { pathname } = useLocation();
-
+  const { user } = useContext(AuthContext);
   let activePage = "Dashboard";
 
-  if (pathname.includes("create_security")) {
-    activePage = "Create Security";
-  }
-  else if (pathname.includes("gates")) {
-    activePage = "Gates";
-  }
-  else if (pathname.includes("manage_organisation")) {
-    activePage = "Manage Organisation";
-  }
-  else if (pathname.includes("Dashboard")) {
-    activePage = "Dashboard";
-  }
-  // else if (pathname.includes("manage_tables")) {
-  //   activePage = "Manage Tables";
-  // } else if (pathname.includes("update_tables")) {
-  //   activePage = "Update Tables";
-  else if (
-  pathname.includes("manage_forms") ||
-  pathname.includes("update_forms") ||
-  pathname.includes("create_forms")
-) {
-  activePage = "Form Management";
-
-  } else if (pathname.includes("form_builder") || pathname.includes("forms")) {
-    activePage = "Form Builder";
-  } else if (pathname.toLowerCase().includes("campaign")) {
-    activePage = "Campaign";
-    
-  }
-   else if (pathname.includes("quick_request")) {
-  activePage = "Quick Request";
-}
-  else if (
-    pathname.includes("/business-data/") &&
-    pathname.includes("/edit")
-  ) {
-    activePage = "Business Data Edit";
-  } else if (pathname.includes("buisness_data")) {
-    activePage = "Business Data";
-  } else if (pathname.includes("apartment/members/add")) {
-    /**
-     * Apartment Module
-     */
-    activePage = "Add Apartment Member";
-  } else if (pathname.includes("apartment/members/import")) {
-    activePage = "Import Apartment Members";
-  } else if (pathname.includes("apartment/members/edit")) {
-    activePage = "Edit Apartment Member";
-  } else if (
-    pathname.match(/\/admin\/organisation\/apartment\/members\/\d+$/)
-  ) {
-    activePage = "Apartment Member Details";
-  } else if (pathname.includes("apartment/members")) {
-    activePage = "Apartment Members";
-  }
+  // if (pathname.includes("create_security")) {
+  //   activePage = "Create Security";
+  // }
+    if (pathname.includes("create_security")) {
+      activePage =
+        user?.org_type?.toUpperCase() === "EVENT"
+          ? "Create Organiser"
+          : "Create Security";
+    } else if (pathname.includes("gates")) {
+      activePage = "Gates";
+    } else if (pathname.includes("manage_organisation")) {
+      activePage = "Manage Organisation";
+    } else if (pathname.includes("Dashboard")) {
+      activePage = "Dashboard";
+    }
+    // else if (pathname.includes("manage_tables")) {
+    //   activePage = "Manage Tables";
+    // } else if (pathname.includes("update_tables")) {
+    //   activePage = "Update Tables";
+    else if (
+      pathname.includes("manage_forms") ||
+      pathname.includes("update_forms") ||
+      pathname.includes("create_forms")
+    ) {
+      activePage = "Manage Category Registration";
+    } else if (
+      pathname.includes("form_builder") ||
+      pathname.includes("forms")
+    ) {
+      activePage = "Form Builder";
+    } else if (pathname.toLowerCase().includes("campaign")) {
+      activePage = "Campaign";
+    } else if (pathname.includes("quick_request")) {
+      activePage = "Quick Request";
+    } else if (
+      pathname.includes("/business-data/") &&
+      pathname.includes("/edit")
+    ) {
+      activePage = "Business Data Edit";
+    } else if (pathname.includes("buisness_data")) {
+      activePage = "Business Data";
+    } else if (pathname.includes("apartment/members/add")) {
+      /**
+       * Apartment Module
+       */
+      activePage = "Add Apartment Member";
+    } else if (pathname.includes("apartment/members/import")) {
+      activePage = "Import Apartment Members";
+    } else if (pathname.includes("apartment/members/edit")) {
+      activePage = "Edit Apartment Member";
+    } else if (
+      pathname.match(/\/admin\/organisation\/apartment\/members\/\d+$/)
+    ) {
+      activePage = "Apartment Member Details";
+    } else if (pathname.includes("apartment/members")) {
+      activePage = "Apartment Members";
+    }
 
  const pageComponents: Record<string, React.ReactElement> = {
 //   Dashboard: (
@@ -101,6 +105,7 @@ export default function SuperAdminDashboard() {
 //     </div>
 //   ),
 
+     "Create Organiser": <SecurityManagement />,
   "Create Security": <SecurityManagement />,
   "Dashboard": <Dashboard />,
   
@@ -111,7 +116,7 @@ export default function SuperAdminDashboard() {
   // "Manage Tables": <DynamicTableCreatePage />,
 
   // "Update Tables": <DynamicTableUpdatePage />,
-  "Form Management": <FormManagement />,
+  "Manage Category Registration": <FormManagement />,
 
   "Business Data": <BusinessDataPage />,
   "Business Data Edit": <BusinessDataEditPage />,
