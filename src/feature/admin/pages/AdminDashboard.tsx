@@ -1,6 +1,160 @@
+// import { useLocation } from "react-router-dom";
+// import { useContext } from "react";
+// import { AuthContext } from "../../../context/AuthContext";
+// import Sidebar from "../components/Sidebar";
+// import TopNav from "../components/TopNav";
+
+// import SecurityManagement from "./orgs/all/SecurityManagement";
+// // import DynamicTableCreatePage from "./DynamicTableCreatePage";
+
+// import FormManagement from "./DynamicFormManagement/FormManagement";
+
+// // import DynamicTableUpdatePage from "./DynamicTableUpdatePage";
+// import BusinessDataPage from "./BusinessDataPage";
+// import BusinessDataEditPage from "./BusinessDataEditPage";
+// import ApartmentMembers from "./apartment/pages/Members/ApartmentMembers";
+// import AddApartmentMember from "./apartment/pages/Members/AddApartmentMember";
+// import EditApartmentMember from "./apartment/pages/Members/EditApartmentMember";
+// import ApartmentMemberDetails from "./apartment/pages/Members/ApartmentMemberDetails";
+// import ImportMembers from "./apartment/pages/Members/ImportMembers";
+// import FormBuilder from "./orgs/all/Formify/FormBuilder";
+// import Campaign from "./orgs/all/Comapaign/Compaign";
+// import QuickRequest from "./orgs/all/QuickRequest/QuickRequest";
+
+// import AssignGatesManagement from "./gates/AssignGatesManagement";
+// import Dashboard from "./AdminDashboard/AdminDashboardHome";
+
+
+// export default function SuperAdminDashboard() {
+//   const { pathname } = useLocation();
+//   const { user } = useContext(AuthContext);
+//   let activePage = "Dashboard";
+
+//   // if (pathname.includes("create_security")) {
+//   //   activePage = "Create Security";
+//   // }
+//     if (pathname.includes("create_security")) {
+//       activePage =
+//         user?.org_type?.toUpperCase() === "EVENT"
+//           ? "Create Organiser"
+//           : "Create Security";
+//     } else if (pathname.includes("gates")) {
+//       activePage = "Gates";
+//     } else if (pathname.includes("manage_organisation")) {
+//       activePage = "Manage Organisation";
+//     } else if (pathname.includes("Dashboard")) {
+//       activePage = "Dashboard";
+//     }
+//     // else if (pathname.includes("manage_tables")) {
+//     //   activePage = "Manage Tables";
+//     // } else if (pathname.includes("update_tables")) {
+//     //   activePage = "Update Tables";
+//     else if (
+//       pathname.includes("manage_forms") ||
+//       pathname.includes("update_forms") ||
+//       pathname.includes("create_forms")
+//     ) {
+//       activePage = "Manage Category Registration";
+//     } else if (
+//       pathname.includes("form_builder") ||
+//       pathname.includes("forms")
+//     ) {
+//       activePage = "Form Builder";
+//     } else if (pathname.toLowerCase().includes("campaign")) {
+//       activePage = "Campaign";
+//     } else if (pathname.includes("quick_request")) {
+//       activePage = "Quick Request";
+//     } else if (
+//       pathname.includes("/business-data/") &&
+//       pathname.includes("/edit")
+//     ) {
+//       activePage = "Business Data Edit";
+//     } else if (pathname.includes("buisness_data")) {
+//       activePage = "Business Data";
+//     } else if (pathname.includes("apartment/members/add")) {
+//       /**
+//        * Apartment Module
+//        */
+//       activePage = "Add Apartment Member";
+//     } else if (pathname.includes("apartment/members/import")) {
+//       activePage = "Import Apartment Members";
+//     } else if (pathname.includes("apartment/members/edit")) {
+//       activePage = "Edit Apartment Member";
+//     } else if (
+//       pathname.match(/\/admin\/organisation\/apartment\/members\/\d+$/)
+//     ) {
+//       activePage = "Apartment Member Details";
+//     } else if (pathname.includes("apartment/members")) {
+//       activePage = "Apartment Members";
+//     }
+
+//  const pageComponents: Record<string, React.ReactElement> = {
+// //   Dashboard: (
+// //     <div className="w-full h-full bg-gradient-to-r from-[#4b1b7a] to-[#2d2a8c] text-white min-h-[80vh]">
+// //       <div className="w-full px-4 sm:px-6 md:px-10 pt-5 md:pt-8 flex flex-wrap gap-4">
+// //         <div className="bg-white rounded-2xl shadow-md p-5 sm:p-8 w-full">
+// //           <h2 className="text-2xl font-semibold mb-4 text-gray-800">
+// //             Welcome to Admin Dashboard
+// //           </h2>
+
+// //           <p className="text-gray-700">
+// //             Use the sidebar to navigate to different sections.
+// //           </p>
+// //         </div>
+// //       </div>
+// //     </div>
+// //   ),
+
+//      "Create Organiser": <SecurityManagement />,
+//   "Create Security": <SecurityManagement />,
+//   "Dashboard": <Dashboard />,
+  
+
+
+//   Gates: <AssignGatesManagement />,
+
+//   // "Manage Tables": <DynamicTableCreatePage />,
+
+//   // "Update Tables": <DynamicTableUpdatePage />,
+//   "Manage Category Registration": <FormManagement />,
+
+//   "Business Data": <BusinessDataPage />,
+//   "Business Data Edit": <BusinessDataEditPage />,
+//   "Form Builder": <FormBuilder />,
+//   Campaign: <Campaign />,
+//   "Quick Request": <QuickRequest />,
+
+//   /**
+//    * Apartment Module
+//    */
+//   "Apartment Members": <ApartmentMembers />,
+
+//   "Add Apartment Member": <AddApartmentMember />,
+
+//   "Edit Apartment Member": <EditApartmentMember />,
+
+//   "Apartment Member Details": <ApartmentMemberDetails />,
+
+//   "Import Apartment Members": <ImportMembers />,
+// };
+
+//   return (
+//     <div className="min-h-screen bg-gray-100">
+//       <div className="flex flex-col md:flex-row min-h-screen">
+//         <Sidebar />
+
+//         <div className="flex-1 flex flex-col w-full">
+//           <TopNav pageTitle={activePage} />
+
+//           <main className="flex-1 bg-gray-50 overflow-auto">
+//             {pageComponents[activePage]}
+//           </main>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
 import { useLocation } from "react-router-dom";
-import { useContext } from "react";
-import { AuthContext } from "../../../context/AuthContext";
 import Sidebar from "../components/Sidebar";
 import TopNav from "../components/TopNav";
 
@@ -20,73 +174,84 @@ import ImportMembers from "./apartment/pages/Members/ImportMembers";
 import FormBuilder from "./orgs/all/Formify/FormBuilder";
 import Campaign from "./orgs/all/Comapaign/Compaign";
 import QuickRequest from "./orgs/all/QuickRequest/QuickRequest";
+import Announcements from "./orgs/all/Announcements/Announcements";
+
 
 import AssignGatesManagement from "./gates/AssignGatesManagement";
 import Dashboard from "./AdminDashboard/AdminDashboardHome";
+import ImportantInformation from "./orgs/all/ImportantInformation/ImportantInformation";
+import VendorsServiceProviders from "./orgs/all/VendorsServiceProviders/VendorsServiceProviders";
 
 
 export default function SuperAdminDashboard() {
   const { pathname } = useLocation();
-  const { user } = useContext(AuthContext);
+
   let activePage = "Dashboard";
 
-  // if (pathname.includes("create_security")) {
-  //   activePage = "Create Security";
-  // }
-    if (pathname.includes("create_security")) {
-      activePage =
-        user?.org_type?.toUpperCase() === "EVENT"
-          ? "Create Organiser"
-          : "Create Security";
-    } else if (pathname.includes("gates")) {
-      activePage = "Gates";
-    } else if (pathname.includes("manage_organisation")) {
-      activePage = "Manage Organisation";
-    } else if (pathname.includes("Dashboard")) {
-      activePage = "Dashboard";
-    }
-    // else if (pathname.includes("manage_tables")) {
-    //   activePage = "Manage Tables";
-    // } else if (pathname.includes("update_tables")) {
-    //   activePage = "Update Tables";
-    else if (
-      pathname.includes("manage_forms") ||
-      pathname.includes("update_forms") ||
-      pathname.includes("create_forms")
-    ) {
-      activePage = "Manage Category Registration";
-    } else if (
-      pathname.includes("form_builder") ||
-      pathname.includes("forms")
-    ) {
-      activePage = "Form Builder";
-    } else if (pathname.toLowerCase().includes("campaign")) {
-      activePage = "Campaign";
-    } else if (pathname.includes("quick_request")) {
-      activePage = "Quick Request";
-    } else if (
-      pathname.includes("/business-data/") &&
-      pathname.includes("/edit")
-    ) {
-      activePage = "Business Data Edit";
-    } else if (pathname.includes("buisness_data")) {
-      activePage = "Business Data";
-    } else if (pathname.includes("apartment/members/add")) {
-      /**
-       * Apartment Module
-       */
-      activePage = "Add Apartment Member";
-    } else if (pathname.includes("apartment/members/import")) {
-      activePage = "Import Apartment Members";
-    } else if (pathname.includes("apartment/members/edit")) {
-      activePage = "Edit Apartment Member";
-    } else if (
-      pathname.match(/\/admin\/organisation\/apartment\/members\/\d+$/)
-    ) {
-      activePage = "Apartment Member Details";
-    } else if (pathname.includes("apartment/members")) {
-      activePage = "Apartment Members";
-    }
+  if (pathname.includes("create_security")) {
+    activePage = "Create Security";
+  }
+  else if (pathname.includes("gates")) {
+    activePage = "Gates";
+  }
+  else if (pathname.includes("manage_organisation")) {
+    activePage = "Manage Organisation";
+  }
+  else if (pathname.includes("Dashboard")) {
+    activePage = "Dashboard";
+  }
+  // else if (pathname.includes("manage_tables")) {
+  //   activePage = "Manage Tables";
+  // } else if (pathname.includes("update_tables")) {
+  //   activePage = "Update Tables";
+  else if (
+  pathname.includes("manage_forms") ||
+  pathname.includes("update_forms") ||
+  pathname.includes("create_forms")
+) {
+  activePage = "Form Management";
+
+  } else if (pathname.includes("form_builder") || pathname.includes("forms")) {
+    activePage = "Form Builder";
+  } else if (pathname.toLowerCase().includes("campaign")) {
+    activePage = "Campaign";
+    
+  }
+   else if (pathname.includes("quick_request")) {
+  activePage = "Quick Request";
+}
+else if (pathname.includes("Announcements")) {
+  activePage = "Announcements";
+}
+else if (pathname.includes("ImportantInformation")) {
+  activePage = "Important Information";
+}
+else if (pathname.includes("VendorsServiceProviders")) {
+  activePage = "Vendors and Service Providers";
+}
+  else if (
+    pathname.includes("/business-data/") &&
+    pathname.includes("/edit")
+  ) {
+    activePage = "Business Data Edit";
+  } else if (pathname.includes("buisness_data")) {
+    activePage = "Business Data";
+  } else if (pathname.includes("apartment/members/add")) {
+    /**
+     * Apartment Module
+     */
+    activePage = "Add Apartment Member";
+  } else if (pathname.includes("apartment/members/import")) {
+    activePage = "Import Apartment Members";
+  } else if (pathname.includes("apartment/members/edit")) {
+    activePage = "Edit Apartment Member";
+  } else if (
+    pathname.match(/\/admin\/organisation\/apartment\/members\/\d+$/)
+  ) {
+    activePage = "Apartment Member Details";
+  } else if (pathname.includes("apartment/members")) {
+    activePage = "Apartment Members";
+  }
 
  const pageComponents: Record<string, React.ReactElement> = {
 //   Dashboard: (
@@ -105,7 +270,6 @@ export default function SuperAdminDashboard() {
 //     </div>
 //   ),
 
-     "Create Organiser": <SecurityManagement />,
   "Create Security": <SecurityManagement />,
   "Dashboard": <Dashboard />,
   
@@ -116,13 +280,17 @@ export default function SuperAdminDashboard() {
   // "Manage Tables": <DynamicTableCreatePage />,
 
   // "Update Tables": <DynamicTableUpdatePage />,
-  "Manage Category Registration": <FormManagement />,
+  "Form Management": <FormManagement />,
 
   "Business Data": <BusinessDataPage />,
   "Business Data Edit": <BusinessDataEditPage />,
   "Form Builder": <FormBuilder />,
   Campaign: <Campaign />,
   "Quick Request": <QuickRequest />,
+    "Announcements": <Announcements />,
+    "Important Information": <ImportantInformation />,
+    "Vendors and Service Providers": <VendorsServiceProviders />,
+
 
   /**
    * Apartment Module
