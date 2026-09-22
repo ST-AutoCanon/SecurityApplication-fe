@@ -32,19 +32,167 @@ import Alert from "../../../../components/Aleartmessage"; // Change the path if 
   const [alertOpen, setAlertOpen] = useState(false);
 const [alertType, setAlertType] = useState<"success" | "error">("success");
 const [alertMessage, setAlertMessage] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    
 
+const showAlert = (
+  type: "success" | "error",
+  message: string
+) => {
+  setAlertType(type);
+  setAlertMessage(message);
+  setAlertOpen(true);
+};
 // const handleSubmit = async () => {
 //   try {
+//     // Organisation Name
 //     if (!orgname.trim()) {
-//       alert("Organisation Name Required");
+//       showAlert("error", "Organisation Name is required");
 //       return;
 //     }
 
+//     // Organisation Type
+//     if (!orgType) {
+//       showAlert("error", "Please select Organisation Type");
+//       return;
+//     }
+
+//     // Phone
+//     if (!phone.trim()) {
+//       showAlert("error", "Phone Number is required");
+//       return;
+//     }
+
+//     if (!/^[6-9]\d{9}$/.test(phone)) {
+//       showAlert("error", "Please enter a valid 10-digit Phone Number");
+//       return;
+//     }
+
+//     // Email
+//     if (!email.trim()) {
+//       showAlert("error", "Organisation Email is required");
+//       return;
+//     }
+
+//     if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
+//       showAlert("error", "Please enter a valid Organisation Email");
+//       return;
+//     }
+
+//     // Address
+//     if (!address.trim()) {
+//       showAlert("error", "Address is required");
+//       return;
+//     }
+
+//     // Aadhaar (Optional)
+//     if (aadhaarNumber && !/^\d{12}$/.test(aadhaarNumber)) {
+//       showAlert("error", "Aadhaar Number must be exactly 12 digits");
+//       return;
+//     }
+
+//     // PAN (Optional)
+//     if (
+//       panNumber &&
+//       !/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(panNumber.toUpperCase())
+//     ) {
+//       showAlert("error", "Please enter a valid PAN Number");
+//       return;
+//     }
+
+//     // Passport (Optional)
+//     if (
+//       passportNumber &&
+//       !/^[A-Z][0-9]{7}$/.test(passportNumber.toUpperCase())
+//     ) {
+//       showAlert("error", "Please enter a valid Passport Number");
+//       return;
+//     }
+
+//     // Registration Dates
+//     if (!registrationStartDate) {
+//       showAlert("error", "Registration Start Date is required");
+//       return;
+//     }
+
+//     if (!registrationEndDate) {
+//       showAlert("error", "Registration End Date is required");
+//       return;
+//     }
+
+//     if (
+//       new Date(registrationEndDate) <
+//       new Date(registrationStartDate)
+//     ) {
+//       showAlert(
+//         "error",
+//         "Registration End Date cannot be earlier than Start Date"
+//       );
+//       return;
+//     }
+
+//     // Status
+//     if (!status) {
+//       showAlert("error", "Please select Status");
+//       return;
+//     }
+
+//     // Photo Validation (Optional)
+//     if (photo) {
+//       const allowedTypes = [
+//         "image/jpeg",
+//         "image/jpg",
+//         "image/png",
+//       ];
+
+//       if (!allowedTypes.includes(photo.type)) {
+//         showAlert("error", "Only JPG, JPEG and PNG images are allowed");
+//         return;
+//       }
+
+//       if (photo.size > 2 * 1024 * 1024) {
+//         showAlert("error", "Photo size should be less than 2MB");
+//         return;
+//       }
+//     }
+
+//     // Admin First Name
+//     if (!adminFirstName.trim()) {
+//       showAlert("error", "Admin First Name is required");
+//       return;
+//     }
+
+//     // Admin Last Name
+//     if (!adminLastName.trim()) {
+//       showAlert("error", "Admin Last Name is required");
+//       return;
+//     }
+
+//     // Admin Phone
+//     if (!adminPhone.trim()) {
+//       showAlert("error", "Admin Phone Number is required");
+//       return;
+//     }
+
+//     if (!/^[6-9]\d{9}$/.test(adminPhone)) {
+//       showAlert("error", "Please enter a valid Admin Phone Number");
+//       return;
+//     }
+
+//     // Admin Email
 //     if (!adminEmail.trim()) {
-//       alert("Admin Email Required");
+//       showAlert("error", "Admin Email is required");
 //       return;
 //     }
 
+//     if (
+//       !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(adminEmail)
+//     ) {
+//       showAlert("error", "Please enter a valid Admin Email");
+//       return;
+//     }
+
+//     // Create FormData
 //     const formData = new FormData();
 
 //     formData.append("org_name", orgname);
@@ -53,8 +201,8 @@ const [alertMessage, setAlertMessage] = useState("");
 //     formData.append("email", email);
 //     formData.append("address", address);
 //     formData.append("aadhaar_number", aadhaarNumber);
-//     formData.append("pan_number", panNumber);
-//     formData.append("passport_number", passportNumber);
+//     formData.append("pan_number", panNumber.toUpperCase());
+//     formData.append("passport_number", passportNumber.toUpperCase());
 //     formData.append("registration_start_date", registrationStartDate);
 //     formData.append("registration_end_date", registrationEndDate);
 //     formData.append("status", status);
@@ -66,7 +214,7 @@ const [alertMessage, setAlertMessage] = useState("");
 //         last_name: adminLastName,
 //         email: adminEmail,
 //         phone: adminPhone,
-//       }),
+//       })
 //     );
 
 //     if (photo) {
@@ -80,23 +228,27 @@ const [alertMessage, setAlertMessage] = useState("");
 //       },
 //     });
 
-//     alert("Organisation Created");
+//     showAlert("success", "Organisation Created Successfully");
 //     resetForm();
+
 //   } catch (error: any) {
 //     console.log(error);
-//     alert(error?.response?.data?.message || "Something went wrong");
+
+//     showAlert(
+//       "error",
+//       error?.response?.data?.message || "Something went wrong"
+//     );
 //   }
 // };
 
-const showAlert = (
-  type: "success" | "error",
-  message: string
-) => {
-  setAlertType(type);
-  setAlertMessage(message);
-  setAlertOpen(true);
-};
+    
+   
 const handleSubmit = async () => {
+  // Prevent multiple clicks while request is in progress
+  if (isSubmitting) return;
+
+  setIsSubmitting(true);
+
   try {
     // Organisation Name
     if (!orgname.trim()) {
@@ -199,12 +351,18 @@ const handleSubmit = async () => {
       ];
 
       if (!allowedTypes.includes(photo.type)) {
-        showAlert("error", "Only JPG, JPEG and PNG images are allowed");
+        showAlert(
+          "error",
+          "Only JPG, JPEG and PNG images are allowed"
+        );
         return;
       }
 
       if (photo.size > 2 * 1024 * 1024) {
-        showAlert("error", "Photo size should be less than 2MB");
+        showAlert(
+          "error",
+          "Photo size should be less than 2MB"
+        );
         return;
       }
     }
@@ -228,7 +386,10 @@ const handleSubmit = async () => {
     }
 
     if (!/^[6-9]\d{9}$/.test(adminPhone)) {
-      showAlert("error", "Please enter a valid Admin Phone Number");
+      showAlert(
+        "error",
+        "Please enter a valid Admin Phone Number"
+      );
       return;
     }
 
@@ -238,10 +399,11 @@ const handleSubmit = async () => {
       return;
     }
 
-    if (
-      !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(adminEmail)
-    ) {
-      showAlert("error", "Please enter a valid Admin Email");
+    if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(adminEmail)) {
+      showAlert(
+        "error",
+        "Please enter a valid Admin Email"
+      );
       return;
     }
 
@@ -255,9 +417,18 @@ const handleSubmit = async () => {
     formData.append("address", address);
     formData.append("aadhaar_number", aadhaarNumber);
     formData.append("pan_number", panNumber.toUpperCase());
-    formData.append("passport_number", passportNumber.toUpperCase());
-    formData.append("registration_start_date", registrationStartDate);
-    formData.append("registration_end_date", registrationEndDate);
+    formData.append(
+      "passport_number",
+      passportNumber.toUpperCase()
+    );
+    formData.append(
+      "registration_start_date",
+      registrationStartDate
+    );
+    formData.append(
+      "registration_end_date",
+      registrationEndDate
+    );
     formData.append("status", status);
 
     formData.append(
@@ -274,6 +445,7 @@ const handleSubmit = async () => {
       formData.append("photo", photo);
     }
 
+    // API request
     await axios.post(`${API}/register`, formData, {
       withCredentials: true,
       headers: {
@@ -281,18 +453,26 @@ const handleSubmit = async () => {
       },
     });
 
-    showAlert("success", "Organisation Created Successfully");
-    resetForm();
+    showAlert(
+      "success",
+      "Organisation Created Successfully"
+    );
 
+    resetForm();
   } catch (error: any) {
     console.log(error);
 
     showAlert(
       "error",
-      error?.response?.data?.message || "Something went wrong"
+      error?.response?.data?.message ||
+        "Something went wrong"
     );
+  } finally {
+    // Allow submission again after validation/API request finishes
+    setIsSubmitting(false);
   }
 };
+
 
 
     const resetForm = () => {
@@ -320,12 +500,12 @@ const handleSubmit = async () => {
     return (
       <div className="max-w-7xl mx-auto p-6 text-gray-800">
         {alertOpen && (
-  <Alert
-    type={alertType}
-    message={alertMessage}
-    onClose={() => setAlertOpen(false)}
-  />
-)}
+          <Alert
+            type={alertType}
+            message={alertMessage}
+            onClose={() => setAlertOpen(false)}
+          />
+        )}
         <h1 className="text-2xl md:text-3xl font-bold mb-6 text-white">
           Organisation Management
         </h1>
@@ -333,11 +513,10 @@ const handleSubmit = async () => {
         <div className="bg-white shadow rounded-xl p-6 mb-8">
           <div className="grid md:grid-cols-2 gap-4">
             {/* Organisation Name */}
-          <div className="flex flex-col">
-            <label className="block mb-2 text-sm font-medium">
-              Organisation Name<span className="text-red-500">*</span>
-
-            </label>
+            <div className="flex flex-col">
+              <label className="block mb-2 text-sm font-medium">
+                Organisation Name<span className="text-red-500">*</span>
+              </label>
 
               <input
                 value={orgname}
@@ -351,10 +530,10 @@ const handleSubmit = async () => {
               <label className="block mb-2 text-sm font-medium">
                 Organisation Type
               </label> */}
-          <div className="flex flex-col">
-            <label className="block mb-2 text-sm font-medium">
-              Organisation Type<span className="text-red-500">*</span>
-            </label>
+            <div className="flex flex-col">
+              <label className="block mb-2 text-sm font-medium">
+                Organisation Type<span className="text-red-500">*</span>
+              </label>
 
               <select
                 value={orgType}
@@ -367,10 +546,10 @@ const handleSubmit = async () => {
                 <option value="EVENT">Event</option>
               </select>
             </div>
-<div className="flex flex-col">
-            <label className="block mb-2 text-sm font-medium">
-              Phone Number<span className="text-red-500">*</span>
-            </label>
+            <div className="flex flex-col">
+              <label className="block mb-2 text-sm font-medium">
+                Phone Number<span className="text-red-500">*</span>
+              </label>
 
               <input
                 value={phone}
@@ -379,8 +558,10 @@ const handleSubmit = async () => {
                 placeholder="Enter phone number"
               />
             </div>
-                      <div className="flex flex-col">
-            <label className="block mb-2 text-sm font-medium">Email-Id<span className="text-red-500">*</span></label>
+            <div className="flex flex-col">
+              <label className="block mb-2 text-sm font-medium">
+                Email-Id<span className="text-red-500">*</span>
+              </label>
               <input
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -388,8 +569,10 @@ const handleSubmit = async () => {
                 placeholder="Enter email"
               />
             </div>
-          <div className="md:col-span-2 flex flex-col">
-            <label className="mb-2 text-sm font-medium">Address<span className="text-red-500">*</span></label>
+            <div className="md:col-span-2 flex flex-col">
+              <label className="mb-2 text-sm font-medium">
+                Address<span className="text-red-500">*</span>
+              </label>
               <textarea
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
@@ -399,9 +582,9 @@ const handleSubmit = async () => {
             </div>
 
             <div className="flex flex-col">
-            <label className="block mb-2 text-sm font-medium">
-              Aadhaar Number
-            </label>
+              <label className="block mb-2 text-sm font-medium">
+                Aadhaar Number
+              </label>
 
               <input
                 value={aadhaarNumber}
@@ -411,10 +594,10 @@ const handleSubmit = async () => {
               />
             </div>
 
-                      <div className="flex flex-col">
-            <label className="block mb-2 text-sm font-medium">
-              PAN Number
-            </label>
+            <div className="flex flex-col">
+              <label className="block mb-2 text-sm font-medium">
+                PAN Number
+              </label>
 
               <input
                 value={panNumber}
@@ -424,10 +607,10 @@ const handleSubmit = async () => {
               />
             </div>
 
-           <div className="flex flex-col">
-            <label className="block mb-2 text-sm font-medium">
-              Passport Number
-            </label>
+            <div className="flex flex-col">
+              <label className="block mb-2 text-sm font-medium">
+                Passport Number
+              </label>
               <input
                 value={passportNumber}
                 onChange={(e) => setPassportNumber(e.target.value)}
@@ -437,9 +620,9 @@ const handleSubmit = async () => {
             </div>
 
             <div className="flex flex-col">
-            <label className="block mb-2 text-sm font-medium">
-              Registration Start Date<span className="text-red-500">*</span>
-            </label>
+              <label className="block mb-2 text-sm font-medium">
+                Registration Start Date<span className="text-red-500">*</span>
+              </label>
 
               <input
                 type="date"
@@ -449,10 +632,10 @@ const handleSubmit = async () => {
               />
             </div>
 
-             <div className="flex flex-col">
-            <label className="block mb-2 text-sm font-medium">
-              Registration End Date<span className="text-red-500">*</span>
-            </label>
+            <div className="flex flex-col">
+              <label className="block mb-2 text-sm font-medium">
+                Registration End Date<span className="text-red-500">*</span>
+              </label>
 
               <input
                 type="date"
@@ -462,8 +645,10 @@ const handleSubmit = async () => {
               />
             </div>
 
-          <div className="flex flex-col">
-            <label className="block mb-2 text-sm font-medium">Status<span className="text-red-500">*</span></label>
+            <div className="flex flex-col">
+              <label className="block mb-2 text-sm font-medium">
+                Status<span className="text-red-500">*</span>
+              </label>
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
@@ -487,9 +672,7 @@ const handleSubmit = async () => {
             </div> */}
 
             <div className="md:col-span-2">
-            <label className="block mb-2 text-sm font-medium">
-              Photo
-            </label>
+              <label className="block mb-2 text-sm font-medium">Photo</label>
 
               {/* <label
     htmlFor="photo-upload"
@@ -540,9 +723,9 @@ const handleSubmit = async () => {
             </div> */}
 
             <div className="flex flex-col">
-            <label className="block mb-2 text-sm font-medium">
-              Admin First Name<span className="text-red-500">*</span>
-            </label>
+              <label className="block mb-2 text-sm font-medium">
+                Admin First Name<span className="text-red-500">*</span>
+              </label>
 
               <input
                 value={adminFirstName}
@@ -553,9 +736,9 @@ const handleSubmit = async () => {
             </div>
 
             <div className="flex flex-col">
-            <label className="block mb-2 text-sm font-medium">
-              Admin Last Name<span className="text-red-500">*</span>
-            </label>
+              <label className="block mb-2 text-sm font-medium">
+                Admin Last Name<span className="text-red-500">*</span>
+              </label>
 
               <input
                 value={adminLastName}
@@ -565,10 +748,10 @@ const handleSubmit = async () => {
               />
             </div>
             {/* Admin Phone */}
-           <div className="flex flex-col">
-            <label className="block mb-2 text-sm font-medium">
-              Admin Phone number<span className="text-red-500">*</span>
-            </label>
+            <div className="flex flex-col">
+              <label className="block mb-2 text-sm font-medium">
+                Admin Phone number<span className="text-red-500">*</span>
+              </label>
 
               <input
                 value={adminPhone}
@@ -595,11 +778,23 @@ const handleSubmit = async () => {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3 mt-6">
-            <button
+            {/* <button
               onClick={handleSubmit}
               className="w-full sm:w-auto bg-blue-600 text-white px-6 py-2 rounded"
             >
               Create Organisation
+            </button> */}
+
+            <button
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+              className={`w-full sm:w-auto px-6 py-2 rounded ${
+                isSubmitting
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-blue-600 text-white"
+              }`}
+            >
+              {isSubmitting ? "Creating..." : "Create Organisation"}
             </button>
           </div>
         </div>
