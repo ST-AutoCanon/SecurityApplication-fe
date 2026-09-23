@@ -2,12 +2,9 @@
   import { Upload } from "lucide-react";
   import axios from "axios";
 import Alert from "../../../../components/Aleartmessage"; // Change the path if needed
-  // const API = "http://localhost:5000/api/org-super-admin";
+
   const API = `${import.meta.env.VITE_BACKEND_URL}/api/org-super-admin`;
 
-  // const config = {
-  //   withCredentials: true,
-  // };
 
 
   export default function OrganisationPage() {
@@ -43,205 +40,7 @@ const showAlert = (
   setAlertMessage(message);
   setAlertOpen(true);
 };
-// const handleSubmit = async () => {
-//   try {
-//     // Organisation Name
-//     if (!orgname.trim()) {
-//       showAlert("error", "Organisation Name is required");
-//       return;
-//     }
 
-//     // Organisation Type
-//     if (!orgType) {
-//       showAlert("error", "Please select Organisation Type");
-//       return;
-//     }
-
-//     // Phone
-//     if (!phone.trim()) {
-//       showAlert("error", "Phone Number is required");
-//       return;
-//     }
-
-//     if (!/^[6-9]\d{9}$/.test(phone)) {
-//       showAlert("error", "Please enter a valid 10-digit Phone Number");
-//       return;
-//     }
-
-//     // Email
-//     if (!email.trim()) {
-//       showAlert("error", "Organisation Email is required");
-//       return;
-//     }
-
-//     if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
-//       showAlert("error", "Please enter a valid Organisation Email");
-//       return;
-//     }
-
-//     // Address
-//     if (!address.trim()) {
-//       showAlert("error", "Address is required");
-//       return;
-//     }
-
-//     // Aadhaar (Optional)
-//     if (aadhaarNumber && !/^\d{12}$/.test(aadhaarNumber)) {
-//       showAlert("error", "Aadhaar Number must be exactly 12 digits");
-//       return;
-//     }
-
-//     // PAN (Optional)
-//     if (
-//       panNumber &&
-//       !/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(panNumber.toUpperCase())
-//     ) {
-//       showAlert("error", "Please enter a valid PAN Number");
-//       return;
-//     }
-
-//     // Passport (Optional)
-//     if (
-//       passportNumber &&
-//       !/^[A-Z][0-9]{7}$/.test(passportNumber.toUpperCase())
-//     ) {
-//       showAlert("error", "Please enter a valid Passport Number");
-//       return;
-//     }
-
-//     // Registration Dates
-//     if (!registrationStartDate) {
-//       showAlert("error", "Registration Start Date is required");
-//       return;
-//     }
-
-//     if (!registrationEndDate) {
-//       showAlert("error", "Registration End Date is required");
-//       return;
-//     }
-
-//     if (
-//       new Date(registrationEndDate) <
-//       new Date(registrationStartDate)
-//     ) {
-//       showAlert(
-//         "error",
-//         "Registration End Date cannot be earlier than Start Date"
-//       );
-//       return;
-//     }
-
-//     // Status
-//     if (!status) {
-//       showAlert("error", "Please select Status");
-//       return;
-//     }
-
-//     // Photo Validation (Optional)
-//     if (photo) {
-//       const allowedTypes = [
-//         "image/jpeg",
-//         "image/jpg",
-//         "image/png",
-//       ];
-
-//       if (!allowedTypes.includes(photo.type)) {
-//         showAlert("error", "Only JPG, JPEG and PNG images are allowed");
-//         return;
-//       }
-
-//       if (photo.size > 2 * 1024 * 1024) {
-//         showAlert("error", "Photo size should be less than 2MB");
-//         return;
-//       }
-//     }
-
-//     // Admin First Name
-//     if (!adminFirstName.trim()) {
-//       showAlert("error", "Admin First Name is required");
-//       return;
-//     }
-
-//     // Admin Last Name
-//     if (!adminLastName.trim()) {
-//       showAlert("error", "Admin Last Name is required");
-//       return;
-//     }
-
-//     // Admin Phone
-//     if (!adminPhone.trim()) {
-//       showAlert("error", "Admin Phone Number is required");
-//       return;
-//     }
-
-//     if (!/^[6-9]\d{9}$/.test(adminPhone)) {
-//       showAlert("error", "Please enter a valid Admin Phone Number");
-//       return;
-//     }
-
-//     // Admin Email
-//     if (!adminEmail.trim()) {
-//       showAlert("error", "Admin Email is required");
-//       return;
-//     }
-
-//     if (
-//       !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(adminEmail)
-//     ) {
-//       showAlert("error", "Please enter a valid Admin Email");
-//       return;
-//     }
-
-//     // Create FormData
-//     const formData = new FormData();
-
-//     formData.append("org_name", orgname);
-//     formData.append("org_type", orgType);
-//     formData.append("phone", phone);
-//     formData.append("email", email);
-//     formData.append("address", address);
-//     formData.append("aadhaar_number", aadhaarNumber);
-//     formData.append("pan_number", panNumber.toUpperCase());
-//     formData.append("passport_number", passportNumber.toUpperCase());
-//     formData.append("registration_start_date", registrationStartDate);
-//     formData.append("registration_end_date", registrationEndDate);
-//     formData.append("status", status);
-
-//     formData.append(
-//       "admin",
-//       JSON.stringify({
-//         first_name: adminFirstName,
-//         last_name: adminLastName,
-//         email: adminEmail,
-//         phone: adminPhone,
-//       })
-//     );
-
-//     if (photo) {
-//       formData.append("photo", photo);
-//     }
-
-//     await axios.post(`${API}/register`, formData, {
-//       withCredentials: true,
-//       headers: {
-//         "Content-Type": "multipart/form-data",
-//       },
-//     });
-
-//     showAlert("success", "Organisation Created Successfully");
-//     resetForm();
-
-//   } catch (error: any) {
-//     console.log(error);
-
-//     showAlert(
-//       "error",
-//       error?.response?.data?.message || "Something went wrong"
-//     );
-//   }
-// };
-
-    
    
 const handleSubmit = async () => {
   // Prevent multiple clicks while request is in progress
@@ -526,10 +325,6 @@ const handleSubmit = async () => {
               />
             </div>
 
-            {/* <div>
-              <label className="block mb-2 text-sm font-medium">
-                Organisation Type
-              </label> */}
             <div className="flex flex-col">
               <label className="block mb-2 text-sm font-medium">
                 Organisation Type<span className="text-red-500">*</span>
@@ -551,11 +346,23 @@ const handleSubmit = async () => {
                 Phone Number<span className="text-red-500">*</span>
               </label>
 
-              <input
+              {/* <input
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Enter phone number"
+              /> */}
+              <input
+                type="tel"
+                value={phone}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/\D/g, "").slice(0, 10);
+                  setPhone(value);
+                }}
+                maxLength={10}
+                inputMode="numeric"
+                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="9876543210"
               />
             </div>
             <div className="flex flex-col">
@@ -754,8 +561,14 @@ const handleSubmit = async () => {
               </label>
 
               <input
+                type="tel"
                 value={adminPhone}
-                onChange={(e) => setAdminPhone(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/\D/g, "").slice(0, 10);
+                  setAdminPhone(value);
+                }}
+                maxLength={10}
+                inputMode="numeric"
                 className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="9876543210"
               />
