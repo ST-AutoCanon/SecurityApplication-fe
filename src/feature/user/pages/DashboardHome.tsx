@@ -140,6 +140,7 @@ import UserSummaryCards from "../../user/pages/UserDashboard/Components/UserSumm
 import UserAnnouncements from "../../user/pages/UserDashboard/Components/Announcements";
 import VendorsServiceProviders from "../../user/pages/UserDashboard/Components/VendorsServiceProviders";
 import ImportantInformation from "../../user/pages/UserDashboard/Components/ImportantInformation";
+import RequestAnnouncements from "../../user/pages/UserDashboard/Components/RequestAnnouncements";
 
 export default function DashboardHome() {
   return (
@@ -205,7 +206,7 @@ export default function DashboardHome() {
 
     {/* Your existing Important Information */}
     <ImportantInformation /> 
-
+<RequestAnnouncements />
   </div>
 
 </div>

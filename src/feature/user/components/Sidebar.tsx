@@ -181,7 +181,7 @@ import {
   Users,
   Menu,
   MessageSquarePlus,
-} from "lucide-react";
+  } from "lucide-react";
 export default function Sidebar() {
   const location = useLocation();
   const navigate = useNavigate();

@@ -25,6 +25,307 @@ type Announcement = {
   expires_at: string | null;
 };
 
+type AnnouncementBlock = {
+  id?: string | number;
+  block_type?: string;
+  blockType?: string;
+  type?: string;
+  content?: any;
+  url?: string;
+  buttonText?: string;
+  buttonLink?: string;
+  align?: "left" | "center" | "right";
+  sort_order?: number;
+  sortOrder?: number;
+};
+const getAnnouncementBlocks = (
+  message: string
+): AnnouncementBlock[] | null => {
+  if (!message) return null;
+
+  try {
+    const parsed = JSON.parse(message);
+
+    // Direct array
+    if (Array.isArray(parsed)) {
+      return parsed;
+    }
+
+    // { blocks: [...] }
+    if (Array.isArray(parsed?.blocks)) {
+      return parsed.blocks;
+    }
+
+    // { content: [...] }
+    if (Array.isArray(parsed?.content)) {
+      return parsed.content;
+    }
+
+    // Single block
+    if (
+      parsed?.block_type ||
+      parsed?.blockType ||
+      parsed?.type
+    ) {
+      return [parsed];
+    }
+
+    return null;
+  } catch {
+    // Old announcements may contain normal text
+    return null;
+  }
+};
+
+const AnnouncementContent = ({
+  message,
+  preview = false,
+}: {
+  message: string;
+  preview?: boolean;
+}) => {
+  const blocks = getAnnouncementBlocks(message);
+
+  /*
+   * Old announcement / plain text support
+   */
+  if (!blocks) {
+    return (
+      <div
+        className={
+          preview
+            ? "text-sm leading-6 text-slate-600 line-clamp-2 whitespace-pre-wrap"
+            : "text-sm leading-7 text-slate-700 whitespace-pre-wrap"
+        }
+      >
+        {message}
+      </div>
+    );
+  }
+
+  const sortedBlocks = [...blocks].sort(
+    (a, b) =>
+      Number(a.sort_order ?? a.sortOrder ?? 0) -
+      Number(b.sort_order ?? b.sortOrder ?? 0)
+  );
+
+  return (
+    <div className="w-full">
+      {sortedBlocks.map((block, index) => {
+        const type =
+          block.block_type ||
+          block.blockType ||
+          block.type;
+
+        const content =
+          block.content &&
+          typeof block.content === "object"
+            ? block.content
+            : {};
+
+        /*
+         * TEXT
+         */
+        if (type === "text") {
+          const text =
+            content.text ??
+            block.content ??
+            "";
+
+          if (!text) return null;
+
+          return (
+            <div
+              key={block.id ?? index}
+              style={{
+                color:
+                  content.color ||
+                  "#334155",
+
+                backgroundColor:
+                  content.backgroundColor &&
+                  content.backgroundColor !==
+                    "transparent"
+                    ? content.backgroundColor
+                    : undefined,
+
+                fontSize:
+                  content.fontSize
+                    ? `${content.fontSize}px`
+                    : "14px",
+
+                fontWeight:
+                  content.fontWeight ||
+                  "normal",
+
+                fontStyle:
+                  content.fontStyle ||
+                  "normal",
+
+                textAlign:
+                  content.textAlign ||
+                  "left",
+
+                lineHeight: 1.6,
+
+                whiteSpace: "pre-wrap",
+
+                padding:
+                  content.backgroundColor &&
+                  content.backgroundColor !==
+                    "transparent"
+                    ? "10px 12px"
+                    : undefined,
+
+                borderRadius:
+                  content.backgroundColor &&
+                  content.backgroundColor !==
+                    "transparent"
+                    ? 8
+                    : undefined,
+
+                marginBottom: 12,
+
+                ...(preview
+                  ? {
+                      maxHeight: 70,
+                      overflow: "hidden",
+                    }
+                  : {}),
+              }}
+            >
+              {text}
+            </div>
+          );
+        }
+
+        /*
+         * IMAGE / BANNER
+         */
+        if (
+          type === "image" ||
+          type === "logo"
+        ) {
+          const imageUrl =
+            content.url ||
+            block.url ||
+            "";
+
+          if (!imageUrl) return null;
+
+          return (
+            <div
+              key={block.id ?? index}
+              style={{
+                textAlign:
+                  type === "logo"
+                    ? "center"
+                    : "left",
+                marginBottom: 14,
+              }}
+            >
+              <img
+                src={imageUrl}
+                alt={
+                  type === "logo"
+                    ? "Logo"
+                    : "Announcement image"
+                }
+                style={{
+                  maxWidth: "100%",
+                  width:
+                    type === "logo"
+                      ? "auto"
+                      : "100%",
+                  maxHeight:
+                    type === "logo"
+                      ? 100
+                      : 350,
+                  objectFit:
+                    type === "logo"
+                      ? "contain"
+                      : "cover",
+                  borderRadius: 8,
+                  display: "inline-block",
+                }}
+              />
+            </div>
+          );
+        }
+
+        /*
+         * BUTTON
+         */
+        if (type === "button") {
+          const buttonText =
+            content.buttonText ||
+            block.buttonText ||
+            "View";
+
+          const buttonLink =
+            content.buttonLink ||
+            block.buttonLink ||
+            "#";
+
+          const align =
+            content.align ||
+            block.align ||
+            "center";
+
+          return (
+            <div
+              key={block.id ?? index}
+              style={{
+                textAlign: align,
+                margin: "16px 0",
+              }}
+            >
+              <a
+                href={buttonLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: "inline-block",
+                  background:
+                    "#7c3aed",
+                  color: "#fff",
+                  padding:
+                    "10px 20px",
+                  borderRadius: 8,
+                  fontSize: 13,
+                  fontWeight: 600,
+                  textDecoration:
+                    "none",
+                }}
+              >
+                {buttonText}
+              </a>
+            </div>
+          );
+        }
+
+        /*
+         * DIVIDER
+         */
+        if (type === "divider") {
+          return (
+            <hr
+              key={block.id ?? index}
+              style={{
+                border: "none",
+                borderTop:
+                  "1px solid #e2e8f0",
+                margin: "16px 0",
+              }}
+            />
+          );
+        }
+
+        return null;
+      })}
+    </div>
+  );
+};
 const API =
   import.meta.env.VITE_BACKEND_URL;
 
@@ -358,7 +659,15 @@ const Announcements = () => {
         {/* ANNOUNCEMENT LIST */}
 
         {announcements.length > 0 && (
-          <div className="space-y-4">
+          // <div className="space-y-4">
+<div
+  className="space-y-3 max-h-[360px] overflow-y-auto pr-2"
+  style={{
+    scrollbarWidth: "thin",
+    scrollbarColor: "#cbd5e1 transparent",
+  }}
+>
+
             {announcements.map(
               (announcement) => {
                 const styles =
@@ -451,11 +760,17 @@ const Announcements = () => {
 
                         {/* MESSAGE */}
 
-                        <p className="mt-4 text-sm leading-6 text-slate-600 line-clamp-2">
+                        {/* <p className="mt-4 text-sm leading-6 text-slate-600 line-clamp-2">
                           {
                             announcement.message
                           }
-                        </p>
+                        </p> */}
+                        {/* <div className="mt-4">
+  <AnnouncementContent
+    message={announcement.message}
+    preview
+  />
+</div> */}
 
                         {/* EXPIRY */}
 
@@ -477,6 +792,7 @@ const Announcements = () => {
                 );
               }
             )}
+
           </div>
         )}
       </section>
@@ -559,12 +875,17 @@ const Announcements = () => {
 
             {/* MESSAGE */}
 
-            <div className="p-6">
-              <p className="text-sm leading-7 text-slate-700 whitespace-pre-wrap">
+              <div className="p-6">
+  <AnnouncementContent
+    message={selectedAnnouncement.message}
+  />
+
+              {/* <p className="text-sm leading-7 text-slate-700 whitespace-pre-wrap">
                 {
                   selectedAnnouncement.message
                 }
-              </p>
+              </p> */}
+              
 
               {selectedAnnouncement.expires_at && (
                 <div className="mt-6 p-3 rounded-xl bg-slate-50 border border-slate-200">
