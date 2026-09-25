@@ -222,7 +222,7 @@
 import React, { useState, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { LayoutDashboard, Building2, Menu, Building, Users,ClipboardEdit,   // for Form Builder
-  Megaphone,MessageSquarePlus } from "lucide-react";
+  Megaphone,MessageSquarePlus,Info,Store,ClipboardListIcon,DoorOpen} from "lucide-react";
 import { AuthContext } from "../../../context/AuthContext";
 
 export default function Sidebar() {
@@ -248,7 +248,7 @@ const { user } = useContext(AuthContext);
     {
       name: "Gates",
       path: "/admin/organisation/gates",
-      icon: <Users size={22} />,
+      icon: <DoorOpen size={22} />,
     },
     // {
     //   name: "Manage Tables",
@@ -263,7 +263,7 @@ const { user } = useContext(AuthContext);
     {
       name: "Form Management",
       path: "/admin/organisation/manage_forms",
-      icon: <LayoutDashboard size={22} />,
+      icon: <ClipboardListIcon size={22} />,
     },
     {
       name: "Buisness Data",
@@ -288,17 +288,17 @@ const { user } = useContext(AuthContext);
 {
   name: "Announcements",
   path: "/admin/organisation/Announcements",
-  icon: <MessageSquarePlus size={22} />,
+  icon: <Megaphone  size={22} />,
 },
 {
   name: "Important Information",
   path: "/admin/organisation/ImportantInformation",
-  icon: <MessageSquarePlus size={22} />,
+  icon: <Info size={22} />,
 },
 {
   name: "Vendors and Service Providers",
   path: "/admin/organisation/VendorsServiceProviders",
-  icon: <MessageSquarePlus size={22} />,
+  icon: <Store size={26} />,
 },
 
 
