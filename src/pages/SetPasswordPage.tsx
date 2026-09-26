@@ -57,7 +57,7 @@ export default function SetPasswordPage() {
       setMessage(res.data.message || "Password created successfully.");
 
       setTimeout(() => {
-        navigate("/", { replace: true });
+        navigate("/login", { replace: true });
       }, 2500);
     } catch (err: any) {
       setSuccess(false);

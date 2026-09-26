@@ -84,12 +84,8 @@ export default function OrganisationDetails({
 
   return (
     <div className="max-w-7xl mx-auto p-6 text-gray-800">
-
       <div className="flex items-center justify-between mb-6">
-
-        <h1 className="text-3xl font-bold text-white">
-          Organisation Details
-        </h1>
+        <h1 className="text-3xl font-bold text-white">Organisation Details</h1>
 
         <button
           onClick={onBack}
@@ -98,13 +94,10 @@ export default function OrganisationDetails({
           <ArrowLeft size={18} />
           Back
         </button>
-
       </div>
 
       <div className="bg-white shadow rounded-xl p-6">
-
         <div className="grid md:grid-cols-2 gap-4">
-
           {/* Organisation Name */}
 
           <div>
@@ -150,9 +143,7 @@ export default function OrganisationDetails({
           {/* Email */}
 
           <div>
-            <label className="block mb-2 text-sm font-medium">
-              Email
-            </label>
+            <label className="block mb-2 text-sm font-medium">Email</label>
 
             <input
               value={organisation.email}
@@ -164,9 +155,7 @@ export default function OrganisationDetails({
           {/* Address */}
 
           <div className="md:col-span-2">
-            <label className="block mb-2 text-sm font-medium">
-              Address
-            </label>
+            <label className="block mb-2 text-sm font-medium">Address</label>
 
             <textarea
               value={organisation.address}
@@ -174,8 +163,8 @@ export default function OrganisationDetails({
               rows={3}
               className="w-full border rounded-lg p-3 bg-gray-100"
             />
-                  </div>
-                {/* Aadhaar */}
+          </div>
+          {/* Aadhaar */}
 
           <div>
             <label className="block mb-2 text-sm font-medium">
@@ -192,9 +181,7 @@ export default function OrganisationDetails({
           {/* PAN */}
 
           <div>
-            <label className="block mb-2 text-sm font-medium">
-              PAN Number
-            </label>
+            <label className="block mb-2 text-sm font-medium">PAN Number</label>
 
             <input
               value={organisation.pan_number || ""}
@@ -220,9 +207,7 @@ export default function OrganisationDetails({
           {/* Status */}
 
           <div>
-            <label className="block mb-2 text-sm font-medium">
-              Status
-            </label>
+            <label className="block mb-2 text-sm font-medium">Status</label>
 
             <input
               value={organisation.status}
@@ -261,7 +246,8 @@ export default function OrganisationDetails({
             />
           </div>
 
-          {/* Photo */}
+
+          {/* Organisation Photo */}
 
           <div className="md:col-span-2">
             <label className="block mb-2 text-sm font-medium">
@@ -269,8 +255,15 @@ export default function OrganisationDetails({
             </label>
 
             {organisation.photo_path ? (
-              <div className="border rounded-lg p-3 bg-gray-100 break-all">
-                {organisation.photo_path}
+              <div className="border rounded-lg p-4 bg-gray-100">
+                <img
+                  src={`${import.meta.env.VITE_BACKEND_URL}/auth-uploads/${organisation.photo_path
+                    .split(/[\\/]/)
+                    .pop()}`}
+                  alt="Organisation"
+                  className="w-40 h-40 object-cover rounded-xl border shadow-sm"
+                />
+
               </div>
             ) : (
               <div className="border rounded-lg p-3 bg-gray-100 text-gray-500">
@@ -278,20 +271,15 @@ export default function OrganisationDetails({
               </div>
             )}
           </div>
-
         </div>
       </div>
 
       {/* ================= ADMIN DETAILS ================= */}
 
       <div className="bg-white shadow rounded-xl p-6 mt-8">
-
-        <h2 className="text-xl font-semibold mb-5">
-          Admin Details
-        </h2>
+        <h2 className="text-xl font-semibold mb-5">Admin Details</h2>
 
         <div className="grid md:grid-cols-2 gap-4">
-
           <div>
             <label className="block mb-2 text-sm font-medium">
               Admin First Name
@@ -339,10 +327,9 @@ export default function OrganisationDetails({
               className="w-full border rounded-lg p-3 bg-gray-100"
             />
           </div>
-
         </div>
-          </div>
-            {/* Footer */}
+      </div>
+      {/* Footer */}
 
       <div className="flex justify-end mt-8">
         <button
@@ -353,7 +340,6 @@ export default function OrganisationDetails({
           Back to Organisations
         </button>
       </div>
-
     </div>
   );
 }

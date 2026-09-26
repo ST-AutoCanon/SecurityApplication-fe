@@ -56,7 +56,7 @@ const UpdateOrganisation = () => {
   const [isActive, setIsActive] = useState(true);
 
   const [photo, setPhoto] = useState<File | null>(null);
-const [existingPhoto, setExistingPhoto] = useState("");
+  const [existingPhoto, setExistingPhoto] = useState("");
   const [adminFirstName, setAdminFirstName] = useState("");
   const [adminLastName, setAdminLastName] = useState("");
   const [adminEmail, setAdminEmail] = useState("");
@@ -70,9 +70,9 @@ const [existingPhoto, setExistingPhoto] = useState("");
     message: string;
   } | null>(null);
 
- const getFileName = (path: string) => {
-   return path.split(/[\\/]/).pop() || "";
- };
+  const getFileName = (path: string) => {
+    return path.split(/[\\/]/).pop() || "";
+  };
   // Fetch Organisations
   useEffect(() => {
     const fetchOrgs = async () => {
@@ -103,7 +103,7 @@ const [existingPhoto, setExistingPhoto] = useState("");
         if (res.data.success && res.data.data) {
           console.log("ORG DETAILS:", res.data.data);
           const org = res.data.data;
-setExistingPhoto(getFileName(org.photo_path || ""));
+          setExistingPhoto(getFileName(org.photo_path || ""));
           setOrgName(org.org_name || "");
           setOrgType(org.org_type || "");
           setPhone(org.phone || "");
@@ -374,23 +374,53 @@ focus:ring-2 focus:ring-blue-400 outline-none text-gray-700"
                       />
                     </div>
                     <div>
-                      <label className="block text-gray-700 font-semibold mb-2">
-                        Organisation Photo
-                      </label>
+                      <div>
+                        <label className="block text-gray-700 font-semibold mb-2">
+                          Organisation Photo
+                        </label>
 
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => {
-                          if (e.target.files?.length) {
-                            setPhoto(e.target.files[0]);
-                          }
-                        }}
-                      />
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            if (e.target.files?.length) {
+                              setPhoto(e.target.files[0]);
+                            }
+                          }}
+                        />
 
-                      <p className="text-sm text-gray-500 mt-2">
-                        {photo ? photo.name : existingPhoto}
-                      </p>
+                        {/* New selected image */}
+                        {photo ? (
+                          <div className="mt-3">
+                            <img
+                              src={URL.createObjectURL(photo)}
+                              alt="New Organisation"
+                              className="w-32 h-32 object-cover rounded-xl border"
+                            />
+
+                            <p className="text-sm text-gray-500 mt-2">
+                              {photo.name}
+                            </p>
+                          </div>
+                        ) : existingPhoto ? (
+                          /* Existing image */
+                          <div className="mt-3">
+                            <img
+                              src={`${import.meta.env.VITE_BACKEND_URL}/auth-uploads/${existingPhoto}`}
+                              alt="Organisation"
+                              className="w-32 h-32 object-cover rounded-xl border"
+                            />
+
+                            {/* <p className="text-sm text-gray-500 mt-2">
+                              {existingPhoto}
+                            </p> */}
+                          </div>
+                        ) : (
+                          <p className="text-sm text-gray-500 mt-2">
+                            No organisation photo
+                          </p>
+                        )}
+                      </div>
                     </div>
                     <div>
                       <label className="block text-gray-700 font-semibold mb-2">
