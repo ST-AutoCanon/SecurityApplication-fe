@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import {
   Bell,
+  ChevronLeft,
   ChevronRight,
   X,
   CalendarDays,
@@ -20,12 +21,17 @@ type Announcement = {
   reviewed_at: string | null;
 };
 
+const ITEMS_PER_PAGE = 2;
+
 const RequestAnnouncements = () => {
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
   const [selectedAnnouncement, setSelectedAnnouncement] =
     useState<Announcement | null>(null);
+
+  const [currentPage, setCurrentPage] = useState(1);
 
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -47,6 +53,7 @@ const RequestAnnouncements = () => {
 
       if (response.data?.success) {
         setAnnouncements(response.data.announcements || []);
+        setCurrentPage(1);
       } else {
         setAnnouncements([]);
       }
@@ -110,7 +117,7 @@ const RequestAnnouncements = () => {
 
   const getTitle = (announcement: string) => {
     if (!announcement) {
-      return "Announcement";
+      return "Broadcasted Message";
     }
 
     const firstLine = announcement
@@ -119,13 +126,15 @@ const RequestAnnouncements = () => {
       .find((line) => line.length > 0);
 
     if (!firstLine) {
-      return "Announcement";
+      return "Broadcasted Message";
     }
 
-    return firstLine
-      .replace(/^📢\s*/, "")
-      .replace(/^Announcement\s*[–-]\s*/i, "")
-      .trim() || "Announcement";
+    return (
+      firstLine
+        .replace(/^📢\s*/, "")
+        .replace(/^Broadcasted Messages\s*[–-]\s*/i, "")
+        .trim() || "Broadcasted Message"
+    );
   };
 
   // ============================================================
@@ -146,16 +155,54 @@ const RequestAnnouncements = () => {
       return announcement;
     }
 
-    return lines[1];
+    return lines.slice(1).join(" ");
   };
 
   // ============================================================
-  // DISPLAY LIMIT
+  // STATUS STYLE
   // ============================================================
 
+  const getStatusClass = (status?: string) => {
+    switch (status?.toLowerCase()) {
+      case "approved":
+        return "bg-emerald-50 text-emerald-600";
+
+      case "rejected":
+        return "bg-red-50 text-red-600";
+
+      default:
+        return "bg-amber-50 text-amber-600";
+    }
+  };
+
+  // ============================================================
+  // PAGINATION
+  // ============================================================
+
+  const totalPages = Math.max(
+    1,
+    Math.ceil(announcements.length / ITEMS_PER_PAGE)
+  );
+
   const visibleAnnouncements = useMemo(() => {
-    return announcements.slice(0, 4);
-  }, [announcements]);
+    const startIndex =
+      (currentPage - 1) * ITEMS_PER_PAGE;
+
+    return announcements.slice(
+      startIndex,
+      startIndex + ITEMS_PER_PAGE
+    );
+  }, [announcements, currentPage]);
+
+  const goToPreviousPage = () => {
+    setCurrentPage((page) => Math.max(1, page - 1));
+  };
+
+  const goToNextPage = () => {
+    setCurrentPage((page) =>
+      Math.min(totalPages, page + 1)
+    );
+  };
 
   // ============================================================
   // LOADING
@@ -164,6 +211,7 @@ const RequestAnnouncements = () => {
   if (loading) {
     return (
       <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        {/* HEADER */}
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50">
             <Bell className="h-5 w-5 text-blue-600" />
@@ -171,7 +219,7 @@ const RequestAnnouncements = () => {
 
           <div>
             <h2 className="text-base font-semibold text-slate-900">
-              Announcements
+              Broadcasted Messages
             </h2>
 
             <p className="text-xs text-slate-500">
@@ -180,17 +228,26 @@ const RequestAnnouncements = () => {
           </div>
         </div>
 
+        {/* SKELETON */}
         <div className="mt-5 space-y-3">
           {[1, 2].map((item) => (
             <div
               key={item}
               className="animate-pulse rounded-xl border border-slate-200 p-4"
             >
-              <div className="h-4 w-32 rounded bg-slate-200" />
+              <div className="flex gap-3">
+                <div className="h-9 w-9 shrink-0 rounded-lg bg-slate-200" />
 
-              <div className="mt-3 h-3 w-full rounded bg-slate-100" />
+                <div className="flex-1">
+                  <div className="h-4 w-36 rounded bg-slate-200" />
 
-              <div className="mt-2 h-3 w-3/4 rounded bg-slate-100" />
+                  <div className="mt-2 h-3 w-24 rounded bg-slate-100" />
+
+                  <div className="mt-3 h-3 w-full rounded bg-slate-100" />
+
+                  <div className="mt-2 h-3 w-3/4 rounded bg-slate-100" />
+                </div>
+              </div>
             </div>
           ))}
         </div>
@@ -212,10 +269,10 @@ const RequestAnnouncements = () => {
 
           <div>
             <h2 className="text-base font-semibold text-slate-900">
-              Announcements
+              Broadcasted Messages
             </h2>
 
-            <p className="text-xs text-red-500">
+            <p className="mt-1 text-xs text-red-500">
               {error}
             </p>
           </div>
@@ -225,114 +282,154 @@ const RequestAnnouncements = () => {
   }
 
   // ============================================================
-  // UI
+  // MAIN UI
   // ============================================================
 
   return (
     <>
       <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         {/* HEADER */}
-        <div className="flex items-start justify-between">
-          <div className="flex items-start gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50">
-              <Megaphone className="h-5 w-5 text-blue-600" />
-            </div>
-
-            <div>
-              <h2 className="text-base font-semibold text-slate-900">
-                Announcements
-              </h2>
-
-              <p className="mt-1 text-xs leading-5 text-slate-500">
-                Latest updates from your apartment
-              </p>
-            </div>
+        <div className="flex items-start gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50">
+            <Megaphone className="h-5 w-5 text-blue-600" />
           </div>
 
-          {announcements.length > 4 && (
-            <button
-              type="button"
-              className="text-xs font-medium text-blue-600 hover:text-blue-700"
-              onClick={() => {
-                // Can be connected to a View All page later.
-              }}
-            >
-              View All
-            </button>
-          )}
+          <div>
+            <h2 className="text-base font-semibold text-slate-900">
+              Broadcasted Messages
+            </h2>
+
+            <p className="mt-1 text-xs leading-5 text-slate-500">
+              Latest updates from your apartment
+            </p>
+          </div>
         </div>
 
-        {/* EMPTY */}
+        {/* EMPTY STATE */}
         {visibleAnnouncements.length === 0 ? (
           <div className="mt-5 rounded-xl border border-dashed border-slate-200 px-4 py-8 text-center">
             <Bell className="mx-auto h-7 w-7 text-slate-300" />
 
             <p className="mt-2 text-sm font-medium text-slate-600">
-              No announcements
+              No Messages
             </p>
 
             <p className="mt-1 text-xs text-slate-400">
-              There are no new announcements at the moment.
+              There are no new messages at the moment.
             </p>
           </div>
         ) : (
-          <div className="mt-5 space-y-3">
-            {visibleAnnouncements.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() =>
-                  setSelectedAnnouncement(item)
-                }
-                className="group w-full rounded-xl border border-slate-200 bg-white p-4 text-left transition hover:border-blue-200 hover:bg-blue-50/30"
-              >
-                <div className="flex items-start gap-3">
-                  {/* ICON */}
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-50">
-                    <Megaphone className="h-4 w-4 text-blue-600" />
-                  </div>
+          <>
+            {/* ==================================================
+                VERTICAL ANNOUNCEMENT LIST
+            ================================================== */}
 
-                  {/* CONTENT */}
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-start justify-between gap-3">
-                      <h3 className="truncate text-sm font-semibold text-slate-900">
-                        {getTitle(item.announcement)}
-                      </h3>
-
-                      <ChevronRight className="h-4 w-4 shrink-0 text-slate-300 transition group-hover:text-blue-500" />
+            <div className="mt-5 space-y-3">
+              {visibleAnnouncements.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() =>
+                    setSelectedAnnouncement(item)
+                  }
+                  className="group w-full rounded-xl border border-slate-200 bg-white p-3.5 text-left transition-all duration-200 hover:border-blue-200 hover:bg-blue-50/30 hover:shadow-sm"
+                >
+                  <div className="flex items-start gap-3">
+                    {/* ICON */}
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-50">
+                      <Megaphone className="h-4 w-4 text-blue-600" />
                     </div>
 
-                    <div className="mt-1 flex flex-wrap items-center gap-2">
-                      <span
-                        className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
-                          item.status?.toLowerCase() ===
-                          "approved"
-                            ? "bg-emerald-50 text-emerald-600"
-                            : item.status?.toLowerCase() ===
-                              "rejected"
-                            ? "bg-red-50 text-red-600"
-                            : "bg-amber-50 text-amber-600"
-                        }`}
-                      >
-                        {item.status}
-                      </span>
+                    {/* CONTENT */}
+                    <div className="min-w-0 flex-1">
+                      {/* TITLE + ARROW */}
+                      <div className="flex items-start justify-between gap-2">
+                        <h3 className="truncate text-sm font-semibold text-slate-900">
+                          {getTitle(item.announcement)}
+                        </h3>
 
-                      <span className="text-[10px] text-slate-400">
-                        {formatDate(
-                          item.reviewed_at ||
-                            item.submitted_at
-                        )}
-                      </span>
+                        <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-slate-300 transition group-hover:text-blue-500" />
+                      </div>
+
+                      {/* STATUS + DATE */}
+                      <div className="mt-1.5 flex items-center gap-2">
+                        <span
+                          className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${getStatusClass(
+                            item.status
+                          )}`}
+                        >
+                          {item.status}
+                        </span>
+
+                        <span className="text-[10px] text-slate-400">
+                          {formatDate(
+                            item.reviewed_at ||
+                              item.submitted_at
+                          )}
+                        </span>
+                      </div>
+
+                      {/* MESSAGE PREVIEW */}
+                      <p className="mt-2 line-clamp-2 text-xs leading-4.5 text-slate-500">
+                        {/* {getPreview(item.announcement)} */}
+                      </p>
                     </div>
-
-                    <p className="mt-2 line-clamp-2 text-xs leading-5 text-slate-500">
-                      {getPreview(item.announcement)}
-                    </p>
                   </div>
+                </button>
+              ))}
+            </div>
+
+            {/* ==================================================
+                PAGINATION
+            ================================================== */}
+
+            {totalPages > 1 && (
+              <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3">
+                {/* PREVIOUS */}
+                <button
+                  type="button"
+                  onClick={goToPreviousPage}
+                  disabled={currentPage === 1}
+                  className="flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  <ChevronLeft className="h-3.5 w-3.5" />
+                  Previous
+                </button>
+
+                {/* PAGE NUMBERS */}
+                <div className="flex items-center gap-1">
+                  {Array.from(
+                    { length: totalPages },
+                    (_, index) => index + 1
+                  ).map((page) => (
+                    <button
+                      key={page}
+                      type="button"
+                      onClick={() => setCurrentPage(page)}
+                      className={`flex h-7 min-w-7 items-center justify-center rounded-lg px-2 text-xs font-medium transition ${
+                        currentPage === page
+                          ? "bg-blue-600 text-white"
+                          : "text-slate-500 hover:bg-slate-100"
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  ))}
                 </div>
-              </button>
-            ))}
-          </div>
+
+                {/* NEXT */}
+                <button
+                  type="button"
+                  onClick={goToNextPage}
+                  disabled={currentPage === totalPages}
+                  className="flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  Next
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            )}
+          </>
         )}
       </section>
 
@@ -351,12 +448,12 @@ const RequestAnnouncements = () => {
           >
             {/* MODAL HEADER */}
             <div className="flex items-start justify-between border-b border-slate-100 px-6 py-5">
-              <div className="flex items-start gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50">
+              <div className="flex min-w-0 items-start gap-3">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50">
                   <Megaphone className="h-5 w-5 text-blue-600" />
                 </div>
 
-                <div>
+                <div className="min-w-0">
                   <h2 className="text-lg font-semibold text-slate-900">
                     {getTitle(
                       selectedAnnouncement.announcement
@@ -364,20 +461,16 @@ const RequestAnnouncements = () => {
                   </h2>
 
                   <div className="mt-2 flex flex-wrap items-center gap-3">
+                    {/* STATUS */}
                     <span
-                      className={`rounded-full px-2.5 py-1 text-[10px] font-medium ${
-                        selectedAnnouncement.status?.toLowerCase() ===
-                        "approved"
-                          ? "bg-emerald-50 text-emerald-600"
-                          : selectedAnnouncement.status?.toLowerCase() ===
-                            "rejected"
-                          ? "bg-red-50 text-red-600"
-                          : "bg-amber-50 text-amber-600"
-                      }`}
+                      className={`rounded-full px-2.5 py-1 text-[10px] font-medium ${getStatusClass(
+                        selectedAnnouncement.status
+                      )}`}
                     >
                       {selectedAnnouncement.status}
                     </span>
 
+                    {/* DATE */}
                     <span className="flex items-center gap-1 text-xs text-slate-400">
                       <CalendarDays className="h-3.5 w-3.5" />
 
@@ -387,6 +480,7 @@ const RequestAnnouncements = () => {
                       )}
                     </span>
 
+                    {/* TIME */}
                     <span className="flex items-center gap-1 text-xs text-slate-400">
                       <Clock3 className="h-3.5 w-3.5" />
 
@@ -399,12 +493,13 @@ const RequestAnnouncements = () => {
                 </div>
               </div>
 
+              {/* CLOSE */}
               <button
                 type="button"
                 onClick={() =>
                   setSelectedAnnouncement(null)
                 }
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+                className="ml-3 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
               >
                 <X className="h-4 w-4" />
               </button>
