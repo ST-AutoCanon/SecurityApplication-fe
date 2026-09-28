@@ -144,71 +144,65 @@ import RequestAnnouncements from "../../user/pages/UserDashboard/Components/Requ
 
 export default function DashboardHome() {
   return (
-//     <div className="flex min-h-screen bg-[#f8faff] text-slate-800">
+    //     <div className="flex min-h-screen bg-[#f8faff] text-slate-800">
 
-//         <main className="flex-1 overflow-y-auto p-4 sm:p-5 lg:p-6">
-//           <div className="mx-auto max-w-[1600px]">
-//             {/* ================================================= */}
-//             {/* REQUEST STATISTICS */}
-//             {/* ================================================= */}
+    //         <main className="flex-1 overflow-y-auto p-4 sm:p-5 lg:p-6">
+    //           <div className="mx-auto max-w-[1600px]">
+    //             {/* ================================================= */}
+    //             {/* REQUEST STATISTICS */}
+    //             {/* ================================================= */}
 
-// <UserSummaryCards  />
+    // <UserSummaryCards  />
 
-//             {/* ================================================= */}
-//             {/* VISITORS OVERVIEW */}
-//             {/* ================================================= */}
+    //             {/* ================================================= */}
+    //             {/* VISITORS OVERVIEW */}
+    //             {/* ================================================= */}
 
-//             <VisitorsOverview />
+    //             <VisitorsOverview />
 
-//             {/* ================================================= */}
-//             {/* LOWER DASHBOARD CONTENT */}
-//             {/* ================================================= */}
+    //             {/* ================================================= */}
+    //             {/* LOWER DASHBOARD CONTENT */}
+    //             {/* ================================================= */}
 
-//             <div className="mt-5 grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1fr)_390px]">
-//               {/* LEFT */}
+    //             <div className="mt-5 grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1fr)_390px]">
+    //               {/* LEFT */}
 
 
-//               {/* RIGHT */}
+    //               {/* RIGHT */}
 
-//               <div className="space-y-5">
-//                  {/* <RequestTracking /> */}
+    //               <div className="space-y-5">
+    //                  {/* <RequestTracking /> */}
 
-//                 <UserAnnouncements /> 
-//               </div>
-//             </div>
-//           </div>
-//         </main>
-//       </div>
-<div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_330px]">
-  
-  {/* LEFT SIDE */}
-  <div className="min-w-0 space-y-4">
-    
-    {/* Your existing summary cards */}
-    <UserSummaryCards />
+    //                 <UserAnnouncements /> 
+    //               </div>
+    //             </div>
+    //           </div>
+    //         </main>
+    //       </div>
+    <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_330px]">
 
-    {/* Visitors */}
-    <VisitorsOverview />
+      {/* LEFT SIDE */}
+      <div className="min-w-0 space-y-4">
 
-    {/* Vendors */}
-    <VendorsServiceProviders />
+        {/* Your existing summary cards */}
+        <UserSummaryCards />
 
-  </div>
+        {/* Visitors */}
+        <VisitorsOverview />
 
-  {/* RIGHT SIDE */}
-  <div className="space-y-4">
+        {/* Vendors */}
+        <VendorsServiceProviders />
 
-    <UserAnnouncements
-      // onViewAll={() => {
-      //   // navigate to announcements page
-      // }}
-    />
+      </div>
 
-    {/* Your existing Important Information */}
-    <ImportantInformation /> 
-<RequestAnnouncements />
-  </div>
+      {/* RIGHT SIDE */}
+      <div className="space-y-8">
 
-</div>
+        <UserAnnouncements />
+        <ImportantInformation />
+        <RequestAnnouncements />
+      </div>
+
+    </div>
   );
 }
