@@ -673,7 +673,7 @@ import {
   CalendarDays,
   ChevronLeft,
   ChevronRight,
-  Info,-
+  Info,
   X,
 } from "lucide-react";
 
