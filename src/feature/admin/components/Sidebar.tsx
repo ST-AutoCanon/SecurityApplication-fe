@@ -231,7 +231,9 @@ export default function Sidebar() {
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-const { user } = useContext(AuthContext);
+
+  const { user } = useContext(AuthContext);
+
   const links = [
     {
       name: "Dashboard",
@@ -239,9 +241,10 @@ const { user } = useContext(AuthContext);
       icon: <LayoutDashboard size={22} />,
     },
     {
-      // name: "Security",
       name:
-        user?.org_type?.toUpperCase() === "EVENT" ? "Organiser" : "Security",
+        user?.org_type?.toUpperCase() === "EVENT"
+          ? "Organiser"
+          : "Security",
       path: "/admin/organisation/create_security",
       icon: <Building2 size={22} />,
     },
@@ -250,16 +253,6 @@ const { user } = useContext(AuthContext);
       path: "/admin/organisation/gates",
       icon: <DoorOpen size={22} />,
     },
-    // {
-    //   name: "Manage Tables",
-    //   path: "/admin/organisation/manage_tables",
-    //   icon: <LayoutDashboard size={22} />,
-    // },
-    // {
-    //   name: "Update Tables",
-    //   path: "/admin/organisation/update_tables",
-    //   icon: <LayoutDashboard size={22} />,
-    // },
     {
       name: "Form Management",
       path: "/admin/organisation/manage_forms",
@@ -308,7 +301,9 @@ const { user } = useContext(AuthContext);
     //   icon: <Building size={22} />,
     // },
     // Show Apartment only if org_type is NOT EVENT or HOSPITAL
-    ...(!["EVENT", "HOSPITAL"].includes(user?.org_type?.toUpperCase() || "")
+    ...(!["EVENT", "HOSPITAL"].includes(
+      user?.org_type?.toUpperCase() || ""
+    )
       ? [
           {
             name: "Apartment",
@@ -320,9 +315,7 @@ const { user } = useContext(AuthContext);
   ];
 
   const isActive = (path: string) => {
-    return path === "/super_admin"
-      ? location.pathname === path
-      : location.pathname.startsWith(path);
+    return location.pathname.startsWith(path);
   };
 
   return (
@@ -331,19 +324,34 @@ const { user } = useContext(AuthContext);
       <aside
         onMouseEnter={() => setSidebarOpen(true)}
         onMouseLeave={() => setSidebarOpen(false)}
-        className={`hidden md:flex flex-col bg-white border-r border-gray-200 shadow-md
-        transition-all duration-300 ease-in-out
-        ${sidebarOpen ? "w-64 p-6" : "w-20 p-3"}
-      `}
+        className={`
+          hidden md:flex
+          flex-col
+          self-stretch
+          shrink-0
+          bg-white
+          border-r
+          border-gray-200
+          shadow-md
+          transition-all
+          duration-300
+          ease-in-out
+          ${sidebarOpen ? "w-64 p-6" : "w-20 p-3"}
+        `}
       >
         {/* Logo / Title */}
-        <div className="flex justify-center mb-8 transition-all duration-300">
+        <div className="flex justify-center mb-8 shrink-0">
           <h1
-            className={`font-semibold text-gray-800 transition-all duration-300
-            ${sidebarOpen ? "text-lg" : "text-sm"}
-          `}
+            className={`
+              font-semibold
+              text-gray-800
+              transition-all
+              duration-300
+              whitespace-nowrap
+              ${sidebarOpen ? "text-lg" : "text-sm"}
+            `}
           >
-            {sidebarOpen ? "Admin" : "Admin"}
+            {sidebarOpen ? "Admin" : "AD"}
           </h1>
         </div>
 
@@ -357,16 +365,29 @@ const { user } = useContext(AuthContext);
                 <li key={link.name}>
                   <Link
                     to={link.path}
-                    className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors
-                    ${
-                      active
-                        ? "bg-gradient-to-r from-[#020b3d] to-cyan-600 text-white shadow-lg"
-                        : "text-gray-700 hover:bg-cyan-50 hover:text-cyan-700"
-                    }
-                  `}
+                    className={`
+                      flex
+                      items-center
+                      gap-3
+                      px-3
+                      py-2
+                      rounded-lg
+                      transition-colors
+                      overflow-hidden
+                      ${
+                        active
+                          ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg"
+                          : "text-gray-700 hover:bg-blue-100 hover:text-blue-500"
+                      }
+                    `}
                   >
                     {link.icon}
-                    {sidebarOpen && <span>{link.name}</span>}
+
+                    {sidebarOpen && (
+                      <span className="whitespace-nowrap">
+                        {link.name}
+                      </span>
+                    )}
                   </Link>
                 </li>
               );
@@ -376,7 +397,7 @@ const { user } = useContext(AuthContext);
       </aside>
 
       {/* ================= MOBILE BOTTOM BAR ================= */}
-      <div className="fixed bottom-0 left-0 right-0 md:hidden z-50 bg-white border-r border-gray-200 border-t shadow">
+      <div className="fixed bottom-0 left-0 right-0 md:hidden z-50 bg-white border-t border-gray-200 shadow">
         <div className="flex justify-around items-center py-2">
           {links.map((link) => {
             const active = isActive(link.path);
@@ -385,9 +406,17 @@ const { user } = useContext(AuthContext);
               <button
                 key={link.name}
                 onClick={() => navigate(link.path)}
-                className={`flex flex-col items-center justify-center w-12 h-12 rounded-lg transition
-                ${active ? "text-blue-600" : "text-gray-500"}
-              `}
+                className={`
+                  flex
+                  flex-col
+                  items-center
+                  justify-center
+                  w-12
+                  h-12
+                  rounded-lg
+                  transition
+                  ${active ? "text-blue-600" : "text-gray-500"}
+                `}
               >
                 {link.icon}
               </button>
@@ -397,7 +426,15 @@ const { user } = useContext(AuthContext);
           {/* Hamburger */}
           <button
             onClick={() => setMobileMenuOpen(true)}
-            className="flex items-center justify-center w-12 h-12 rounded-lg text-gray-700"
+            className="
+              flex
+              items-center
+              justify-center
+              w-12
+              h-12
+              rounded-lg
+              text-gray-700
+            "
           >
             <Menu size={24} />
           </button>
@@ -409,23 +446,47 @@ const { user } = useContext(AuthContext);
         <div className="fixed inset-0 z-50 flex">
           {/* Overlay */}
           <div
-            className="fixed inset-0 bg-black/40"
+            className="absolute inset-0 bg-black/40"
             onClick={() => setMobileMenuOpen(false)}
           />
 
           {/* Drawer */}
-          <aside className="relative w-64 bg-white border-r border-gray-200 shadow-lg p-6">
+          <aside
+            className="
+              relative
+              z-10
+              w-64
+              h-full
+              bg-white
+              border-r
+              border-gray-200
+              shadow-lg
+              p-6
+            "
+          >
+            {/* Close Button */}
             <button
-              className="absolute top-4 right-4 text-gray-600"
+              type="button"
+              className="
+                absolute
+                top-4
+                right-4
+                text-gray-600
+                text-xl
+              "
               onClick={() => setMobileMenuOpen(false)}
             >
               ×
             </button>
 
+            {/* Logo / Title */}
             <div className="flex justify-center mb-6">
-              <h1 className="text-lg font-semibold">Admin</h1>
+              <h1 className="text-lg font-semibold">
+                Admin
+              </h1>
             </div>
 
+            {/* Navigation */}
             <nav>
               <ul className="space-y-4">
                 {links.map((link) => {
@@ -436,15 +497,23 @@ const { user } = useContext(AuthContext);
                       <Link
                         to={link.path}
                         onClick={() => setMobileMenuOpen(false)}
-                        className={`flex items-center gap-3 px-3 py-2 rounded-lg transition
-                        ${
-                          active
-                            ? "bg-gradient-to-r from-[#020b3d] to-cyan-600 text-white shadow-lg"
-                            : "text-gray-700 hover:bg-cyan-50 hover:text-cyan-700"
-                        }
-                      `}
+                        className={`
+                          flex
+                          items-center
+                          gap-3
+                          px-3
+                          py-2
+                          rounded-lg
+                          transition
+                          ${
+                            active
+                              ? "bg-gradient-to-r from-[#020b3d] to-cyan-600 text-white shadow-lg"
+                              : "text-gray-700 hover:bg-cyan-50 hover:text-cyan-700"
+                          }
+                        `}
                       >
                         {link.icon}
+
                         <span>{link.name}</span>
                       </Link>
                     </li>

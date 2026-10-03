@@ -83,7 +83,7 @@ export default function OrganisationDetails({
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-6 text-gray-800">
+    <div className="max-w-5xl mx-auto p-6 text-gray-800">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold text-white">Organisation Details</h1>
 
@@ -246,7 +246,6 @@ export default function OrganisationDetails({
             />
           </div>
 
-
           {/* Organisation Photo */}
 
           <div className="md:col-span-2">
@@ -263,7 +262,6 @@ export default function OrganisationDetails({
                   alt="Organisation"
                   className="w-40 h-40 object-cover rounded-xl border shadow-sm"
                 />
-
               </div>
             ) : (
               <div className="border rounded-lg p-3 bg-gray-100 text-gray-500">

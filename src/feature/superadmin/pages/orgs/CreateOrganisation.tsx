@@ -297,7 +297,7 @@ const handleSubmit = async () => {
     };
 
     return (
-      <div className="max-w-7xl mx-auto p-6 text-gray-800">
+      <div className="max-w-5xl mx-auto p-6 text-gray-800">
         {alertOpen && (
           <Alert
             type={alertType}
@@ -305,11 +305,11 @@ const handleSubmit = async () => {
             onClose={() => setAlertOpen(false)}
           />
         )}
-        <h1 className="text-2xl md:text-3xl font-bold mb-6 text-white">
+        {/* <h1 className="text-2xl md:text-3xl font-bold mb-6 text-white">
           Organisation Management
-        </h1>
+        </h1> */}
 
-        <div className="bg-white shadow rounded-xl p-6 mb-8">
+        <div className="bg-white shadow rounded-2xl p-6 mb-8">
           <div className="grid md:grid-cols-2 gap-4">
             {/* Organisation Name */}
             <div className="flex flex-col">
@@ -320,7 +320,8 @@ const handleSubmit = async () => {
               <input
                 value={orgname}
                 onChange={(e) => setOrgName(e.target.value)}
-                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                // className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:ring-1 focus:ring-blue-300 focus:border-blue-300"
+                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500"
                 placeholder="Enter organisation name"
               />
             </div>
@@ -333,7 +334,7 @@ const handleSubmit = async () => {
               <select
                 value={orgType}
                 onChange={(e) => setOrgType(e.target.value)}
-                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500"
               >
                 <option value="">Select Type</option>
                 <option value="HOSPITAL">Hospital</option>
@@ -346,12 +347,6 @@ const handleSubmit = async () => {
                 Phone Number<span className="text-red-500">*</span>
               </label>
 
-              {/* <input
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Enter phone number"
-              /> */}
               <input
                 type="tel"
                 value={phone}
@@ -361,7 +356,7 @@ const handleSubmit = async () => {
                 }}
                 maxLength={10}
                 inputMode="numeric"
-                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500"
                 placeholder="9876543210"
               />
             </div>
@@ -372,7 +367,7 @@ const handleSubmit = async () => {
               <input
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500"
                 placeholder="Enter email"
               />
             </div>
@@ -383,7 +378,7 @@ const handleSubmit = async () => {
               <textarea
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500"
                 placeholder="Enter address"
               />
             </div>
@@ -396,7 +391,7 @@ const handleSubmit = async () => {
               <input
                 value={aadhaarNumber}
                 onChange={(e) => setAadhaarNumber(e.target.value)}
-                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500"
                 placeholder="Enter Aadhaar number (12 digits)"
               />
             </div>
@@ -409,7 +404,7 @@ const handleSubmit = async () => {
               <input
                 value={panNumber}
                 onChange={(e) => setPanNumber(e.target.value)}
-                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500"
                 placeholder="Enter PAN number(For example : ABCDE1234F)"
               />
             </div>
@@ -421,7 +416,7 @@ const handleSubmit = async () => {
               <input
                 value={passportNumber}
                 onChange={(e) => setPassportNumber(e.target.value)}
-                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500"
                 placeholder="Enter Passport number (For example : A1234567)"
               />
             </div>
@@ -435,7 +430,7 @@ const handleSubmit = async () => {
                 type="date"
                 value={registrationStartDate}
                 onChange={(e) => setRegistrationStartDate(e.target.value)}
-                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500"
               />
             </div>
 
@@ -448,7 +443,7 @@ const handleSubmit = async () => {
                 type="date"
                 value={registrationEndDate}
                 onChange={(e) => setRegistrationEndDate(e.target.value)}
-                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500"
               />
             </div>
 
@@ -459,11 +454,11 @@ const handleSubmit = async () => {
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
-                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500"
               >
                 <option value="">Select Status</option>
                 <option value="ACTIVE">ACTIVE</option>
-                <option value="INACTIVE">INACTIVE</option>                
+                <option value="INACTIVE">INACTIVE</option>
               </select>
             </div>
 
@@ -536,7 +531,7 @@ const handleSubmit = async () => {
               <input
                 value={adminFirstName}
                 onChange={(e) => setAdminFirstName(e.target.value)}
-                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500"
                 placeholder="First Name"
               />
             </div>
@@ -549,7 +544,7 @@ const handleSubmit = async () => {
               <input
                 value={adminLastName}
                 onChange={(e) => setAdminLastName(e.target.value)}
-                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500"
                 placeholder="Last Name"
               />
             </div>
@@ -568,7 +563,7 @@ const handleSubmit = async () => {
                 }}
                 maxLength={10}
                 inputMode="numeric"
-                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500"
                 placeholder="9876543210"
               />
             </div>
@@ -583,7 +578,7 @@ const handleSubmit = async () => {
                 type="email"
                 value={adminEmail}
                 onChange={(e) => setAdminEmail(e.target.value)}
-                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500"
                 placeholder="admin@example.com"
               />
             </div>
@@ -603,7 +598,7 @@ const handleSubmit = async () => {
               className={`w-full sm:w-auto px-6 py-2 rounded ${
                 isSubmitting
                   ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-blue-600 text-white"
+                  : "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg"
               }`}
             >
               {isSubmitting ? "Creating..." : "Create Organisation"}
