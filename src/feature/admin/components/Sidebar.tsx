@@ -219,33 +219,10 @@
 //     </>
 //   );
 // }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import React, { useState, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import {
-  LayoutDashboard,
-  Building2,
-  Menu,
-  Building,
-  Users,
-  ClipboardEdit,
-  Megaphone,
-  MessageSquarePlus,
-} from "lucide-react";
+import { LayoutDashboard, Building2, Menu, Building, Users,ClipboardEdit,   // for Form Builder
+  Megaphone,MessageSquarePlus,Info,Store,ClipboardListIcon,DoorOpen} from "lucide-react";
 import { AuthContext } from "../../../context/AuthContext";
 
 export default function Sidebar() {
@@ -274,19 +251,19 @@ export default function Sidebar() {
     {
       name: "Gates",
       path: "/admin/organisation/gates",
-      icon: <Users size={22} />,
+      icon: <DoorOpen size={22} />,
     },
     {
-      name: "Manage Category",
+      name: "Form Management",
       path: "/admin/organisation/manage_forms",
-      icon: <LayoutDashboard size={22} />,
+      icon: <ClipboardListIcon size={22} />,
     },
     {
       name: "Buisness Data",
       path: "/admin/organisation/buisness_data",
       icon: <LayoutDashboard size={22} />,
     },
-    {
+   {
       name: "Form Builder",
       path: "/admin/organisation/form_builder",
       icon: <ClipboardEdit size={22} />,
@@ -296,12 +273,33 @@ export default function Sidebar() {
       path: "/admin/organisation/Campaign",
       icon: <Megaphone size={22} />,
     },
-    {
-      name: "Quick Request",
-      path: "/admin/organisation/quick_request",
-      icon: <MessageSquarePlus size={22} />,
-    },
+     {
+  name: "Quick Request",
+  path: "/admin/organisation/quick_request",
+  icon: <MessageSquarePlus size={22} />,
+},
+{
+  name: "Announcements",
+  path: "/admin/organisation/Announcements",
+  icon: <Megaphone  size={22} />,
+},
+{
+  name: "Important Information",
+  path: "/admin/organisation/ImportantInformation",
+  icon: <Info size={22} />,
+},
+{
+  name: "Vendors and Service Providers",
+  path: "/admin/organisation/VendorsServiceProviders",
+  icon: <Store size={26} />,
+},
 
+
+    // {
+    //   name: "Apartment",
+    //   path: "/admin/organisation/apartment/members",
+    //   icon: <Building size={22} />,
+    // },
     // Show Apartment only if org_type is NOT EVENT or HOSPITAL
     ...(!["EVENT", "HOSPITAL"].includes(
       user?.org_type?.toUpperCase() || ""
