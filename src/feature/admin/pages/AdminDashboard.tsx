@@ -25,7 +25,7 @@ import AssignGatesManagement from "./gates/AssignGatesManagement";
 import Dashboard from "./AdminDashboard/AdminDashboardHome";
 
 
-export default function SuperAdminDashboard() {
+export default function AdminDashboard() {
   const { pathname } = useLocation();
   const { user } = useContext(AuthContext);
   let activePage = "Dashboard";
@@ -138,19 +138,28 @@ export default function SuperAdminDashboard() {
   "Import Apartment Members": <ImportMembers />,
 };
 
-  return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="flex flex-col md:flex-row min-h-screen">
-        <Sidebar />
 
-        <div className="flex-1 flex flex-col w-full">
-          <TopNav pageTitle={activePage} />
+  
+return (
+  <div className="min-h-screen bg-gray-100 flex flex-col">
 
-          <main className="flex-1 bg-gray-50 overflow-auto">
-            {pageComponents[activePage]}
-          </main>
-        </div>
-      </div>
+    {/* ================= TOP NAV ================= */}
+    <TopNav pageTitle={activePage} />
+
+    {/* ================= SIDEBAR + CONTENT ================= */}
+    <div className="flex flex-1 min-h-0">
+
+      {/* ================= SIDEBAR ================= */}
+      <Sidebar />
+
+      {/* ================= MAIN CONTENT ================= */}
+      <main className="flex-1 min-w-0 bg-gray-50 overflow-auto">
+        {pageComponents[activePage]}
+      </main>
+
     </div>
-  );
+  </div>
+);
+
+
 }

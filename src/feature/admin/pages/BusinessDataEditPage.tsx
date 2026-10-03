@@ -205,7 +205,8 @@ const table = parts[4];
                     <select
                       value={value ?? ""}
                       onChange={(e) => handleChange(key, e.target.value)}
-                      className="w-full border rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
+                      // className="w-full border rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
+                      className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500"
                     >
                       <option value="Active">Active</option>
                       <option value="Inactive">Inactive</option>
@@ -329,7 +330,8 @@ const table = parts[4];
                     type="text"
                     value={value ?? ""}
                     onChange={(e) => handleChange(key, e.target.value)}
-                    className="w-full border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
+                    // className="w-full border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500"
                   />
                 </div>
               );
