@@ -1,46 +1,383 @@
-// import { useEffect, useState } from "react";
+// import { useEffect, useMemo, useState } from "react";
 // import axios from "axios";
 // import {
 //   AlertCircle,
-//   Edit,
+//   AlertTriangle,
+//   CheckCircle2,
 //   Eye,
-//   EyeOff,
+//   Edit,
+//   Minus,
+//   Pencil,
 //   Plus,
 //   Trash2,
 //   X,
+//   XCircle,
 // } from "lucide-react";
+
+// const API = import.meta.env.VITE_BACKEND_URL;
+
+// const MAX_CONTACTS = 10;
+
+// type InformationType = "emergency" | "community";
+
+// type Contact = {
+//   id: string;
+//   designation: string;
+//   name: string;
+//   contactNo: string;
+//   isEditing: boolean;
+// };
+
+// type InformationPayload = {
+//   informationType: InformationType;
+//   contacts: {
+//     designation: string;
+//     name: string;
+//     contactNo: string;
+//   }[];
+// };
 
 // type Information = {
 //   id: number;
 //   title: string;
 //   description: string;
-//   status: "published" | "draft";
 //   created_at: string;
-//   updated_at: string;
+//   updated_at?: string;
+//   status?: "published" | "draft";
+//   priority?: string;
+//   expires_at?: string | null;
+//   is_active?: boolean;
 // };
 
-// const API = import.meta.env.VITE_BACKEND_URL;
+// /*
+// |--------------------------------------------------------------------------
+// | ALERT TYPES
+// |--------------------------------------------------------------------------
+// */
+
+// type AlertType = "success" | "warning" | "error";
+
+// type AlertState = {
+//   type: AlertType;
+//   message: string;
+//   confirmText?: string;
+//   cancelText?: string;
+//   onConfirm?: () => void;
+// };
+
+// /*
+// |--------------------------------------------------------------------------
+// | CONTACT
+// |--------------------------------------------------------------------------
+// */
+
+// const createContact = (): Contact => ({
+//   id: `${Date.now()}-${Math.random()}`,
+//   designation: "",
+//   name: "",
+//   contactNo: "",
+//   isEditing: true,
+// });
+
+// /*
+// |--------------------------------------------------------------------------
+// | API RESPONSE MESSAGE
+// |--------------------------------------------------------------------------
+// */
+
+// const getApiResponseMessage = (
+//   data: any,
+//   fallback: string
+// ): string => {
+//   if (!data) {
+//     return fallback;
+//   }
+
+//   if (typeof data === "string") {
+//     return data;
+//   }
+
+//   const directMessage =
+//     data.message ||
+//     data.msg ||
+//     data.error ||
+//     data.detail;
+
+//   if (typeof directMessage === "string") {
+//     return directMessage;
+//   }
+
+//   if (data.data) {
+//     const nestedMessage =
+//       data.data.message ||
+//       data.data.msg ||
+//       data.data.error ||
+//       data.data.detail;
+
+//     if (typeof nestedMessage === "string") {
+//       return nestedMessage;
+//     }
+//   }
+
+//   if (Array.isArray(data.errors)) {
+//     const messages = data.errors
+//       .map((item: any) => {
+//         if (typeof item === "string") {
+//           return item;
+//         }
+
+//         return (
+//           item?.message ||
+//           item?.msg ||
+//           item?.error ||
+//           item?.detail ||
+//           ""
+//         );
+//       })
+//       .filter(Boolean);
+
+//     if (messages.length > 0) {
+//       return messages.join("\n");
+//     }
+//   }
+
+//   return fallback;
+// };
+
+// /*
+// |--------------------------------------------------------------------------
+// | PARSE STORED DESCRIPTION
+// |--------------------------------------------------------------------------
+// */
+
+// const parseDescription = (
+//   description: string
+// ): {
+//   informationType: InformationType;
+//   contacts: Contact[];
+//   isLegacy: boolean;
+// } => {
+//   if (!description) {
+//     return {
+//       informationType: "community",
+//       contacts: [],
+//       isLegacy: false,
+//     };
+//   }
+
+//   try {
+//     const parsed = JSON.parse(description);
+
+//     if (
+//       parsed &&
+//       (parsed.informationType === "emergency" ||
+//         parsed.informationType === "community") &&
+//       Array.isArray(parsed.contacts)
+//     ) {
+//       return {
+//         informationType: parsed.informationType,
+//         contacts: parsed.contacts.map(
+//           (
+//             contact: {
+//               designation?: string;
+//               name?: string;
+//               contactNo?: string;
+//             },
+//             index: number
+//           ) => ({
+//             id: `existing-${index}-${Date.now()}-${Math.random()}`,
+//             designation: contact.designation || "",
+//             name: contact.name || "",
+//             contactNo: contact.contactNo || "",
+//             isEditing: false,
+//           })
+//         ),
+//         isLegacy: false,
+//       };
+//     }
+//   } catch {
+//     // Old records may contain plain text/html.
+//   }
+
+//   return {
+//     informationType: "community",
+//     contacts: [],
+//     isLegacy: true,
+//   };
+// };
+
+// /*
+// |--------------------------------------------------------------------------
+// | BUILD PAYLOAD
+// |--------------------------------------------------------------------------
+// */
+
+// const buildDescription = (
+//   informationType: InformationType,
+//   contacts: Contact[]
+// ) => {
+//   const payload: InformationPayload = {
+//     informationType,
+//     contacts: contacts.map((contact) => ({
+//       designation: contact.designation.trim(),
+//       name: contact.name.trim(),
+//       contactNo: contact.contactNo.trim(),
+//     })),
+//   };
+
+//   return JSON.stringify(payload);
+// };
 
 // const ImportantInformation = () => {
-//   const [information, setInformation] = useState<
-//     Information[]
-//   >([]);
+//   const [information, setInformation] = useState<Information[]>([]);
 
 //   const [loading, setLoading] = useState(true);
 //   const [saving, setSaving] = useState(false);
 
 //   const [showModal, setShowModal] = useState(false);
+//   const [showViewModal, setShowViewModal] = useState(false);
 
-//   const [editingId, setEditingId] =
-//     useState<number | null>(null);
+//   const [editingId, setEditingId] = useState<number | null>(null);
+
+//   const [selectedInformation, setSelectedInformation] =
+//     useState<Information | null>(null);
+
+//   /*
+//   |--------------------------------------------------------------------------
+//   | FORM STATE
+//   |--------------------------------------------------------------------------
+//   */
 
 //   const [title, setTitle] = useState("");
-//   const [description, setDescription] =
-//     useState("");
 
-//   const [status, setStatus] = useState<
-//     "published" | "draft"
-//   >("published");
+//   const [informationType, setInformationType] =
+//     useState<InformationType>("emergency");
+
+//   const [contacts, setContacts] = useState<Contact[]>([]);
+
+//   /*
+//   |--------------------------------------------------------------------------
+//   | ERRORS
+//   |--------------------------------------------------------------------------
+//   */
+
+//   const [titleError, setTitleError] = useState("");
+//   const [typeError, setTypeError] = useState("");
+//   const [contactsError, setContactsError] = useState("");
+
+//   const [contactErrors, setContactErrors] = useState<
+//     Record<
+//       string,
+//       {
+//         designation?: string;
+//         name?: string;
+//         contactNo?: string;
+//       }
+//     >
+//   >({});
+
+//   /*
+//   |--------------------------------------------------------------------------
+//   | ANNOUNCEMENT-STYLE ALERT
+//   |--------------------------------------------------------------------------
+//   */
+
+//   const [alert, setAlert] =
+//     useState<AlertState | null>(null);
+
+//   const showAlert = (
+//     type: AlertType,
+//     message: string,
+//     options?: {
+//       confirmText?: string;
+//       cancelText?: string;
+//       onConfirm?: () => void;
+//     }
+//   ) => {
+//     setAlert({
+//       type,
+//       message,
+//       ...options,
+//     });
+//   };
+
+//   const closeAlert = () => {
+//     setAlert(null);
+//   };
+
+//   /*
+//   |--------------------------------------------------------------------------
+//   | API ERROR POPUP
+//   |--------------------------------------------------------------------------
+//   */
+
+//   const showApiError = (
+//     error: any,
+//     fallback: string
+//   ) => {
+//     const message = getApiResponseMessage(
+//       error?.response?.data ?? error?.data,
+//       error?.message || fallback
+//     );
+
+//     showAlert("error", message);
+//   };
+
+//   /*
+//   |--------------------------------------------------------------------------
+//   | DETERMINE EXISTING INFORMATION TYPES
+//   |--------------------------------------------------------------------------
+//   */
+
+//   const existingInformationTypes = useMemo(() => {
+//     const types = new Set<InformationType>();
+
+//     information.forEach((item) => {
+//       const parsed = parseDescription(item.description);
+
+//       if (!parsed.isLegacy) {
+//         types.add(parsed.informationType);
+//       }
+//     });
+
+//     return types;
+//   }, [information]);
+
+//   const hasEmergencyInformation =
+//     existingInformationTypes.has("emergency");
+
+//   const hasCommunityInformation =
+//     existingInformationTypes.has("community");
+
+//   const canAddEmergency = !hasEmergencyInformation;
+//   const canAddCommunity = !hasCommunityInformation;
+
+//   const canAddInformation =
+//     canAddEmergency || canAddCommunity;
+
+//   /*
+//   |--------------------------------------------------------------------------
+//   | GET DEFAULT TYPE
+//   |--------------------------------------------------------------------------
+//   */
+
+//   const getNextInformationType = (): InformationType => {
+//     if (
+//       hasEmergencyInformation &&
+//       !hasCommunityInformation
+//     ) {
+//       return "community";
+//     }
+
+//     if (
+//       hasCommunityInformation &&
+//       !hasEmergencyInformation
+//     ) {
+//       return "emergency";
+//     }
+
+//     return "emergency";
+//   };
 
 //   /*
 //   |--------------------------------------------------------------------------
@@ -48,7 +385,9 @@
 //   |--------------------------------------------------------------------------
 //   */
 
-//   const fetchInformation = async () => {
+//   const fetchInformation = async (
+//     showErrorPopup = true
+//   ) => {
 //     try {
 //       setLoading(true);
 
@@ -61,12 +400,27 @@
 
 //       if (response.data?.success) {
 //         setInformation(response.data.data || []);
+//       } else if (showErrorPopup) {
+//         showAlert(
+//           "error",
+//           getApiResponseMessage(
+//             response.data,
+//             "Unable to load important information."
+//           )
+//         );
 //       }
-//     } catch (error) {
+//     } catch (error: any) {
 //       console.error(
 //         "Failed to fetch important information:",
 //         error
 //       );
+
+//       if (showErrorPopup) {
+//         showApiError(
+//           error,
+//           "Failed to fetch important information."
+//         );
+//       }
 //     } finally {
 //       setLoading(false);
 //     }
@@ -78,14 +432,101 @@
 
 //   /*
 //   |--------------------------------------------------------------------------
-//   | RESET
+//   | WARNING AUTO CLOSE
+//   |--------------------------------------------------------------------------
+//   */
+
+//   useEffect(() => {
+//     if (!alert) {
+//       return;
+//     }
+
+//     /*
+//      * Normal warning messages automatically disappear
+//      * after 3 seconds.
+//      *
+//      * Confirmation dialogs have onConfirm and therefore
+//      * must remain open.
+//      */
+//     if (
+//       alert.type === "warning" &&
+//       !alert.onConfirm
+//     ) {
+//       const timer = setTimeout(() => {
+//         closeAlert();
+//       }, 3000);
+
+//       return () => clearTimeout(timer);
+//     }
+//   }, [alert]);
+
+//   /*
+//   |--------------------------------------------------------------------------
+//   | ALERT KEYBOARD HANDLING
+//   |--------------------------------------------------------------------------
+//   */
+
+//   useEffect(() => {
+//     if (!alert) {
+//       return;
+//     }
+
+//     const handleKeyDown = (
+//       event: KeyboardEvent
+//     ) => {
+//       if (
+//         event.key === "Enter" ||
+//         event.key === "Escape"
+//       ) {
+//         event.preventDefault();
+
+//         if (
+//           event.key === "Enter" &&
+//           alert.onConfirm
+//         ) {
+//           const confirmAction =
+//             alert.onConfirm;
+
+//           closeAlert();
+
+//           setTimeout(() => {
+//             confirmAction();
+//           }, 100);
+//         } else {
+//           closeAlert();
+//         }
+//       }
+//     };
+
+//     window.addEventListener(
+//       "keydown",
+//       handleKeyDown
+//     );
+
+//     return () => {
+//       window.removeEventListener(
+//         "keydown",
+//         handleKeyDown
+//       );
+//     };
+//   }, [alert]);
+
+//   /*
+//   |--------------------------------------------------------------------------
+//   | RESET FORM
 //   |--------------------------------------------------------------------------
 //   */
 
 //   const resetForm = () => {
 //     setTitle("");
-//     setDescription("");
-//     setStatus("published");
+//     setInformationType("emergency");
+//     setContacts([]);
+
+//     setTitleError("");
+//     setTypeError("");
+//     setContactsError("");
+//     setContactErrors({});
+
 //     setEditingId(null);
 //   };
 
@@ -96,7 +537,17 @@
 //   */
 
 //   const openCreate = () => {
+//     const nextType =
+//       getNextInformationType();
+
 //     resetForm();
+
+//     setInformationType(nextType);
+
+//     setContacts([
+//       createContact(),
+//     ]);
+
 //     setShowModal(true);
 //   };
 
@@ -106,22 +557,55 @@
 //   |--------------------------------------------------------------------------
 //   */
 
-//   const openEdit = (item: Information) => {
+//   const openEdit = (
+//     item: Information
+//   ) => {
+//     const parsed =
+//       parseDescription(
+//         item.description
+//       );
+
 //     setEditingId(item.id);
 //     setTitle(item.title);
-//     setDescription(item.description);
-//     setStatus(item.status);
+//     setInformationType(
+//       parsed.informationType
+//     );
+
+//     if (
+//       parsed.contacts.length > 0
+//     ) {
+//       setContacts(
+//         parsed.contacts.map(
+//           (contact) => ({
+//             ...contact,
+//             isEditing: false,
+//           })
+//         )
+//       );
+//     } else {
+//       setContacts([
+//         createContact(),
+//       ]);
+//     }
+
+//     setTitleError("");
+//     setTypeError("");
+//     setContactsError("");
+//     setContactErrors({});
+
 //     setShowModal(true);
 //   };
 
 //   /*
 //   |--------------------------------------------------------------------------
-//   | CLOSE
+//   | CLOSE MODAL
 //   |--------------------------------------------------------------------------
 //   */
 
 //   const closeModal = () => {
-//     if (saving) return;
+//     if (saving) {
+//       return;
+//     }
 
 //     setShowModal(false);
 //     resetForm();
@@ -129,7 +613,436 @@
 
 //   /*
 //   |--------------------------------------------------------------------------
-//   | SAVE
+//   | UPDATE CONTACT
+//   |--------------------------------------------------------------------------
+//   */
+
+//   const updateContact = (
+//     id: string,
+//     field: keyof Pick<
+//       Contact,
+//       | "designation"
+//       | "name"
+//       | "contactNo"
+//     >,
+//     value: string
+//   ) => {
+//     setContacts((prev) =>
+//       prev.map((contact) =>
+//         contact.id === id
+//           ? {
+//               ...contact,
+//               [field]: value,
+//             }
+//           : contact
+//       )
+//     );
+
+//     setContactErrors((prev) => {
+//       const current =
+//         prev[id];
+
+//       if (!current) {
+//         return prev;
+//       }
+
+//       const updated = {
+//         ...current,
+//         [field]: undefined,
+//       };
+
+//       const hasAnyError =
+//         Object.values(
+//           updated
+//         ).some(Boolean);
+
+//       if (!hasAnyError) {
+//         const next = {
+//           ...prev,
+//         };
+
+//         delete next[id];
+
+//         return next;
+//       }
+
+//       return {
+//         ...prev,
+//         [id]: updated,
+//       };
+//     });
+
+//     setContactsError("");
+//   };
+
+//   /*
+//   |--------------------------------------------------------------------------
+//   | EDIT CONTACT ROW
+//   |--------------------------------------------------------------------------
+//   */
+
+//   const editContact = (
+//     id: string
+//   ) => {
+//     setContacts((prev) =>
+//       prev.map((contact) =>
+//         contact.id === id
+//           ? {
+//               ...contact,
+//               isEditing: true,
+//             }
+//           : contact
+//       )
+//     );
+//   };
+
+//   /*
+//   |--------------------------------------------------------------------------
+//   | VALIDATE SINGLE CONTACT
+//   |--------------------------------------------------------------------------
+//   */
+
+//   const validateContact = (
+//     contact: Contact
+//   ) => {
+//     const errors: {
+//       designation?: string;
+//       name?: string;
+//       contactNo?: string;
+//     } = {};
+
+//     const designation =
+//       contact.designation.trim();
+
+//     const name =
+//       contact.name.trim();
+
+//     const contactNo =
+//       contact.contactNo.trim();
+
+//     if (!designation) {
+//       errors.designation =
+//         "Designation is required.";
+//     } else if (
+//       designation.length < 2
+//     ) {
+//       errors.designation =
+//         "Designation must contain at least 2 characters.";
+//     }
+
+//     if (!name) {
+//       errors.name =
+//         "Name is required.";
+//     } else if (
+//       name.length < 2
+//     ) {
+//       errors.name =
+//         "Name must contain at least 2 characters.";
+//     }
+
+//     if (!contactNo) {
+//       errors.contactNo =
+//         "Contact number is required.";
+//     } else if (
+//       !/^[6-9]\d{9}$/.test(
+//         contactNo
+//       )
+//     ) {
+//       errors.contactNo =
+//         "Enter a valid 10-digit mobile number.";
+//     }
+
+//     return errors;
+//   };
+
+//   /*
+//   |--------------------------------------------------------------------------
+//   | VALIDATE ALL CONTACTS
+//   |--------------------------------------------------------------------------
+//   */
+
+//   const validateContacts = () => {
+//     if (
+//       contacts.length === 0
+//     ) {
+//       setContactsError(
+//         "At least one contact is required."
+//       );
+
+//       return false;
+//     }
+
+//     if (
+//       contacts.length >
+//       MAX_CONTACTS
+//     ) {
+//       setContactsError(
+//         `A maximum of ${MAX_CONTACTS} contacts is allowed.`
+//       );
+
+//       return false;
+//     }
+
+//     let valid = true;
+
+//     const errors: Record<
+//       string,
+//       {
+//         designation?: string;
+//         name?: string;
+//         contactNo?: string;
+//       }
+//     > = {};
+
+//     contacts.forEach(
+//       (contact) => {
+//         const contactError =
+//           validateContact(
+//             contact
+//           );
+
+//         if (
+//           Object.keys(
+//             contactError
+//           ).length > 0
+//         ) {
+//           valid = false;
+
+//           errors[
+//             contact.id
+//           ] = contactError;
+//         }
+//       }
+//     );
+
+//     setContactErrors(
+//       errors
+//     );
+
+//     if (!valid) {
+//       setContactsError(
+//         "Please correct the contact details."
+//       );
+//     } else {
+//       setContactsError("");
+//     }
+
+//     return valid;
+//   };
+
+//   /*
+//   |--------------------------------------------------------------------------
+//   | ADD CONTACT
+//   |--------------------------------------------------------------------------
+//   */
+
+//   const addContact = () => {
+//     if (saving) {
+//       return;
+//     }
+
+//     if (
+//       contacts.length >=
+//       MAX_CONTACTS
+//     ) {
+//       showAlert(
+//         "warning",
+//         `You can add a maximum of ${MAX_CONTACTS} contacts.`
+//       );
+
+//       return;
+//     }
+
+//     const lastIndex =
+//       contacts.length - 1;
+
+//     if (lastIndex >= 0) {
+//       const lastContact =
+//         contacts[lastIndex];
+
+//       const errors =
+//         validateContact(
+//           lastContact
+//         );
+
+//       if (
+//         Object.keys(errors)
+//           .length > 0
+//       ) {
+//         setContactErrors(
+//           (prev) => ({
+//             ...prev,
+//             [lastContact.id]:
+//               errors,
+//           })
+//         );
+
+//         setContactsError(
+//           `Please complete Contact ${
+//             lastIndex + 1
+//           } before adding another contact.`
+//         );
+
+//         showAlert(
+//           "warning",
+//           `Please complete Contact ${
+//             lastIndex + 1
+//           } before adding another contact.`
+//         );
+
+//         return;
+//       }
+//     }
+
+//     /*
+//      * Lock existing contacts and
+//      * make the new row editable.
+//      */
+//     setContacts(
+//       (prev) => [
+//         ...prev.map(
+//           (contact) => ({
+//             ...contact,
+//             isEditing: false,
+//           })
+//         ),
+//         createContact(),
+//       ]
+//     );
+
+//     setContactsError("");
+//   };
+
+//   /*
+//   |--------------------------------------------------------------------------
+//   | REMOVE CONTACT
+//   |--------------------------------------------------------------------------
+//   */
+
+//   const removeContact = (
+//     id: string
+//   ) => {
+//     if (saving) {
+//       return;
+//     }
+
+//     if (
+//       contacts.length === 1
+//     ) {
+//       showAlert(
+//         "warning",
+//         "At least one contact is required."
+//       );
+
+//       return;
+//     }
+
+//     setContacts(
+//       (prev) =>
+//         prev.filter(
+//           (contact) =>
+//             contact.id !== id
+//         )
+//     );
+
+//     setContactErrors(
+//       (prev) => {
+//         const next = {
+//           ...prev,
+//         };
+
+//         delete next[id];
+
+//         return next;
+//       }
+//     );
+
+//     setContactsError("");
+//   };
+
+//   /*
+//   |--------------------------------------------------------------------------
+//   | FORM VALIDATION
+//   |--------------------------------------------------------------------------
+//   */
+
+//   const validateForm = () => {
+//     let valid = true;
+
+//     setTitleError("");
+//     setTypeError("");
+//     setContactsError("");
+
+//     const trimmedTitle =
+//       title.trim();
+
+//     if (!trimmedTitle) {
+//       setTitleError(
+//         "Title is required."
+//       );
+
+//       valid = false;
+//     } else if (
+//       trimmedTitle.length < 3
+//     ) {
+//       setTitleError(
+//         "Title must contain at least 3 characters."
+//       );
+
+//       valid = false;
+//     }
+
+//     if (
+//       informationType !==
+//         "emergency" &&
+//       informationType !==
+//         "community"
+//     ) {
+//       setTypeError(
+//         "Please select an information type."
+//       );
+
+//       valid = false;
+//     }
+
+//     if (!editingId) {
+//       if (
+//         informationType ===
+//           "emergency" &&
+//         hasEmergencyInformation
+//       ) {
+//         setTypeError(
+//           "Emergency contact information has already been added."
+//         );
+
+//         valid = false;
+//       }
+
+//       if (
+//         informationType ===
+//           "community" &&
+//         hasCommunityInformation
+//       ) {
+//         setTypeError(
+//           "Community contact information has already been added."
+//         );
+
+//         valid = false;
+//       }
+//     }
+
+//     if (
+//       !validateContacts()
+//     ) {
+//       valid = false;
+//     }
+
+//     return valid;
+//   };
+
+//   /*
+//   |--------------------------------------------------------------------------
+//   | SUBMIT
 //   |--------------------------------------------------------------------------
 //   */
 
@@ -138,58 +1051,96 @@
 //   ) => {
 //     e.preventDefault();
 
-//     if (!title.trim()) {
-//       alert("Please enter title");
+//     if (saving) {
 //       return;
 //     }
 
-//     if (!description.trim()) {
-//       alert("Please enter description");
+//     if (!validateForm()) {
+//       showAlert(
+//         "warning",
+//         "Please fill in all required fields correctly."
+//       );
+
 //       return;
 //     }
+
+//     const finalDescription =
+//       buildDescription(
+//         informationType,
+//         contacts
+//       );
+
+//     const wasEditing =
+//       editingId !== null;
 
 //     try {
 //       setSaving(true);
 
-//       if (editingId) {
-//         await axios.put(
-//           `${API}/api/admin/important-information/${editingId}`,
-//           {
-//             title,
-//             description,
-//             status,
-//           },
-//           {
-//             withCredentials: true,
-//           }
-//         );
+//       let response;
+
+//       if (
+//         editingId !== null
+//       ) {
+//         response =
+//           await axios.put(
+//             `${API}/api/admin/important-information/${editingId}`,
+//             {
+//               title:
+//                 title.trim(),
+//               description:
+//                 finalDescription,
+//               priority:
+//                 "Important",
+//             },
+//             {
+//               withCredentials:
+//                 true,
+//             }
+//           );
 //       } else {
-//         await axios.post(
-//           `${API}/api/admin/important-information`,
-//           {
-//             title,
-//             description,
-//             status,
-//           },
-//           {
-//             withCredentials: true,
-//           }
-//         );
+//         response =
+//           await axios.post(
+//             `${API}/api/admin/important-information`,
+//             {
+//               title:
+//                 title.trim(),
+//               description:
+//                 finalDescription,
+//               priority:
+//                 "Important",
+//             },
+//             {
+//               withCredentials:
+//                 true,
+//             }
+//           );
 //       }
 
 //       setShowModal(false);
 //       resetForm();
 
-//       await fetchInformation();
+//       await fetchInformation(
+//         false
+//       );
+
+//       showAlert(
+//         "success",
+//         getApiResponseMessage(
+//           response.data,
+//           wasEditing
+//             ? "Important information updated successfully."
+//             : "Important information added successfully."
+//         )
+//       );
 //     } catch (error: any) {
 //       console.error(
 //         "Failed to save important information:",
 //         error
 //       );
 
-//       alert(
-//         error?.response?.data?.message ||
-//           "Failed to save important information"
+//       showApiError(
+//         error,
+//         "Failed to save important information."
 //       );
 //     } finally {
 //       setSaving(false);
@@ -198,34 +1149,25 @@
 
 //   /*
 //   |--------------------------------------------------------------------------
-//   | TOGGLE
+//   | VIEW
 //   |--------------------------------------------------------------------------
 //   */
 
-//   const toggleStatus = async (
+//   const openView = (
 //     item: Information
 //   ) => {
-//     try {
-//       await axios.patch(
-//         `${API}/api/admin/important-information/${item.id}/toggle-status`,
-//         {},
-//         {
-//           withCredentials: true,
-//         }
-//       );
+//     setSelectedInformation(
+//       item
+//     );
 
-//       await fetchInformation();
-//     } catch (error: any) {
-//       console.error(
-//         "Failed to change status:",
-//         error
-//       );
+//     setShowViewModal(true);
+//   };
 
-//       alert(
-//         error?.response?.data?.message ||
-//           "Failed to change status"
-//       );
-//     }
+//   const closeViewModal = () => {
+//     setShowViewModal(false);
+//     setSelectedInformation(
+//       null
+//     );
 //   };
 
 //   /*
@@ -234,35 +1176,67 @@
 //   |--------------------------------------------------------------------------
 //   */
 
-//   const handleDelete = async (
+//   const performDelete = async (
 //     id: number
 //   ) => {
-//     const confirmed = window.confirm(
-//       "Are you sure you want to delete this information?"
-//     );
-
-//     if (!confirmed) return;
-
 //     try {
-//       await axios.delete(
-//         `${API}/api/admin/important-information/${id}`,
-//         {
-//           withCredentials: true,
-//         }
+//       const response =
+//         await axios.delete(
+//           `${API}/api/admin/important-information/${id}`,
+//           {
+//             withCredentials:
+//               true,
+//           }
+//         );
+
+//       setInformation(
+//         (prev) =>
+//           prev.filter(
+//             (item) =>
+//               item.id !== id
+//           )
 //       );
 
-//       await fetchInformation();
+//       showAlert(
+//         "success",
+//         getApiResponseMessage(
+//           response.data,
+//           "Important information deleted successfully."
+//         )
+//       );
 //     } catch (error: any) {
 //       console.error(
 //         "Failed to delete information:",
 //         error
 //       );
 
-//       alert(
-//         error?.response?.data?.message ||
-//           "Failed to delete information"
+//       showApiError(
+//         error,
+//         "Failed to delete important information."
 //       );
 //     }
+//   };
+
+//   const handleDelete = (
+//     id: number
+//   ) => {
+//     showAlert(
+//       "warning",
+//       "Are you sure you want to delete this important information? This action cannot be undone.",
+//       {
+//         confirmText:
+//           "Delete",
+//         cancelText:
+//           "Cancel",
+//         onConfirm: () => {
+//           closeAlert();
+
+//           setTimeout(() => {
+//             performDelete(id);
+//           }, 100);
+//         },
+//       }
+//     );
 //   };
 
 //   /*
@@ -271,8 +1245,16 @@
 //   |--------------------------------------------------------------------------
 //   */
 
-//   const formatDate = (date: string) => {
-//     return new Date(date).toLocaleDateString(
+//   const formatDate = (
+//     date: string
+//   ) => {
+//     if (!date) {
+//       return "-";
+//     }
+
+//     return new Date(
+//       date
+//     ).toLocaleDateString(
 //       "en-IN",
 //       {
 //         day: "2-digit",
@@ -282,40 +1264,353 @@
 //     );
 //   };
 
-//   return (
-//     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-6">
-//       <div className="mx-auto max-w-[1500px]">
-//         {/* HEADER */}
+//   /*
+//   |--------------------------------------------------------------------------
+//   | INFORMATION TYPE LABEL
+//   |--------------------------------------------------------------------------
+//   */
 
-//         <div className="mb-8 flex items-center justify-between">
+//   const getInformationTypeLabel = (
+//     type: InformationType
+//   ) => {
+//     return type ===
+//       "emergency"
+//       ? "Emergency Contact Info"
+//       : "Community Contact Info";
+//   };
+
+//   /*
+//   |--------------------------------------------------------------------------
+//   | VIEW CONTENT
+//   |--------------------------------------------------------------------------
+//   */
+
+//   const renderViewContent = () => {
+//     if (
+//       !selectedInformation
+//     ) {
+//       return null;
+//     }
+
+//     const parsed =
+//       parseDescription(
+//         selectedInformation.description
+//       );
+
+//     if (parsed.isLegacy) {
+//       return (
+//         <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+//           <p className="whitespace-pre-wrap text-sm leading-6 text-slate-700">
+//             {
+//               selectedInformation.description
+//             }
+//           </p>
+//         </div>
+//       );
+//     }
+
+//     return (
+//       <div className="space-y-5">
+//         <div className="rounded-xl border border-indigo-100 bg-indigo-50 px-4 py-3">
+//           <p className="text-xs font-semibold uppercase tracking-wide text-indigo-500">
+//             Information Type
+//           </p>
+
+//           <p className="mt-1 text-sm font-semibold text-indigo-800">
+//             {getInformationTypeLabel(
+//               parsed.informationType
+//             )}
+//           </p>
+//         </div>
+
+//         {parsed.contacts
+//           .length === 0 ? (
+//           <div className="rounded-xl border border-slate-200 bg-slate-50 p-6 text-center">
+//             <p className="text-sm text-slate-500">
+//               No contacts available.
+//             </p>
+//           </div>
+//         ) : (
+//           <div className="overflow-hidden rounded-xl border border-slate-200">
+//             <div className="overflow-x-auto">
+//               <table className="w-full min-w-[650px]">
+//                 <thead className="bg-slate-50">
+//                   <tr>
+//                     <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+//                       #
+//                     </th>
+
+//                     <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+//                       Designation
+//                     </th>
+
+//                     <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+//                       Name
+//                     </th>
+
+//                     <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+//                       Contact No
+//                     </th>
+//                   </tr>
+//                 </thead>
+
+//                 <tbody className="divide-y divide-slate-100 bg-white">
+//                   {parsed.contacts.map(
+//                     (
+//                       contact,
+//                       index
+//                     ) => (
+//                       <tr
+//                         key={
+//                           contact.id
+//                         }
+//                       >
+//                         <td className="px-4 py-3 text-sm text-slate-400">
+//                           {index +
+//                             1}
+//                         </td>
+
+//                         <td className="px-4 py-3 text-sm font-medium text-slate-700">
+//                           {contact.designation ||
+//                             "-"}
+//                         </td>
+
+//                         <td className="px-4 py-3 text-sm text-slate-700">
+//                           {contact.name ||
+//                             "-"}
+//                         </td>
+
+//                         <td className="px-4 py-3 text-sm font-medium text-slate-700">
+//                           {contact.contactNo ||
+//                             "-"}
+//                         </td>
+//                       </tr>
+//                     )
+//                   )}
+//                 </tbody>
+//               </table>
+//             </div>
+//           </div>
+//         )}
+//       </div>
+//     );
+//   };
+
+//   /*
+//   |--------------------------------------------------------------------------
+//   | ANNOUNCEMENT-STYLE ALERT MODAL
+//   |--------------------------------------------------------------------------
+//   */
+
+//   const AlertModal = ({
+//     type,
+//     message,
+//     confirmText,
+//     cancelText,
+//     onConfirm,
+//     onClose,
+//   }: {
+//     type: AlertType;
+//     message: string;
+//     confirmText?: string;
+//     cancelText?: string;
+//     onConfirm?: () => void;
+//     onClose: () => void;
+//   }) => {
+//     const isConfirm =
+//       Boolean(onConfirm);
+
+//     const config =
+//       type === "success"
+//         ? {
+//             borderColor:
+//               "#10b981",
+//             iconColor:
+//               "#10b981",
+//             buttonBg:
+//               "#10b981",
+//             title:
+//               "Success",
+//             Icon: CheckCircle2,
+//           }
+//         : type === "warning"
+//         ? {
+//             borderColor:
+//               "#eab308",
+//             iconColor:
+//               "#eab308",
+//             buttonBg:
+//               "#eab308",
+//             title:
+//               isConfirm
+//                 ? "Confirm Delete"
+//                 : "Warning",
+//             Icon: isConfirm
+//               ? Trash2
+//               : AlertTriangle,
+//           }
+//         : {
+//             borderColor:
+//               "#f43f5e",
+//             iconColor:
+//               "#f43f5e",
+//             buttonBg:
+//               "#f43f5e",
+//             title:
+//               "Error",
+//             Icon: XCircle,
+//           };
+
+//     const Icon =
+//       config.Icon;
+
+//     return (
+//       <div
+//         className="fixed inset-0 z-[9999] flex items-center justify-center"
+//         style={{
+//           background:
+//             "rgba(15, 23, 42, 0.45)",
+//         }}
+//       >
+//         <div
+//           className="w-[380px] max-w-[calc(100vw-32px)] overflow-hidden rounded-xl bg-white shadow-2xl"
+//           style={{
+//             borderLeft:
+//               `4px solid ${config.borderColor}`,
+//           }}
+//           role={
+//             isConfirm
+//               ? "alertdialog"
+//               : "dialog"
+//           }
+//           aria-modal="true"
+//         >
+//           {/* HEADER */}
+//           <div
+//             className="flex items-center justify-between px-5 py-3.5 text-white"
+//             style={{
+//               background:
+//                 "#020b3d",
+//             }}
+//           >
+//             <div className="flex items-center gap-3">
+//               <Icon
+//                 size={24}
+//                 color={
+//                   config.iconColor
+//                 }
+//               />
+
+//               <h2 className="m-0 text-[17px] font-semibold">
+//                 {config.title}
+//               </h2>
+//             </div>
+
+//             <button
+//               type="button"
+//               onClick={onClose}
+//               aria-label="Close"
+//               className="flex cursor-pointer items-center rounded p-1 text-white transition hover:bg-white/10"
+//             >
+//               <X size={18} />
+//             </button>
+//           </div>
+
+//           {/* MESSAGE */}
+//           <div className="px-5 py-[22px]">
+//             <p className="m-0 whitespace-pre-wrap text-sm leading-[1.6] text-slate-600">
+//               {message}
+//             </p>
+//           </div>
+
+//           {/* FOOTER */}
+//           <div className="flex justify-end gap-2.5 border-t border-slate-200 bg-slate-50 px-5 py-3.5">
+//             {isConfirm && (
+//               <button
+//                 type="button"
+//                 onClick={onClose}
+//                 className="rounded-lg border border-slate-200 bg-white px-5 py-2 text-[13px] font-medium text-slate-600 transition hover:bg-slate-100"
+//               >
+//                 {cancelText ||
+//                   "Cancel"}
+//               </button>
+//             )}
+
+//             <button
+//               type="button"
+//               onClick={() => {
+//                 if (
+//                   onConfirm
+//                 ) {
+//                   const confirmAction =
+//                     onConfirm;
+
+//                   onClose();
+
+//                   setTimeout(
+//                     () => {
+//                       confirmAction();
+//                     },
+//                     100
+//                   );
+//                 } else {
+//                   onClose();
+//                 }
+//               }}
+//               className="rounded-lg border-none px-5 py-2 text-[13px] font-medium text-white transition"
+//               style={{
+//                 background:
+//                   config.buttonBg,
+//               }}
+//             >
+//               {isConfirm
+//                 ? confirmText ||
+//                   "Confirm"
+//                 : "OK"}
+//             </button>
+//           </div>
+//         </div>
+//       </div>
+//     );
+//   };
+
+//   return (
+//     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-4 sm:p-6">
+//       <div className="mx-auto max-w-[1500px]">
+
+//         {/* HEADER */}
+//         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 //           <div>
 //             <h1 className="text-2xl font-bold text-slate-800">
 //               Important Information
 //             </h1>
 
 //             <p className="mt-1 text-sm text-slate-500">
-//               Manage important information visible to
-//               apartment members.
+//               Manage important contact information visible
+//               to apartment members.
 //             </p>
 //           </div>
 
-//           <button
-//             onClick={openCreate}
-//             className="flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700"
-//           >
-//             <Plus size={18} />
-//             Add Information
-//           </button>
+//           {canAddInformation && (
+//             <button
+//               type="button"
+//               onClick={openCreate}
+//               className="flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700"
+//             >
+//               <Plus size={18} />
+//               Add Information
+//             </button>
+//           )}
 //         </div>
 
 //         {/* LIST */}
-
 //         <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
 //           {loading ? (
 //             <div className="p-10 text-center text-slate-500">
 //               Loading important information...
 //             </div>
-//           ) : information.length === 0 ? (
+//           ) : information.length ===
+//             0 ? (
 //             <div className="flex flex-col items-center justify-center p-16 text-center">
 //               <AlertCircle
 //                 size={42}
@@ -327,116 +1622,203 @@
 //               </h3>
 
 //               <p className="mt-1 text-sm text-slate-500">
-//                 Add information that should be visible
-//                 to apartment members.
+//                 Add important emergency or community
+//                 contact information.
 //               </p>
 
-//               <button
-//                 onClick={openCreate}
-//                 className="mt-5 flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
-//               >
-//                 <Plus size={16} />
-//                 Add Information
-//               </button>
+//               {canAddInformation && (
+//                 <button
+//                   type="button"
+//                   onClick={openCreate}
+//                   className="mt-5 flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+//                 >
+//                   <Plus size={16} />
+//                   Add Information
+//                 </button>
+//               )}
 //             </div>
 //           ) : (
 //             <div className="divide-y divide-slate-100">
-//               {information.map((item) => (
-//                 <div
-//                   key={item.id}
-//                   className="p-6 transition hover:bg-slate-50"
-//                 >
-//                   <div className="flex items-start justify-between gap-6">
-//                     <div className="min-w-0 flex-1">
-//                       <div className="mb-2 flex items-center gap-3">
-//                         <h2 className="text-lg font-semibold text-slate-800">
-//                           {item.title}
-//                         </h2>
+//               {information.map(
+//                 (item) => {
+//                   const parsed =
+//                     parseDescription(
+//                       item.description
+//                     );
 
-//                         <span
-//                           className={`rounded-full px-3 py-1 text-xs font-semibold ${
-//                             item.status ===
-//                             "published"
-//                               ? "bg-emerald-100 text-emerald-700"
-//                               : "bg-amber-100 text-amber-700"
-//                           }`}
-//                         >
-//                           {item.status ===
-//                           "published"
-//                             ? "Published"
-//                             : "Draft"}
-//                         </span>
+//                   return (
+//                     <div
+//                       key={
+//                         item.id
+//                       }
+//                       className="p-5 transition hover:bg-slate-50 sm:p-6"
+//                     >
+//                       <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+//                         <div className="min-w-0 flex-1">
+//                           <div className="mb-3 flex flex-wrap items-center gap-2">
+//                             <h2 className="text-lg font-semibold text-slate-800">
+//                               {
+//                                 item.title
+//                               }
+//                             </h2>
+
+//                             {!parsed.isLegacy && (
+//                               <span
+//                                 className={`rounded-full px-3 py-1 text-xs font-semibold ${
+//                                   parsed.informationType ===
+//                                   "emergency"
+//                                     ? "bg-red-100 text-red-700"
+//                                     : "bg-blue-100 text-blue-700"
+//                                 }`}
+//                               >
+//                                 {parsed.informationType ===
+//                                 "emergency"
+//                                   ? "Emergency"
+//                                   : "Community"}
+//                               </span>
+//                             )}
+//                           </div>
+
+//                           {parsed.isLegacy ? (
+//                             <p className="line-clamp-3 whitespace-pre-line text-sm leading-6 text-slate-600">
+//                               {
+//                                 item.description
+//                               }
+//                             </p>
+//                           ) : (
+//                             <>
+//                               <p className="mb-3 text-sm text-slate-500">
+//                                 {
+//                                   parsed.contacts
+//                                     .length
+//                                 }{" "}
+//                                 {parsed.contacts
+//                                   .length ===
+//                                 1
+//                                   ? "contact"
+//                                   : "contacts"}{" "}
+//                                 added
+//                               </p>
+
+//                               <div className="flex flex-wrap gap-2">
+//                                 {parsed.contacts
+//                                   .slice(
+//                                     0,
+//                                     3
+//                                   )
+//                                   .map(
+//                                     (
+//                                       contact
+//                                     ) => (
+//                                       <span
+//                                         key={
+//                                           contact.id
+//                                         }
+//                                         className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs text-slate-600"
+//                                       >
+//                                         <span className="font-semibold">
+//                                           {
+//                                             contact.name
+//                                           }
+//                                         </span>
+
+//                                         {contact.designation
+//                                           ? ` • ${contact.designation}`
+//                                           : ""}
+//                                       </span>
+//                                     )
+//                                   )}
+
+//                                 {parsed.contacts
+//                                   .length >
+//                                   3 && (
+//                                   <span className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-500">
+//                                     +
+//                                     {parsed.contacts
+//                                       .length -
+//                                       3}{" "}
+//                                     more
+//                                   </span>
+//                                 )}
+//                               </div>
+//                             </>
+//                           )}
+
+//                           <p className="mt-4 text-xs text-slate-400">
+//                             Created{" "}
+//                             {formatDate(
+//                               item.created_at
+//                             )}
+//                           </p>
+//                         </div>
+
+//                         {/* ACTIONS */}
+//                         <div className="flex shrink-0 items-center gap-2">
+//                           <button
+//                             type="button"
+//                             onClick={() =>
+//                               openView(
+//                                 item
+//                               )
+//                             }
+//                             title="View"
+//                             className="rounded-lg border border-slate-200 p-2 text-slate-600 transition hover:bg-slate-100"
+//                           >
+//                             <Eye
+//                               size={17}
+//                             />
+//                           </button>
+
+//                           <button
+//                             type="button"
+//                             onClick={() =>
+//                               openEdit(
+//                                 item
+//                               )
+//                             }
+//                             title="Edit"
+//                             className="rounded-lg border border-blue-200 p-2 text-blue-600 transition hover:bg-blue-50"
+//                           >
+//                             <Edit
+//                               size={17}
+//                             />
+//                           </button>
+
+//                           <button
+//                             type="button"
+//                             onClick={() =>
+//                               handleDelete(
+//                                 item.id
+//                               )
+//                             }
+//                             title="Delete"
+//                             className="rounded-lg border border-red-200 p-2 text-red-600 transition hover:bg-red-50"
+//                           >
+//                             <Trash2
+//                               size={17}
+//                             />
+//                           </button>
+//                         </div>
 //                       </div>
-
-//                       <p className="max-w-4xl whitespace-pre-line text-sm leading-6 text-slate-600">
-//                         {item.description}
-//                       </p>
-
-//                       <p className="mt-3 text-xs text-slate-400">
-//                         Created{" "}
-//                         {formatDate(
-//                           item.created_at
-//                         )}
-//                       </p>
 //                     </div>
-
-//                     <div className="flex shrink-0 items-center gap-2">
-//                       <button
-//                         onClick={() =>
-//                           toggleStatus(item)
-//                         }
-//                         title={
-//                           item.status ===
-//                           "published"
-//                             ? "Unpublish"
-//                             : "Publish"
-//                         }
-//                         className="rounded-lg border border-slate-200 p-2 text-slate-600 hover:bg-slate-100"
-//                       >
-//                         {item.status ===
-//                         "published" ? (
-//                           <EyeOff size={17} />
-//                         ) : (
-//                           <Eye size={17} />
-//                         )}
-//                       </button>
-
-//                       <button
-//                         onClick={() =>
-//                           openEdit(item)
-//                         }
-//                         title="Edit"
-//                         className="rounded-lg border border-slate-200 p-2 text-blue-600 hover:bg-blue-50"
-//                       >
-//                         <Edit size={17} />
-//                       </button>
-
-//                       <button
-//                         onClick={() =>
-//                           handleDelete(item.id)
-//                         }
-//                         title="Delete"
-//                         className="rounded-lg border border-slate-200 p-2 text-red-600 hover:bg-red-50"
-//                       >
-//                         <Trash2 size={17} />
-//                       </button>
-//                     </div>
-//                   </div>
-//                 </div>
-//               ))}
+//                   );
+//                 }
+//               )}
 //             </div>
 //           )}
 //         </div>
 //       </div>
 
-//       {/* MODAL */}
+//       {/* ================================================================= */}
+//       {/* CREATE / EDIT MODAL */}
+//       {/* ================================================================= */}
 
 //       {showModal && (
-//         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm">
-//           <div className="w-full max-w-2xl rounded-2xl bg-white shadow-2xl">
-//             {/* MODAL HEADER */}
+//         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm">
+//           <div className="flex max-h-[92vh] w-full max-w-5xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
 
-//             <div className="flex items-center justify-between border-b border-slate-200 px-6 py-5">
+//             {/* HEADER */}
+//             <div className="flex shrink-0 items-center justify-between border-b border-slate-200 px-5 py-4 sm:px-6 sm:py-5">
 //               <div>
 //                 <h2 className="text-xl font-bold text-slate-800">
 //                   {editingId
@@ -445,101 +1827,574 @@
 //                 </h2>
 
 //                 <p className="mt-1 text-sm text-slate-500">
-//                   This information will be visible to
-//                   members of your organisation.
+//                   {editingId
+//                     ? "Update the contact information."
+//                     : "Add important emergency or community contact information."}
 //                 </p>
 //               </div>
 
 //               <button
-//                 onClick={closeModal}
-//                 className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+//                 type="button"
+//                 onClick={
+//                   closeModal
+//                 }
+//                 disabled={saving}
+//                 className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
 //               >
 //                 <X size={20} />
 //               </button>
 //             </div>
 
 //             {/* FORM */}
-
 //             <form
-//               onSubmit={handleSubmit}
-//               className="space-y-5 p-6"
+//               onSubmit={
+//                 handleSubmit
+//               }
+//               className="flex min-h-0 flex-1 flex-col"
 //             >
-//               <div>
-//                 <label className="mb-2 block text-sm font-semibold text-slate-700">
-//                   Title
-//                 </label>
+//               <div className="flex-1 space-y-6 overflow-y-auto p-5 sm:p-6">
 
-//                 <input
-//                   type="text"
-//                   value={title}
-//                   onChange={(e) =>
-//                     setTitle(e.target.value)
-//                   }
-//                   placeholder="Enter information title"
-//                   className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
-//                 />
+//                 {/* TITLE */}
+//                 <div>
+//                   <label className="mb-2 block text-sm font-semibold text-slate-700">
+//                     Title
+//                     <span className="ml-1 text-red-500">
+//                       *
+//                     </span>
+//                   </label>
+
+//                   <input
+//                     type="text"
+//                     value={title}
+//                     onChange={(
+//                       e
+//                     ) => {
+//                       setTitle(
+//                         e.target
+//                           .value
+//                       );
+
+//                       if (
+//                         titleError
+//                       ) {
+//                         setTitleError(
+//                           ""
+//                         );
+//                       }
+//                     }}
+//                     placeholder="Enter information title"
+//                     disabled={saving}
+//                     className={`w-full rounded-xl border px-4 py-3 text-sm outline-none transition ${
+//                       titleError
+//                         ? "border-red-400 bg-red-50/30 focus:border-red-500 focus:ring-2 focus:ring-red-100"
+//                         : "border-slate-200 bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+//                     }`}
+//                   />
+
+//                   {titleError && (
+//                     <p className="mt-1.5 text-xs font-medium text-red-600">
+//                       {
+//                         titleError
+//                       }
+//                     </p>
+//                   )}
+//                 </div>
+
+//                 {/* INFORMATION TYPE */}
+//                 <div>
+//                   <label className="mb-3 block text-sm font-semibold text-slate-700">
+//                     Choose
+//                     <span className="ml-1 text-red-500">
+//                       *
+//                     </span>
+//                   </label>
+
+//                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+
+//                     {/* EMERGENCY */}
+//                     {(editingId ||
+//                       canAddEmergency) &&
+//                       (editingId
+//                         ? informationType ===
+//                             "emergency" ||
+//                           !hasEmergencyInformation
+//                         : canAddEmergency) && (
+//                         <label
+//                           className={`flex cursor-pointer items-center gap-3 rounded-xl border p-4 transition ${
+//                             informationType ===
+//                             "emergency"
+//                               ? "border-red-300 bg-red-50 ring-2 ring-red-100"
+//                               : "border-slate-200 bg-white hover:bg-slate-50"
+//                           }`}
+//                         >
+//                           <input
+//                             type="radio"
+//                             name="informationType"
+//                             value="emergency"
+//                             checked={
+//                               informationType ===
+//                               "emergency"
+//                             }
+//                             onChange={() => {
+//                               setInformationType(
+//                                 "emergency"
+//                               );
+//                               setTypeError(
+//                                 ""
+//                               );
+//                             }}
+//                             disabled={
+//                               saving
+//                             }
+//                             className="h-4 w-4 accent-red-600"
+//                           />
+
+//                           <div>
+//                             <p className="text-sm font-semibold text-slate-800">
+//                               Emergency contact info
+//                             </p>
+
+//                             <p className="mt-0.5 text-xs text-slate-500">
+//                               Security, police, ambulance,
+//                               fire, etc.
+//                             </p>
+//                           </div>
+//                         </label>
+//                       )}
+
+//                     {/* COMMUNITY */}
+//                     {(editingId ||
+//                       canAddCommunity) &&
+//                       (editingId
+//                         ? informationType ===
+//                             "community" ||
+//                           !hasCommunityInformation
+//                         : canAddCommunity) && (
+//                         <label
+//                           className={`flex cursor-pointer items-center gap-3 rounded-xl border p-4 transition ${
+//                             informationType ===
+//                             "community"
+//                               ? "border-blue-300 bg-blue-50 ring-2 ring-blue-100"
+//                               : "border-slate-200 bg-white hover:bg-slate-50"
+//                           }`}
+//                         >
+//                           <input
+//                             type="radio"
+//                             name="informationType"
+//                             value="community"
+//                             checked={
+//                               informationType ===
+//                               "community"
+//                             }
+//                             onChange={() => {
+//                               setInformationType(
+//                                 "community"
+//                               );
+//                               setTypeError(
+//                                 ""
+//                               );
+//                             }}
+//                             disabled={
+//                               saving
+//                             }
+//                             className="h-4 w-4 accent-blue-600"
+//                           />
+
+//                           <div>
+//                             <p className="text-sm font-semibold text-slate-800">
+//                               Others
+//                             </p>
+
+//                             <p className="mt-0.5 text-xs text-slate-500">
+//                               Community contact information
+//                             </p>
+//                           </div>
+//                         </label>
+//                       )}
+//                   </div>
+
+//                   {typeError && (
+//                     <p className="mt-1.5 text-xs font-medium text-red-600">
+//                       {
+//                         typeError
+//                       }
+//                     </p>
+//                   )}
+//                 </div>
+
+//                 {/* CONTACTS */}
+//                 <div>
+//                   <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+//                     <div>
+//                       <label className="block text-sm font-semibold text-slate-700">
+//                         Contact Information
+//                         <span className="ml-1 text-red-500">
+//                           *
+//                         </span>
+//                       </label>
+
+//                       <p className="mt-1 text-xs text-slate-500">
+//                         Add up to{" "}
+//                         {
+//                           MAX_CONTACTS
+//                         }{" "}
+//                         contacts.
+//                       </p>
+//                     </div>
+
+//                     <div
+//                       className={`text-xs font-semibold ${
+//                         contacts.length >=
+//                         MAX_CONTACTS
+//                           ? "text-red-600"
+//                           : "text-slate-500"
+//                       }`}
+//                     >
+//                       {
+//                         contacts.length
+//                       }{" "}
+//                       /{" "}
+//                       {
+//                         MAX_CONTACTS
+//                       }
+//                     </div>
+//                   </div>
+
+//                   {contactsError && (
+//                     <div className="mb-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2">
+//                       <p className="text-xs font-medium text-red-600">
+//                         {
+//                           contactsError
+//                         }
+//                       </p>
+//                     </div>
+//                   )}
+
+//                   <div className="space-y-3">
+//                     {contacts.map(
+//                       (
+//                         contact,
+//                         index
+//                       ) => {
+//                         const errors =
+//                           contactErrors[
+//                             contact
+//                               .id
+//                           ] ||
+//                           {};
+
+//                         return (
+//                           <div
+//                             key={
+//                               contact.id
+//                             }
+//                             className="rounded-xl border border-slate-200 bg-slate-50 p-4"
+//                           >
+//                             {/* ROW HEADER */}
+//                             <div className="mb-3 flex items-center justify-between">
+//                               <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+//                                 Contact{" "}
+//                                 {index +
+//                                   1}
+//                               </p>
+
+//                               {contact.isEditing && (
+//                                 <span className="rounded-full bg-blue-100 px-2.5 py-1 text-[11px] font-semibold text-blue-700">
+//                                   Editing
+//                                 </span>
+//                               )}
+//                             </div>
+
+//                             <div className="grid grid-cols-1 gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto]">
+
+//                               {/* DESIGNATION */}
+//                               <div>
+//                                 <label className="mb-1.5 block text-xs font-semibold text-slate-600">
+//                                   Designation
+//                                 </label>
+
+//                                 <input
+//                                   type="text"
+//                                   value={
+//                                     contact.designation
+//                                   }
+//                                   disabled={
+//                                     !contact.isEditing ||
+//                                     saving
+//                                   }
+//                                   onChange={(
+//                                     e
+//                                   ) =>
+//                                     updateContact(
+//                                       contact.id,
+//                                       "designation",
+//                                       e.target
+//                                         .value
+//                                     )
+//                                   }
+//                                   placeholder="e.g. Security"
+//                                   className={`w-full rounded-lg border px-3 py-2.5 text-sm outline-none transition ${
+//                                     errors.designation
+//                                       ? "border-red-400 bg-red-50"
+//                                       : contact.isEditing
+//                                       ? "border-slate-300 bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+//                                       : "border-slate-200 bg-slate-100 text-slate-500"
+//                                   }`}
+//                                 />
+
+//                                 {errors.designation && (
+//                                   <p className="mt-1 text-[11px] font-medium text-red-600">
+//                                     {
+//                                       errors.designation
+//                                     }
+//                                   </p>
+//                                 )}
+//                               </div>
+
+//                               {/* NAME */}
+//                               <div>
+//                                 <label className="mb-1.5 block text-xs font-semibold text-slate-600">
+//                                   Name
+//                                 </label>
+
+//                                 <input
+//                                   type="text"
+//                                   value={
+//                                     contact.name
+//                                   }
+//                                   disabled={
+//                                     !contact.isEditing ||
+//                                     saving
+//                                   }
+//                                   onChange={(
+//                                     e
+//                                   ) =>
+//                                     updateContact(
+//                                       contact.id,
+//                                       "name",
+//                                       e.target
+//                                         .value
+//                                     )
+//                                   }
+//                                   placeholder="Enter name"
+//                                   className={`w-full rounded-lg border px-3 py-2.5 text-sm outline-none transition ${
+//                                     errors.name
+//                                       ? "border-red-400 bg-red-50"
+//                                       : contact.isEditing
+//                                       ? "border-slate-300 bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+//                                       : "border-slate-200 bg-slate-100 text-slate-500"
+//                                   }`}
+//                                 />
+
+//                                 {errors.name && (
+//                                   <p className="mt-1 text-[11px] font-medium text-red-600">
+//                                     {
+//                                       errors.name
+//                                     }
+//                                   </p>
+//                                 )}
+//                               </div>
+
+//                               {/* CONTACT NUMBER */}
+//                               <div>
+//                                 <label className="mb-1.5 block text-xs font-semibold text-slate-600">
+//                                   Contact No
+//                                 </label>
+
+//                                 <input
+//                                   type="tel"
+//                                   inputMode="numeric"
+//                                   maxLength={
+//                                     10
+//                                   }
+//                                   value={
+//                                     contact.contactNo
+//                                   }
+//                                   disabled={
+//                                     !contact.isEditing ||
+//                                     saving
+//                                   }
+//                                   onChange={(
+//                                     e
+//                                   ) => {
+//                                     const value =
+//                                       e.target.value
+//                                         .replace(
+//                                           /\D/g,
+//                                           ""
+//                                         )
+//                                         .slice(
+//                                           0,
+//                                           10
+//                                         );
+
+//                                     updateContact(
+//                                       contact.id,
+//                                       "contactNo",
+//                                       value
+//                                     );
+//                                   }}
+//                                   placeholder="10-digit number"
+//                                   className={`w-full rounded-lg border px-3 py-2.5 text-sm outline-none transition ${
+//                                     errors.contactNo
+//                                       ? "border-red-400 bg-red-50"
+//                                       : contact.isEditing
+//                                       ? "border-slate-300 bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+//                                       : "border-slate-200 bg-slate-100 text-slate-500"
+//                                   }`}
+//                                 />
+
+//                                 {errors.contactNo && (
+//                                   <p className="mt-1 text-[11px] font-medium text-red-600">
+//                                     {
+//                                       errors.contactNo
+//                                     }
+//                                   </p>
+//                                 )}
+//                               </div>
+
+//                               {/* ACTION BUTTONS */}
+//                               <div className="flex items-end gap-2">
+
+//                                 {/* EDIT */}
+//                                 <button
+//                                   type="button"
+//                                   onClick={() =>
+//                                     editContact(
+//                                       contact.id
+//                                     )
+//                                   }
+//                                   disabled={
+//                                     saving ||
+//                                     contact.isEditing
+//                                   }
+//                                   title={
+//                                     contact.isEditing
+//                                       ? "Currently editing"
+//                                       : "Edit contact"
+//                                   }
+//                                   className={`flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-lg border transition ${
+//                                     contact.isEditing
+//                                       ? "cursor-not-allowed border-slate-200 bg-slate-100 text-slate-300"
+//                                       : "border-blue-200 bg-blue-50 text-blue-600 hover:bg-blue-100"
+//                                   }`}
+//                                 >
+//                                   <Pencil
+//                                     size={
+//                                       17
+//                                     }
+//                                   />
+//                                 </button>
+
+//                                 {/* ADD */}
+//                                 <button
+//                                   type="button"
+//                                   onClick={
+//                                     addContact
+//                                   }
+//                                   disabled={
+//                                     saving ||
+//                                     contacts.length >=
+//                                       MAX_CONTACTS
+//                                   }
+//                                   title={
+//                                     contacts.length >=
+//                                     MAX_CONTACTS
+//                                       ? "Maximum 10 contacts allowed"
+//                                       : "Add contact"
+//                                   }
+//                                   className={`flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-lg border transition ${
+//                                     contacts.length >=
+//                                     MAX_CONTACTS
+//                                       ? "cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400"
+//                                       : "border-emerald-200 bg-emerald-50 text-emerald-600 hover:bg-emerald-100"
+//                                   }`}
+//                                 >
+//                                   <Plus
+//                                     size={
+//                                       18
+//                                     }
+//                                   />
+//                                 </button>
+
+//                                 {/* REMOVE */}
+//                                 <button
+//                                   type="button"
+//                                   onClick={() =>
+//                                     removeContact(
+//                                       contact.id
+//                                     )
+//                                   }
+//                                   disabled={
+//                                     saving ||
+//                                     contacts.length ===
+//                                       1
+//                                   }
+//                                   title={
+//                                     contacts.length ===
+//                                     1
+//                                       ? "At least one contact is required"
+//                                       : "Remove contact"
+//                                   }
+//                                   className={`flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-lg border transition ${
+//                                     contacts.length ===
+//                                     1
+//                                       ? "cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400"
+//                                       : "border-red-200 bg-red-50 text-red-600 hover:bg-red-100"
+//                                   }`}
+//                                 >
+//                                   <Minus
+//                                     size={
+//                                       18
+//                                     }
+//                                   />
+//                                 </button>
+//                               </div>
+//                             </div>
+//                           </div>
+//                         );
+//                       }
+//                     )}
+//                   </div>
+
+//                   {contacts.length >=
+//                     MAX_CONTACTS && (
+//                     <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2">
+//                       <p className="text-xs font-medium text-amber-700">
+//                         Maximum of{" "}
+//                         {
+//                           MAX_CONTACTS
+//                         }{" "}
+//                         contacts reached.
+//                         You cannot add
+//                         another contact.
+//                       </p>
+//                     </div>
+//                   )}
+//                 </div>
 //               </div>
 
-//               <div>
-//                 <label className="mb-2 block text-sm font-semibold text-slate-700">
-//                   Description
-//                 </label>
-
-//                 <textarea
-//                   value={description}
-//                   onChange={(e) =>
-//                     setDescription(
-//                       e.target.value
-//                     )
-//                   }
-//                   rows={5}
-//                   placeholder="Enter important information..."
-//                   className="w-full resize-none rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
-//                 />
-//               </div>
-
-//               <div>
-//                 <label className="mb-2 block text-sm font-semibold text-slate-700">
-//                   Status
-//                 </label>
-
-//                 <select
-//                   value={status}
-//                   onChange={(e) =>
-//                     setStatus(
-//                       e.target.value as
-//                         | "published"
-//                         | "draft"
-//                     )
-//                   }
-//                   className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-indigo-500"
-//                 >
-//                   <option value="published">
-//                     Published
-//                   </option>
-
-//                   <option value="draft">
-//                     Draft
-//                   </option>
-//                 </select>
-//               </div>
-
-//               {/* BUTTONS */}
-
-//               <div className="flex justify-end gap-3 border-t border-slate-100 pt-5">
+//               {/* FORM BUTTONS */}
+//               <div className="flex shrink-0 flex-col-reverse gap-3 border-t border-slate-200 bg-white px-5 py-4 sm:flex-row sm:justify-end sm:px-6">
 //                 <button
 //                   type="button"
-//                   onClick={closeModal}
-//                   disabled={saving}
-//                   className="rounded-xl border border-slate-200 px-5 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50"
+//                   onClick={
+//                     closeModal
+//                   }
+//                   disabled={
+//                     saving
+//                   }
+//                   className="rounded-xl border border-slate-200 px-5 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
 //                 >
 //                   Cancel
 //                 </button>
 
 //                 <button
 //                   type="submit"
-//                   disabled={saving}
-//                   className="rounded-xl bg-indigo-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
+//                   disabled={
+//                     saving
+//                   }
+//                   className="rounded-xl bg-indigo-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
 //                 >
 //                   {saving
 //                     ? "Saving..."
@@ -552,55 +2407,151 @@
 //           </div>
 //         </div>
 //       )}
+
+//       {/* ================================================================= */}
+//       {/* VIEW MODAL */}
+//       {/* ================================================================= */}
+
+//       {showViewModal &&
+//         selectedInformation && (
+//           <div className="fixed inset-0 z-[55] flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm">
+//             <div className="flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
+
+//               <div className="flex shrink-0 items-center justify-between border-b border-slate-200 px-5 py-4 sm:px-6 sm:py-5">
+//                 <div className="min-w-0">
+//                   <h2 className="truncate text-xl font-bold text-slate-800">
+//                     {
+//                       selectedInformation.title
+//                     }
+//                   </h2>
+
+//                   <p className="mt-1 text-sm text-slate-500">
+//                     Important contact information
+//                   </p>
+//                 </div>
+
+//                 <button
+//                   type="button"
+//                   onClick={
+//                     closeViewModal
+//                   }
+//                   className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+//                 >
+//                   <X size={20} />
+//                 </button>
+//               </div>
+
+//               <div className="min-h-0 flex-1 overflow-y-auto p-5 sm:p-6">
+//                 {renderViewContent()}
+//               </div>
+
+//               <div className="flex shrink-0 justify-end border-t border-slate-200 px-5 py-4 sm:px-6">
+//                 <button
+//                   type="button"
+//                   onClick={
+//                     closeViewModal
+//                   }
+//                   className="rounded-xl border border-slate-200 px-5 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
+//                 >
+//                   Close
+//                 </button>
+//               </div>
+//             </div>
+//           </div>
+//         )}
+
+//       {/* ================================================================= */}
+//       {/* ANNOUNCEMENT-STYLE ALERT */}
+//       {/* ================================================================= */}
+
+//       {alert && (
+//         <AlertModal
+//           type={alert.type}
+//           message={
+//             alert.message
+//           }
+//           confirmText={
+//             alert.confirmText
+//           }
+//           cancelText={
+//             alert.cancelText
+//           }
+//           onConfirm={
+//             alert.onConfirm
+//           }
+//           onClose={
+//             closeAlert
+//           }
+//         />
+//       )}
 //     </div>
 //   );
 // };
 
 // export default ImportantInformation;
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import {
   AlertCircle,
   AlertTriangle,
-  CheckCircle,
-  XCircle,
-  AlignCenter,
-  AlignJustify,
-  AlignLeft,
-  AlignRight,
-  Bold,
   CheckCircle2,
-  Edit,
-  ImagePlus,
   Eye,
-  Italic,
-  Link,
-  List,
-  ListOrdered,
+  Edit,
+  Minus,
+  Pencil,
   Plus,
-  Redo2,
   Trash2,
-  Underline,
-  Undo2,
   X,
+  XCircle,
+  Phone,
+  ShieldAlert,
+  Users,
 } from "lucide-react";
+
+const API = import.meta.env.VITE_BACKEND_URL;
+
+const MAX_CONTACTS = 10;
+
+type InformationType = "emergency" | "community";
+
+type Contact = {
+  id: string;
+  designation: string;
+  name: string;
+  contactNo: string;
+  isEditing: boolean;
+};
+
+type InformationPayload = {
+  informationType: InformationType;
+  contacts: {
+    designation: string;
+    name: string;
+    contactNo: string;
+  }[];
+};
 
 type Information = {
   id: number;
   title: string;
   description: string;
   created_at: string;
-  updated_at: string;
+  updated_at?: string;
   status?: "published" | "draft";
   priority?: string;
   expires_at?: string | null;
   is_active?: boolean;
 };
 
+/*
+|--------------------------------------------------------------------------
+| ALERT TYPES
+|--------------------------------------------------------------------------
+*/
+
 type AlertType = "success" | "warning" | "error";
 
 type AlertState = {
-  show: boolean;
   type: AlertType;
   message: string;
   confirmText?: string;
@@ -608,81 +2559,225 @@ type AlertState = {
   onConfirm?: () => void;
 };
 
-const API = import.meta.env.VITE_BACKEND_URL;
+/*
+|--------------------------------------------------------------------------
+| CONTACT
+|--------------------------------------------------------------------------
+*/
 
+const createContact = (): Contact => ({
+  id: `${Date.now()}-${Math.random()}`,
+  designation: "",
+  name: "",
+  contactNo: "",
+  isEditing: true,
+});
 
-const prepareRichTextHtml = (html: string) => {
-  if (!html) return "";
+/*
+|--------------------------------------------------------------------------
+| API RESPONSE MESSAGE
+|--------------------------------------------------------------------------
+*/
 
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(html, "text/html");
+const getApiResponseMessage = (
+  data: any,
+  fallback: string
+): string => {
+  if (!data) {
+    return fallback;
+  }
 
-  doc.querySelectorAll("a").forEach((anchor) => {
-    anchor.setAttribute("target", "_blank");
-    anchor.setAttribute("rel", "noopener noreferrer");
+  if (typeof data === "string") {
+    return data;
+  }
 
-    if (!anchor.getAttribute("href")?.match(/^(https?:|mailto:|tel:)/i)) {
-      const href = anchor.getAttribute("href");
+  const directMessage =
+    data.message ||
+    data.msg ||
+    data.error ||
+    data.detail;
 
-      if (href) {
-        anchor.setAttribute("href", `https://${href}`);
-      }
+  if (typeof directMessage === "string") {
+    return directMessage;
+  }
+
+  if (data.data) {
+    const nestedMessage =
+      data.data.message ||
+      data.data.msg ||
+      data.data.error ||
+      data.data.detail;
+
+    if (typeof nestedMessage === "string") {
+      return nestedMessage;
     }
-  });
+  }
 
-  return doc.body.innerHTML;
+  if (Array.isArray(data.errors)) {
+    const messages = data.errors
+      .map((item: any) => {
+        if (typeof item === "string") {
+          return item;
+        }
+
+        return (
+          item?.message ||
+          item?.msg ||
+          item?.error ||
+          item?.detail ||
+          ""
+        );
+      })
+      .filter(Boolean);
+
+    if (messages.length > 0) {
+      return messages.join("\n");
+    }
+  }
+
+  return fallback;
+};
+
+/*
+|--------------------------------------------------------------------------
+| PARSE STORED DESCRIPTION
+|--------------------------------------------------------------------------
+*/
+
+const parseDescription = (
+  description: string
+): {
+  informationType: InformationType;
+  contacts: Contact[];
+  isLegacy: boolean;
+} => {
+  if (!description) {
+    return {
+      informationType: "community",
+      contacts: [],
+      isLegacy: false,
+    };
+  }
+
+  try {
+    const parsed = JSON.parse(description);
+
+    if (
+      parsed &&
+      (parsed.informationType === "emergency" ||
+        parsed.informationType === "community") &&
+      Array.isArray(parsed.contacts)
+    ) {
+      return {
+        informationType: parsed.informationType,
+        contacts: parsed.contacts.map(
+          (
+            contact: {
+              designation?: string;
+              name?: string;
+              contactNo?: string;
+            },
+            index: number
+          ) => ({
+            id: `existing-${index}-${Date.now()}-${Math.random()}`,
+            designation: contact.designation || "",
+            name: contact.name || "",
+            contactNo: contact.contactNo || "",
+            isEditing: false,
+          })
+        ),
+        isLegacy: false,
+      };
+    }
+  } catch {
+    // Old records may contain plain text/html.
+  }
+
+  return {
+    informationType: "community",
+    contacts: [],
+    isLegacy: true,
+  };
+};
+
+/*
+|--------------------------------------------------------------------------
+| BUILD PAYLOAD
+|--------------------------------------------------------------------------
+*/
+
+const buildDescription = (
+  informationType: InformationType,
+  contacts: Contact[]
+) => {
+  const payload: InformationPayload = {
+    informationType,
+    contacts: contacts.map((contact) => ({
+      designation: contact.designation.trim(),
+      name: contact.name.trim(),
+      contactNo: contact.contactNo.trim(),
+    })),
+  };
+
+  return JSON.stringify(payload);
 };
 
 const ImportantInformation = () => {
-  const [information, setInformation] = useState<
-    Information[]
-  >([]);
-  const [selectedInformation, setSelectedInformation] =
-  useState<Information | null>(null);
+  const [information, setInformation] = useState<Information[]>([]);
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [uploadingImage, setUploadingImage] =
-    useState(false);
 
   const [showModal, setShowModal] = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false);
 
-  const [editingId, setEditingId] =
-    useState<number | null>(null);
+  const [editingId, setEditingId] = useState<number | null>(null);
+
+  const [selectedInformation, setSelectedInformation] =
+    useState<Information | null>(null);
+
+  /*
+  |--------------------------------------------------------------------------
+  | FORM STATE
+  |--------------------------------------------------------------------------
+  */
 
   const [title, setTitle] = useState("");
-  const [description, setDescription] =
-    useState("");
 
-  const [titleError, setTitleError] =
-    useState("");
-  const [descriptionError, setDescriptionError] =
-    useState("");
+  const [informationType, setInformationType] =
+    useState<InformationType>("emergency");
 
-  const [fontFamily, setFontFamily] =
-    useState("Arial");
-  const [fontSize, setFontSize] =
-    useState("16px");
-  const [fontColor, setFontColor] =
-    useState("#1e293b");
-  const [showLinkInput, setShowLinkInput] = useState(false);
-  const [linkUrl, setLinkUrl] = useState("");
-  const [backgroundColor, setBackgroundColor] = useState("#ffffff");
+  const [contacts, setContacts] = useState<Contact[]>([]);
 
-  const editorRef =
-    useRef<HTMLDivElement | null>(null);
+  /*
+  |--------------------------------------------------------------------------
+  | ERRORS
+  |--------------------------------------------------------------------------
+  */
 
-  const imageInputRef =
-    useRef<HTMLInputElement | null>(null);
+  const [titleError, setTitleError] = useState("");
+  const [typeError, setTypeError] = useState("");
+  const [contactsError, setContactsError] = useState("");
 
-    const [selectedImage, setSelectedImage] =
-  useState<HTMLImageElement | null>(null);
-  
-  const [alert, setAlert] = useState<AlertState>({
-    show: false,
-    type: "success",
-    message: "",
-  });
+  const [contactErrors, setContactErrors] = useState<
+    Record<
+      string,
+      {
+        designation?: string;
+        name?: string;
+        contactNo?: string;
+      }
+    >
+  >({});
+
+  /*
+  |--------------------------------------------------------------------------
+  | ANNOUNCEMENT-STYLE ALERT
+  |--------------------------------------------------------------------------
+  */
+
+  const [alert, setAlert] =
+    useState<AlertState | null>(null);
 
   const showAlert = (
     type: AlertType,
@@ -693,45 +2788,95 @@ const ImportantInformation = () => {
       onConfirm?: () => void;
     }
   ) => {
-    setAlert({ show: true, type, message, ...options });
+    setAlert({
+      type,
+      message,
+      ...options,
+    });
   };
 
   const closeAlert = () => {
-    setAlert((prev) => ({ ...prev, show: false, onConfirm: undefined }));
+    setAlert(null);
   };
 
-  const closePopup = closeAlert;
-
   /*
-  |---------------------------------------------------------------------------
-  | FONT SIZE OPTIONS
-  |---------------------------------------------------------------------------
+  |--------------------------------------------------------------------------
+  | API ERROR POPUP
+  |--------------------------------------------------------------------------
   */
 
-  const fontSizes = [
-    "8px",
-    "10px",
-    "12px",
-    "14px",
-    "16px",
-    "18px",
-    "20px",
-    "22px",
-    "24px",
-    "26px",
-    "28px",
-    "30px",
-    "32px",
-    "36px",
-    "40px",
-    "44px",
-    "48px",
-  ];
+  const showApiError = (
+    error: any,
+    fallback: string
+  ) => {
+    const message = getApiResponseMessage(
+      error?.response?.data ?? error?.data,
+      error?.message || fallback
+    );
+
+    showAlert("error", message);
+  };
 
   /*
-  |---------------------------------------------------------------------------
+  |--------------------------------------------------------------------------
+  | DETERMINE EXISTING INFORMATION TYPES
+  |--------------------------------------------------------------------------
+  */
+
+  const existingInformationTypes = useMemo(() => {
+    const types = new Set<InformationType>();
+
+    information.forEach((item) => {
+      const parsed = parseDescription(item.description);
+
+      if (!parsed.isLegacy) {
+        types.add(parsed.informationType);
+      }
+    });
+
+    return types;
+  }, [information]);
+
+  const hasEmergencyInformation =
+    existingInformationTypes.has("emergency");
+
+  const hasCommunityInformation =
+    existingInformationTypes.has("community");
+
+  const canAddEmergency = !hasEmergencyInformation;
+  const canAddCommunity = !hasCommunityInformation;
+
+  const canAddInformation =
+    canAddEmergency || canAddCommunity;
+
+  /*
+  |--------------------------------------------------------------------------
+  | GET DEFAULT TYPE
+  |--------------------------------------------------------------------------
+  */
+
+  const getNextInformationType = (): InformationType => {
+    if (
+      hasEmergencyInformation &&
+      !hasCommunityInformation
+    ) {
+      return "community";
+    }
+
+    if (
+      hasCommunityInformation &&
+      !hasEmergencyInformation
+    ) {
+      return "emergency";
+    }
+
+    return "emergency";
+  };
+
+  /*
+  |--------------------------------------------------------------------------
   | FETCH
-  |---------------------------------------------------------------------------
+  |--------------------------------------------------------------------------
   */
 
   const fetchInformation = async (
@@ -740,21 +2885,23 @@ const ImportantInformation = () => {
     try {
       setLoading(true);
 
-      const response =
-        await axios.get(
-          `${API}/api/admin/important-information`,
-          {
-            withCredentials: true,
-          }
-        );
+      const response = await axios.get(
+        `${API}/api/admin/important-information`,
+        {
+          withCredentials: true,
+        }
+      );
 
       if (response.data?.success) {
-        setInformation(
-          response.data.data || []
-        );
+        setInformation(response.data.data || []);
       } else if (showErrorPopup) {
-        showAlert("error", response.data?.message ||
-            "Unable to load important information.");;
+        showAlert(
+          "error",
+          getApiResponseMessage(
+            response.data,
+            "Unable to load important information."
+          )
+        );
       }
     } catch (error: any) {
       console.error(
@@ -763,9 +2910,10 @@ const ImportantInformation = () => {
       );
 
       if (showErrorPopup) {
-        showAlert("error", error?.response?.data?.message ||
-            error?.response?.data?.error ||
-            "Failed to fetch important information.");;
+        showApiError(
+          error,
+          "Failed to fetch important information."
+        );
       }
     } finally {
       setLoading(false);
@@ -777,90 +2925,172 @@ const ImportantInformation = () => {
   }, []);
 
   /*
-  |---------------------------------------------------------------------------
+  |--------------------------------------------------------------------------
+  | WARNING AUTO CLOSE
+  |--------------------------------------------------------------------------
+  */
+
+  useEffect(() => {
+    if (!alert) {
+      return;
+    }
+
+    if (
+      alert.type === "warning" &&
+      !alert.onConfirm
+    ) {
+      const timer = setTimeout(() => {
+        closeAlert();
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [alert]);
+
+  /*
+  |--------------------------------------------------------------------------
+  | ALERT KEYBOARD HANDLING
+  |--------------------------------------------------------------------------
+  */
+
+  useEffect(() => {
+    if (!alert) {
+      return;
+    }
+
+    const handleKeyDown = (
+      event: KeyboardEvent
+    ) => {
+      if (
+        event.key === "Enter" ||
+        event.key === "Escape"
+      ) {
+        event.preventDefault();
+
+        if (
+          event.key === "Enter" &&
+          alert.onConfirm
+        ) {
+          const confirmAction =
+            alert.onConfirm;
+
+          closeAlert();
+
+          setTimeout(() => {
+            confirmAction();
+          }, 100);
+        } else {
+          closeAlert();
+        }
+      }
+    };
+
+    window.addEventListener(
+      "keydown",
+      handleKeyDown
+    );
+
+    return () => {
+      window.removeEventListener(
+        "keydown",
+        handleKeyDown
+      );
+    };
+  }, [alert]);
+
+  /*
+  |--------------------------------------------------------------------------
   | RESET FORM
-  |---------------------------------------------------------------------------
+  |--------------------------------------------------------------------------
   */
 
   const resetForm = () => {
     setTitle("");
-    setDescription("");
+    setInformationType("emergency");
+    setContacts([]);
 
     setTitleError("");
-    setDescriptionError("");
+    setTypeError("");
+    setContactsError("");
+    setContactErrors({});
 
     setEditingId(null);
-
-    setFontFamily("Arial");
-    setFontSize("16px");
-    setFontColor("#1e293b");
-    setBackgroundColor("#ffffff");
-    setLinkUrl("");
-    setShowLinkInput(false);
-
-    if (editorRef.current) {
-      editorRef.current.innerHTML = "";
-    }
   };
 
   /*
-  |---------------------------------------------------------------------------
-  | CREATE
-  |---------------------------------------------------------------------------
+  |--------------------------------------------------------------------------
+  | OPEN CREATE
+  |--------------------------------------------------------------------------
   */
 
   const openCreate = () => {
-    resetForm();
-    setShowModal(true);
+    const nextType =
+      getNextInformationType();
 
-    setTimeout(() => {
-      if (editorRef.current) {
-        editorRef.current.innerHTML = "";
-        editorRef.current.focus();
-      }
-    }, 0);
+    resetForm();
+
+    setInformationType(nextType);
+
+    setContacts([
+      createContact(),
+    ]);
+
+    setShowModal(true);
   };
 
   /*
-  |---------------------------------------------------------------------------
-  | EDIT
-  |---------------------------------------------------------------------------
+  |--------------------------------------------------------------------------
+  | OPEN EDIT
+  |--------------------------------------------------------------------------
   */
 
   const openEdit = (
     item: Information
   ) => {
-    setEditingId(item.id);
+    const parsed =
+      parseDescription(
+        item.description
+      );
 
+    setEditingId(item.id);
     setTitle(item.title);
-    setDescription(
-      item.description || ""
+    setInformationType(
+      parsed.informationType
     );
 
+    if (
+      parsed.contacts.length > 0
+    ) {
+      setContacts(
+        parsed.contacts.map(
+          (contact) => ({
+            ...contact,
+            isEditing: false,
+          })
+        )
+      );
+    } else {
+      setContacts([
+        createContact(),
+      ]);
+    }
+
     setTitleError("");
-    setDescriptionError("");
+    setTypeError("");
+    setContactsError("");
+    setContactErrors({});
 
     setShowModal(true);
-
-    setTimeout(() => {
-      if (editorRef.current) {
-        editorRef.current.innerHTML =
-          item.description || "";
-      }
-    }, 0);
   };
 
   /*
-  |---------------------------------------------------------------------------
+  |--------------------------------------------------------------------------
   | CLOSE MODAL
-  |---------------------------------------------------------------------------
+  |--------------------------------------------------------------------------
   */
 
   const closeModal = () => {
-    if (
-      saving ||
-      uploadingImage
-    ) {
+    if (saving) {
       return;
     }
 
@@ -869,430 +3099,365 @@ const ImportantInformation = () => {
   };
 
   /*
-  |---------------------------------------------------------------------------
-  | SYNC EDITOR
-  |---------------------------------------------------------------------------
+  |--------------------------------------------------------------------------
+  | UPDATE CONTACT
+  |--------------------------------------------------------------------------
   */
 
-  const syncDescription = () => {
-    if (!editorRef.current) {
-      return;
-    }
-
-    setDescription(
-      editorRef.current.innerHTML
-    );
-  };
-
-  /*
-  |---------------------------------------------------------------------------
-  | EXECUTE EDITOR COMMAND
-  |---------------------------------------------------------------------------
-  */
-
-  const execEditorCommand = (
-    command: string,
-    value?: string
+  const updateContact = (
+    id: string,
+    field: keyof Pick<
+      Contact,
+      | "designation"
+      | "name"
+      | "contactNo"
+    >,
+    value: string
   ) => {
-    if (!editorRef.current) {
-      return;
-    }
-
-    editorRef.current.focus();
-
-    document.execCommand(
-      command,
-      false,
-      value
-    );
-
-    syncDescription();
-  };
-
-  /*
-  |---------------------------------------------------------------------------
-  | FONT FAMILY
-  |---------------------------------------------------------------------------
-  */
-
-  const handleFontFamily = (
-    e: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    const value = e.target.value;
-
-    setFontFamily(value);
-
-    execEditorCommand(
-      "fontName",
-      value
-    );
-  };
-
-  /*
-  |---------------------------------------------------------------------------
-  | FONT SIZE
-  |---------------------------------------------------------------------------
-  */
-
-  const applyFontSize = (
-    size: string
-  ) => {
-    if (!editorRef.current) {
-      return;
-    }
-
-    editorRef.current.focus();
-
-    const selection =
-      window.getSelection();
-
-    if (
-      !selection ||
-      selection.rangeCount === 0
-    ) {
-      return;
-    }
-
-    const range =
-      selection.getRangeAt(0);
-
-    if (range.collapsed) {
-      return;
-    }
-
-    const span =
-      document.createElement(
-        "span"
-      );
-
-    span.style.fontSize = size;
-
-    try {
-      range.surroundContents(span);
-    } catch {
-      const fragment =
-        range.extractContents();
-
-      span.appendChild(fragment);
-
-      range.insertNode(span);
-    }
-
-    selection.removeAllRanges();
-
-    const newRange =
-      document.createRange();
-
-    newRange.selectNodeContents(span);
-
-    selection.addRange(
-      newRange
-    );
-
-    syncDescription();
-  };
-
-  const handleFontSize = (
-    e: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    const value = e.target.value;
-
-    setFontSize(value);
-
-    applyFontSize(value);
-  };
-
-  /*
-  |---------------------------------------------------------------------------
-  | FONT COLOR
-  |---------------------------------------------------------------------------
-  */
-
-  const handleFontColor = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const value = e.target.value;
-
-    setFontColor(value);
-
-    execEditorCommand(
-      "foreColor",
-      value
-    );
-  };
-
-  const applyLink = () => {
-    const url = linkUrl.trim();
-    if (!url) return;
-    const normalized = /^(https?:|mailto:|tel:)/i.test(url) ? url : `https://${url}`;
-    editorRef.current?.focus();
-    document.execCommand("createLink", false, normalized);
-    editorRef.current?.querySelectorAll("a").forEach((a) => {
-      a.setAttribute("target", "_blank");
-      a.setAttribute("rel", "noopener noreferrer");
-    });
-    syncDescription();
-    setLinkUrl("");
-    setShowLinkInput(false);
-  };
-
-  /*
-  |---------------------------------------------------------------------------
-  | IMAGE UPLOAD
-  |---------------------------------------------------------------------------
-  */
-
-  const handleImageButton = () => {
-    imageInputRef.current?.click();
-  };
-
-//   const handleEditorClick = (
-//   e: React.MouseEvent<HTMLDivElement>
-// ) => {
-//   const target = e.target as HTMLElement;
-
-//   if (target.tagName === "IMG") {
-//     setSelectedImage(
-//       target as HTMLImageElement
-//     );
-//   } else {
-//     setSelectedImage(null);
-//   }
-// };
-
-const handleEditorClick = (
-  e: React.MouseEvent<HTMLDivElement>
-) => {
-  const target = e.target as HTMLElement;
-
-  // If an image is clicked, select it for removal
-  if (target.tagName === "IMG") {
-    setSelectedImage(
-      target as HTMLImageElement
-    );
-    return;
-  }
-
-  // If a link is clicked, open it in a new tab
-  if (target.tagName === "A") {
-    e.preventDefault();
-
-    const href =
-      (target as HTMLAnchorElement).href;
-
-    if (href) {
-      window.open(
-        href,
-        "_blank",
-        "noopener,noreferrer"
-      );
-    }
-
-    return;
-  }
-
-  // Clicking anywhere else deselects the image
-  setSelectedImage(null);
-};
-const removeSelectedImage = () => {
-  if (!selectedImage) {
-    return;
-  }
-
-  selectedImage.remove();
-
-  setSelectedImage(null);
-
-  syncDescription();
-};
-  const handleImageUpload = async (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file =
-      e.target.files?.[0];
-
-    if (!file) {
-      return;
-    }
-
-    const allowedTypes = [
-      "image/png",
-      "image/jpeg",
-      "image/jpg",
-      "image/gif",
-      "image/webp",
-    ];
-
-    if (
-      !allowedTypes.includes(
-        file.type
+    setContacts((prev) =>
+      prev.map((contact) =>
+        contact.id === id
+          ? {
+              ...contact,
+              [field]: value,
+            }
+          : contact
       )
-    ) {
-      showAlert("error", "Please upload a PNG, JPG, GIF or WebP image.");;
+    );
 
-      e.target.value = "";
-      return;
-    }
+    setContactErrors((prev) => {
+      const current =
+        prev[id];
 
-    const maxSize =
-      8 * 1024 * 1024;
-
-    if (file.size > maxSize) {
-      showAlert("error", "Image size must be less than 8 MB.");;
-
-      e.target.value = "";
-      return;
-    }
-
-    try {
-      setUploadingImage(true);
-
-      const formData =
-        new FormData();
-
-      formData.append(
-        "image",
-        file
-      );
-
-      const response =
-        await axios.post(
-          `${API}/api/upload/image`,
-          formData,
-          {
-            withCredentials: true,
-
-          }
-        );
-
-      const imageUrl =
-        response.data?.url ||
-        response.data?.imageUrl ||
-        response.data?.image_url ||
-        response.data?.data?.url ||
-        response.data?.data?.imageUrl ||
-        response.data?.data?.image_url;
-
-      if (!imageUrl) {
-        throw new Error(
-          response.data?.message ||
-            "Image URL was not returned by the server."
-        );
+      if (!current) {
+        return prev;
       }
 
-      const finalImageUrl = String(imageUrl).startsWith("http")
-        ? String(imageUrl)
-        : `${String(API).replace(/\/$/, "")}/${String(imageUrl).replace(/^\//, "")}`;
+      const updated = {
+        ...current,
+        [field]: undefined,
+      };
 
-      if (!editorRef.current) {
+      const hasAnyError =
+        Object.values(
+          updated
+        ).some(Boolean);
+
+      if (!hasAnyError) {
+        const next = {
+          ...prev,
+        };
+
+        delete next[id];
+
+        return next;
+      }
+
+      return {
+        ...prev,
+        [id]: updated,
+      };
+    });
+
+    setContactsError("");
+  };
+
+  /*
+  |--------------------------------------------------------------------------
+  | EDIT CONTACT ROW
+  |--------------------------------------------------------------------------
+  */
+
+  const editContact = (
+    id: string
+  ) => {
+    setContacts((prev) =>
+      prev.map((contact) =>
+        contact.id === id
+          ? {
+              ...contact,
+              isEditing: true,
+            }
+          : contact
+      )
+    );
+  };
+
+  /*
+  |--------------------------------------------------------------------------
+  | VALIDATE SINGLE CONTACT
+  |--------------------------------------------------------------------------
+  */
+
+  const validateContact = (
+    contact: Contact
+  ) => {
+    const errors: {
+      designation?: string;
+      name?: string;
+      contactNo?: string;
+    } = {};
+
+    const designation =
+      contact.designation.trim();
+
+    const name =
+      contact.name.trim();
+
+    const contactNo =
+      contact.contactNo.trim();
+
+    if (!designation) {
+      errors.designation =
+        "Designation is required.";
+    } else if (
+      designation.length < 2
+    ) {
+      errors.designation =
+        "Designation must contain at least 2 characters.";
+    }
+
+    if (!name) {
+      errors.name =
+        "Name is required.";
+    } else if (
+      name.length < 2
+    ) {
+      errors.name =
+        "Name must contain at least 2 characters.";
+    }
+
+    if (!contactNo) {
+      errors.contactNo =
+        "Contact number is required.";
+    } else if (
+      !/^[6-9]\d{9}$/.test(
+        contactNo
+      )
+    ) {
+      errors.contactNo =
+        "Enter a valid 10-digit mobile number.";
+    }
+
+    return errors;
+  };
+
+  /*
+  |--------------------------------------------------------------------------
+  | VALIDATE ALL CONTACTS
+  |--------------------------------------------------------------------------
+  */
+
+  const validateContacts = () => {
+    if (
+      contacts.length === 0
+    ) {
+      setContactsError(
+        "At least one contact is required."
+      );
+
+      return false;
+    }
+
+    if (
+      contacts.length >
+      MAX_CONTACTS
+    ) {
+      setContactsError(
+        `A maximum of ${MAX_CONTACTS} contacts is allowed.`
+      );
+
+      return false;
+    }
+
+    let valid = true;
+
+    const errors: Record<
+      string,
+      {
+        designation?: string;
+        name?: string;
+        contactNo?: string;
+      }
+    > = {};
+
+    contacts.forEach(
+      (contact) => {
+        const contactError =
+          validateContact(
+            contact
+          );
+
+        if (
+          Object.keys(
+            contactError
+          ).length > 0
+        ) {
+          valid = false;
+
+          errors[
+            contact.id
+          ] = contactError;
+        }
+      }
+    );
+
+    setContactErrors(
+      errors
+    );
+
+    if (!valid) {
+      setContactsError(
+        "Please correct the contact details."
+      );
+    } else {
+      setContactsError("");
+    }
+
+    return valid;
+  };
+
+  /*
+  |--------------------------------------------------------------------------
+  | ADD CONTACT
+  |--------------------------------------------------------------------------
+  */
+
+  const addContact = () => {
+    if (saving) {
+      return;
+    }
+
+    if (
+      contacts.length >=
+      MAX_CONTACTS
+    ) {
+      showAlert(
+        "warning",
+        `You can add a maximum of ${MAX_CONTACTS} contacts.`
+      );
+
+      return;
+    }
+
+    const lastIndex =
+      contacts.length - 1;
+
+    if (lastIndex >= 0) {
+      const lastContact =
+        contacts[lastIndex];
+
+      const errors =
+        validateContact(
+          lastContact
+        );
+
+      if (
+        Object.keys(errors)
+          .length > 0
+      ) {
+        setContactErrors(
+          (prev) => ({
+            ...prev,
+            [lastContact.id]:
+              errors,
+          })
+        );
+
+        setContactsError(
+          `Please complete Contact ${
+            lastIndex + 1
+          } before adding another contact.`
+        );
+
+        showAlert(
+          "warning",
+          `Please complete Contact ${
+            lastIndex + 1
+          } before adding another contact.`
+        );
+
         return;
       }
-
-      // editorRef.current.focus();
-
-      // document.execCommand(
-      //   "insertImage",
-      //   false,
-      //   finalImageUrl
-      // );
-
-      // syncDescription();
-      editorRef.current.focus();
-
-document.execCommand(
-  "insertImage",
-  false,
-  finalImageUrl
-);
-
-// Select the newly added image
-const images =
-  editorRef.current.querySelectorAll("img");
-
-const newImage =
-  images[images.length - 1];
-
-if (newImage) {
-  setSelectedImage(newImage);
-}
-
-syncDescription();
-
-      showAlert("success", response.data?.message ||
-          "Image/banner has been added successfully.");;
-    } catch (error: any) {
-      console.error(
-        "Image upload failed:",
-        error
-      );
-
-      showAlert("error", error?.response?.data?.message ||
-          error?.response?.data?.error ||
-          error?.message ||
-          "Failed to upload image.");;
-    } finally {
-      setUploadingImage(false);
-      e.target.value = "";
     }
+
+    setContacts(
+      (prev) => [
+        ...prev.map(
+          (contact) => ({
+            ...contact,
+            isEditing: false,
+          })
+        ),
+        createContact(),
+      ]
+    );
+
+    setContactsError("");
   };
 
   /*
-  |---------------------------------------------------------------------------
-  | PLAIN TEXT
-  |---------------------------------------------------------------------------
+  |--------------------------------------------------------------------------
+  | REMOVE CONTACT
+  |--------------------------------------------------------------------------
   */
 
-  const getPlainText = (
-    html: string
+  const removeContact = (
+    id: string
   ) => {
-    const temp =
-      document.createElement(
-        "div"
+    if (saving) {
+      return;
+    }
+
+    if (
+      contacts.length === 1
+    ) {
+      showAlert(
+        "warning",
+        "At least one contact is required."
       );
 
-    temp.innerHTML = html;
+      return;
+    }
 
-    return (
-      temp.textContent ||
-      temp.innerText ||
-      ""
-    )
-      .replace(
-        /\u00a0/g,
-        " "
-      )
-      .trim();
+    setContacts(
+      (prev) =>
+        prev.filter(
+          (contact) =>
+            contact.id !== id
+        )
+    );
+
+    setContactErrors(
+      (prev) => {
+        const next = {
+          ...prev,
+        };
+
+        delete next[id];
+
+        return next;
+      }
+    );
+
+    setContactsError("");
   };
 
   /*
-  |---------------------------------------------------------------------------
-  | VALIDATION
-  |---------------------------------------------------------------------------
+  |--------------------------------------------------------------------------
+  | FORM VALIDATION
+  |--------------------------------------------------------------------------
   */
 
   const validateForm = () => {
     let valid = true;
 
     setTitleError("");
-    setDescriptionError("");
+    setTypeError("");
+    setContactsError("");
 
     const trimmedTitle =
       title.trim();
-
-    const currentDescription =
-      editorRef.current?.innerHTML ||
-      description ||
-      "";
-
-    const plainDescription =
-      getPlainText(
-        currentDescription
-      );
-
-    const hasImage =
-      currentDescription.includes(
-        "<img"
-      );
 
     if (!trimmedTitle) {
       setTitleError(
@@ -1311,23 +3476,47 @@ syncDescription();
     }
 
     if (
-      !plainDescription &&
-      !hasImage
+      informationType !==
+        "emergency" &&
+      informationType !==
+        "community"
     ) {
-      setDescriptionError(
-        "Description is required."
+      setTypeError(
+        "Please select an information type."
       );
 
       valid = false;
-    } else if (
-      plainDescription.length > 0 &&
-      plainDescription.length < 3 &&
-      !hasImage
-    ) {
-      setDescriptionError(
-        "Description must contain at least 3 characters."
-      );
+    }
 
+    if (!editingId) {
+      if (
+        informationType ===
+          "emergency" &&
+        hasEmergencyInformation
+      ) {
+        setTypeError(
+          "Emergency contact information has already been added."
+        );
+
+        valid = false;
+      }
+
+      if (
+        informationType ===
+          "community" &&
+        hasCommunityInformation
+      ) {
+        setTypeError(
+          "Community contact information has already been added."
+        );
+
+        valid = false;
+      }
+    }
+
+    if (
+      !validateContacts()
+    ) {
       valid = false;
     }
 
@@ -1335,9 +3524,9 @@ syncDescription();
   };
 
   /*
-  |---------------------------------------------------------------------------
+  |--------------------------------------------------------------------------
   | SUBMIT
-  |---------------------------------------------------------------------------
+  |--------------------------------------------------------------------------
   */
 
   const handleSubmit = async (
@@ -1345,37 +3534,50 @@ syncDescription();
   ) => {
     e.preventDefault();
 
-    syncDescription();
+    if (saving) {
+      return;
+    }
 
     if (!validateForm()) {
-      showAlert("warning", "Please fill in all required fields correctly.");;
+      showAlert(
+        "warning",
+        "Please fill in all required fields correctly."
+      );
 
       return;
     }
 
     const finalDescription =
-      editorRef.current?.innerHTML ||
-      description;
+      buildDescription(
+        informationType,
+        contacts
+      );
 
-    const currentEditingId =
-      editingId;
+    const wasEditing =
+      editingId !== null;
 
     try {
       setSaving(true);
 
       let response;
 
-      if (currentEditingId) {
+      if (
+        editingId !== null
+      ) {
         response =
           await axios.put(
-            `${API}/api/admin/important-information/${currentEditingId}`,
+            `${API}/api/admin/important-information/${editingId}`,
             {
-              title: title.trim(),
+              title:
+                title.trim(),
               description:
                 finalDescription,
+              priority:
+                "Important",
             },
             {
-              withCredentials: true,
+              withCredentials:
+                true,
             }
           );
       } else {
@@ -1383,12 +3585,16 @@ syncDescription();
           await axios.post(
             `${API}/api/admin/important-information`,
             {
-              title: title.trim(),
+              title:
+                title.trim(),
               description:
                 finalDescription,
+              priority:
+                "Important",
             },
             {
-              withCredentials: true,
+              withCredentials:
+                true,
             }
           );
       }
@@ -1400,28 +3606,57 @@ syncDescription();
         false
       );
 
-      showAlert("success", response.data?.message ||
-          (currentEditingId
+      showAlert(
+        "success",
+        getApiResponseMessage(
+          response.data,
+          wasEditing
             ? "Important information updated successfully."
-            : "Important information added successfully."));;
+            : "Important information added successfully."
+        )
+      );
     } catch (error: any) {
       console.error(
         "Failed to save important information:",
         error
       );
 
-      showAlert("error", error?.response?.data?.message ||
-          error?.response?.data?.error ||
-          "Failed to save important information.");;
+      showApiError(
+        error,
+        "Failed to save important information."
+      );
     } finally {
       setSaving(false);
     }
   };
 
   /*
-  |---------------------------------------------------------------------------
+  |--------------------------------------------------------------------------
+  | VIEW
+  |--------------------------------------------------------------------------
+  */
+
+  const openView = (
+    item: Information
+  ) => {
+    setSelectedInformation(
+      item
+    );
+
+    setShowViewModal(true);
+  };
+
+  const closeViewModal = () => {
+    setShowViewModal(false);
+    setSelectedInformation(
+      null
+    );
+  };
+
+  /*
+  |--------------------------------------------------------------------------
   | DELETE
-  |---------------------------------------------------------------------------
+  |--------------------------------------------------------------------------
   */
 
   const performDelete = async (
@@ -1432,15 +3667,10 @@ syncDescription();
         await axios.delete(
           `${API}/api/admin/important-information/${id}`,
           {
-            withCredentials: true,
+            withCredentials:
+              true,
           }
         );
-
-      /*
-      |-----------------------------------------------------------------------
-      | REMOVE CARD IMMEDIATELY
-      |-----------------------------------------------------------------------
-      */
 
       setInformation(
         (prev) =>
@@ -1450,39 +3680,48 @@ syncDescription();
           )
       );
 
-      showAlert("success", response.data?.message ||
-          "Important information deleted successfully.");;
+      showAlert(
+        "success",
+        getApiResponseMessage(
+          response.data,
+          "Important information deleted successfully."
+        )
+      );
     } catch (error: any) {
       console.error(
         "Failed to delete information:",
         error
       );
 
-      showAlert("error", error?.response?.data?.message ||
-          error?.response?.data?.error ||
-          "Failed to delete important information.");;
+      showApiError(
+        error,
+        "Failed to delete important information."
+      );
     }
   };
 
   const handleDelete = (
     id: number
   ) => {
-    showAlert("warning", "Are you sure you want to delete this important information? This action cannot be undone.", {
+    showAlert(
+      "warning",
+      "Are you sure you want to delete this important information? This action cannot be undone.",
+      {
         confirmText:
           "Delete",
         cancelText:
           "Cancel",
         onConfirm: () => {
-          closePopup();
           performDelete(id);
         },
-      });;
+      }
+    );
   };
 
   /*
-  |---------------------------------------------------------------------------
+  |--------------------------------------------------------------------------
   | DATE
-  |---------------------------------------------------------------------------
+  |--------------------------------------------------------------------------
   */
 
   const formatDate = (
@@ -1505,383 +3744,726 @@ syncDescription();
   };
 
   /*
-  |---------------------------------------------------------------------------
-  | STRIP HTML FOR CARD PREVIEW
-  |---------------------------------------------------------------------------
+  |--------------------------------------------------------------------------
+  | INFORMATION TYPE LABEL
+  |--------------------------------------------------------------------------
   */
 
-  const getPreviewText = (
-    html: string
+  const getInformationTypeLabel = (
+    type: InformationType
   ) => {
-    return getPlainText(
-      html || ""
+    return type ===
+      "emergency"
+      ? "Emergency Contact Info"
+      : "Community Contact Info";
+  };
+
+  /*
+  |--------------------------------------------------------------------------
+  | VIEW CONTENT
+  |--------------------------------------------------------------------------
+  */
+
+  const renderViewContent = () => {
+    if (
+      !selectedInformation
+    ) {
+      return null;
+    }
+
+    const parsed =
+      parseDescription(
+        selectedInformation.description
+      );
+
+    if (parsed.isLegacy) {
+      return (
+        <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+          <p className="whitespace-pre-wrap text-sm leading-6 text-slate-700">
+            {
+              selectedInformation.description
+            }
+          </p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-5">
+        <div
+          className={`rounded-xl border px-4 py-3 ${
+            parsed.informationType ===
+            "emergency"
+              ? "border-red-100 bg-red-50"
+              : "border-blue-100 bg-blue-50"
+          }`}
+        >
+          <p
+            className={`text-xs font-semibold uppercase tracking-wide ${
+              parsed.informationType ===
+              "emergency"
+                ? "text-red-500"
+                : "text-blue-500"
+            }`}
+          >
+            Information Type
+          </p>
+
+          <p
+            className={`mt-1 text-sm font-semibold ${
+              parsed.informationType ===
+              "emergency"
+                ? "text-red-800"
+                : "text-blue-800"
+            }`}
+          >
+            {getInformationTypeLabel(
+              parsed.informationType
+            )}
+          </p>
+        </div>
+
+        {parsed.contacts
+          .length === 0 ? (
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-6 text-center">
+            <p className="text-sm text-slate-500">
+              No contacts available.
+            </p>
+          </div>
+        ) : (
+          <div className="overflow-hidden rounded-xl border border-slate-200">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[650px]">
+                <thead className="bg-slate-50">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                      #
+                    </th>
+
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                      Designation
+                    </th>
+
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                      Name
+                    </th>
+
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                      Contact No
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody className="divide-y divide-slate-100 bg-white">
+                  {parsed.contacts.map(
+                    (
+                      contact,
+                      index
+                    ) => (
+                      <tr
+                        key={
+                          contact.id
+                        }
+                      >
+                        <td className="px-4 py-3 text-sm text-slate-400">
+                          {index +
+                            1}
+                        </td>
+
+                        <td className="px-4 py-3 text-sm font-medium text-slate-700">
+                          {contact.designation ||
+                            "-"}
+                        </td>
+
+                        <td className="px-4 py-3 text-sm text-slate-700">
+                          {contact.name ||
+                            "-"}
+                        </td>
+
+                        <td className="px-4 py-3 text-sm font-medium text-slate-700">
+                          {contact.contactNo ||
+                            "-"}
+                        </td>
+                      </tr>
+                    )
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+      </div>
     );
   };
 
   /*
-  |---------------------------------------------------------------------------
-  | RENDER
-  |---------------------------------------------------------------------------
+  |--------------------------------------------------------------------------
+  | ANNOUNCEMENT-STYLE ALERT MODAL
+  |--------------------------------------------------------------------------
   */
 
+  const AlertModal = ({
+    type,
+    message,
+    confirmText,
+    cancelText,
+    onConfirm,
+    onClose,
+  }: {
+    type: AlertType;
+    message: string;
+    confirmText?: string;
+    cancelText?: string;
+    onConfirm?: () => void;
+    onClose: () => void;
+  }) => {
+    const isConfirm =
+      Boolean(onConfirm);
+
+    const config =
+      type === "success"
+        ? {
+            borderColor:
+              "#10b981",
+            iconColor:
+              "#10b981",
+            buttonBg:
+              "#10b981",
+            title:
+              "Success",
+            Icon: CheckCircle2,
+          }
+        : type === "warning"
+        ? {
+            borderColor:
+              "#eab308",
+            iconColor:
+              "#eab308",
+            buttonBg:
+              "#eab308",
+            title:
+              isConfirm
+                ? "Confirm Delete"
+                : "Warning",
+            Icon: isConfirm
+              ? Trash2
+              : AlertTriangle,
+          }
+        : {
+            borderColor:
+              "#f43f5e",
+            iconColor:
+              "#f43f5e",
+            buttonBg:
+              "#f43f5e",
+            title:
+              "Error",
+            Icon: XCircle,
+          };
+
+    const Icon =
+      config.Icon;
+
+    return (
+      <div
+        className="fixed inset-0 z-[9999] flex items-center justify-center"
+        style={{
+          background:
+            "rgba(15, 23, 42, 0.45)",
+        }}
+      >
+        <div
+          className="w-[380px] max-w-[calc(100vw-32px)] overflow-hidden rounded-xl bg-white shadow-2xl"
+          style={{
+            borderLeft:
+              `4px solid ${config.borderColor}`,
+          }}
+          role={
+            isConfirm
+              ? "alertdialog"
+              : "dialog"
+          }
+          aria-modal="true"
+        >
+          <div
+            className="flex items-center justify-between px-5 py-3.5 text-white"
+            style={{
+              background:
+                "#020b3d",
+            }}
+          >
+            <div className="flex items-center gap-3">
+              <Icon
+                size={24}
+                color={
+                  config.iconColor
+                }
+              />
+
+              <h2 className="m-0 text-[17px] font-semibold">
+                {config.title}
+              </h2>
+            </div>
+
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close"
+              className="flex cursor-pointer items-center rounded p-1 text-white transition hover:bg-white/10"
+            >
+              <X size={18} />
+            </button>
+          </div>
+
+          <div className="px-5 py-[22px]">
+            <p className="m-0 whitespace-pre-wrap text-sm leading-[1.6] text-slate-600">
+              {message}
+            </p>
+          </div>
+
+          <div className="flex justify-end gap-2.5 border-t border-slate-200 bg-slate-50 px-5 py-3.5">
+            {isConfirm && (
+              <button
+                type="button"
+                onClick={onClose}
+                className="rounded-lg border border-slate-200 bg-white px-5 py-2 text-[13px] font-medium text-slate-600 transition hover:bg-slate-100"
+              >
+                {cancelText ||
+                  "Cancel"}
+              </button>
+            )}
+
+            <button
+              type="button"
+              onClick={() => {
+                if (
+                  onConfirm
+                ) {
+                  const confirmAction =
+                    onConfirm;
+
+                  onClose();
+
+                  setTimeout(
+                    () => {
+                      confirmAction();
+                    },
+                    100
+                  );
+                } else {
+                  onClose();
+                }
+              }}
+              className="rounded-lg border-none px-5 py-2 text-[13px] font-medium text-white transition"
+              style={{
+                background:
+                  config.buttonBg,
+              }}
+            >
+              {isConfirm
+                ? confirmText ||
+                  "Confirm"
+                : "OK"}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  /*
+  |--------------------------------------------------------------------------
+  | INFORMATION CARD
+  |--------------------------------------------------------------------------
+  */
+
+  const renderInformationCard = (
+    item: Information
+  ) => {
+    const parsed =
+      parseDescription(
+        item.description
+      );
+
+    if (parsed.isLegacy) {
+      return (
+        <div
+          key={item.id}
+          className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
+        >
+          <div className="border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white px-5 py-4">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex min-w-0 items-center gap-3">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-500">
+                  <Users size={21} />
+                </div>
+
+                <div className="min-w-0">
+                  <h2 className="truncate text-lg font-bold text-slate-800">
+                    {item.title}
+                  </h2>
+
+                  <p className="mt-0.5 text-xs text-slate-500">
+                    Important Information
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex shrink-0 items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() =>
+                    openView(item)
+                  }
+                  title="View"
+                  className="rounded-lg border border-slate-200 p-2 text-slate-600 transition hover:bg-slate-100"
+                >
+                  <Eye size={16} />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    openEdit(item)
+                  }
+                  title="Edit"
+                  className="rounded-lg border border-blue-200 p-2 text-blue-600 transition hover:bg-blue-50"
+                >
+                  <Edit size={16} />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    handleDelete(item.id)
+                  }
+                  title="Delete"
+                  className="rounded-lg border border-red-200 p-2 text-red-600 transition hover:bg-red-50"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-5">
+            <p className="line-clamp-4 whitespace-pre-line text-sm leading-6 text-slate-600">
+              {item.description}
+            </p>
+
+            <p className="mt-5 border-t border-slate-100 pt-4 text-xs text-slate-400">
+              Created {formatDate(item.created_at)}
+            </p>
+          </div>
+        </div>
+      );
+    }
+
+    const isEmergency =
+      parsed.informationType ===
+      "emergency";
+
+    return (
+      <div
+        key={item.id}
+        className={`group overflow-hidden rounded-2xl border bg-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg ${
+          isEmergency
+            ? "border-grey-10"
+            : "border-grey-10"
+        }`}
+      >
+        {/* CARD HEADER */}
+        <div
+          className={`border-b px-5 py-4 ${
+            isEmergency
+              ? "border-grey-10 bg-gradient-to-r from-grey-10 via-white to-white"
+              : "border-blue-10 bg-gradient-to-r from-blue-10 via-white to-white"
+          }`}
+        >
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex min-w-0 items-center gap-3">
+              {/* <div
+                className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${
+                  isEmergency
+                    ? "bg-red-100 text-red-600"
+                    : "bg-blue-100 text-blue-600"
+                }`}
+              >
+                {isEmergency ? (
+                  <ShieldAlert size={23} />
+                ) : (
+                  <Users size={23} />
+                )}
+              </div> */}
+
+              <div className="min-w-0">
+                <h2 className="truncate text-lg font-bold text-slate-800">
+                  {item.title}
+                </h2>
+
+                <div className="mt-1 flex items-center gap-2">
+                  <span
+                    className={`rounded-full px-2.5 py-1 text-[11px] font-bold ${
+                      isEmergency
+                        ? "bg-grey-10 text-grey-100"
+                        : "bg-grey-10 text-grey-100"
+                    }`}
+                  >
+                    {isEmergency
+                      ? "Emergency"
+                      : "Community"}
+                  </span>
+
+                  <span className="text-xs text-slate-400">
+                    {parsed.contacts.length}{" "}
+                    {parsed.contacts.length ===
+                    1
+                      ? "contact"
+                      : "contacts"}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* ACTIONS */}
+            <div className="flex shrink-0 items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() =>
+                  openView(item)
+                }
+                title="View"
+                className="rounded-lg border border-slate-200 bg-white p-2 text-slate-600 transition hover:bg-slate-100"
+              >
+                <Eye size={16} />
+              </button>
+
+              <button
+                type="button"
+                onClick={() =>
+                  openEdit(item)
+                }
+                title="Edit"
+                className="rounded-lg border border-blue-200 bg-white p-2 text-blue-600 transition hover:bg-blue-50"
+              >
+                <Edit size={16} />
+              </button>
+
+              <button
+                type="button"
+                onClick={() =>
+                  handleDelete(item.id)
+                }
+                title="Delete"
+                className="rounded-lg border border-red-200 bg-white p-2 text-red-600 transition hover:bg-red-50"
+              >
+                <Trash2 size={16} />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* CONTACTS */}
+        <div className="p-5">
+          {parsed.contacts.length ===
+          0 ? (
+            <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-center">
+              <p className="text-sm text-slate-500">
+                No contacts available.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-2.5">
+              {parsed.contacts
+                .slice(0, 4)
+                .map((contact, index) => (
+                  <div
+                    key={contact.id}
+                    className="flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50/80 px-3.5 py-3 transition hover:bg-slate-100"
+                  >
+                    {/* NUMBER */}
+                    <div
+                      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${
+                        isEmergency
+                          ? "bg-grey-100 text-grey-700"
+                          : "bg-blue-100 text-blue-700"
+                      }`}
+                    >
+                      {index + 1}
+                    </div>
+
+                    {/* DETAILS */}
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-semibold text-slate-700">
+                        {contact.name ||
+                          "-"}
+                      </p>
+
+                      <p className="truncate text-xs text-slate-500">
+                        {contact.designation ||
+                          "Contact"}
+                      </p>
+                    </div>
+
+                    {/* PHONE */}
+                    <div className="flex shrink-0 items-center gap-1.5 text-xs font-semibold text-slate-600">
+                      <Phone
+                        size={14}
+                        className={
+                          isEmergency
+                            ? "text-blue-500"
+                            : "text-blue-500"
+                        }
+                      />
+
+                      <span className="hidden sm:inline">
+                        {contact.contactNo ||
+                          "-"}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+
+              {parsed.contacts.length >
+                4 && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    openView(item)
+                  }
+                  className="w-full rounded-xl border border-dashed border-slate-200 px-3 py-2.5 text-xs font-semibold text-slate-500 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-700"
+                >
+                  View{" "}
+                  {parsed.contacts.length -
+                    4}{" "}
+                  more contacts
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* FOOTER */}
+          {/* <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-4">
+            <p className="text-xs text-slate-400">
+              Created{" "}
+              {formatDate(
+                item.created_at
+              )}
+            </p>
+
+            <button
+              type="button"
+              onClick={() =>
+                openView(item)
+              }
+              className={`text-xs font-semibold transition ${
+                isEmergency
+                  ? "text-red-600 hover:text-red-700"
+                  : "text-blue-600 hover:text-blue-700"
+              }`}
+            >
+              View details →
+            </button>
+          </div> */}
+        </div>
+      </div>
+    );
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-4 sm:p-6">
       <div className="mx-auto max-w-[1500px]">
 
-        {/* ================================================================ */}
         {/* HEADER */}
-        {/* ================================================================ */}
-
-        <div className="mb-7 flex items-center justify-between gap-4">
+        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-2xl font-bold text-slate-800">
               Important Information
             </h1>
 
             <p className="mt-1 text-sm text-slate-500">
-              Manage important information visible
+              Manage important contact information visible
               to apartment members.
             </p>
           </div>
 
-          <button
-            onClick={openCreate}
-            className="flex shrink-0 items-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700"
-          >
-            <Plus size={18} />
-            Add Information
-          </button>
+          {/* ADD INFORMATION */}
+          {canAddInformation && (
+            <button
+              type="button"
+              onClick={openCreate}
+              className="flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700"
+            >
+              <Plus size={18} />
+              Add Information
+            </button>
+          )}
         </div>
 
-        {/* ================================================================ */}
-        {/* CONTENT */}
-        {/* ================================================================ */}
+        {/* =============================================================== */}
+        {/* INFORMATION CARDS */}
+        {/* =============================================================== */}
 
         {loading ? (
-          <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center text-sm text-slate-500 shadow-sm">
-            Loading important information...
+          <div className="rounded-2xl border border-slate-200 bg-white p-12 text-center shadow-sm">
+            <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-slate-200 border-t-indigo-600" />
+
+            <p className="text-sm text-slate-500">
+              Loading important information...
+            </p>
           </div>
-        ) : information.length === 0 ? (
+        ) : information.length ===
+          0 ? (
           <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
             <div className="flex flex-col items-center justify-center p-16 text-center">
-              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-slate-100">
-                <AlertCircle
-                  size={30}
-                  className="text-slate-400"
-                />
+              <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-500">
+                <AlertCircle size={34} />
               </div>
 
               <h3 className="text-lg font-semibold text-slate-700">
                 No important information
               </h3>
 
-              <p className="mt-1 max-w-sm text-sm text-slate-500">
-                Add information that should be
-                visible to apartment members.
+              <p className="mt-1 max-w-md text-sm leading-6 text-slate-500">
+                Add important emergency or community
+                contact information to make it visible
+                to apartment members.
               </p>
 
-              <button
-                onClick={openCreate}
-                className="mt-5 flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700"
-              >
-                <Plus size={16} />
-                Add Information
-              </button>
+              {canAddInformation && (
+                <button
+                  type="button"
+                  onClick={openCreate}
+                  className="mt-5 flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-indigo-700"
+                >
+                  <Plus size={16} />
+                  Add Information
+                </button>
+              )}
             </div>
           </div>
         ) : (
-          <div className="rounded-2xl border border-slate-200 bg-white/70 p-4 shadow-sm">
-            {/* ============================================================ */}
-            {/* CARD GRID */}
-            {/* ============================================================ */}
-
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-
-              {information.map(
-                (item) => {
-                  const preview =
-                    getPreviewText(
-                      item.description
-                    );
-
-                  const hasImage =
-                    item.description?.includes(
-                      "<img"
-                    );
-
-                  return (
-                    <div
-                      key={item.id}
-                      className="group flex aspect-square min-h-[280px] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-md"
-                    >
-                      {/* ================================================== */}
-                      {/* CARD HEADER */}
-                      {/* ================================================== */}
-
-                      <div className="flex items-start justify-between gap-2 border-b border-slate-100 px-4 pb-3 pt-4">
-                        <div className="min-w-0 flex-1">
-                          <h2
-                            className="line-clamp-2 text-[15px] font-bold leading-5 text-slate-800"
-                            title={
-                              item.title
-                            }
-                          >
-                            {
-                              item.title
-                            }
-                          </h2>
-
-                          <div className="mt-1.5 flex items-center gap-2">
-                            <span className="inline-flex rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] font-semibold text-indigo-600">
-                              Important
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* ACTIONS */}
-
-                        <div className="flex shrink-0 items-center gap-1">
-                          {/* <button
-                            type="button"
-                            onClick={() =>
-                            setSelectedAnnouncement(
-                              announcement
-                            )}
-                            // onClick={() => {
-                            //   const previewWindow = window.open("", "_blank", "width=900,height=700");
-                            //   if (!previewWindow) return;
-                            //   const safeTitle = item.title.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-                            //   previewWindow.document.write(`<!doctype html><html><head><title>${safeTitle}</title><style>body{font-family:Arial,sans-serif;padding:32px;line-height:1.6;color:#334155}img{max-width:100%;height:auto;border-radius:10px}a{color:#4f46e5;text-decoration:underline}</style></head><body><h1>${safeTitle}</h1>${item.description || ""}</body></html>`);
-                            //   previewWindow.document.close();
-                            // }}
-                            title="View"
-                            className="rounded-lg p-1.5 text-slate-600 transition hover:bg-slate-50 hover:text-indigo-600"
-                          > */}
-
-<button
-  type="button"
-  onClick={() => setSelectedInformation(item)}
-  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-indigo-600"
-  title="View information"
-  aria-label="View information"
->
-  <Eye className="h-3.5 w-3.5" />
-</button>
-                            {/* <Eye size={15} />
-                          </button> */}
-
-                          <button
-                            onClick={() =>
-                              openEdit(
-                                item
-                              )
-                            }
-                            title="Edit"
-                            className="rounded-lg p-1.5 text-blue-600 transition hover:bg-blue-50"
-                          >
-                            <Edit
-                              size={15}
-                            />
-                          </button>
-
-                          <button
-                            onClick={() =>
-                              handleDelete(
-                                item.id
-                              )
-                            }
-                            title="Delete"
-                            className="rounded-lg p-1.5 text-red-600 transition hover:bg-red-50"
-                          >
-                            <Trash2
-                              size={15}
-                            />
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* ================================================== */}
-                      {/* CARD CONTENT */}
-                      {/* ================================================== */}
-
-                      <div className="min-h-0 flex-1 overflow-hidden px-4 py-3">
-                        {hasImage ? (
-                          <div
-                            className="line-clamp-5 text-[12px] leading-[18px] text-slate-600"
-                            // dangerouslySetInnerHTML={{
-                            //   __html:
-                            //     item.description ||
-                            //     "",
-                            // }}
-                            dangerouslySetInnerHTML={{
-  __html: prepareRichTextHtml(
-    item.description || ""
-  ),
-}}
-                          />
-                        ) : (
-                          <p
-                            className="line-clamp-6 text-[12px] leading-[18px] text-slate-600"
-                            title={
-                              preview
-                            }
-                          >
-                            {
-                              preview
-                            }
-                          </p>
-                        )}
-                      </div>
-
-                      {/* ================================================== */}
-                      {/* CARD FOOTER */}
-                      {/* ================================================== */}
-
-                      <div className="mt-auto flex items-center justify-between border-t border-slate-100 px-4 py-2.5">
-                        <div>
-                          <p className="text-[10px] font-medium uppercase tracking-wide text-slate-400">
-                            Created
-                          </p>
-
-                          <p className="mt-0.5 text-[11px] font-medium text-slate-500">
-                            {formatDate(
-                              item.created_at
-                            )}
-                          </p>
-                        </div>
-
-                        {/* {hasImage && (
-                          <div className="flex items-center gap-1 rounded-lg bg-slate-50 px-2 py-1 text-[10px] font-medium text-slate-500">
-                            <ImagePlus
-                              size={12}
-                            />
-                            Image
-                          </div>
-                        )} */}
-                      </div>
-                    </div>
-                  );
-                }
-              )}
-            </div>
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            {information.map(
+              (item) =>
+                renderInformationCard(
+                  item
+                )
+            )}
           </div>
         )}
       </div>
 
-{/* view modal */}
-{selectedInformation && (
-  <div
-    className="fixed inset-0 z-[90] flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm"
-    onClick={() => setSelectedInformation(null)}
-  >
-    <div
-      className="w-full max-w-3xl overflow-hidden rounded-2xl bg-white shadow-2xl"
-      onClick={(e) => e.stopPropagation()}
-    >
-      {/* Header */}
-      <div className="flex items-center justify-between bg-[#020b3d] px-5 py-4 text-white">
-        <div>
-          <h2 className="text-base font-semibold">
-            {selectedInformation.title}
-          </h2>
-
-          <p className="mt-0.5 text-xs text-slate-300">
-            Important Information
-          </p>
-        </div>
-
-        <button
-          type="button"
-          onClick={() => setSelectedInformation(null)}
-          className="rounded-lg p-1.5 text-white transition hover:bg-white/10"
-          title="Close"
-        >
-          <X size={19} />
-        </button>
-      </div>
-
-      {/* Content */}
-      <div className="max-h-[70vh] overflow-y-auto px-6 py-6">
-        {/* <div
-          className="prose prose-sm max-w-none text-slate-700
-            [&_a]:font-medium
-            [&_a]:text-indigo-600
-            [&_a]:underline
-            [&_a]:underline-offset-2
-            [&_a:hover]:text-indigo-800
-            [&_img]:my-4
-            [&_img]:h-auto
-            [&_img]:max-w-full
-            [&_img]:rounded-xl"
-          dangerouslySetInnerHTML={{
-            __html: selectedInformation.description || "",
-          }}
-        /> */}
-        <div
-  className="prose prose-sm max-w-none text-slate-700
-    [&_a]:font-medium
-    [&_a]:text-indigo-600
-    [&_a]:underline
-    [&_a]:underline-offset-2
-    [&_a:hover]:text-indigo-800
-    [&_a]:cursor-pointer"
-  onClick={(event) => {
-    const target = event.target as HTMLElement;
-    const anchor = target.closest("a");
-
-    if (!anchor) return;
-
-    event.preventDefault();
-    event.stopPropagation();
-
-    const href = anchor.getAttribute("href");
-
-    if (href) {
-      window.open(
-        href,
-        "_blank",
-        "noopener,noreferrer"
-      );
-    }
-  }}
-  // dangerouslySetInnerHTML={{
-  //   __html: selectedInformation.description || "",
-  // }}
-
-  dangerouslySetInnerHTML={{
-  __html: prepareRichTextHtml(
-    selectedInformation.description || ""
-  ),
-}}
-/>
-      </div>
-
-      {/* Footer */}
-      <div className="flex justify-end border-t border-slate-100 bg-slate-50 px-5 py-3">
-        <button
-          type="button"
-          onClick={() => setSelectedInformation(null)}
-          className="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700"
-        >
-          Close
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
-
-      {/* ================================================================== */}
-      {/* ADD / EDIT MODAL */}
-      {/* ================================================================== */}
+      {/* ================================================================= */}
+      {/* CREATE / EDIT MODAL */}
+      {/* ================================================================= */}
 
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm">
-          <div className="max-h-[92vh] w-full max-w-4xl overflow-hidden rounded-2xl bg-white shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm">
+          <div className="flex max-h-[92vh] w-full max-w-5xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
 
-            {/* MODAL HEADER */}
-
-            <div className="flex items-center justify-between border-b border-slate-200 px-6 py-5">
+            {/* HEADER */}
+            <div className="flex shrink-0 items-center justify-between border-b border-slate-200 px-5 py-4 sm:px-6 sm:py-5">
               <div>
                 <h2 className="text-xl font-bold text-slate-800">
                   {editingId
@@ -1890,17 +4472,18 @@ syncDescription();
                 </h2>
 
                 <p className="mt-1 text-sm text-slate-500">
-                  Format the information with custom
-                  fonts, colors and images.
+                  {editingId
+                    ? "Update the contact information."
+                    : "Add important emergency or community contact information."}
                 </p>
               </div>
 
               <button
-                onClick={closeModal}
-                disabled={
-                  saving ||
-                  uploadingImage
+                type="button"
+                onClick={
+                  closeModal
                 }
+                disabled={saving}
                 className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <X size={20} />
@@ -1908,17 +4491,15 @@ syncDescription();
             </div>
 
             {/* FORM */}
-
             <form
               onSubmit={
                 handleSubmit
               }
-              className="max-h-[calc(92vh-100px)] overflow-y-auto"
+              className="flex min-h-0 flex-1 flex-col"
             >
-              <div className="space-y-6 p-6">
+              <div className="flex-1 space-y-6 overflow-y-auto p-5 sm:p-6">
 
                 {/* TITLE */}
-
                 <div>
                   <label className="mb-2 block text-sm font-semibold text-slate-700">
                     Title
@@ -1933,17 +4514,12 @@ syncDescription();
                     onChange={(
                       e
                     ) => {
-                      const value =
-                        e.target
-                          .value;
-
                       setTitle(
-                        value
+                        e.target.value
                       );
 
                       if (
-                        titleError &&
-                        value.trim()
+                        titleError
                       ) {
                         setTitleError(
                           ""
@@ -1951,10 +4527,11 @@ syncDescription();
                       }
                     }}
                     placeholder="Enter information title"
+                    disabled={saving}
                     className={`w-full rounded-xl border px-4 py-3 text-sm outline-none transition ${
                       titleError
                         ? "border-red-400 bg-red-50/30 focus:border-red-500 focus:ring-2 focus:ring-red-100"
-                        : "border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                        : "border-slate-200 bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
                     }`}
                   />
 
@@ -1967,603 +4544,489 @@ syncDescription();
                   )}
                 </div>
 
-                {/* DESCRIPTION */}
-
+                {/* INFORMATION TYPE */}
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-slate-700">
-                    Description
+                  <label className="mb-3 block text-sm font-semibold text-slate-700">
+                    Choose
                     <span className="ml-1 text-red-500">
                       *
                     </span>
                   </label>
 
-                  {/* TOOLBAR */}
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
 
-                  <div
-                    className={`rounded-t-xl border border-b-0 bg-slate-50 ${
-                      descriptionError
-                        ? "border-red-400"
-                        : "border-slate-200"
-                    }`}
-                  >
-                    <div className="flex flex-wrap items-center gap-1 p-2">
+                    {/* EMERGENCY */}
+                    {(editingId ||
+                      canAddEmergency) &&
+                      (editingId
+                        ? informationType ===
+                            "emergency" ||
+                          !hasEmergencyInformation
+                        : canAddEmergency) && (
+                        <label
+                          className={`flex cursor-pointer items-center gap-3 rounded-xl border p-4 transition ${
+                            informationType ===
+                            "emergency"
+                              ? "border-red-300 bg-red-50 ring-2 ring-red-100"
+                              : "border-slate-200 bg-white hover:bg-slate-50"
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            name="informationType"
+                            value="emergency"
+                            checked={
+                              informationType ===
+                              "emergency"
+                            }
+                            onChange={() => {
+                              setInformationType(
+                                "emergency"
+                              );
+                              setTypeError(
+                                ""
+                              );
+                            }}
+                            disabled={
+                              saving
+                            }
+                            className="h-4 w-4 accent-red-600"
+                          />
 
-                      {/* FONT FAMILY */}
+                          <div>
+                            <p className="text-sm font-semibold text-slate-800">
+                              Emergency contact info
+                            </p>
 
-                      <select
-                        value={
-                          fontFamily
-                        }
-                        onChange={
-                          handleFontFamily
-                        }
-                        title="Font Family"
-                        className="h-9 rounded-lg border border-slate-200 bg-white px-2 text-sm text-slate-700 outline-none transition hover:bg-slate-50 focus:border-indigo-500"
-                      >
-                        <option value="Arial">
-                          Arial
-                        </option>
+                            <p className="mt-0.5 text-xs text-slate-500">
+                              Security, police, ambulance,
+                              fire, etc.
+                            </p>
+                          </div>
+                        </label>
+                      )}
 
-                        <option value="Verdana">
-                          Verdana
-                        </option>
+                    {/* COMMUNITY */}
+                    {(editingId ||
+                      canAddCommunity) &&
+                      (editingId
+                        ? informationType ===
+                            "community" ||
+                          !hasCommunityInformation
+                        : canAddCommunity) && (
+                        <label
+                          className={`flex cursor-pointer items-center gap-3 rounded-xl border p-4 transition ${
+                            informationType ===
+                            "community"
+                              ? "border-blue-300 bg-blue-50 ring-2 ring-blue-100"
+                              : "border-slate-200 bg-white hover:bg-slate-50"
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            name="informationType"
+                            value="community"
+                            checked={
+                              informationType ===
+                              "community"
+                            }
+                            onChange={() => {
+                              setInformationType(
+                                "community"
+                              );
+                              setTypeError(
+                                ""
+                              );
+                            }}
+                            disabled={
+                              saving
+                            }
+                            className="h-4 w-4 accent-blue-600"
+                          />
 
-                        <option value="Tahoma">
-                          Tahoma
-                        </option>
+                          <div>
+                            <p className="text-sm font-semibold text-slate-800">
+                              Others
+                            </p>
 
-                        <option value="Trebuchet MS">
-                          Trebuchet MS
-                        </option>
-
-                        <option value="Times New Roman">
-                          Times New Roman
-                        </option>
-
-                        <option value="Georgia">
-                          Georgia
-                        </option>
-
-                        <option value="Courier New">
-                          Courier New
-                        </option>
-
-                        <option value="Impact">
-                          Impact
-                        </option>
-
-                        <option value="Comic Sans MS">
-                          Comic Sans MS
-                        </option>
-                      </select>
-
-                      {/* FONT SIZE */}
-
-                      <select
-                        value={
-                          fontSize
-                        }
-                        onChange={
-                          handleFontSize
-                        }
-                        title="Font Size"
-                        className="h-9 w-[90px] rounded-lg border border-slate-200 bg-white px-2 text-sm text-slate-700 outline-none transition hover:bg-slate-50 focus:border-indigo-500"
-                      >
-                        {fontSizes.map(
-                          (
-                            size
-                          ) => (
-                            <option
-                              key={
-                                size
-                              }
-                              value={
-                                size
-                              }
-                            >
-                              {
-                                size
-                              }
-                            </option>
-                          )
-                        )}
-                      </select>
-
-                      {/* FONT COLOR */}
-
-                      <div className="flex h-9 items-center gap-2 rounded-lg border border-slate-200 bg-white px-2">
-                        <span className="text-xs font-medium text-slate-500">
-                          Color
-                        </span>
-
-                        <input
-                          type="color"
-                          value={
-                            fontColor
-                          }
-                          onChange={
-                            handleFontColor
-                          }
-                          title="Font Color"
-                          className="h-6 w-7 cursor-pointer border-0 bg-transparent p-0"
-                        />
-                      </div>
-
-                      <div className="mx-1 h-6 w-px bg-slate-200" />
-
-                      {/* BOLD */}
-
-                      <button
-                        type="button"
-                        onClick={() =>
-                          execEditorCommand(
-                            "bold"
-                          )
-                        }
-                        title="Bold"
-                        className="rounded-lg p-2 text-slate-600 transition hover:bg-white hover:text-indigo-600"
-                      >
-                        <Bold
-                          size={17}
-                        />
-                      </button>
-
-                      {/* ITALIC */}
-
-                      <button
-                        type="button"
-                        onClick={() =>
-                          execEditorCommand(
-                            "italic"
-                          )
-                        }
-                        title="Italic"
-                        className="rounded-lg p-2 text-slate-600 transition hover:bg-white hover:text-indigo-600"
-                      >
-                        <Italic
-                          size={17}
-                        />
-                      </button>
-
-                      {/* UNDERLINE */}
-
-                      <button
-                        type="button"
-                        onClick={() =>
-                          execEditorCommand(
-                            "underline"
-                          )
-                        }
-                        title="Underline"
-                        className="rounded-lg p-2 text-slate-600 transition hover:bg-white hover:text-indigo-600"
-                      >
-                        <Underline
-                          size={17}
-                        />
-                      </button>
-
-                      <div className="mx-1 h-6 w-px bg-slate-200" />
-
-                      {/* ALIGN LEFT */}
-
-                      <button
-                        type="button"
-                        onClick={() =>
-                          execEditorCommand(
-                            "justifyLeft"
-                          )
-                        }
-                        title="Align Left"
-                        className="rounded-lg p-2 text-slate-600 transition hover:bg-white hover:text-indigo-600"
-                      >
-                        <AlignLeft
-                          size={17}
-                        />
-                      </button>
-
-                      {/* ALIGN CENTER */}
-
-                      <button
-                        type="button"
-                        onClick={() =>
-                          execEditorCommand(
-                            "justifyCenter"
-                          )
-                        }
-                        title="Align Center"
-                        className="rounded-lg p-2 text-slate-600 transition hover:bg-white hover:text-indigo-600"
-                      >
-                        <AlignCenter
-                          size={17}
-                        />
-                      </button>
-
-                      {/* ALIGN RIGHT */}
-
-                      <button
-                        type="button"
-                        onClick={() =>
-                          execEditorCommand(
-                            "justifyRight"
-                          )
-                        }
-                        title="Align Right"
-                        className="rounded-lg p-2 text-slate-600 transition hover:bg-white hover:text-indigo-600"
-                      >
-                        <AlignRight
-                          size={17}
-                        />
-                      </button>
-
-                      {/* JUSTIFY */}
-
-                      <button
-                        type="button"
-                        onClick={() =>
-                          execEditorCommand(
-                            "justifyFull"
-                          )
-                        }
-                        title="Justify"
-                        className="rounded-lg p-2 text-slate-600 transition hover:bg-white hover:text-indigo-600"
-                      >
-                        <AlignJustify
-                          size={17}
-                        />
-                      </button>
-
-                      <div className="mx-1 h-6 w-px bg-slate-200" />
-
-                      {/* BULLET LIST */}
-
-                      <button
-                        type="button"
-                        onClick={() =>
-                          execEditorCommand(
-                            "insertUnorderedList"
-                          )
-                        }
-                        title="Bullet List"
-                        className="rounded-lg p-2 text-slate-600 transition hover:bg-white hover:text-indigo-600"
-                      >
-                        <List
-                          size={17}
-                        />
-                      </button>
-
-                      {/* NUMBER LIST */}
-
-                      <button
-                        type="button"
-                        onClick={() =>
-                          execEditorCommand(
-                            "insertOrderedList"
-                          )
-                        }
-                        title="Numbered List"
-                        className="rounded-lg p-2 text-slate-600 transition hover:bg-white hover:text-indigo-600"
-                      >
-                        <ListOrdered
-                          size={17}
-                        />
-                      </button>
-
-                      {/* LINK */}
-
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const url =
-                            window.prompt(
-                              "Enter URL"
-                            );
-
-                          if (
-                            url &&
-                            url.trim()
-                          ) {
-                            execEditorCommand(
-                              "createLink",
-                              url.trim()
-                            );
-                          }
-                        }}
-                        title="Add Link"
-                        className="rounded-lg p-2 text-slate-600 transition hover:bg-white hover:text-indigo-600"
-                      >
-                        <Link
-                          size={17}
-                        />
-                      </button>
-
-                      {/* IMAGE */}
-
-                      <button
-                        type="button"
-                        onClick={
-                          handleImageButton
-                        }
-                        disabled={
-                          uploadingImage
-                        }
-                        title="Add Image / Banner"
-                        className="flex items-center gap-1 rounded-lg p-2 text-indigo-600 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
-                      >
-                        <ImagePlus
-                          size={17}
-                        />
-
-                        <span className="text-xs font-semibold">
-                          {uploadingImage
-                            ? "Uploading..."
-                            : "Image"}
-                        </span>
-                      </button>
-
-                      <input
-                        ref={
-                          imageInputRef
-                        }
-                        type="file"
-                        accept="image/png,image/jpeg,image/jpg,image/gif,image/webp"
-                        onChange={
-                          handleImageUpload
-                        }
-                        className="hidden"
-                      />
-
-                      <div className="mx-1 h-6 w-px bg-slate-200" />
-
-                      {/* UNDO */}
-
-                      <button
-                        type="button"
-                        onClick={() =>
-                          execEditorCommand(
-                            "undo"
-                          )
-                        }
-                        title="Undo"
-                        className="rounded-lg p-2 text-slate-600 transition hover:bg-white hover:text-indigo-600"
-                      >
-                        <Undo2
-                          size={17}
-                        />
-                      </button>
-
-                      {/* REDO */}
-
-                      <button
-                        type="button"
-                        onClick={() =>
-                          execEditorCommand(
-                            "redo"
-                          )
-                        }
-                        title="Redo"
-                        className="rounded-lg p-2 text-slate-600 transition hover:bg-white hover:text-indigo-600"
-                      >
-                        <Redo2
-                          size={17}
-                        />
-                      </button>
-                    </div>
+                            <p className="mt-0.5 text-xs text-slate-500">
+                              Community contact information
+                            </p>
+                          </div>
+                        </label>
+                      )}
                   </div>
 
-                  {/* CONTENT EDITOR */}
-
-                  {/* <div
-                    ref={
-                      editorRef
-                    }
-                    contentEditable={
-                      !saving
-                    }
-                    suppressContentEditableWarning
-                    onInput={() => {
-                      syncDescription();
-
-                      if (
-                        descriptionError
-                      ) {
-                        const html =
-                          editorRef.current
-                            ?.innerHTML ||
-                          "";
-
-                        const plain =
-                          getPlainText(
-                            html
-                          );
-
-                        if (
-                          plain ||
-                          html.includes(
-                            "<img"
-                          )
-                        ) {
-                          setDescriptionError(
-                            ""
-                          );
-                        }
-                      }
-                    }}
-                    onBlur={
-                      syncDescription
-                    }
-                    data-placeholder="Enter important information..."
-                    className={`min-h-[250px] w-full overflow-y-auto rounded-b-xl border bg-white px-4 py-4 text-sm leading-6 text-slate-700 outline-none transition focus:ring-2 ${
-                      descriptionError
-                        ? "border-red-400 focus:border-red-500 focus:ring-red-100"
-                        : "border-slate-200 focus:border-indigo-500 focus:ring-indigo-100"
-                    }`}
-                    style={{
-                      fontFamily:
-                        "Arial",
-                      fontSize:
-                        "16px",
-                      color:
-                        "#1e293b",
-                      backgroundColor: backgroundColor,
-                    }}
-                  /> */}
-{/* <div className="relative">
-
-<div
-  ref={editorRef}
-  contentEditable={!saving}
-  suppressContentEditableWarning
-    onClick={handleEditorClick}
-  onInput={() => {
-    syncDescription();
-  }}
-  onBlur={syncDescription}
-  onClick={(event) => {
-    const target = event.target as HTMLElement;
-    const anchor = target.closest("a");
-
-    if (!anchor) return;
-
-    event.preventDefault();
-    event.stopPropagation();
-
-    const href = anchor.getAttribute("href");
-
-    if (href) {
-      window.open(
-        href,
-        "_blank",
-        "noopener,noreferrer"
-      );
-    }
-  }}
-  className="min-h-[250px] w-full ..."
->
-
-</div>
-</div> */}
-<div className="relative">
-  <div
-    ref={editorRef}
-    contentEditable={!saving}
-    suppressContentEditableWarning
-    onClick={handleEditorClick}
-    onInput={() => {
-      syncDescription();
-
-      if (descriptionError) {
-        const html =
-          editorRef.current?.innerHTML || "";
-
-        const plain =
-          getPlainText(html);
-
-        if (
-          plain ||
-          html.includes("<img")
-        ) {
-          setDescriptionError("");
-        }
-      }
-    }}
-    onBlur={syncDescription}
-    data-placeholder="Enter important information..."
-    className={`min-h-[250px] w-full overflow-y-auto rounded-b-xl border bg-white px-4 py-4 text-sm leading-6 text-slate-700 outline-none transition focus:ring-2 ${
-      descriptionError
-        ? "border-red-400 focus:border-red-500 focus:ring-red-100"
-        : "border-slate-200 focus:border-indigo-500 focus:ring-indigo-100"
-    }`}
-    style={{
-      fontFamily: "Arial",
-      fontSize: "16px",
-      color: "#1e293b",
-    }}
-  />
-
-  {selectedImage && (
-    <button
-      type="button"
-      onMouseDown={(e) => {
-        e.preventDefault();
-      }}
-      onClick={removeSelectedImage}
-      title="Remove image"
-      className="absolute right-3 top-3 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-red-600 text-white shadow-lg transition hover:bg-red-700"
-    >
-      <X size={17} />
-    </button>
-  )}
-</div>
-                  <style>
-                    {`
-                      [contenteditable][data-placeholder]:empty:before {
-                        content: attr(data-placeholder);
-                        color: #94a3b8;
-                        pointer-events: none;
-                      }
-
-                      [contenteditable] img {
-                        max-width: 100%;
-                        height: auto;
-                        display: block;
-                        margin: 12px 0;
-                        border-radius: 10px;
-                          cursor: pointer;
-
-                      }
-
-                      [contenteditable] a {
-                        color: #4f46e5;
-                        text-decoration: underline;
-                          cursor: pointer;
-
-                      }
-
-                      [contenteditable] ul {
-                        list-style-type: disc;
-                        padding-left: 24px;
-                      }
-
-                      [contenteditable] ol {
-                        list-style-type: decimal;
-                        padding-left: 24px;
-                      }
-
-                      [contenteditable] p {
-                        margin: 0 0 8px 0;
-                      }
-                    `}
-                  </style>
-
-                  {descriptionError && (
+                  {typeError && (
                     <p className="mt-1.5 text-xs font-medium text-red-600">
                       {
-                        descriptionError
+                        typeError
                       }
                     </p>
                   )}
+                </div>
 
-                  <p className="mt-2 text-xs text-slate-400">
-                    Select text before changing its
-                    font size, font family or color.
-                    Images and banners can also be added.
-                  </p>
+                {/* CONTACTS */}
+                <div>
+                  <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700">
+                        Contact Information
+                        <span className="ml-1 text-red-500">
+                          *
+                        </span>
+                      </label>
+
+                      <p className="mt-1 text-xs text-slate-500">
+                        Add up to{" "}
+                        {
+                          MAX_CONTACTS
+                        }{" "}
+                        contacts.
+                      </p>
+                    </div>
+
+                    <div
+                      className={`text-xs font-semibold ${
+                        contacts.length >=
+                        MAX_CONTACTS
+                          ? "text-red-600"
+                          : "text-slate-500"
+                      }`}
+                    >
+                      {
+                        contacts.length
+                      }{" "}
+                      /{" "}
+                      {
+                        MAX_CONTACTS
+                      }
+                    </div>
+                  </div>
+
+                  {contactsError && (
+                    <div className="mb-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2">
+                      <p className="text-xs font-medium text-red-600">
+                        {
+                          contactsError
+                        }
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="space-y-3">
+                    {contacts.map(
+                      (
+                        contact,
+                        index
+                      ) => {
+                        const errors =
+                          contactErrors[
+                            contact.id
+                          ] ||
+                          {};
+
+                        return (
+                          <div
+                            key={
+                              contact.id
+                            }
+                            className="rounded-xl border border-slate-200 bg-slate-50 p-4"
+                          >
+                            <div className="mb-3 flex items-center justify-between">
+                              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                Contact{" "}
+                                {index +
+                                  1}
+                              </p>
+
+                              {contact.isEditing && (
+                                <span className="rounded-full bg-blue-100 px-2.5 py-1 text-[11px] font-semibold text-blue-700">
+                                  Editing
+                                </span>
+                              )}
+                            </div>
+
+                            <div className="grid grid-cols-1 gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto]">
+
+                              {/* DESIGNATION */}
+                              <div>
+                                <label className="mb-1.5 block text-xs font-semibold text-slate-600">
+                                  Designation
+                                </label>
+
+                                <input
+                                  type="text"
+                                  value={
+                                    contact.designation
+                                  }
+                                  disabled={
+                                    !contact.isEditing ||
+                                    saving
+                                  }
+                                  onChange={(
+                                    e
+                                  ) =>
+                                    updateContact(
+                                      contact.id,
+                                      "designation",
+                                      e.target
+                                        .value
+                                    )
+                                  }
+                                  placeholder="e.g. Security"
+                                  className={`w-full rounded-lg border px-3 py-2.5 text-sm outline-none transition ${
+                                    errors.designation
+                                      ? "border-red-400 bg-red-50"
+                                      : contact.isEditing
+                                      ? "border-slate-300 bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                                      : "border-slate-200 bg-slate-100 text-slate-500"
+                                  }`}
+                                />
+
+                                {errors.designation && (
+                                  <p className="mt-1 text-[11px] font-medium text-red-600">
+                                    {
+                                      errors.designation
+                                    }
+                                  </p>
+                                )}
+                              </div>
+
+                              {/* NAME */}
+                              <div>
+                                <label className="mb-1.5 block text-xs font-semibold text-slate-600">
+                                  Name
+                                </label>
+
+                                <input
+                                  type="text"
+                                  value={
+                                    contact.name
+                                  }
+                                  disabled={
+                                    !contact.isEditing ||
+                                    saving
+                                  }
+                                  onChange={(
+                                    e
+                                  ) =>
+                                    updateContact(
+                                      contact.id,
+                                      "name",
+                                      e.target
+                                        .value
+                                    )
+                                  }
+                                  placeholder="Enter name"
+                                  className={`w-full rounded-lg border px-3 py-2.5 text-sm outline-none transition ${
+                                    errors.name
+                                      ? "border-red-400 bg-red-50"
+                                      : contact.isEditing
+                                      ? "border-slate-300 bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                                      : "border-slate-200 bg-slate-100 text-slate-500"
+                                  }`}
+                                />
+
+                                {errors.name && (
+                                  <p className="mt-1 text-[11px] font-medium text-red-600">
+                                    {
+                                      errors.name
+                                    }
+                                  </p>
+                                )}
+                              </div>
+
+                              {/* CONTACT NUMBER */}
+                              <div>
+                                <label className="mb-1.5 block text-xs font-semibold text-slate-600">
+                                  Contact No
+                                </label>
+
+                                <input
+                                  type="tel"
+                                  inputMode="numeric"
+                                  maxLength={
+                                    10
+                                  }
+                                  value={
+                                    contact.contactNo
+                                  }
+                                  disabled={
+                                    !contact.isEditing ||
+                                    saving
+                                  }
+                                  onChange={(
+                                    e
+                                  ) => {
+                                    const value =
+                                      e.target.value
+                                        .replace(
+                                          /\D/g,
+                                          ""
+                                        )
+                                        .slice(
+                                          0,
+                                          10
+                                        );
+
+                                    updateContact(
+                                      contact.id,
+                                      "contactNo",
+                                      value
+                                    );
+                                  }}
+                                  placeholder="10-digit number"
+                                  className={`w-full rounded-lg border px-3 py-2.5 text-sm outline-none transition ${
+                                    errors.contactNo
+                                      ? "border-red-400 bg-red-50"
+                                      : contact.isEditing
+                                      ? "border-slate-300 bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                                      : "border-slate-200 bg-slate-100 text-slate-500"
+                                  }`}
+                                />
+
+                                {errors.contactNo && (
+                                  <p className="mt-1 text-[11px] font-medium text-red-600">
+                                    {
+                                      errors.contactNo
+                                    }
+                                  </p>
+                                )}
+                              </div>
+
+                              {/* ACTION BUTTONS */}
+                              <div className="flex items-end gap-2">
+
+                                {/* EDIT */}
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    editContact(
+                                      contact.id
+                                    )
+                                  }
+                                  disabled={
+                                    saving ||
+                                    contact.isEditing
+                                  }
+                                  title={
+                                    contact.isEditing
+                                      ? "Currently editing"
+                                      : "Edit contact"
+                                  }
+                                  className={`flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-lg border transition ${
+                                    contact.isEditing
+                                      ? "cursor-not-allowed border-slate-200 bg-slate-100 text-slate-300"
+                                      : "border-blue-200 bg-blue-50 text-blue-600 hover:bg-blue-100"
+                                  }`}
+                                >
+                                  <Pencil
+                                    size={
+                                      17
+                                    }
+                                  />
+                                </button>
+
+                                {/* ADD */}
+                                <button
+                                  type="button"
+                                  onClick={
+                                    addContact
+                                  }
+                                  disabled={
+                                    saving ||
+                                    contacts.length >=
+                                      MAX_CONTACTS
+                                  }
+                                  title={
+                                    contacts.length >=
+                                    MAX_CONTACTS
+                                      ? "Maximum 10 contacts allowed"
+                                      : "Add contact"
+                                  }
+                                  className={`flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-lg border transition ${
+                                    contacts.length >=
+                                    MAX_CONTACTS
+                                      ? "cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400"
+                                      : "border-emerald-200 bg-emerald-50 text-emerald-600 hover:bg-emerald-100"
+                                  }`}
+                                >
+                                  <Plus
+                                    size={
+                                      18
+                                    }
+                                  />
+                                </button>
+
+                                {/* REMOVE */}
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    removeContact(
+                                      contact.id
+                                    )
+                                  }
+                                  disabled={
+                                    saving ||
+                                    contacts.length ===
+                                      1
+                                  }
+                                  title={
+                                    contacts.length ===
+                                    1
+                                      ? "At least one contact is required"
+                                      : "Remove contact"
+                                  }
+                                  className={`flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-lg border transition ${
+                                    contacts.length ===
+                                    1
+                                      ? "cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400"
+                                      : "border-red-200 bg-red-50 text-red-600 hover:bg-red-100"
+                                  }`}
+                                >
+                                  <Minus
+                                    size={
+                                      18
+                                    }
+                                  />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      }
+                    )}
+                  </div>
+
+                  {contacts.length >=
+                    MAX_CONTACTS && (
+                    <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2">
+                      <p className="text-xs font-medium text-amber-700">
+                        Maximum of{" "}
+                        {
+                          MAX_CONTACTS
+                        }{" "}
+                        contacts reached.
+                        You cannot add
+                        another contact.
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
 
               {/* FORM BUTTONS */}
-
-              <div className="flex justify-end gap-3 border-t border-slate-100 bg-slate-50 px-6 py-4">
+              <div className="flex shrink-0 flex-col-reverse gap-3 border-t border-slate-200 bg-white px-5 py-4 sm:flex-row sm:justify-end sm:px-6">
                 <button
                   type="button"
                   onClick={
                     closeModal
                   }
                   disabled={
-                    saving ||
-                    uploadingImage
+                    saving
                   }
-                  className="rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="rounded-xl border border-slate-200 px-5 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Cancel
                 </button>
@@ -2571,8 +5034,7 @@ syncDescription();
                 <button
                   type="submit"
                   disabled={
-                    saving ||
-                    uploadingImage
+                    saving
                   }
                   className="rounded-xl bg-indigo-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
                 >
@@ -2588,36 +5050,81 @@ syncDescription();
         </div>
       )}
 
-      {alert.show && (
-        <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm"
-          onClick={closeAlert}
-        >
-          <div
-            className="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl border-l-4"
-            style={{
-              borderLeftColor:
-                alert.type === "success" ? "#10b981" :
-                alert.type === "warning" ? "#eab308" : "#f43f5e"
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between bg-[#020b3d] px-5 py-4 text-white">
-              <div className="flex items-center gap-3">
-                {alert.type === "success" ? <CheckCircle size={24} className="text-emerald-400" /> : alert.type === "warning" ? <AlertTriangle size={24} className="text-yellow-400" /> : <XCircle size={24} className="text-rose-400" />}
-                <h2 className="text-base font-semibold">{alert.type === "success" ? "Success" : alert.type === "warning" ? "Warning" : "Error"}</h2>
+      {/* ================================================================= */}
+      {/* VIEW MODAL */}
+      {/* ================================================================= */}
+
+      {showViewModal &&
+        selectedInformation && (
+          <div className="fixed inset-0 z-[55] flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm">
+            <div className="flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
+
+              <div className="flex shrink-0 items-center justify-between border-b border-slate-200 px-5 py-4 sm:px-6 sm:py-5">
+                <div className="min-w-0">
+                  <h2 className="truncate text-xl font-bold text-slate-800">
+                    {
+                      selectedInformation.title
+                    }
+                  </h2>
+
+                  <p className="mt-1 text-sm text-slate-500">
+                    Important contact information
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={
+                    closeViewModal
+                  }
+                  className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+                >
+                  <X size={20} />
+                </button>
               </div>
-              <button type="button" onClick={closeAlert} className="rounded p-1 hover:bg-white/10"><X size={18} /></button>
-            </div>
-            <div className="px-5 py-5">
-              <p className="whitespace-pre-line text-sm leading-6 text-slate-600">{alert.message}</p>
-            </div>
-            <div className="flex justify-end gap-2 border-t border-slate-100 bg-slate-50 px-5 py-3">
-              {alert.onConfirm && <button type="button" onClick={closeAlert} className="rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-600">{alert.cancelText || "Cancel"}</button>}
-              <button type="button" onClick={() => { if (alert.onConfirm) { const fn=alert.onConfirm; closeAlert(); setTimeout(fn,100); } else closeAlert(); }} className={`rounded-xl px-5 py-2.5 text-sm font-semibold text-white shadow-sm ${alert.type === "success" ? "bg-emerald-600 hover:bg-emerald-700" : alert.type === "warning" ? "bg-yellow-500 hover:bg-yellow-600" : "bg-rose-500 hover:bg-rose-600"}`}>{alert.onConfirm ? alert.confirmText || "Confirm" : "OK"}</button>
+
+              <div className="min-h-0 flex-1 overflow-y-auto p-5 sm:p-6">
+                {renderViewContent()}
+              </div>
+
+              <div className="flex shrink-0 justify-end border-t border-slate-200 px-5 py-4 sm:px-6">
+                <button
+                  type="button"
+                  onClick={
+                    closeViewModal
+                  }
+                  className="rounded-xl border border-slate-200 px-5 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        )}
+
+      {/* ================================================================= */}
+      {/* ANNOUNCEMENT-STYLE ALERT */}
+      {/* ================================================================= */}
+
+      {alert && (
+        <AlertModal
+          type={alert.type}
+          message={
+            alert.message
+          }
+          confirmText={
+            alert.confirmText
+          }
+          cancelText={
+            alert.cancelText
+          }
+          onConfirm={
+            alert.onConfirm
+          }
+          onClose={
+            closeAlert
+          }
+        />
       )}
     </div>
   );

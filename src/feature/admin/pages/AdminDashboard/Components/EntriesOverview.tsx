@@ -1,8 +1,253 @@
+// // // import { useEffect, useState } from "react";
+// // // import {
+// // //   ResponsiveContainer,
+// // //   LineChart,
+// // //   Line,
+// // //   CartesianGrid,
+// // //   XAxis,
+// // //   YAxis,
+// // //   Tooltip,
+// // //   Legend,
+// // // } from "recharts";
+
+// // // type Period = "daily" | "weekly" | "monthly";
+
+// // // interface EntriesOverviewProps {
+// // //   period: Period;
+// // // }
+
+// // // interface EntryData {
+// // //   label: string;
+// // //   [key: string]: string | number;
+// // // }
+
+// // // const API = import.meta.env.VITE_BACKEND_URL;
+
+// // // // Only controls visual appearance.
+// // // // Categories themselves are NOT hardcoded.
+// // // const LINE_COLORS = [
+// // //   "#2563EB",
+// // //   "#7C3AED",
+// // //   "#16A34A",
+// // //   "#EA580C",
+// // //   "#DC2626",
+// // //   "#0891B2",
+// // //   "#CA8A04",
+// // //   "#DB2777",
+// // //   "#4F46E5",
+// // //   "#059669",
+// // // ];
+
+// // // export default function EntriesOverview({
+// // //   period,
+// // // }: EntriesOverviewProps) {
+// // //   const [data, setData] = useState<EntryData[]>([]);
+// // //   const [loading, setLoading] = useState(false);
+// // //   const [error, setError] = useState("");
+
+// // //   useEffect(() => {
+// // //     const fetchEntriesOverview = async () => {
+// // //       try {
+// // //         setLoading(true);
+// // //         setError("");
+
+// // //         const response = await fetch(
+// // //           `${API}/api/admin/dashboard/entries-overview?period=${period}`,
+// // //           {
+// // //             method: "GET",
+// // //             credentials: "include",
+// // //           }
+// // //         );
+
+// // //         const result = await response.json();
+
+// // //         if (!response.ok || !result.success) {
+// // //           throw new Error(
+// // //             result.message || "Failed to fetch entries overview"
+// // //           );
+// // //         }
+
+// // //         setData(result.data || []);
+// // //       } catch (err) {
+// // //         console.error("Entries Overview Error:", err);
+
+// // //         setError(
+// // //           err instanceof Error
+// // //             ? err.message
+// // //             : "Failed to load graph"
+// // //         );
+
+// // //         setData([]);
+// // //       } finally {
+// // //         setLoading(false);
+// // //       }
+// // //     };
+
+// // //     fetchEntriesOverview();
+// // //   }, [period]);
+
+// // //   /*
+// // //    * =====================================================
+// // //    * Get categories dynamically from backend data
+// // //    * =====================================================
+// // //    *
+// // //    * "label" belongs to the X-axis.
+// // //    *
+// // //    * Every other property is a category coming from
+// // //    * the database/backend.
+// // //    *
+// // //    * Example:
+// // //    *
+// // //    * {
+// // //    *   label: "10 AM",
+// // //    *   Visitor: 10,
+// // //    *   Vendor: 5,
+// // //    *   Maid: 3,
+// // //    *   Guest: 8
+// // //    * }
+// // //    *
+// // //    * Categories become:
+// // //    *
+// // //    * ["Visitor", "Vendor", "Maid", "Guest"]
+// // //    */
+
+// // //   const categories = Array.from(
+// // //     new Set(
+// // //       data.flatMap((item) =>
+// // //         Object.keys(item).filter(
+// // //           (key) => key !== "label"
+// // //         )
+// // //       )
+// // //     )
+// // //   );
+
+// // //   return (
+// // //     <div className="bg-white rounded-xl border border-slate-200 shadow-sm h-full">
+// // //       {/* Header */}
+// // //       <div className="px-5 pt-4">
+// // //         <h2 className="text-sm font-semibold text-slate-800">
+// // //           Entries Overview (
+// // //           {period === "daily"
+// // //             ? "Today"
+// // //             : period === "weekly"
+// // //             ? "This Week"
+// // //             : "This Month"}
+// // //           )
+// // //         </h2>
+// // //       </div>
+
+// // //       {/* Chart */}
+// // //       <div className="h-[300px] w-full px-3 pb-4 pt-2">
+// // //         {loading ? (
+// // //           <div className="flex h-full items-center justify-center text-sm text-slate-400">
+// // //             Loading entries...
+// // //           </div>
+// // //         ) : error ? (
+// // //           <div className="flex h-full items-center justify-center text-sm text-red-500">
+// // //             {error}
+// // //           </div>
+// // //         ) : data.length === 0 ? (
+// // //           <div className="flex h-full items-center justify-center text-sm text-slate-400">
+// // //             No entry data available
+// // //           </div>
+// // //         ) : categories.length === 0 ? (
+// // //           <div className="flex h-full items-center justify-center text-sm text-slate-400">
+// // //             No categories available
+// // //           </div>
+// // //         ) : (
+// // //           <ResponsiveContainer width="100%" height="100%">
+// // //             <LineChart
+// // //               data={data}
+// // //               margin={{
+// // //                 top: 15,
+// // //                 right: 20,
+// // //                 left: 0,
+// // //                 bottom: 5,
+// // //               }}
+// // //             >
+// // //               <CartesianGrid
+// // //                 strokeDasharray="3 3"
+// // //                 vertical={false}
+// // //                 stroke="#E5E7EB"
+// // //               />
+
+// // //               <XAxis
+// // //                 dataKey="label"
+// // //                 tick={{
+// // //                   fontSize: 11,
+// // //                   fill: "#475569",
+// // //                 }}
+// // //                 axisLine={false}
+// // //                 tickLine={false}
+// // //               />
+
+// // //               <YAxis
+// // //                 allowDecimals={false}
+// // //                 tick={{
+// // //                   fontSize: 11,
+// // //                   fill: "#475569",
+// // //                 }}
+// // //                 axisLine={false}
+// // //                 tickLine={false}
+// // //               />
+
+// // //               <Tooltip
+// // //                 contentStyle={{
+// // //                   backgroundColor: "#ffffff",
+// // //                   border: "1px solid #E2E8F0",
+// // //                   borderRadius: "8px",
+// // //                   fontSize: "12px",
+// // //                 }}
+// // //               />
+
+// // //               <Legend
+// // //                 wrapperStyle={{
+// // //                   fontSize: "11px",
+// // //                   paddingTop: "8px",
+// // //                 }}
+// // //               />
+
+// // //               {/* =========================================
+// // //                   DYNAMIC DATABASE CATEGORIES
+// // //                   ========================================= */}
+
+// // //               {categories.map((category, index) => {
+// // //                 const color =
+// // //                   LINE_COLORS[
+// // //                     index % LINE_COLORS.length
+// // //                   ];
+
+// // //                 return (
+// // //                   <Line
+// // //                     key={category}
+// // //                     type="monotone"
+// // //                     dataKey={category}
+// // //                     name={category}
+// // //                     stroke={color}
+// // //                     strokeWidth={2}
+// // //                     dot={{
+// // //                       r: 3,
+// // //                       strokeWidth: 2,
+// // //                       fill: color,
+// // //                     }}
+// // //                     activeDot={{
+// // //                       r: 5,
+// // //                     }}
+// // //                   />
+// // //                 );
+// // //               })}
+// // //             </LineChart>
+// // //           </ResponsiveContainer>
+// // //         )}
+// // //       </div>
+// // //     </div>
+// // //   );
+// // // }
 // // import { useEffect, useState } from "react";
 // // import {
 // //   ResponsiveContainer,
-// //   LineChart,
-// //   Line,
+// //   BarChart,
+// //   Bar,
 // //   CartesianGrid,
 // //   XAxis,
 // //   YAxis,
@@ -25,7 +270,7 @@
 
 // // // Only controls visual appearance.
 // // // Categories themselves are NOT hardcoded.
-// // const LINE_COLORS = [
+// // const BAR_COLORS = [
 // //   "#2563EB",
 // //   "#7C3AED",
 // //   "#16A34A",
@@ -67,9 +312,17 @@
 // //           );
 // //         }
 
+// //         console.log(
+// //           "Entries Overview Data:",
+// //           result.data
+// //         );
+
 // //         setData(result.data || []);
 // //       } catch (err) {
-// //         console.error("Entries Overview Error:", err);
+// //         console.error(
+// //           "Entries Overview Error:",
+// //           err
+// //         );
 
 // //         setError(
 // //           err instanceof Error
@@ -88,27 +341,13 @@
 
 // //   /*
 // //    * =====================================================
-// //    * Get categories dynamically from backend data
+// //    * GET CATEGORIES DYNAMICALLY
 // //    * =====================================================
 // //    *
-// //    * "label" belongs to the X-axis.
+// //    * "label" is the X-axis.
 // //    *
-// //    * Every other property is a category coming from
-// //    * the database/backend.
-// //    *
-// //    * Example:
-// //    *
-// //    * {
-// //    *   label: "10 AM",
-// //    *   Visitor: 10,
-// //    *   Vendor: 5,
-// //    *   Maid: 3,
-// //    *   Guest: 8
-// //    * }
-// //    *
-// //    * Categories become:
-// //    *
-// //    * ["Visitor", "Vendor", "Maid", "Guest"]
+// //    * Everything else is treated as a category
+// //    * coming from the backend/database.
 // //    */
 
 // //   const categories = Array.from(
@@ -123,8 +362,13 @@
 
 // //   return (
 // //     <div className="bg-white rounded-xl border border-slate-200 shadow-sm h-full">
-// //       {/* Header */}
+
+// //       {/* =================================================
+// //           HEADER
+// //       ================================================= */}
+
 // //       <div className="px-5 pt-4">
+
 // //         <h2 className="text-sm font-semibold text-slate-800">
 // //           Entries Overview (
 // //           {period === "daily"
@@ -134,29 +378,47 @@
 // //             : "This Month"}
 // //           )
 // //         </h2>
+
 // //       </div>
 
-// //       {/* Chart */}
+// //       {/* =================================================
+// //           CHART
+// //       ================================================= */}
+
 // //       <div className="h-[300px] w-full px-3 pb-4 pt-2">
+
 // //         {loading ? (
+
 // //           <div className="flex h-full items-center justify-center text-sm text-slate-400">
 // //             Loading entries...
 // //           </div>
+
 // //         ) : error ? (
+
 // //           <div className="flex h-full items-center justify-center text-sm text-red-500">
 // //             {error}
 // //           </div>
+
 // //         ) : data.length === 0 ? (
+
 // //           <div className="flex h-full items-center justify-center text-sm text-slate-400">
 // //             No entry data available
 // //           </div>
+
 // //         ) : categories.length === 0 ? (
+
 // //           <div className="flex h-full items-center justify-center text-sm text-slate-400">
 // //             No categories available
 // //           </div>
+
 // //         ) : (
-// //           <ResponsiveContainer width="100%" height="100%">
-// //             <LineChart
+
+// //           <ResponsiveContainer
+// //             width="100%"
+// //             height="100%"
+// //           >
+
+// //             <BarChart
 // //               data={data}
 // //               margin={{
 // //                 top: 15,
@@ -165,11 +427,16 @@
 // //                 bottom: 5,
 // //               }}
 // //             >
+
+// //               {/* GRID */}
+
 // //               <CartesianGrid
 // //                 strokeDasharray="3 3"
 // //                 vertical={false}
 // //                 stroke="#E5E7EB"
 // //               />
+
+// //               {/* X AXIS */}
 
 // //               <XAxis
 // //                 dataKey="label"
@@ -181,6 +448,8 @@
 // //                 tickLine={false}
 // //               />
 
+// //               {/* Y AXIS */}
+
 // //               <YAxis
 // //                 allowDecimals={false}
 // //                 tick={{
@@ -191,14 +460,99 @@
 // //                 tickLine={false}
 // //               />
 
-// //               <Tooltip
+// //               {/* TOOLTIP */}
+
+// //               {/* <Tooltip
 // //                 contentStyle={{
 // //                   backgroundColor: "#ffffff",
 // //                   border: "1px solid #E2E8F0",
 // //                   borderRadius: "8px",
 // //                   fontSize: "12px",
+// //                   boxShadow:
+// //                     "0 4px 12px rgba(0,0,0,0.08)",
+// //                 }}
+// //                 cursor={{
+// //                   fill: "rgba(37, 99, 235, 0.05)",
+// //                 }}
+// //               /> */}
+// // <Tooltip
+// //   content={({ active, payload, label }) => {
+// //     if (!active || !payload || payload.length === 0) {
+// //       return null;
+// //     }
+
+// //     const visibleData = payload.filter(
+// //       (item) => Number(item.value) > 0
+// //     );
+
+// //     return (
+// //       <div
+// //         style={{
+// //           backgroundColor: "#ffffff",
+// //           border: "1px solid #d1d5db",
+// //           borderRadius: "10px",
+// //           padding: "12px 14px",
+// //           boxShadow: "0 6px 18px rgba(0, 0, 0, 0.15)",
+// //           minWidth: "180px",
+// //           color: "#1f2937",
+// //           zIndex: 9999,
+// //         }}
+// //       >
+// //         <div
+// //           style={{
+// //             fontWeight: 600,
+// //             fontSize: "14px",
+// //             marginBottom: "8px",
+// //             color: "#111827",
+// //           }}
+// //         >
+// //           {label}
+// //         </div>
+
+// //         {visibleData.map((item, index) => (
+// //           <div
+// //             key={index}
+// //             style={{
+// //               display: "flex",
+// //               justifyContent: "space-between",
+// //               alignItems: "center",
+// //               gap: "20px",
+// //               marginBottom: "5px",
+// //               fontSize: "13px",
+// //             }}
+// //           >
+// //             <span
+// //               style={{
+// //                 display: "flex",
+// //                 alignItems: "center",
+// //                 gap: "6px",
+// //                 color: item.color,
+// //                 fontWeight: 500,
+// //               }}
+// //             >
+// //               <span
+// //                 style={{
+// //                   width: "8px",
+// //                   height: "8px",
+// //                   borderRadius: "50%",
+// //                   backgroundColor: item.color,
 // //                 }}
 // //               />
+
+// //               {item.name}
+// //             </span>
+
+// //             <strong style={{ color: "#111827" }}>
+// //               {item.value}
+// //             </strong>
+// //           </div>
+// //         ))}
+// //       </div>
+// //     );
+// //   }}
+// // />
+
+// //               {/* LEGEND */}
 
 // //               <Legend
 // //                 wrapperStyle={{
@@ -207,38 +561,40 @@
 // //                 }}
 // //               />
 
-// //               {/* =========================================
-// //                   DYNAMIC DATABASE CATEGORIES
-// //                   ========================================= */}
+// //               {/* =================================================
+// //                   DYNAMIC CATEGORY BARS
+// //                   ================================================= */}
 
 // //               {categories.map((category, index) => {
+
 // //                 const color =
-// //                   LINE_COLORS[
-// //                     index % LINE_COLORS.length
+// //                   BAR_COLORS[
+// //                     index % BAR_COLORS.length
 // //                   ];
 
 // //                 return (
-// //                   <Line
+// //                   <Bar
 // //                     key={category}
-// //                     type="monotone"
 // //                     dataKey={category}
 // //                     name={category}
-// //                     stroke={color}
-// //                     strokeWidth={2}
-// //                     dot={{
-// //                       r: 3,
-// //                       strokeWidth: 2,
-// //                       fill: color,
-// //                     }}
-// //                     activeDot={{
-// //                       r: 5,
-// //                     }}
+// //                     stackId="entries"
+// //                     fill={color}
+// //                     radius={
+// //                       index === categories.length - 1
+// //                         ? [4, 4, 0, 0]
+// //                         : [0, 0, 0, 0]
+// //                     }
 // //                   />
 // //                 );
+
 // //               })}
-// //             </LineChart>
+
+// //             </BarChart>
+
 // //           </ResponsiveContainer>
+
 // //         )}
+
 // //       </div>
 // //     </div>
 // //   );
@@ -255,7 +611,12 @@
 //   Legend,
 // } from "recharts";
 
-// type Period = "daily" | "weekly" | "monthly";
+// // type Period = "daily" | "weekly" | "monthly";
+// type Period =
+//   | "daily"
+//   | "weekly"
+//   | "monthly"
+//   | "yearly";
 
 // interface EntriesOverviewProps {
 //   period: Period;
@@ -312,17 +673,11 @@
 //           );
 //         }
 
-//         console.log(
-//           "Entries Overview Data:",
-//           result.data
-//         );
+//         console.log("Entries Overview Data:", result.data);
 
 //         setData(result.data || []);
 //       } catch (err) {
-//         console.error(
-//           "Entries Overview Error:",
-//           err
-//         );
+//         console.error("Entries Overview Error:", err);
 
 //         setError(
 //           err instanceof Error
@@ -368,17 +723,23 @@
 //       ================================================= */}
 
 //       <div className="px-5 pt-4">
-
 //         <h2 className="text-sm font-semibold text-slate-800">
 //           Entries Overview (
-//           {period === "daily"
+//           {/* {period === "daily"
 //             ? "Today"
 //             : period === "weekly"
 //             ? "This Week"
-//             : "This Month"}
+//             : "This Month"} */}
+
+//             {period === "daily"
+//   ? "Today"
+//   : period === "weekly"
+//   ? "This Week"
+//   : period === "monthly"
+//   ? "This Month"
+//   : "This Year"}
 //           )
 //         </h2>
-
 //       </div>
 
 //       {/* =================================================
@@ -428,7 +789,9 @@
 //               }}
 //             >
 
-//               {/* GRID */}
+//               {/* =================================================
+//                   GRID
+//                   ================================================= */}
 
 //               <CartesianGrid
 //                 strokeDasharray="3 3"
@@ -436,7 +799,9 @@
 //                 stroke="#E5E7EB"
 //               />
 
-//               {/* X AXIS */}
+//               {/* =================================================
+//                   X AXIS
+//                   ================================================= */}
 
 //               <XAxis
 //                 dataKey="label"
@@ -448,7 +813,9 @@
 //                 tickLine={false}
 //               />
 
-//               {/* Y AXIS */}
+//               {/* =================================================
+//                   Y AXIS
+//                   ================================================= */}
 
 //               <YAxis
 //                 allowDecimals={false}
@@ -460,134 +827,253 @@
 //                 tickLine={false}
 //               />
 
-//               {/* TOOLTIP */}
+//               {/* =================================================
+//                   CUSTOM TOOLTIP
+//                   ================================================= */}
 
-//               {/* <Tooltip
-//                 contentStyle={{
-//                   backgroundColor: "#ffffff",
-//                   border: "1px solid #E2E8F0",
-//                   borderRadius: "8px",
-//                   fontSize: "12px",
-//                   boxShadow:
-//                     "0 4px 12px rgba(0,0,0,0.08)",
-//                 }}
+//               <Tooltip
 //                 cursor={{
-//                   fill: "rgba(37, 99, 235, 0.05)",
+//                   fill: "rgba(37, 99, 235, 0.06)",
 //                 }}
-//               /> */}
-// <Tooltip
-//   content={({ active, payload, label }) => {
-//     if (!active || !payload || payload.length === 0) {
-//       return null;
-//     }
+//                 content={({ active, payload, label }) => {
+//                   if (
+//                     !active ||
+//                     !payload ||
+//                     payload.length === 0
+//                   ) {
+//                     return null;
+//                   }
 
-//     const visibleData = payload.filter(
-//       (item) => Number(item.value) > 0
-//     );
+//                   /*
+//                    * Only show categories which have
+//                    * a value greater than 0.
+//                    */
+//                   const visibleData = payload.filter(
+//                     (item) => Number(item.value) > 0
+//                   );
 
-//     return (
-//       <div
-//         style={{
-//           backgroundColor: "#ffffff",
-//           border: "1px solid #d1d5db",
-//           borderRadius: "10px",
-//           padding: "12px 14px",
-//           boxShadow: "0 6px 18px rgba(0, 0, 0, 0.15)",
-//           minWidth: "180px",
-//           color: "#1f2937",
-//           zIndex: 9999,
-//         }}
-//       >
-//         <div
-//           style={{
-//             fontWeight: 600,
-//             fontSize: "14px",
-//             marginBottom: "8px",
-//             color: "#111827",
-//           }}
-//         >
-//           {label}
-//         </div>
+//                   /*
+//                    * If everything is 0, don't show
+//                    * an empty tooltip.
+//                    */
+//                   if (visibleData.length === 0) {
+//                     return null;
+//                   }
 
-//         {visibleData.map((item, index) => (
-//           <div
-//             key={index}
-//             style={{
-//               display: "flex",
-//               justifyContent: "space-between",
-//               alignItems: "center",
-//               gap: "20px",
-//               marginBottom: "5px",
-//               fontSize: "13px",
-//             }}
-//           >
-//             <span
-//               style={{
-//                 display: "flex",
-//                 alignItems: "center",
-//                 gap: "6px",
-//                 color: item.color,
-//                 fontWeight: 500,
-//               }}
-//             >
-//               <span
-//                 style={{
-//                   width: "8px",
-//                   height: "8px",
-//                   borderRadius: "50%",
-//                   backgroundColor: item.color,
+//                   return (
+//                     <div
+//                       style={{
+//                         backgroundColor: "#ffffff",
+//                         border: "1px solid #CBD5E1",
+//                         borderRadius: "10px",
+//                         padding: "10px 12px",
+//                         minWidth: "215px",
+//                         maxWidth: "240px",
+
+//                         /*
+//                          * Important:
+//                          * Solid background prevents
+//                          * graph elements showing through.
+//                          */
+//                         opacity: 1,
+
+//                         /*
+//                          * Enough height for around
+//                          * 10 categories.
+//                          */
+//                         maxHeight: "265px",
+
+//                         /*
+//                          * If there are more categories,
+//                          * tooltip becomes scrollable.
+//                          */
+//                         overflowY: "auto",
+
+//                         /*
+//                          * Makes tooltip stay above bars.
+//                          */
+//                         position: "relative",
+//                         zIndex: 9999,
+
+//                         boxShadow:
+//                           "0 8px 24px rgba(15, 23, 42, 0.18)",
+
+//                         color: "#1E293B",
+//                       }}
+//                     >
+
+//                       {/* =================================================
+//                           TIME / LABEL
+//                           ================================================= */}
+
+//                       <div
+//                         style={{
+//                           fontWeight: 700,
+//                           fontSize: "14px",
+//                           color: "#0F172A",
+//                           paddingBottom: "8px",
+//                           marginBottom: "6px",
+//                           borderBottom:
+//                             "1px solid #E2E8F0",
+//                         }}
+//                       >
+//                         {label}
+//                       </div>
+
+//                       {/* =================================================
+//                           CATEGORY VALUES
+//                           ================================================= */}
+
+//                       {visibleData.map(
+//                         (item, index) => (
+//                           <div
+//                             key={`${item.name}-${index}`}
+//                             style={{
+//                               display: "flex",
+//                               alignItems: "center",
+//                               justifyContent:
+//                                 "space-between",
+
+//                               /*
+//                                * Prevent long category
+//                                * names from breaking layout.
+//                                */
+//                               gap: "12px",
+
+//                               minHeight: "21px",
+//                               marginBottom: "3px",
+
+//                               fontSize: "12px",
+//                             }}
+//                           >
+
+//                             {/* CATEGORY NAME */}
+
+//                             <div
+//                               style={{
+//                                 display: "flex",
+//                                 alignItems: "center",
+//                                 gap: "7px",
+//                                 minWidth: 0,
+//                                 flex: 1,
+//                               }}
+//                             >
+
+//                               {/* COLOR DOT */}
+
+//                               <span
+//                                 style={{
+//                                   width: "8px",
+//                                   height: "8px",
+//                                   minWidth: "8px",
+//                                   borderRadius:
+//                                     "50%",
+//                                   backgroundColor:
+//                                     item.color ||
+//                                     "#64748B",
+//                                 }}
+//                               />
+
+//                               {/* CATEGORY */}
+
+//                               <span
+//                                 style={{
+//                                   color:
+//                                     item.color ||
+//                                     "#334155",
+
+//                                   fontWeight: 500,
+
+//                                   /*
+//                                    * Long category
+//                                    * names remain readable.
+//                                    */
+//                                   whiteSpace:
+//                                     "nowrap",
+//                                   overflow:
+//                                     "hidden",
+//                                   textOverflow:
+//                                     "ellipsis",
+//                                 }}
+//                                 title={String(
+//                                   item.name
+//                                 )}
+//                               >
+//                                 {item.name}
+//                               </span>
+//                             </div>
+
+//                             {/* VALUE */}
+
+//                             <span
+//                               style={{
+//                                 fontWeight: 700,
+//                                 color: "#0F172A",
+//                                 minWidth: "20px",
+//                                 textAlign: "right",
+//                               }}
+//                             >
+//                               {item.value}
+//                             </span>
+
+//                           </div>
+//                         )
+//                       )}
+
+//                     </div>
+//                   );
 //                 }}
 //               />
 
-//               {item.name}
-//             </span>
+//               {/* =================================================
+//                   LEGEND
+//                   ================================================= */}
 
-//             <strong style={{ color: "#111827" }}>
-//               {item.value}
-//             </strong>
-//           </div>
-//         ))}
-//       </div>
-//     );
-//   }}
-// />
-
-//               {/* LEGEND */}
-
-//               <Legend
+//               {/* <Legend
 //                 wrapperStyle={{
 //                   fontSize: "11px",
 //                   paddingTop: "8px",
 //                 }}
-//               />
+//               /> */}
 
 //               {/* =================================================
 //                   DYNAMIC CATEGORY BARS
 //                   ================================================= */}
 
-//               {categories.map((category, index) => {
+//               {categories.map(
+//                 (category, index) => {
+//                   const color =
+//                     BAR_COLORS[
+//                       index % BAR_COLORS.length
+//                     ];
 
-//                 const color =
-//                   BAR_COLORS[
-//                     index % BAR_COLORS.length
-//                   ];
+//                   return (
+//                     <Bar
+//                       key={category}
+//                       dataKey={category}
+//                       name={category}
+//                       stackId="entries"
+//                       fill={color}
 
-//                 return (
-//                   <Bar
-//                     key={category}
-//                     dataKey={category}
-//                     name={category}
-//                     stackId="entries"
-//                     fill={color}
-//                     radius={
-//                       index === categories.length - 1
-//                         ? [4, 4, 0, 0]
-//                         : [0, 0, 0, 0]
-//                     }
-//                   />
-//                 );
+//                       /*
+//                        * Highlight the exact bar segment
+//                        * being hovered.
+//                        */
+//                       activeBar={{
+//                         stroke: "#0F172A",
+//                         strokeWidth: 2,
+//                       }}
 
-//               })}
+//                       radius={
+//                         index ===
+//                         categories.length - 1
+//                           ? [4, 4, 0, 0]
+//                           : [0, 0, 0, 0]
+//                       }
+//                     />
+//                   );
+//                 }
+//               )}
 
 //             </BarChart>
 
@@ -611,7 +1097,11 @@ import {
   Legend,
 } from "recharts";
 
-type Period = "daily" | "weekly" | "monthly";
+type Period =
+  | "daily"
+  | "weekly"
+  | "monthly"
+  | "yearly";
 
 interface EntriesOverviewProps {
   period: Period;
@@ -646,6 +1136,32 @@ export default function EntriesOverview({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  /*
+   * =====================================================
+   * CURRENT / PREVIOUS PERIOD
+   *
+   * 0  = current period
+   * -1 = previous period
+   * =====================================================
+   */
+  const [periodOffset, setPeriodOffset] = useState(0);
+
+  /*
+   * =====================================================
+   * When the top Daily / Weekly / Monthly / Yearly
+   * selection changes, always start from the current
+   * period.
+   * =====================================================
+   */
+  useEffect(() => {
+    setPeriodOffset(0);
+  }, [period]);
+
+  /*
+   * =====================================================
+   * Fetch graph data
+   * =====================================================
+   */
   useEffect(() => {
     const fetchEntriesOverview = async () => {
       try {
@@ -653,7 +1169,7 @@ export default function EntriesOverview({
         setError("");
 
         const response = await fetch(
-          `${API}/api/admin/dashboard/entries-overview?period=${period}`,
+          `${API}/api/admin/dashboard/entries-overview?period=${period}&offset=${periodOffset}`,
           {
             method: "GET",
             credentials: "include",
@@ -664,15 +1180,22 @@ export default function EntriesOverview({
 
         if (!response.ok || !result.success) {
           throw new Error(
-            result.message || "Failed to fetch entries overview"
+            result.message ||
+              "Failed to fetch entries overview"
           );
         }
 
-        console.log("Entries Overview Data:", result.data);
+        console.log(
+          "Entries Overview Data:",
+          result.data
+        );
 
         setData(result.data || []);
       } catch (err) {
-        console.error("Entries Overview Error:", err);
+        console.error(
+          "Entries Overview Error:",
+          err
+        );
 
         setError(
           err instanceof Error
@@ -687,7 +1210,115 @@ export default function EntriesOverview({
     };
 
     fetchEntriesOverview();
-  }, [period]);
+  }, [period, periodOffset]);
+
+  /*
+   * =====================================================
+   * PERIOD LABELS
+   * =====================================================
+   */
+  const getPeriodLabel = () => {
+    if (periodOffset === -1) {
+      switch (period) {
+        case "daily":
+          return "Previous Day";
+
+        case "weekly":
+          return "Previous Week";
+
+        case "monthly":
+          return "Previous Month";
+
+        case "yearly":
+          return "Previous Year";
+
+        default:
+          return "";
+      }
+    }
+
+    switch (period) {
+      case "daily":
+        return "Today";
+
+      case "weekly":
+        return "This Week";
+
+      case "monthly":
+        return "This Month";
+
+      case "yearly":
+        return "This Year";
+
+      default:
+        return "";
+    }
+  };
+
+  /*
+   * =====================================================
+   * BUTTON LABEL
+   * =====================================================
+   *
+   * Current period:
+   *     Previous Day / Week / Month / Year
+   *
+   * Previous period:
+   *     Current Day / Week / Month / Year
+   *
+   * This allows the user to easily switch back.
+   * =====================================================
+   */
+  const getNavigationButtonLabel = () => {
+    if (periodOffset === -1) {
+      switch (period) {
+        case "daily":
+          return "Current Day";
+
+        case "weekly":
+          return "Current Week";
+
+        case "monthly":
+          return "Current Month";
+
+        case "yearly":
+          return "Current Year";
+
+        default:
+          return "Current";
+      }
+    }
+
+    switch (period) {
+      case "daily":
+        return "Previous Day";
+
+      case "weekly":
+        return "Previous Week";
+
+      case "monthly":
+        return "Previous Month";
+
+      case "yearly":
+        return "Previous Year";
+
+      default:
+        return "Previous";
+    }
+  };
+
+  /*
+   * =====================================================
+   * Handle previous/current button
+   * =====================================================
+   */
+  const handlePeriodNavigation = () => {
+    if (periodOffset === 0) {
+      setPeriodOffset(-1);
+    } else {
+      setPeriodOffset(0);
+    }
+  };
 
   /*
    * =====================================================
@@ -698,8 +1329,8 @@ export default function EntriesOverview({
    *
    * Everything else is treated as a category
    * coming from the backend/database.
+   * =====================================================
    */
-
   const categories = Array.from(
     new Set(
       data.flatMap((item) =>
@@ -710,29 +1341,116 @@ export default function EntriesOverview({
     )
   );
 
+  /*
+   * =====================================================
+   * CUSTOM LEGEND
+   *
+   * Keep all categories on one line and distribute
+   * available horizontal space between them.
+   * =====================================================
+   */
+  const renderLegend = (props: any) => {
+    const { payload } = props;
+
+    return (
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          width: "100%",
+          padding: "8px 10px 0",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+        }}
+      >
+        {payload?.map(
+          (entry: any, index: number) => (
+            <div
+              key={`legend-${index}`}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "5px",
+                fontSize: "11px",
+                whiteSpace: "nowrap",
+                flexShrink: 0,
+              }}
+            >
+              <span
+                style={{
+                  width: "12px",
+                  height: "12px",
+                  backgroundColor: entry.color,
+                  display: "inline-block",
+                  flexShrink: 0,
+                }}
+              />
+
+              <span
+                style={{
+                  color: entry.color,
+                }}
+              >
+                {entry.value}
+              </span>
+            </div>
+          )
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="bg-white rounded-xl border border-slate-200 shadow-sm h-full">
 
       {/* =================================================
           HEADER
-      ================================================= */}
+          ================================================= */}
+      <div className="px-5 pt-4 flex items-center justify-between gap-3">
 
-      <div className="px-5 pt-4">
+        {/* TITLE */}
         <h2 className="text-sm font-semibold text-slate-800">
-          Entries Overview (
-          {period === "daily"
-            ? "Today"
-            : period === "weekly"
-            ? "This Week"
-            : "This Month"}
-          )
+          Entries Overview ({getPeriodLabel()})
         </h2>
+
+        {/* PREVIOUS / CURRENT BUTTON */}
+        <button
+          type="button"
+          onClick={handlePeriodNavigation}
+          disabled={loading}
+          className="
+            flex
+            items-center
+            gap-1.5
+            rounded-md
+            border
+            border-slate-200
+            bg-white
+            px-3
+            py-1.5
+            text-xs
+            font-medium
+            text-slate-600
+            transition
+            hover:border-blue-300
+            hover:bg-blue-50
+            hover:text-blue-600
+            disabled:cursor-not-allowed
+            disabled:opacity-50
+          "
+        >
+          {periodOffset === 0 ? "←" : "↻"}
+          <span>
+            {getNavigationButtonLabel()}
+          </span>
+        </button>
+
       </div>
 
       {/* =================================================
           CHART
-      ================================================= */}
-
+          ================================================= */}
       <div className="h-[300px] w-full px-3 pb-4 pt-2">
 
         {loading ? (
@@ -779,7 +1497,6 @@ export default function EntriesOverview({
               {/* =================================================
                   GRID
                   ================================================= */}
-
               <CartesianGrid
                 strokeDasharray="3 3"
                 vertical={false}
@@ -789,7 +1506,6 @@ export default function EntriesOverview({
               {/* =================================================
                   X AXIS
                   ================================================= */}
-
               <XAxis
                 dataKey="label"
                 tick={{
@@ -803,7 +1519,6 @@ export default function EntriesOverview({
               {/* =================================================
                   Y AXIS
                   ================================================= */}
-
               <YAxis
                 allowDecimals={false}
                 tick={{
@@ -817,12 +1532,15 @@ export default function EntriesOverview({
               {/* =================================================
                   CUSTOM TOOLTIP
                   ================================================= */}
-
               <Tooltip
                 cursor={{
                   fill: "rgba(37, 99, 235, 0.06)",
                 }}
-                content={({ active, payload, label }) => {
+                content={({
+                  active,
+                  payload,
+                  label,
+                }) => {
                   if (
                     !active ||
                     !payload ||
@@ -832,74 +1550,67 @@ export default function EntriesOverview({
                   }
 
                   /*
-                   * Only show categories which have
+                   * Only show categories with
                    * a value greater than 0.
                    */
-                  const visibleData = payload.filter(
-                    (item) => Number(item.value) > 0
-                  );
+                  const visibleData =
+                    payload.filter(
+                      (item) =>
+                        Number(item.value) > 0
+                    );
 
                   /*
-                   * If everything is 0, don't show
-                   * an empty tooltip.
+                   * If everything is 0,
+                   * don't show empty tooltip.
                    */
-                  if (visibleData.length === 0) {
+                  if (
+                    visibleData.length === 0
+                  ) {
                     return null;
                   }
 
                   return (
                     <div
                       style={{
-                        backgroundColor: "#ffffff",
-                        border: "1px solid #CBD5E1",
-                        borderRadius: "10px",
-                        padding: "10px 12px",
-                        minWidth: "215px",
-                        maxWidth: "240px",
-
-                        /*
-                         * Important:
-                         * Solid background prevents
-                         * graph elements showing through.
-                         */
+                        backgroundColor:
+                          "#ffffff",
+                        border:
+                          "1px solid #CBD5E1",
+                        borderRadius:
+                          "10px",
+                        padding:
+                          "10px 12px",
+                        minWidth:
+                          "215px",
+                        maxWidth:
+                          "240px",
                         opacity: 1,
-
-                        /*
-                         * Enough height for around
-                         * 10 categories.
-                         */
-                        maxHeight: "265px",
-
-                        /*
-                         * If there are more categories,
-                         * tooltip becomes scrollable.
-                         */
-                        overflowY: "auto",
-
-                        /*
-                         * Makes tooltip stay above bars.
-                         */
-                        position: "relative",
+                        maxHeight:
+                          "265px",
+                        overflowY:
+                          "auto",
+                        position:
+                          "relative",
                         zIndex: 9999,
-
                         boxShadow:
                           "0 8px 24px rgba(15, 23, 42, 0.18)",
-
-                        color: "#1E293B",
+                        color:
+                          "#1E293B",
                       }}
                     >
 
                       {/* =================================================
                           TIME / LABEL
                           ================================================= */}
-
                       <div
                         style={{
                           fontWeight: 700,
                           fontSize: "14px",
                           color: "#0F172A",
-                          paddingBottom: "8px",
-                          marginBottom: "6px",
+                          paddingBottom:
+                            "8px",
+                          marginBottom:
+                            "6px",
                           borderBottom:
                             "1px solid #E2E8F0",
                         }}
@@ -910,36 +1621,37 @@ export default function EntriesOverview({
                       {/* =================================================
                           CATEGORY VALUES
                           ================================================= */}
-
                       {visibleData.map(
-                        (item, index) => (
+                        (
+                          item,
+                          index
+                        ) => (
                           <div
                             key={`${item.name}-${index}`}
                             style={{
-                              display: "flex",
-                              alignItems: "center",
+                              display:
+                                "flex",
+                              alignItems:
+                                "center",
                               justifyContent:
                                 "space-between",
-
-                              /*
-                               * Prevent long category
-                               * names from breaking layout.
-                               */
                               gap: "12px",
-
-                              minHeight: "21px",
-                              marginBottom: "3px",
-
-                              fontSize: "12px",
+                              minHeight:
+                                "21px",
+                              marginBottom:
+                                "3px",
+                              fontSize:
+                                "12px",
                             }}
                           >
 
                             {/* CATEGORY NAME */}
-
                             <div
                               style={{
-                                display: "flex",
-                                alignItems: "center",
+                                display:
+                                  "flex",
+                                alignItems:
+                                  "center",
                                 gap: "7px",
                                 minWidth: 0,
                                 flex: 1,
@@ -947,12 +1659,14 @@ export default function EntriesOverview({
                             >
 
                               {/* COLOR DOT */}
-
                               <span
                                 style={{
-                                  width: "8px",
-                                  height: "8px",
-                                  minWidth: "8px",
+                                  width:
+                                    "8px",
+                                  height:
+                                    "8px",
+                                  minWidth:
+                                    "8px",
                                   borderRadius:
                                     "50%",
                                   backgroundColor:
@@ -962,19 +1676,13 @@ export default function EntriesOverview({
                               />
 
                               {/* CATEGORY */}
-
                               <span
                                 style={{
                                   color:
                                     item.color ||
                                     "#334155",
-
-                                  fontWeight: 500,
-
-                                  /*
-                                   * Long category
-                                   * names remain readable.
-                                   */
+                                  fontWeight:
+                                    500,
                                   whiteSpace:
                                     "nowrap",
                                   overflow:
@@ -991,13 +1699,15 @@ export default function EntriesOverview({
                             </div>
 
                             {/* VALUE */}
-
                             <span
                               style={{
                                 fontWeight: 700,
-                                color: "#0F172A",
-                                minWidth: "20px",
-                                textAlign: "right",
+                                color:
+                                  "#0F172A",
+                                minWidth:
+                                  "20px",
+                                textAlign:
+                                  "right",
                               }}
                             >
                               {item.value}
@@ -1015,23 +1725,22 @@ export default function EntriesOverview({
               {/* =================================================
                   LEGEND
                   ================================================= */}
-
               <Legend
-                wrapperStyle={{
-                  fontSize: "11px",
-                  paddingTop: "8px",
-                }}
+                content={renderLegend}
               />
 
               {/* =================================================
                   DYNAMIC CATEGORY BARS
                   ================================================= */}
-
               {categories.map(
-                (category, index) => {
+                (
+                  category,
+                  index
+                ) => {
                   const color =
                     BAR_COLORS[
-                      index % BAR_COLORS.length
+                      index %
+                        BAR_COLORS.length
                     ];
 
                   return (
@@ -1041,16 +1750,11 @@ export default function EntriesOverview({
                       name={category}
                       stackId="entries"
                       fill={color}
-
-                      /*
-                       * Highlight the exact bar segment
-                       * being hovered.
-                       */
                       activeBar={{
-                        stroke: "#0F172A",
+                        stroke:
+                          "#0F172A",
                         strokeWidth: 2,
                       }}
-
                       radius={
                         index ===
                         categories.length - 1

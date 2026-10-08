@@ -8,7 +8,12 @@ import {
   Legend,
 } from "recharts";
 
-type Period = "daily" | "weekly" | "monthly";
+// type Period = "daily" | "weekly" | "monthly";
+type Period =
+  | "daily"
+  | "weekly"
+  | "monthly"
+  | "yearly";
 
 interface EntriesByCategoryProps {
   period: Period;
@@ -93,11 +98,18 @@ export default function EntriesByCategory({
       <div className="px-5 pt-4">
         <h2 className="text-sm font-semibold text-slate-800">
           Entries by Category (
-          {period === "daily"
+          {/* {period === "daily"
             ? "Today"
             : period === "weekly"
             ? "This Week"
-            : "This Month"}
+            : "This Month"} */}
+            {period === "daily"
+  ? "Today"
+  : period === "weekly"
+  ? "This Week"
+  : period === "monthly"
+  ? "This Month"
+  : "This Year"}
           )
         </h2>
       </div>
