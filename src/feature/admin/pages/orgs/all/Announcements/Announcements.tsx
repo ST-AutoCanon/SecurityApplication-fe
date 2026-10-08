@@ -1,16 +1,15 @@
+
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import {
   Bell,
   CalendarDays,
   ChevronRight,
-  Image as ImageIcon,
   Italic,
   Bold,
   AlignLeft,
   AlignCenter,
   AlignRight,
-  Upload,
   X,
   Plus,
   Pencil,
@@ -25,14 +24,13 @@ import {
 
 const API_URL = import.meta.env.VITE_BACKEND_URL;
 
-type BlockType = "text" | "image";
+type BlockType = "text";
 
 type MessageBlock = {
   id: string;
   type: BlockType;
 
   text?: string;
-  imageUrl?: string;
 
   color?: string;
   backgroundColor?: string;
@@ -58,6 +56,11 @@ type Announcement = {
   createdAt?: string;
   created_at?: string;
 
+  startsAt?: string;
+  starts_at?: string;
+  startDate?: string;
+  start_date?: string;
+
   expiresAt?: string;
   expires_at?: string;
   expiryDate?: string;
@@ -72,6 +75,7 @@ type AnnouncementForm = {
   title: string;
   message: string;
   priority: string;
+  startsAt: string;
   expiresAt: string;
 };
 
@@ -95,34 +99,44 @@ const EMOJIS = [
   "😦","😧","😮","😲","🥱","😴","🤤","😪","😵","🤐","🥴","🤢","🤮","🤧",
   "😷","🤒","🤕","🤑","🤠","😈","👿","👹","👺","🤡","💩","👻","💀","☠️",
   "👽","👾","🤖","🎃",
+
   // Hands & gestures
   "👋","🤚","🖐️","✋","🖖","👌","🤏","✌️","🤞","🤟","🤘","🤙","👈","👉",
   "👆","👇","☝️","👍","👎","✊","👊","🤝","👏","🙌","👐","🤲","🙏","💪",
+
   // Hearts & symbols
   "❤️","🧡","💛","💚","💙","💜","🖤","🤍","🤎","💔","❣️","💕","💞","💓",
   "💗","💖","💘","💝","💟","✨","⭐","🌟","💫","🔥","💯","💥","🎯","✅",
   "❌","⚠️","❗","❓","‼️","⁉️","⭕","❎","✔️","➕","➖","✖️","➗",
+
   // Objects & communication
   "📢","📣","🔔","🔕","📯","📱","💻","🖥️","⌨️","🖨️","📷","📸","📹","🎥",
   "☎️","📞","✉️","📧","📨","📩","📤","📥","📬","📭","📮","📝","📄","📋",
   "📌","📍","🔗","🔒","🔓","🔑","🗝️","🔐","🔎","🔍","💡","📅","📆","⏰",
+
   // Celebration
   "🎉","🎊","🎈","🎁","🎂","🍰","🥳","🏆","🥇","🥈","🥉","🎖️","🏅","🎓",
+
   // Home & places
   "🏠","🏡","🏢","🏥","🏫","🏨","🏪","🏬","🏭","🏦","🏛️","🛣️","🚪","🛗",
+
   // Travel & transport
   "🚗","🚕","🚌","🚎","🏎️","🚓","🚑","🚒","🚚","🚛","🚜","🏍️","🚲","✈️",
   "🚆","🚇","🚉","🚁","🚢","⛵","🛵","🛴",
+
   // Food & drink
   "🍎","🍏","🍊","🍋","🍌","🍉","🍇","🍓","🍒","🍑","🍍","🥭","🥝","🍅",
   "🥑","🍕","🍔","🍟","🌭","🌮","🌯","🍿","🍩","🍪","🍰","🍫","🍭","☕",
   "🍵","🥤","🧃","🍽️","🍴",
+
   // Nature & weather
   "🌸","🌹","🌺","🌻","🌼","🌷","🌱","🌲","🌳","🌴","🌵","🍀","☀️","🌤️",
   "⛅","🌧️","⛈️","🌩️","❄️","☃️","🌈","🌙","⭐","🌍","🌎","🌏","🌊",
+
   // Animals
   "🐶","🐱","🐭","🐹","🐰","🦊","🐻","🐼","🐨","🐯","🦁","🐮","🐷","🐸",
   "🐵","🙈","🙉","🙊","🐔","🐧","🐦","🐤","🦄","🐝","🦋","🐢","🐠","🐟",
+
   // Activities
   "⚽","🏀","🏈","⚾","🎾","🏐","🏸","🥊","🎮","🎲","🎵","🎶","🎸","🎹",
   "🎤","🎧","🎨","📚","📖",
@@ -137,7 +151,16 @@ const FONT_FAMILIES = [
   "Courier New",
 ];
 
-const FONT_SIZES = [12, 14, 16, 18, 20, 24, 28, 32];
+const FONT_SIZES = [
+  12,
+  14,
+  16,
+  18,
+  20,
+  24,
+  28,
+  32,
+];
 
 const createTextBlock = (): MessageBlock => ({
   id: `text-${Date.now()}-${Math.random()}`,
@@ -152,13 +175,9 @@ const createTextBlock = (): MessageBlock => ({
   fontFamily: "Arial",
 });
 
-const createImageBlock = (imageUrl = ""): MessageBlock => ({
-  id: `image-${Date.now()}-${Math.random()}`,
-  type: "image",
-  imageUrl,
-});
-
-const parseMessageBlocks = (message?: string): MessageBlock[] => {
+const parseMessageBlocks = (
+  message?: string
+): MessageBlock[] => {
   if (!message) {
     return [];
   }
@@ -167,15 +186,29 @@ const parseMessageBlocks = (message?: string): MessageBlock[] => {
     const parsed = JSON.parse(message);
 
     if (Array.isArray(parsed)) {
-      return parsed;
+      return parsed.filter(
+        (block) => block?.type === "text"
+      );
     }
 
-    if (parsed?.blocks && Array.isArray(parsed.blocks)) {
-      return parsed.blocks;
+    if (
+      parsed?.blocks &&
+      Array.isArray(parsed.blocks)
+    ) {
+      return parsed.blocks.filter(
+        (block: MessageBlock) =>
+          block?.type === "text"
+      );
     }
 
-    if (parsed?.content && Array.isArray(parsed.content)) {
-      return parsed.content;
+    if (
+      parsed?.content &&
+      Array.isArray(parsed.content)
+    ) {
+      return parsed.content.filter(
+        (block: MessageBlock) =>
+          block?.type === "text"
+      );
     }
   } catch {
     // Normal text message
@@ -189,7 +222,9 @@ const parseMessageBlocks = (message?: string): MessageBlock[] => {
   ];
 };
 
-const getMessage = (announcement: Announcement): string => {
+const getMessage = (
+  announcement: Announcement
+): string => {
   return (
     announcement.message ||
     announcement.description ||
@@ -198,7 +233,9 @@ const getMessage = (announcement: Announcement): string => {
   );
 };
 
-const getPublishedDate = (announcement: Announcement): string => {
+const getPublishedDate = (
+  announcement: Announcement
+): string => {
   return (
     announcement.publishedAt ||
     announcement.published_at ||
@@ -208,7 +245,21 @@ const getPublishedDate = (announcement: Announcement): string => {
   );
 };
 
-const getExpiryDate = (announcement: Announcement): string => {
+const getStartDate = (
+  announcement: Announcement
+): string => {
+  return (
+    announcement.startsAt ||
+    announcement.starts_at ||
+    announcement.startDate ||
+    announcement.start_date ||
+    ""
+  );
+};
+
+const getExpiryDate = (
+  announcement: Announcement
+): string => {
   return (
     announcement.expiresAt ||
     announcement.expires_at ||
@@ -234,7 +285,9 @@ const formatDate = (value?: string) => {
   });
 };
 
-const getDateInputValue = (value?: string) => {
+const getDateInputValue = (
+  value?: string
+) => {
   if (!value) return "";
 
   const date = new Date(value);
@@ -244,8 +297,12 @@ const getDateInputValue = (value?: string) => {
   }
 
   const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(
+    date.getMonth() + 1
+  ).padStart(2, "0");
+  const day = String(
+    date.getDate()
+  ).padStart(2, "0");
 
   return `${year}-${month}-${day}`;
 };
@@ -254,13 +311,19 @@ const getTodayInputValue = () => {
   const today = new Date();
 
   const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, "0");
-  const day = String(today.getDate()).padStart(2, "0");
+  const month = String(
+    today.getMonth() + 1
+  ).padStart(2, "0");
+  const day = String(
+    today.getDate()
+  ).padStart(2, "0");
 
   return `${year}-${month}-${day}`;
 };
 
-const getPriorityStyles = (priority?: string) => {
+const getPriorityStyles = (
+  priority?: string
+) => {
   switch ((priority || "").toLowerCase()) {
     case "important":
       return {
@@ -269,7 +332,6 @@ const getPriorityStyles = (priority?: string) => {
         border: "border-red-100",
       };
 
-    
     case "general":
       return {
         bg: "bg-slate-50",
@@ -290,7 +352,10 @@ const getApiResponseMessage = (
   data: any,
   fallback: string
 ): string => {
-  if (data === null || data === undefined) {
+  if (
+    data === null ||
+    data === undefined
+  ) {
     return fallback;
   }
 
@@ -311,52 +376,78 @@ const getApiResponseMessage = (
   ];
 
   for (const candidate of candidates) {
-    if (candidate === null || candidate === undefined) continue;
+    if (
+      candidate === null ||
+      candidate === undefined
+    ) {
+      continue;
+    }
 
     if (typeof candidate === "string") {
       const trimmed = candidate.trim();
-      if (trimmed) return trimmed;
+
+      if (trimmed) {
+        return trimmed;
+      }
     }
 
     if (typeof candidate === "object") {
       try {
         return JSON.stringify(candidate);
       } catch {
-        // Continue to the next candidate.
+        // Continue
       }
     }
   }
 
-  if (Array.isArray(data?.errors) && data.errors.length) {
+  if (
+    Array.isArray(data?.errors) &&
+    data.errors.length
+  ) {
     return data.errors
       .map((item: any) =>
         typeof item === "string"
           ? item
-          : item?.message || item?.msg || JSON.stringify(item)
+          : item?.message ||
+            item?.msg ||
+            JSON.stringify(item)
       )
       .join("\n");
   }
 
-  if (Array.isArray(data?.data?.errors) && data.data.errors.length) {
+  if (
+    Array.isArray(data?.data?.errors) &&
+    data.data.errors.length
+  ) {
     return data.data.errors
       .map((item: any) =>
         typeof item === "string"
           ? item
-          : item?.message || item?.msg || JSON.stringify(item)
+          : item?.message ||
+            item?.msg ||
+            JSON.stringify(item)
       )
       .join("\n");
   }
 
   try {
-    const serialized = JSON.stringify(data, null, 2);
-    return serialized && serialized !== "{}" ? serialized : fallback;
+    const serialized = JSON.stringify(
+      data,
+      null,
+      2
+    );
+
+    return serialized &&
+      serialized !== "{}"
+      ? serialized
+      : fallback;
   } catch {
     return fallback;
   }
 };
 
 /* -------------------------------------------------------------------------- */
-/* ALERT MODAL — same design as Campaign.tsx                                 */
+/* ALERT MODAL                                                                */
 /* -------------------------------------------------------------------------- */
 
 const AlertModal = ({
@@ -377,96 +468,243 @@ const AlertModal = ({
   const isConfirm = Boolean(onConfirm);
 
   useEffect(() => {
-    if (type === "warning" && !isConfirm) {
-      const timer = setTimeout(onClose, 3000);
-      return () => clearTimeout(timer);
+    if (
+      type === "warning" &&
+      !isConfirm
+    ) {
+      const timer = setTimeout(
+        onClose,
+        3000
+      );
+
+      return () =>
+        clearTimeout(timer);
     }
-  }, [type, isConfirm, onClose]);
+  }, [
+    type,
+    isConfirm,
+    onClose,
+  ]);
 
   useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Enter" || event.key === "Escape") {
+    const handleKeyDown = (
+      event: KeyboardEvent
+    ) => {
+      if (
+        event.key === "Enter" ||
+        event.key === "Escape"
+      ) {
         event.preventDefault();
-        if (event.key === "Enter" && onConfirm) onConfirm();
-        else onClose();
+
+        if (
+          event.key === "Enter" &&
+          onConfirm
+        ) {
+          onConfirm();
+        } else {
+          onClose();
+        }
       }
     };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+
+    window.addEventListener(
+      "keydown",
+      handleKeyDown
+    );
+
+    return () =>
+      window.removeEventListener(
+        "keydown",
+        handleKeyDown
+      );
   }, [onClose, onConfirm]);
 
   const config =
     type === "success"
-      ? { borderColor: "#10b981", iconColor: "#10b981", buttonBg: "#10b981", title: "Success", Icon: CheckCircle }
+      ? {
+          borderColor: "#10b981",
+          iconColor: "#10b981",
+          buttonBg: "#10b981",
+          title: "Success",
+          Icon: CheckCircle,
+        }
       : type === "warning"
-      ? { borderColor: "#eab308", iconColor: "#eab308", buttonBg: "#eab308", title: "Warning", Icon: AlertTriangle }
-      : { borderColor: "#f43f5e", iconColor: "#f43f5e", buttonBg: "#f43f5e", title: "Error", Icon: XCircle };
+      ? {
+          borderColor: "#eab308",
+          iconColor: "#eab308",
+          buttonBg: "#eab308",
+          title: "Warning",
+          Icon: AlertTriangle,
+        }
+      : {
+          borderColor: "#f43f5e",
+          iconColor: "#f43f5e",
+          buttonBg: "#f43f5e",
+          title: "Error",
+          Icon: XCircle,
+        };
 
   const Icon = config.Icon;
 
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(15, 23, 42, 0.45)" }}>
-      <div style={{ width: 380, maxWidth: "calc(100vw - 32px)", overflow: "hidden", borderRadius: 12, background: "#fff", boxShadow: "0 25px 50px rgba(0,0,0,0.25)", borderLeft: `4px solid ${config.borderColor}` }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "#020b3d", padding: "14px 20px", color: "#fff" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <Icon size={24} color={config.iconColor} />
-            <h2 style={{ margin: 0, fontSize: 17, fontWeight: 600 }}>{config.title}</h2>
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 9999,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background:
+          "rgba(15, 23, 42, 0.45)",
+      }}
+    >
+      <div
+        style={{
+          width: 380,
+          maxWidth:
+            "calc(100vw - 32px)",
+          overflow: "hidden",
+          borderRadius: 12,
+          background: "#fff",
+          boxShadow:
+            "0 25px 50px rgba(0,0,0,0.25)",
+          borderLeft: `4px solid ${config.borderColor}`,
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent:
+              "space-between",
+            background: "#020b3d",
+            padding: "14px 20px",
+            color: "#fff",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 12,
+            }}
+          >
+            <Icon
+              size={24}
+              color={config.iconColor}
+            />
+
+            <h2
+              style={{
+                margin: 0,
+                fontSize: 17,
+                fontWeight: 600,
+              }}
+            >
+              {config.title}
+            </h2>
           </div>
-          <button type="button" onClick={onClose} style={{ background: "transparent", border: "none", color: "#fff", cursor: "pointer", padding: 4, borderRadius: 4, display: "flex", alignItems: "center" }}>
+
+          <button
+            type="button"
+            onClick={onClose}
+            style={{
+              background: "transparent",
+              border: "none",
+              color: "#fff",
+              cursor: "pointer",
+              padding: 4,
+              borderRadius: 4,
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
             <X size={18} />
           </button>
         </div>
-        <div style={{ padding: "22px 20px" }}>
-          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: "#475569", whiteSpace: "pre-wrap" }}>{message}</p>
+
+        <div
+          style={{
+            padding: "22px 20px",
+          }}
+        >
+          <p
+            style={{
+              margin: 0,
+              fontSize: 14,
+              lineHeight: 1.6,
+              color: "#475569",
+              whiteSpace: "pre-wrap",
+            }}
+          >
+            {message}
+          </p>
         </div>
-        <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, borderTop: "1px solid #e2e8f0", background: "#f8fafc", padding: "14px 20px" }}>
+
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            gap: 10,
+            borderTop:
+              "1px solid #e2e8f0",
+            background: "#f8fafc",
+            padding: "14px 20px",
+          }}
+        >
           {isConfirm && (
-            <button type="button" onClick={onClose} style={{ border: "1px solid #e2e8f0", borderRadius: 8, padding: "8px 20px", fontSize: 13, fontWeight: 500, color: "#475569", background: "#fff", cursor: "pointer" }}>
+            <button
+              type="button"
+              onClick={onClose}
+              style={{
+                border:
+                  "1px solid #e2e8f0",
+                borderRadius: 8,
+                padding: "8px 20px",
+                fontSize: 13,
+                fontWeight: 500,
+                color: "#475569",
+                background: "#fff",
+                cursor: "pointer",
+              }}
+            >
               {cancelText || "Cancel"}
             </button>
           )}
-          <button type="button" onClick={() => { if (onConfirm) { onClose(); setTimeout(onConfirm, 100); } else onClose(); }} style={{ border: "none", borderRadius: 8, padding: "8px 20px", fontSize: 13, fontWeight: 500, color: "#fff", background: config.buttonBg, cursor: "pointer" }}>
-            {isConfirm ? confirmText || "Confirm" : "OK"}
+
+          <button
+            type="button"
+            onClick={() => {
+              if (onConfirm) {
+                onClose();
+                setTimeout(
+                  onConfirm,
+                  100
+                );
+              } else {
+                onClose();
+              }
+            }}
+            style={{
+              border: "none",
+              borderRadius: 8,
+              padding: "8px 20px",
+              fontSize: 13,
+              fontWeight: 500,
+              color: "#fff",
+              background:
+                config.buttonBg,
+              cursor: "pointer",
+            }}
+          >
+            {isConfirm
+              ? confirmText || "Confirm"
+              : "OK"}
           </button>
         </div>
       </div>
     </div>
-  );
-};
-
-/* -------------------------------------------------------------------------- */
-/* IMAGE UPLOAD                                                               */
-/* -------------------------------------------------------------------------- */
-
-const uploadImageFile = async (file: File): Promise<string> => {
-  if (!file.type.startsWith("image/")) {
-    throw new Error("Please select a valid image file.");
-  }
-
-  if (file.size > 8 * 1024 * 1024) {
-    throw new Error("Image size must be less than 8 MB.");
-  }
-
-  const formData = new FormData();
-  formData.append("image", file);
-
-  const response = await axios.post(
-    `${API_URL}/api/upload/image`,
-    formData,
-    {
-      withCredentials: true,
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }
-  );
-
-  return (
-    response.data?.url ||
-    response.data?.imageUrl ||
-    response.data?.path ||
-    response.data?.data?.url ||
-    ""
   );
 };
 
@@ -478,7 +716,9 @@ type EmojiPickerProps = {
   onSelect: (emoji: string) => void;
 };
 
-const EmojiPicker = ({ onSelect }: EmojiPickerProps) => {
+const EmojiPicker = ({
+  onSelect,
+}: EmojiPickerProps) => {
   return (
     <div className="absolute left-0 top-full z-50 mt-1 w-52 rounded-xl border border-slate-200 bg-white p-2 shadow-xl">
       <div className="grid grid-cols-8 gap-1">
@@ -486,7 +726,9 @@ const EmojiPicker = ({ onSelect }: EmojiPickerProps) => {
           <button
             key={emoji}
             type="button"
-            onClick={() => onSelect(emoji)}
+            onClick={() =>
+              onSelect(emoji)
+            }
             className="flex h-7 w-7 items-center justify-center rounded-md text-base transition hover:bg-slate-100"
           >
             {emoji}
@@ -503,7 +745,9 @@ const EmojiPicker = ({ onSelect }: EmojiPickerProps) => {
 
 type TextBlockEditorProps = {
   block: MessageBlock;
-  onChange: (block: MessageBlock) => void;
+  onChange: (
+    block: MessageBlock
+  ) => void;
   onRemove: () => void;
 };
 
@@ -512,11 +756,20 @@ const TextBlockEditor = ({
   onChange,
   onRemove,
 }: TextBlockEditorProps) => {
-  const [showEmoji, setShowEmoji] = useState(false);
-  const editorRef = useRef<HTMLDivElement | null>(null);
-  const savedRangeRef = useRef<Range | null>(null);
+  const [showEmoji, setShowEmoji] =
+    useState(false);
 
-  const update = (changes: Partial<MessageBlock>) => {
+  const editorRef =
+    useRef<HTMLDivElement | null>(
+      null
+    );
+
+  const savedRangeRef =
+    useRef<Range | null>(null);
+
+  const update = (
+    changes: Partial<MessageBlock>
+  ) => {
     onChange({
       ...block,
       ...changes,
@@ -524,124 +777,245 @@ const TextBlockEditor = ({
   };
 
   const rememberSelection = () => {
-    const selection = window.getSelection();
-    if (!selection || !selection.rangeCount || !editorRef.current) {
+    const selection =
+      window.getSelection();
+
+    if (
+      !selection ||
+      !selection.rangeCount ||
+      !editorRef.current
+    ) {
       return;
     }
 
-    const range = selection.getRangeAt(0);
-    if (editorRef.current.contains(range.commonAncestorContainer)) {
-      savedRangeRef.current = range.cloneRange();
+    const range =
+      selection.getRangeAt(0);
+
+    if (
+      editorRef.current.contains(
+        range.commonAncestorContainer
+      )
+    ) {
+      savedRangeRef.current =
+        range.cloneRange();
     }
   };
 
   const restoreSelection = () => {
-    const selection = window.getSelection();
-    const range = savedRangeRef.current;
+    const selection =
+      window.getSelection();
 
-    if (!selection || !range || !editorRef.current) return;
+    const range =
+      savedRangeRef.current;
+
+    if (
+      !selection ||
+      !range ||
+      !editorRef.current
+    ) {
+      return;
+    }
 
     try {
       selection.removeAllRanges();
       selection.addRange(range);
     } catch {
-      // Selection may no longer be valid after a React update.
+      // Selection may no longer be valid.
     }
   };
 
   const emitEditorValue = () => {
-    if (!editorRef.current) return;
-    update({ text: editorRef.current.innerHTML });
+    if (!editorRef.current) {
+      return;
+    }
+
+    update({
+      text:
+        editorRef.current.innerHTML,
+    });
+
     rememberSelection();
   };
 
   const applyInlineStyle = (
-    property: "color" | "fontSize" | "fontFamily",
+    property:
+      | "color"
+      | "fontSize"
+      | "fontFamily",
     value: string
   ) => {
-    if (!editorRef.current) return;
+    if (!editorRef.current) {
+      return;
+    }
 
     editorRef.current.focus();
+
     restoreSelection();
 
-    const selection = window.getSelection();
-    if (!selection || !selection.rangeCount || selection.isCollapsed) {
-      // If no text is selected, keep the selected value as the default
-      // for the whole text block, matching the existing editor behaviour.
+    const selection =
+      window.getSelection();
+
+    if (
+      !selection ||
+      !selection.rangeCount ||
+      selection.isCollapsed
+    ) {
       if (property === "fontSize") {
-        update({ fontSize: Number(value) });
-      } else if (property === "fontFamily") {
-        update({ fontFamily: value });
+        update({
+          fontSize: Number(value),
+        });
+      } else if (
+        property === "fontFamily"
+      ) {
+        update({
+          fontFamily: value,
+        });
       } else {
-        update({ color: value });
+        update({
+          color: value,
+        });
       }
+
       return;
     }
 
-    const range = selection.getRangeAt(0);
-    if (!editorRef.current.contains(range.commonAncestorContainer)) {
+    const range =
+      selection.getRangeAt(0);
+
+    if (
+      !editorRef.current.contains(
+        range.commonAncestorContainer
+      )
+    ) {
       return;
     }
 
-    const wrapper = document.createElement("span");
+    const wrapper =
+      document.createElement(
+        "span"
+      );
+
     wrapper.style[property] = value;
-    wrapper.appendChild(range.extractContents());
+
+    wrapper.appendChild(
+      range.extractContents()
+    );
+
     range.insertNode(wrapper);
 
     selection.removeAllRanges();
-    const newRange = document.createRange();
-    newRange.selectNodeContents(wrapper);
-    selection.addRange(newRange);
-    savedRangeRef.current = newRange.cloneRange();
+
+    const newRange =
+      document.createRange();
+
+    newRange.selectNodeContents(
+      wrapper
+    );
+
+    selection.addRange(
+      newRange
+    );
+
+    savedRangeRef.current =
+      newRange.cloneRange();
 
     emitEditorValue();
   };
 
-  const toggleInlineStyle = (command: "bold" | "italic") => {
-    if (!editorRef.current) return;
+  const toggleInlineStyle = (
+    command: "bold" | "italic"
+  ) => {
+    if (!editorRef.current) {
+      return;
+    }
 
     editorRef.current.focus();
+
     restoreSelection();
 
-    const selection = window.getSelection();
-    if (!selection || !selection.rangeCount || selection.isCollapsed) {
+    const selection =
+      window.getSelection();
+
+    if (
+      !selection ||
+      !selection.rangeCount ||
+      selection.isCollapsed
+    ) {
       update(
         command === "bold"
           ? {
               fontWeight:
-                block.fontWeight === "bold" ? "normal" : "bold",
+                block.fontWeight ===
+                "bold"
+                  ? "normal"
+                  : "bold",
             }
           : {
               fontStyle:
-                block.fontStyle === "italic" ? "normal" : "italic",
+                block.fontStyle ===
+                "italic"
+                  ? "normal"
+                  : "italic",
             }
       );
+
       return;
     }
 
-    document.execCommand(command, false);
+    document.execCommand(
+      command,
+      false
+    );
+
     emitEditorValue();
   };
 
-  const setAlignment = (textAlign: "left" | "center" | "right") => {
+  const setAlignment = (
+    textAlign:
+      | "left"
+      | "center"
+      | "right"
+  ) => {
     update({ textAlign });
   };
 
   useEffect(() => {
-    if (!editorRef.current) return;
+    if (!editorRef.current) {
+      return;
+    }
 
-    // Do not replace innerHTML while the user is typing/selecting.
-    if (document.activeElement !== editorRef.current) {
-      const value = block.text || "";
-      const looksLikeHtml = /<([a-z][^>]*?)>/i.test(value);
+    if (
+      document.activeElement !==
+      editorRef.current
+    ) {
+      const value =
+        block.text || "";
 
-      editorRef.current.innerHTML = looksLikeHtml
-        ? value
-        : value
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/\n/g, "<br />");
+      const looksLikeHtml =
+        /<([a-z][^>]*?)>/i.test(
+          value
+        );
+
+      editorRef.current.innerHTML =
+        looksLikeHtml
+          ? value
+          : value
+              .replace(
+                /&/g,
+                "&amp;"
+              )
+              .replace(
+                /</g,
+                "&lt;"
+              )
+              .replace(
+                />/g,
+                "&gt;"
+              )
+              .replace(
+                /\n/g,
+                "<br />"
+              );
     }
   }, [block.text]);
 
@@ -672,50 +1046,90 @@ const TextBlockEditor = ({
         data-placeholder="Write announcement message..."
         className="min-h-[104px] w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100 empty:before:pointer-events-none empty:before:text-slate-400 empty:before:content-[attr(data-placeholder)]"
         style={{
-          fontFamily: block.fontFamily || "Arial",
-          fontSize: `${block.fontSize || 16}px`,
-          color: block.color || "#1e293b",
+          fontFamily:
+            block.fontFamily ||
+            "Arial",
+          fontSize: `${
+            block.fontSize || 16
+          }px`,
+          color:
+            block.color ||
+            "#1e293b",
           backgroundColor:
             block.backgroundColor &&
-            block.backgroundColor !== "transparent"
+            block.backgroundColor !==
+              "transparent"
               ? block.backgroundColor
               : "#ffffff",
-          fontWeight: block.fontWeight || "normal",
-          fontStyle: block.fontStyle || "normal",
-          textAlign: block.textAlign || "left",
+          fontWeight:
+            block.fontWeight ||
+            "normal",
+          fontStyle:
+            block.fontStyle ||
+            "normal",
+          textAlign:
+            block.textAlign ||
+            "left",
           whiteSpace: "pre-wrap",
         }}
       />
 
       <div className="mt-2 flex flex-wrap items-center gap-1.5">
         <select
-          value={block.fontFamily || "Arial"}
-          onMouseDown={rememberSelection}
+          value={
+            block.fontFamily ||
+            "Arial"
+          }
+          onMouseDown={
+            rememberSelection
+          }
           onChange={(e) =>
-            applyInlineStyle("fontFamily", e.target.value)
+            applyInlineStyle(
+              "fontFamily",
+              e.target.value
+            )
           }
           className="h-8 rounded-md border border-slate-200 bg-white px-2 text-[11px] text-slate-600 outline-none"
         >
-          {FONT_FAMILIES.map((font) => (
-            <option key={font} value={font}>
-              {font}
-            </option>
-          ))}
+          {FONT_FAMILIES.map(
+            (font) => (
+              <option
+                key={font}
+                value={font}
+              >
+                {font}
+              </option>
+            )
+          )}
         </select>
 
         <select
-          value={block.fontSize || 16}
-          onMouseDown={rememberSelection}
+          value={
+            block.fontSize || 16
+          }
+          onMouseDown={
+            rememberSelection
+          }
           onChange={(e) =>
-            applyInlineStyle("fontSize", `${Number(e.target.value)}px`)
+            applyInlineStyle(
+              "fontSize",
+              `${Number(
+                e.target.value
+              )}px`
+            )
           }
           className="h-8 rounded-md border border-slate-200 bg-white px-2 text-[11px] text-slate-600 outline-none"
         >
-          {FONT_SIZES.map((size) => (
-            <option key={size} value={size}>
-              {size}px
-            </option>
-          ))}
+          {FONT_SIZES.map(
+            (size) => (
+              <option
+                key={size}
+                value={size}
+              >
+                {size}px
+              </option>
+            )
+          )}
         </select>
 
         <button
@@ -723,10 +1137,13 @@ const TextBlockEditor = ({
           onMouseDown={(e) => {
             e.preventDefault();
             rememberSelection();
-            toggleInlineStyle("bold");
+            toggleInlineStyle(
+              "bold"
+            );
           }}
           className={`flex h-8 w-8 items-center justify-center rounded-md border ${
-            block.fontWeight === "bold"
+            block.fontWeight ===
+            "bold"
               ? "border-blue-200 bg-blue-50 text-blue-600"
               : "border-slate-200 text-slate-500"
           }`}
@@ -739,10 +1156,13 @@ const TextBlockEditor = ({
           onMouseDown={(e) => {
             e.preventDefault();
             rememberSelection();
-            toggleInlineStyle("italic");
+            toggleInlineStyle(
+              "italic"
+            );
           }}
           className={`flex h-8 w-8 items-center justify-center rounded-md border ${
-            block.fontStyle === "italic"
+            block.fontStyle ===
+            "italic"
               ? "border-blue-200 bg-blue-50 text-blue-600"
               : "border-slate-200 text-slate-500"
           }`}
@@ -752,9 +1172,12 @@ const TextBlockEditor = ({
 
         <button
           type="button"
-          onClick={() => setAlignment("left")}
+          onClick={() =>
+            setAlignment("left")
+          }
           className={`flex h-8 w-8 items-center justify-center rounded-md border ${
-            block.textAlign === "left"
+            block.textAlign ===
+            "left"
               ? "border-blue-200 bg-blue-50 text-blue-600"
               : "border-slate-200 text-slate-500"
           }`}
@@ -764,9 +1187,12 @@ const TextBlockEditor = ({
 
         <button
           type="button"
-          onClick={() => setAlignment("center")}
+          onClick={() =>
+            setAlignment("center")
+          }
           className={`flex h-8 w-8 items-center justify-center rounded-md border ${
-            block.textAlign === "center"
+            block.textAlign ===
+            "center"
               ? "border-blue-200 bg-blue-50 text-blue-600"
               : "border-slate-200 text-slate-500"
           }`}
@@ -776,9 +1202,12 @@ const TextBlockEditor = ({
 
         <button
           type="button"
-          onClick={() => setAlignment("right")}
+          onClick={() =>
+            setAlignment("right")
+          }
           className={`flex h-8 w-8 items-center justify-center rounded-md border ${
-            block.textAlign === "right"
+            block.textAlign ===
+            "right"
               ? "border-blue-200 bg-blue-50 text-blue-600"
               : "border-slate-200 text-slate-500"
           }`}
@@ -789,7 +1218,11 @@ const TextBlockEditor = ({
         <div className="relative">
           <button
             type="button"
-            onClick={() => setShowEmoji((prev) => !prev)}
+            onClick={() =>
+              setShowEmoji(
+                (prev) => !prev
+              )
+            }
             className="flex h-8 items-center gap-1 rounded-md border border-slate-200 px-2 text-xs text-slate-500 hover:bg-slate-50"
           >
             😊
@@ -798,12 +1231,22 @@ const TextBlockEditor = ({
           {showEmoji && (
             <EmojiPicker
               onSelect={(emoji) => {
-                if (editorRef.current) {
+                if (
+                  editorRef.current
+                ) {
                   editorRef.current.focus();
+
                   restoreSelection();
-                  document.execCommand("insertText", false, emoji);
+
+                  document.execCommand(
+                    "insertText",
+                    false,
+                    emoji
+                  );
+
                   emitEditorValue();
                 }
+
                 setShowEmoji(false);
               }}
             />
@@ -817,16 +1260,29 @@ const TextBlockEditor = ({
           <span
             className="h-4 w-4 rounded border border-slate-200"
             style={{
-              backgroundColor: block.color || "#1e293b",
+              backgroundColor:
+                block.color ||
+                "#1e293b",
             }}
           />
+
           <input
             type="color"
-            value={block.color || "#1e293b"}
-            onMouseDown={rememberSelection}
+            value={
+              block.color ||
+              "#1e293b"
+            }
+            onMouseDown={
+              rememberSelection
+            }
             onChange={(e) => {
-              const value = e.target.value;
-              applyInlineStyle("color", value);
+              const value =
+                e.target.value;
+
+              applyInlineStyle(
+                "color",
+                value
+              );
             }}
             className="absolute h-0 w-0 opacity-0"
           />
@@ -841,22 +1297,31 @@ const TextBlockEditor = ({
             style={{
               backgroundColor:
                 block.backgroundColor &&
-                block.backgroundColor !== "transparent"
+                block.backgroundColor !==
+                  "transparent"
                   ? block.backgroundColor
                   : "#ffffff",
             }}
           />
-          <span className="text-[10px]">BG</span>
+
+          <span className="text-[10px]">
+            BG
+          </span>
+
           <input
             type="color"
             value={
               block.backgroundColor &&
-              block.backgroundColor !== "transparent"
+              block.backgroundColor !==
+                "transparent"
                 ? block.backgroundColor
                 : "#ffffff"
             }
             onChange={(e) =>
-              update({ backgroundColor: e.target.value })
+              update({
+                backgroundColor:
+                  e.target.value,
+              })
             }
             className="absolute h-0 w-0 opacity-0"
           />
@@ -864,7 +1329,12 @@ const TextBlockEditor = ({
 
         <button
           type="button"
-          onClick={() => update({ backgroundColor: "transparent" })}
+          onClick={() =>
+            update({
+              backgroundColor:
+                "transparent",
+            })
+          }
           className="h-8 rounded-md border border-slate-200 px-2 text-[10px] text-slate-500 hover:bg-slate-50"
           title="Remove background color"
         >
@@ -876,131 +1346,14 @@ const TextBlockEditor = ({
 };
 
 /* -------------------------------------------------------------------------- */
-/* IMAGE BLOCK EDITOR                                                         */
-/* -------------------------------------------------------------------------- */
-
-type ImageBlockEditorProps = {
-  block: MessageBlock;
-  onChange: (block: MessageBlock) => void;
-  onRemove: () => void;
-};
-
-const ImageBlockEditor = ({
-  block,
-  onChange,
-  onRemove,
-}: ImageBlockEditorProps) => {
-  const [uploading, setUploading] = useState(false);
-
-  const handleFile = async (file?: File) => {
-    if (!file) return;
-
-    try {
-      setUploading(true);
-
-      const url = await uploadImageFile(file);
-
-      if (!url) {
-        throw new Error("Image URL was not returned by the server.");
-      }
-
-      onChange({
-        ...block,
-        imageUrl: url,
-      });
-    } catch (error: any) {
-      window.dispatchEvent(
-        new CustomEvent("announcement-upload-error", {
-          detail:
-            error?.response?.data?.message ||
-            error?.message ||
-            "Unable to upload image.",
-        })
-      );
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  return (
-    <div className="rounded-xl border border-slate-200 bg-white p-3">
-      <div className="mb-2 flex items-center justify-between">
-        <span className="text-xs font-semibold text-slate-600">
-          Image / Banner
-        </span>
-
-        <button
-          type="button"
-          onClick={onRemove}
-          className="rounded-md p-1 text-slate-400 hover:bg-red-50 hover:text-red-500"
-        >
-          <X className="h-4 w-4" />
-        </button>
-      </div>
-
-      {block.imageUrl ? (
-        <div className="relative overflow-hidden rounded-lg border border-slate-200">
-          <img
-            src={block.imageUrl}
-            alt="Announcement"
-            className="max-h-52 w-full object-contain"
-          />
-
-          <label className="absolute bottom-2 right-2 flex cursor-pointer items-center gap-1 rounded-lg bg-white/95 px-2.5 py-1.5 text-xs font-medium text-slate-600 shadow">
-            <Upload className="h-3.5 w-3.5" />
-            Replace
-            <input
-              type="file"
-              accept="image/png,image/jpeg,image/gif,image/webp"
-              className="hidden"
-              onChange={(e) =>
-                handleFile(e.target.files?.[0])
-              }
-            />
-          </label>
-        </div>
-      ) : (
-        <label className="flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-8 text-center transition hover:bg-slate-100">
-          {uploading ? (
-            <>
-              <RefreshCw className="h-6 w-6 animate-spin text-blue-500" />
-              <p className="mt-2 text-xs text-slate-500">
-                Uploading...
-              </p>
-            </>
-          ) : (
-            <>
-              <ImageIcon className="h-7 w-7 text-slate-400" />
-              <p className="mt-2 text-xs font-medium text-slate-600">
-                Click to upload image
-              </p>
-              <p className="mt-1 text-[10px] text-slate-400">
-                PNG, JPG, GIF or WebP • Max 8 MB
-              </p>
-            </>
-          )}
-
-          <input
-            type="file"
-            accept="image/png,image/jpeg,image/gif,image/webp"
-            className="hidden"
-            onChange={(e) =>
-              handleFile(e.target.files?.[0])
-            }
-          />
-        </label>
-      )}
-    </div>
-  );
-};
-
-/* -------------------------------------------------------------------------- */
 /* MESSAGE EDITOR                                                             */
 /* -------------------------------------------------------------------------- */
 
 type MessageEditorProps = {
   blocks: MessageBlock[];
-  onChange: (blocks: MessageBlock[]) => void;
+  onChange: (
+    blocks: MessageBlock[]
+  ) => void;
 };
 
 const MessageEditor = ({
@@ -1012,20 +1365,27 @@ const MessageEditor = ({
     block: MessageBlock
   ) => {
     const next = [...blocks];
+
     next[index] = block;
+
     onChange(next);
   };
 
-  const removeBlock = (index: number) => {
-    onChange(blocks.filter((_, i) => i !== index));
+  const removeBlock = (
+    index: number
+  ) => {
+    onChange(
+      blocks.filter(
+        (_, i) => i !== index
+      )
+    );
   };
 
   const addTextBlock = () => {
-    onChange([...blocks, createTextBlock()]);
-  };
-
-  const addImageBlock = () => {
-    onChange([...blocks, createImageBlock()]);
+    onChange([
+      ...blocks,
+      createTextBlock(),
+    ]);
   };
 
   return (
@@ -1035,33 +1395,31 @@ const MessageEditor = ({
           <Sparkles className="mx-auto h-7 w-7 text-slate-300" />
 
           <p className="mt-2 text-sm font-medium text-slate-500">
-            Start creating your announcement
+            Start creating your
+            announcement
           </p>
 
           <p className="mt-1 text-xs text-slate-400">
-            Add text, formatting or an image/banner.
+            Add text and formatting
+            to your announcement.
           </p>
         </div>
       )}
 
-      {blocks.map((block, index) =>
-        block.type === "image" ? (
-          <ImageBlockEditor
-            key={block.id}
-            block={block}
-            onChange={(updated) =>
-              updateBlock(index, updated)
-            }
-            onRemove={() => removeBlock(index)}
-          />
-        ) : (
+      {blocks.map(
+        (block, index) => (
           <TextBlockEditor
             key={block.id}
             block={block}
             onChange={(updated) =>
-              updateBlock(index, updated)
+              updateBlock(
+                index,
+                updated
+              )
             }
-            onRemove={() => removeBlock(index)}
+            onRemove={() =>
+              removeBlock(index)
+            }
           />
         )
       )}
@@ -1074,15 +1432,6 @@ const MessageEditor = ({
         >
           <Plus className="h-3.5 w-3.5" />
           Add Text
-        </button>
-
-        <button
-          type="button"
-          onClick={addImageBlock}
-          className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:bg-slate-50"
-        >
-          <ImageIcon className="h-3.5 w-3.5" />
-          Add Image
         </button>
       </div>
     </div>
@@ -1111,55 +1460,70 @@ const MessageRenderer = ({
   }
 
   return (
-    <div className={compact ? "space-y-1.5" : "space-y-3"}>
+    <div
+      className={
+        compact
+          ? "space-y-1.5"
+          : "space-y-3"
+      }
+    >
       {blocks.map((block) => {
-        if (block.type === "image" && block.imageUrl) {
-          return (
-            <img
-              key={block.id}
-              src={block.imageUrl}
-              alt="Announcement"
-              className={
-                compact
-                  ? "block max-h-[105px] h-auto w-full rounded-lg object-contain"
-                  : "block max-h-80 h-auto w-full rounded-xl object-contain"
-              }
-            />
-          );
-        }
-
-        if (block.type === "text") {
+        if (
+          block.type === "text"
+        ) {
           const fontSize = compact
-            ? Math.min(Number(block.fontSize || 16), 14)
-            : Number(block.fontSize || 16);
+            ? Math.min(
+                Number(
+                  block.fontSize ||
+                    16
+                ),
+                14
+              )
+            : Number(
+                block.fontSize ||
+                  16
+              );
 
           return (
             <div
               key={block.id}
               className="whitespace-pre-wrap break-words"
               style={{
-                color: block.color || "#1e293b",
+                color:
+                  block.color ||
+                  "#1e293b",
                 backgroundColor:
                   block.backgroundColor &&
-                  block.backgroundColor !== "transparent"
+                  block.backgroundColor !==
+                    "transparent"
                     ? block.backgroundColor
                     : undefined,
                 fontSize,
                 fontWeight:
-                  block.fontWeight || "normal",
+                  block.fontWeight ||
+                  "normal",
                 fontStyle:
-                  block.fontStyle || "normal",
+                  block.fontStyle ||
+                  "normal",
                 textAlign:
-                  block.textAlign || "left",
+                  block.textAlign ||
+                  "left",
                 fontFamily:
-                  block.fontFamily || "Arial",
-                lineHeight: compact ? 1.45 : 1.6,
+                  block.fontFamily ||
+                  "Arial",
+                lineHeight:
+                  compact
+                    ? 1.45
+                    : 1.6,
               }}
             >
-              {/<[a-z][\s\S]*>/i.test(block.text || "") ? (
+              {/<[a-z][\s\S]*>/i.test(
+                block.text || ""
+              ) ? (
                 <span
                   dangerouslySetInnerHTML={{
-                    __html: block.text || "",
+                    __html:
+                      block.text || "",
                   }}
                 />
               ) : (
@@ -1180,39 +1544,68 @@ const MessageRenderer = ({
 /* -------------------------------------------------------------------------- */
 
 export default function Announcements() {
-  const [announcements, setAnnouncements] = useState<
-    Announcement[]
-  >([]);
-
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-
-  const [selectedAnnouncement, setSelectedAnnouncement] =
-    useState<Announcement | null>(null);
-
-  const [showCreateModal, setShowCreateModal] =
-    useState(false);
-
-  const [editingAnnouncement, setEditingAnnouncement] =
-    useState<Announcement | null>(null);
-
-  const [form, setForm] = useState<AnnouncementForm>({
-    title: "",
-    message: "",
-    priority: "Notice",
-    expiresAt: "",
-  });
-
-  const [messageBlocks, setMessageBlocks] = useState<
-    MessageBlock[]
-  >([]);
-
-  const [saving, setSaving] = useState(false);
-  const [deletingId, setDeletingId] = useState<number | null>(
-    null
+  const [
+    announcements,
+    setAnnouncements,
+  ] = useState<Announcement[]>(
+    []
   );
 
-  const [alert, setAlert] = useState<AlertState | null>(null);
+  const [loading, setLoading] =
+    useState(true);
+
+  const [refreshing, setRefreshing] =
+    useState(false);
+
+  const [
+    selectedAnnouncement,
+    setSelectedAnnouncement,
+  ] =
+    useState<Announcement | null>(
+      null
+    );
+
+  const [
+    showCreateModal,
+    setShowCreateModal,
+  ] = useState(false);
+
+  const [
+    editingAnnouncement,
+    setEditingAnnouncement,
+  ] =
+    useState<Announcement | null>(
+      null
+    );
+
+  const [form, setForm] =
+    useState<AnnouncementForm>({
+      title: "",
+      message: "",
+      priority: "Notice",
+      startsAt: "",
+      expiresAt: "",
+    });
+
+  const [
+    messageBlocks,
+    setMessageBlocks,
+  ] = useState<MessageBlock[]>(
+    []
+  );
+
+  const [saving, setSaving] =
+    useState(false);
+
+  const [
+    deletingId,
+    setDeletingId,
+  ] = useState<number | null>(null);
+
+  const [alert, setAlert] =
+    useState<AlertState | null>(
+      null
+    );
 
   /* ------------------------------------------------------------------------ */
   /* ALERT HELPERS                                                            */
@@ -1227,54 +1620,79 @@ export default function Announcements() {
       onConfirm?: () => void;
     }
   ) => {
-    setAlert({ type, message, ...options });
+    setAlert({
+      type,
+      message,
+      ...options,
+    });
   };
 
-  const closeAlert = () => setAlert(null);
+  const closeAlert = () =>
+    setAlert(null);
 
-  const showApiError = (error: any, fallback: string) => {
-    const message = getApiResponseMessage(
-      error?.response?.data ?? error?.data,
-      error?.message || fallback
+  const showApiError = (
+    error: any,
+    fallback: string
+  ) => {
+    const message =
+      getApiResponseMessage(
+        error?.response?.data ??
+          error?.data,
+        error?.message || fallback
+      );
+
+    showAlert(
+      "error",
+      message
     );
-    showAlert("error", message);
   };
 
   /* ------------------------------------------------------------------------ */
   /* FETCH                                                                    */
   /* ------------------------------------------------------------------------ */
 
-  const fetchAnnouncements = async () => {
-    try {
+  const fetchAnnouncements =
+    async () => {
+      try {
+        const response =
+          await axios.get(
+            `${API_URL}/api/admin/announcements`,
+            {
+              withCredentials: true,
+            }
+          );
 
-      const response = await axios.get(
-        `${API_URL}/api/admin/announcements`,
-        {
-          withCredentials: true,
-        }
-      );
+        const data =
+          response.data;
 
-      const data = response.data;
+        const list =
+          Array.isArray(data)
+            ? data
+            : Array.isArray(
+                data?.announcements
+              )
+            ? data.announcements
+            : Array.isArray(
+                data?.data
+              )
+            ? data.data
+            : [];
 
-      const list =
-        Array.isArray(data)
-          ? data
-          : Array.isArray(data?.announcements)
-          ? data.announcements
-          : Array.isArray(data?.data)
-          ? data.data
-          : [];
+        setAnnouncements(list);
+      } catch (err: any) {
+        const message =
+          getApiResponseMessage(
+            err?.response?.data,
+            err?.message ||
+              "Unable to fetch announcements."
+          );
 
-      setAnnouncements(list);
-    } catch (err: any) {
-      const message = getApiResponseMessage(
-        err?.response?.data,
-        err?.message || "Unable to fetch announcements."
-      );
-
-      showAlert("error", message);
-    }
-  };
+        showAlert(
+          "error",
+          message
+        );
+      }
+    };
 
   useEffect(() => {
     const load = async () => {
@@ -1293,12 +1711,16 @@ export default function Announcements() {
   /* ------------------------------------------------------------------------ */
 
   const openCreateModal = () => {
-    setEditingAnnouncement(null);
+    setEditingAnnouncement(
+      null
+    );
 
     setForm({
       title: "",
       message: "",
       priority: "Notice",
+      startsAt:
+        getTodayInputValue(),
       expiresAt: "",
     });
 
@@ -1316,19 +1738,40 @@ export default function Announcements() {
   const openEditModal = (
     announcement: Announcement
   ) => {
-    setEditingAnnouncement(announcement);
+    setEditingAnnouncement(
+      announcement
+    );
 
     setForm({
-      title: announcement.title || "",
-      message: getMessage(announcement),
-      priority: announcement.priority || "Notice",
-      expiresAt: getDateInputValue(
-        getExpiryDate(announcement)
-      ),
+      title:
+        announcement.title || "",
+      message:
+        getMessage(
+          announcement
+        ),
+      priority:
+        announcement.priority ||
+        "Notice",
+      startsAt:
+        getDateInputValue(
+          getStartDate(
+            announcement
+          )
+        ),
+      expiresAt:
+        getDateInputValue(
+          getExpiryDate(
+            announcement
+          )
+        ),
     });
 
     setMessageBlocks(
-      parseMessageBlocks(getMessage(announcement))
+      parseMessageBlocks(
+        getMessage(
+          announcement
+        )
+      )
     );
 
     setShowCreateModal(true);
@@ -1338,7 +1781,9 @@ export default function Announcements() {
     if (saving) return;
 
     setShowCreateModal(false);
-    setEditingAnnouncement(null);
+    setEditingAnnouncement(
+      null
+    );
   };
 
   /* ------------------------------------------------------------------------ */
@@ -1352,19 +1797,21 @@ export default function Announcements() {
 
     setForm((prev) => ({
       ...prev,
-      message: JSON.stringify(blocks),
+      message:
+        JSON.stringify(blocks),
     }));
   };
 
-  const hasMessageContent = () => {
-    return messageBlocks.some((block) => {
-      if (block.type === "image") {
-        return Boolean(block.imageUrl);
-      }
-
-      return Boolean(block.text?.trim());
-    });
-  };
+  const hasMessageContent =
+    () => {
+      return messageBlocks.some(
+        (block) => {
+          return Boolean(
+            block.text?.trim()
+          );
+        }
+      );
+    };
 
   /* ------------------------------------------------------------------------ */
   /* SUBMIT                                                                    */
@@ -1376,24 +1823,56 @@ export default function Announcements() {
     e.preventDefault();
 
     if (!form.title.trim()) {
-      showAlert("warning", "Please enter an announcement title.");
+      showAlert(
+        "warning",
+        "Please enter an announcement title."
+      );
       return;
     }
 
     if (!hasMessageContent()) {
-      showAlert("warning", "Please enter an announcement message or add an image.");
+      showAlert(
+        "warning",
+        "Please enter an announcement message."
+      );
+      return;
+    }
+
+    if (!form.startsAt) {
+      showAlert(
+        "warning",
+        "Please select a start date."
+      );
+      return;
+    }
+
+    const today =
+      getTodayInputValue();
+
+    if (form.startsAt < today) {
+      showAlert(
+        "warning",
+        "Start date cannot be earlier than today."
+      );
       return;
     }
 
     if (!form.expiresAt) {
-      showAlert("warning", "Please select an expiry date.");
+      showAlert(
+        "warning",
+        "Please select an expiry date."
+      );
       return;
     }
 
-    const today = getTodayInputValue();
-
-    if (form.expiresAt < today) {
-      showAlert("warning", "Expiry date cannot be earlier than today.");
+    if (
+      form.expiresAt <
+      form.startsAt
+    ) {
+      showAlert(
+        "warning",
+        "Expiry date cannot be earlier than the start date."
+      );
       return;
     }
 
@@ -1401,45 +1880,64 @@ export default function Announcements() {
       setSaving(true);
 
       const payload = {
-        title: form.title.trim(),
-        message: JSON.stringify(messageBlocks),
-        priority: form.priority,
-        expiresAt: form.expiresAt,
+        title:
+          form.title.trim(),
+        message:
+          JSON.stringify(
+            messageBlocks
+          ),
+        priority:
+          form.priority,
+        startsAt:
+          form.startsAt,
+        expiresAt:
+          form.expiresAt,
       };
 
       let response;
 
       if (editingAnnouncement) {
-        response = await axios.put(
-          `${API_URL}/api/admin/announcements/${editingAnnouncement.id}`,
-          payload,
-          {
-            withCredentials: true,
-          }
-        );
+        response =
+          await axios.put(
+            `${API_URL}/api/admin/announcements/${editingAnnouncement.id}`,
+            payload,
+            {
+              withCredentials: true,
+            }
+          );
       } else {
-        response = await axios.post(
-          `${API_URL}/api/admin/announcements`,
-          payload,
-          {
-            withCredentials: true,
-          }
-        );
+        response =
+          await axios.post(
+            `${API_URL}/api/admin/announcements`,
+            payload,
+            {
+              withCredentials: true,
+            }
+          );
       }
 
-      const apiMessage = getApiResponseMessage(
-        response.data,
-        editingAnnouncement
-          ? "Announcement updated successfully."
-          : "Announcement created successfully."
+      const apiMessage =
+        getApiResponseMessage(
+          response.data,
+          editingAnnouncement
+            ? "Announcement updated successfully."
+            : "Announcement created successfully."
+        );
+
+      setShowCreateModal(
+        false
       );
 
-      setShowCreateModal(false);
-      setEditingAnnouncement(null);
+      setEditingAnnouncement(
+        null
+      );
 
       await fetchAnnouncements();
 
-      showAlert("success", apiMessage);
+      showAlert(
+        "success",
+        apiMessage
+      );
     } catch (err: any) {
       showApiError(
         err,
@@ -1456,31 +1954,47 @@ export default function Announcements() {
   /* DELETE                                                                    */
   /* ------------------------------------------------------------------------ */
 
-  const performDelete = async (id: number) => {
+  const performDelete = async (
+    id: number
+  ) => {
     try {
       setDeletingId(id);
 
-      const response = await axios.delete(
-        `${API_URL}/api/admin/announcements/${id}`,
-        {
-          withCredentials: true,
-        }
+      const response =
+        await axios.delete(
+          `${API_URL}/api/admin/announcements/${id}`,
+          {
+            withCredentials: true,
+          }
+        );
+
+      const apiMessage =
+        getApiResponseMessage(
+          response.data,
+          "Announcement deleted successfully."
+        );
+
+      setAnnouncements(
+        (prev) =>
+          prev.filter(
+            (item) =>
+              item.id !== id
+          )
       );
 
-      const apiMessage = getApiResponseMessage(
-        response.data,
-        "Announcement deleted successfully."
-      );
-
-      setAnnouncements((prev) =>
-        prev.filter((item) => item.id !== id)
-      );
-
-      if (selectedAnnouncement?.id === id) {
-        setSelectedAnnouncement(null);
+      if (
+        selectedAnnouncement?.id ===
+        id
+      ) {
+        setSelectedAnnouncement(
+          null
+        );
       }
 
-      showAlert("success", apiMessage);
+      showAlert(
+        "success",
+        apiMessage
+      );
     } catch (err: any) {
       showApiError(
         err,
@@ -1500,7 +2014,10 @@ export default function Announcements() {
       {
         confirmText: "Delete",
         cancelText: "Cancel",
-        onConfirm: () => performDelete(announcement.id),
+        onConfirm: () =>
+          performDelete(
+            announcement.id
+          ),
       }
     );
   };
@@ -1512,41 +2029,12 @@ export default function Announcements() {
   const handleRefresh = async () => {
     try {
       setRefreshing(true);
+
       await fetchAnnouncements();
     } finally {
       setRefreshing(false);
     }
   };
-
-  /* ------------------------------------------------------------------------ */
-  /* UPLOAD ERROR EVENT                                                        */
-  /* ------------------------------------------------------------------------ */
-
-  useEffect(() => {
-    const handler = (event: Event) => {
-      const customEvent = event as CustomEvent;
-
-      showAlert(
-        "error",
-        getApiResponseMessage(
-          customEvent.detail,
-          "Unable to upload image."
-        )
-      );
-    };
-
-    window.addEventListener(
-      "announcement-upload-error",
-      handler
-    );
-
-    return () => {
-      window.removeEventListener(
-        "announcement-upload-error",
-        handler
-      );
-    };
-  }, []);
 
   /* ------------------------------------------------------------------------ */
   /* RENDER                                                                    */
@@ -1555,6 +2043,7 @@ export default function Announcements() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-4 sm:p-6">
       <div className="mx-auto max-w-[1450px]">
+
         {/* PAGE HEADER */}
         <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -1577,8 +2066,11 @@ export default function Announcements() {
 
           <button
             type="button"
-            onClick={openCreateModal}
-            className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700"
+            onClick={
+              openCreateModal
+            }
+            className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-semibold bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg
+ shadow-sm transition hover:bg-blue-700"
           >
             <Plus className="h-4 w-4" />
             Create Announcement
@@ -1606,14 +2098,20 @@ export default function Announcements() {
 
             <button
               type="button"
-              onClick={handleRefresh}
-              disabled={refreshing}
+              onClick={
+                handleRefresh
+              }
+              disabled={
+                refreshing
+              }
               className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 disabled:opacity-50"
               title="Refresh"
             >
               <RefreshCw
                 className={`h-3.5 w-3.5 ${
-                  refreshing ? "animate-spin" : ""
+                  refreshing
+                    ? "animate-spin"
+                    : ""
                 }`}
               />
             </button>
@@ -1622,16 +2120,19 @@ export default function Announcements() {
           {/* LOADING */}
           {loading ? (
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              {[1, 2, 3, 4].map((item) => (
-                <div
-                  key={item}
-                  className="aspect-square max-h-[360px] w-full animate-pulse rounded-2xl border border-slate-200 bg-slate-50"
-                />
-              ))}
+              {[1, 2, 3, 4].map(
+                (item) => (
+                  <div
+                    key={item}
+                    className="aspect-square max-h-[360px] w-full animate-pulse rounded-2xl border border-slate-200 bg-slate-50"
+                  />
+                )
+              )}
             </div>
-          ) : announcements.length === 0 ? (
+          ) : announcements.length ===
+            0 ? (
             /* EMPTY */
-            <div className="flex min-h-[260px] flex-col items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50/60 px-4 text-center">
+            <div className="flex min-h-[100px] flex-col items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50/60 px-4 text-center">
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-50">
                 <Bell className="h-5 w-5 text-blue-500" />
               </div>
@@ -1646,7 +2147,9 @@ export default function Announcements() {
 
               <button
                 type="button"
-                onClick={openCreateModal}
+                onClick={
+                  openCreateModal
+                }
                 className="mt-4 flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-2 text-xs font-semibold text-white hover:bg-blue-700"
               >
                 <Plus className="h-3.5 w-3.5" />
@@ -1656,155 +2159,172 @@ export default function Announcements() {
           ) : (
             /* ANNOUNCEMENT GRID */
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-              {announcements.map((announcement) => {
-                const priorityStyles =
-                  getPriorityStyles(
-                    announcement.priority
-                  );
+              {announcements.map(
+                (announcement) => {
+                  const priorityStyles =
+                    getPriorityStyles(
+                      announcement.priority
+                    );
 
-                const blocks = parseMessageBlocks(
-                  getMessage(announcement)
-                );
+                  const blocks =
+                    parseMessageBlocks(
+                      getMessage(
+                        announcement
+                      )
+                    );
 
-                return (
-                  <div
-                    key={announcement.id}
-                    className="group relative mx-auto flex aspect-square w-full max-w-[360px] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
-                  >
-                    {/* TOP ACCENT */}
+                  return (
                     <div
-                      className={`h-1 w-full ${
-                        (announcement.priority || "")
-                          .toLowerCase() === "important"
-                          ? "bg-red-500"
-                          : "bg-blue-500"
-                      }`}
-                    />
+                      key={
+                        announcement.id
+                      }
+                      className="group relative mx-auto flex aspect-square w-full max-w-[360px] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
+                    >
+                      {/* TOP ACCENT */}
+                      <div
+                        className={`h-1 w-full ${
+                          (
+                            announcement.priority ||
+                            ""
+                          ).toLowerCase() ===
+                          "important"
+                            ? "bg-red-500"
+                            : "bg-blue-500"
+                        }`}
+                      />
 
-                    <div className="flex min-h-0 flex-1 flex-col p-3.5">
-                      {/* HEADER */}
-                      <div className="flex items-start gap-2">
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-50">
-                          <Bell className="h-3.5 w-3.5 text-blue-600" />
-                        </div>
+                      <div className="flex min-h-0 flex-1 flex-col p-3.5">
 
-                        <div className="min-w-0 flex-1">
-                          <h3
-                            className="truncate text-sm font-semibold text-slate-800"
-                            title={announcement.title}
-                          >
-                            {announcement.title}
-                          </h3>
+                        {/* HEADER */}
+                        <div className="flex items-start gap-2">
+                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-50">
+                            <Bell className="h-3.5 w-3.5 text-blue-600" />
+                          </div>
 
-                          <div className="mt-1">
-                            <span
-                              className={`inline-flex rounded-full border px-2 py-0.5 text-[9px] font-semibold ${priorityStyles.bg} ${priorityStyles.text} ${priorityStyles.border}`}
+                          <div className="min-w-0 flex-1">
+                            <h3
+                              className="truncate text-sm font-semibold text-slate-800"
+                              title={
+                                announcement.title
+                              }
                             >
-                              {announcement.priority ||
-                                "Notice"}
-                            </span>
-                          </div>
-                        </div>
+                              {
+                                announcement.title
+                              }
+                            </h3>
 
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setSelectedAnnouncement(
-                              announcement
-                            )
-                          }
-                          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
-                          title="View details"
-                        >
-                          <ChevronRight className="h-4 w-4" />
-                        </button>
-                      </div>
-
-                      {/* MESSAGE */}
-                      <div className="mt-3 min-h-0 flex-1 overflow-hidden rounded-lg bg-slate-50/70 p-2.5">
-                       {/* <div className="mt-2 max-h-[95px] overflow-hidden rounded-lg bg-slate-50/70 p-2"> */}
-                        <div className="line-clamp-5 max-h-[105px] overflow-hidden text-[13px] leading-5 text-slate-600">
-                          <MessageRenderer
-                            blocks={blocks}
-                            compact
-                          />
-                        </div>
-                      </div>
-
-                      {/* DATES */}
-                      <div className="mt-3 grid grid-cols-2 gap-2">
-                        <div className="rounded-lg bg-slate-50 px-2.5 py-2">
-                          <div className="flex items-center gap-1 text-[9px] font-medium uppercase tracking-wide text-slate-400">
-                            <CalendarDays className="h-3 w-3" />
-                            Published
+                            <div className="mt-1">
+                              <span
+                                className={`inline-flex rounded-full border px-2 py-0.5 text-[9px] font-semibold ${priorityStyles.bg} ${priorityStyles.text} ${priorityStyles.border}`}
+                              >
+                                {announcement.priority ||
+                                  "Notice"}
+                              </span>
+                            </div>
                           </div>
 
-                          <p className="mt-0.5 truncate text-[11px] font-semibold text-slate-600">
-                            {formatDate(
-                              getPublishedDate(
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setSelectedAnnouncement(
                                 announcement
                               )
-                            )}
-                          </p>
+                            }
+                            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
+                            title="View details"
+                          >
+                            <ChevronRight className="h-4 w-4" />
+                          </button>
                         </div>
 
-                        <div className="rounded-lg bg-slate-50 px-2.5 py-2">
-                          <div className="flex items-center gap-1 text-[9px] font-medium uppercase tracking-wide text-slate-400">
-                            <CalendarDays className="h-3 w-3" />
-                            Expires
+                        {/* MESSAGE */}
+                        <div className="mt-3 min-h-0 flex-1 overflow-hidden rounded-lg bg-slate-50/70 p-2.5">
+                          <div className="line-clamp-5 max-h-[105px] overflow-hidden text-[13px] leading-5 text-slate-600">
+                            <MessageRenderer
+                              blocks={
+                                blocks
+                              }
+                              compact
+                            />
+                          </div>
+                        </div>
+
+                        {/* DATES */}
+                        <div className="mt-3 grid grid-cols-2 gap-2">
+                          <div className="rounded-lg bg-slate-50 px-2.5 py-2">
+                            <div className="flex items-center gap-1 text-[9px] font-medium uppercase tracking-wide text-slate-400">
+                              <CalendarDays className="h-3 w-3" />
+                              Start Date
+                            </div>
+
+                            <p className="mt-0.5 truncate text-[11px] font-semibold text-slate-600">
+                              {formatDate(
+                                getStartDate(
+                                  announcement
+                                )
+                              )}
+                            </p>
                           </div>
 
-                          <p className="mt-0.5 truncate text-[11px] font-semibold text-slate-600">
-                            {formatDate(
-                              getExpiryDate(
+                          <div className="rounded-lg bg-slate-50 px-2.5 py-2">
+                            <div className="flex items-center gap-1 text-[9px] font-medium uppercase tracking-wide text-slate-400">
+                              <CalendarDays className="h-3 w-3" />
+                              Expires
+                            </div>
+
+                            <p className="mt-0.5 truncate text-[11px] font-semibold text-slate-600">
+                              {formatDate(
+                                getExpiryDate(
+                                  announcement
+                                )
+                              )}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* ACTIONS */}
+                        <div className="mt-3 flex items-center gap-2 border-t border-slate-100 pt-2.5">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              openEditModal(
                                 announcement
                               )
+                            }
+                            className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white py-1.5 text-[10px] font-semibold text-slate-600 transition hover:bg-slate-50"
+                          >
+                            <Pencil className="h-3 w-3" />
+                            Edit
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleDelete(
+                                announcement
+                              )
+                            }
+                            disabled={
+                              deletingId ===
+                              announcement.id
+                            }
+                            className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-red-100 bg-red-50 py-1.5 text-[10px] font-semibold text-red-600 transition hover:bg-red-100 disabled:opacity-50"
+                          >
+                            {deletingId ===
+                            announcement.id ? (
+                              <RefreshCw className="h-3 w-3 animate-spin" />
+                            ) : (
+                              <Trash2 className="h-3 w-3" />
                             )}
-                          </p>
+
+                            Delete
+                          </button>
                         </div>
-                      </div>
-
-                      {/* ACTIONS */}
-                      <div className="mt-3 flex items-center gap-2 border-t border-slate-100 pt-2.5">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            openEditModal(
-                              announcement
-                            )
-                          }
-                          className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white py-1.5 text-[10px] font-semibold text-slate-600 transition hover:bg-slate-50"
-                        >
-                          <Pencil className="h-3 w-3" />
-                          Edit
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() =>
-                            handleDelete(
-                              announcement
-                            )
-                          }
-                          disabled={
-                            deletingId ===
-                            announcement.id
-                          }
-                          className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-red-100 bg-red-50 py-1.5 text-[10px] font-semibold text-red-600 transition hover:bg-red-100 disabled:opacity-50"
-                        >
-                          {deletingId ===
-                          announcement.id ? (
-                            <RefreshCw className="h-3 w-3 animate-spin" />
-                          ) : (
-                            <Trash2 className="h-3 w-3" />
-                          )}
-                          Delete
-                        </button>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                }
+              )}
             </div>
           )}
         </div>
@@ -1817,10 +2337,13 @@ export default function Announcements() {
       {selectedAnnouncement && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-sm">
           <div className="flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
+
             <div className="flex items-start justify-between border-b border-slate-100 px-5 py-4">
               <div className="min-w-0">
                 <h2 className="truncate text-base font-bold text-slate-800">
-                  {selectedAnnouncement.title}
+                  {
+                    selectedAnnouncement.title
+                  }
                 </h2>
 
                 <div className="mt-1.5 flex items-center gap-2">
@@ -1857,7 +2380,9 @@ export default function Announcements() {
               <button
                 type="button"
                 onClick={() =>
-                  setSelectedAnnouncement(null)
+                  setSelectedAnnouncement(
+                    null
+                  )
                 }
                 className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
               >
@@ -1868,11 +2393,13 @@ export default function Announcements() {
             <div className="overflow-y-auto p-5">
               <MessageRenderer
                 blocks={parseMessageBlocks(
-                  getMessage(selectedAnnouncement)
+                  getMessage(
+                    selectedAnnouncement
+                  )
                 )}
               />
 
-              <div className="mt-5 grid grid-cols-2 gap-3">
+              <div className="mt-5 grid grid-cols-3 gap-3">
                 <div className="rounded-xl bg-slate-50 p-3">
                   <p className="text-[10px] uppercase tracking-wide text-slate-400">
                     Published On
@@ -1881,6 +2408,20 @@ export default function Announcements() {
                   <p className="mt-1 text-xs font-semibold text-slate-700">
                     {formatDate(
                       getPublishedDate(
+                        selectedAnnouncement
+                      )
+                    )}
+                  </p>
+                </div>
+
+                <div className="rounded-xl bg-slate-50 p-3">
+                  <p className="text-[10px] uppercase tracking-wide text-slate-400">
+                    Start Date
+                  </p>
+
+                  <p className="mt-1 text-xs font-semibold text-slate-700">
+                    {formatDate(
+                      getStartDate(
                         selectedAnnouncement
                       )
                     )}
@@ -1902,38 +2443,6 @@ export default function Announcements() {
                 </div>
               </div>
             </div>
-
-            {/* <div className="flex justify-end gap-2 border-t border-slate-100 bg-slate-50 px-5 py-3">
-              <button
-                type="button"
-                onClick={() => {
-                  setSelectedAnnouncement(null);
-                  openEditModal(
-                    selectedAnnouncement
-                  );
-                }}
-                className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100"
-              >
-                <Pencil className="h-3.5 w-3.5" />
-                Edit
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  const item =
-                    selectedAnnouncement;
-
-                  setSelectedAnnouncement(null);
-
-                  handleDelete(item);
-                }}
-                className="flex items-center gap-1.5 rounded-lg bg-red-600 px-3 py-2 text-xs font-semibold text-white hover:bg-red-700"
-              >
-                <Trash2 className="h-3.5 w-3.5" />
-                Delete
-              </button>
-            </div> */}
           </div>
         </div>
       )}
@@ -1945,6 +2454,7 @@ export default function Announcements() {
       {showCreateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-sm">
           <div className="flex max-h-[92vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
+
             <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
               <div>
                 <h2 className="text-base font-bold text-slate-800">
@@ -1954,13 +2464,15 @@ export default function Announcements() {
                 </h2>
 
                 <p className="mt-0.5 text-[11px] text-slate-400">
-                  Format your announcement with text and images.
+                  Format your announcement with text.
                 </p>
               </div>
 
               <button
                 type="button"
-                onClick={closeFormModal}
+                onClick={
+                  closeFormModal
+                }
                 disabled={saving}
                 className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 disabled:opacity-50"
               >
@@ -1969,12 +2481,16 @@ export default function Announcements() {
             </div>
 
             <form
-              onSubmit={handleSubmit}
+              onSubmit={
+                handleSubmit
+              }
               noValidate
               className="flex min-h-0 flex-1 flex-col"
             >
               <div className="min-h-0 flex-1 overflow-y-auto p-5">
                 <div className="grid gap-4 md:grid-cols-2">
+
+                  {/* TITLE */}
                   <div>
                     <label className="mb-1.5 block text-xs font-semibold text-slate-600">
                       Title
@@ -1982,64 +2498,133 @@ export default function Announcements() {
 
                     <input
                       type="text"
-                      value={form.title}
+                      value={
+                        form.title
+                      }
                       onChange={(e) =>
-                        setForm((prev) => ({
-                          ...prev,
-                          title: e.target.value,
-                        }))
+                        setForm(
+                          (prev) => ({
+                            ...prev,
+                            title:
+                              e.target
+                                .value,
+                          })
+                        )
                       }
                       placeholder="Enter announcement title"
                       className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
                     />
                   </div>
 
+                  {/* PRIORITY */}
                   <div>
                     <label className="mb-1.5 block text-xs font-semibold text-slate-600">
                       Priority
                     </label>
 
                     <select
-                      value={form.priority}
+                      value={
+                        form.priority
+                      }
                       onChange={(e) =>
-                        setForm((prev) => ({
-                          ...prev,
-                          priority: e.target.value,
-                        }))
+                        setForm(
+                          (prev) => ({
+                            ...prev,
+                            priority:
+                              e.target
+                                .value,
+                          })
+                        )
                       }
                       className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
                     >
                       <option value="Important">
                         Important
                       </option>
+
                       <option value="Notice">
                         Notice
                       </option>
+
                       <option value="General">
                         General
                       </option>
                     </select>
                   </div>
 
-                  <div className="md:col-span-2">
+                  {/* START DATE */}
+                  <div>
+                    <label className="mb-1.5 block text-xs font-semibold text-slate-600">
+                      Start Date
+                    </label>
+
+                    <input
+                      type="date"
+                      min={getTodayInputValue()}
+                      value={
+                        form.startsAt
+                      }
+                      onChange={(e) => {
+                        const value =
+                          e.target
+                            .value;
+
+                        setForm(
+                          (prev) => ({
+                            ...prev,
+                            startsAt:
+                              value,
+                            expiresAt:
+                              prev.expiresAt &&
+                              prev.expiresAt <
+                                value
+                                ? ""
+                                : prev.expiresAt,
+                          })
+                        );
+                      }}
+                      className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                    />
+
+                    <p className="mt-1 text-[10px] text-slate-400">
+                      Announcement will start from this date.
+                    </p>
+                  </div>
+
+                  {/* EXPIRY DATE */}
+                  <div>
                     <label className="mb-1.5 block text-xs font-semibold text-slate-600">
                       Expiry Date
                     </label>
 
                     <input
                       type="date"
-                      min={getTodayInputValue()}
-                      value={form.expiresAt}
+                      min={
+                        form.startsAt ||
+                        getTodayInputValue()
+                      }
+                      value={
+                        form.expiresAt
+                      }
                       onChange={(e) =>
-                        setForm((prev) => ({
-                          ...prev,
-                          expiresAt: e.target.value,
-                        }))
+                        setForm(
+                          (prev) => ({
+                            ...prev,
+                            expiresAt:
+                              e.target
+                                .value,
+                          })
+                        )
                       }
                       className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
                     />
+
+                    <p className="mt-1 text-[10px] text-slate-400">
+                      Expiry date cannot be before the start date.
+                    </p>
                   </div>
 
+                  {/* MESSAGE */}
                   <div className="md:col-span-2">
                     <div className="mb-1.5 flex items-center justify-between">
                       <label className="text-xs font-semibold text-slate-600">
@@ -2047,22 +2632,29 @@ export default function Announcements() {
                       </label>
 
                       <span className="text-[10px] text-slate-400">
-                        Text, formatting & images supported
+                        Text formatting supported
                       </span>
                     </div>
 
                     <MessageEditor
-                      blocks={messageBlocks}
-                      onChange={updateMessageBlocks}
+                      blocks={
+                        messageBlocks
+                      }
+                      onChange={
+                        updateMessageBlocks
+                      }
                     />
                   </div>
                 </div>
               </div>
 
+              {/* FOOTER */}
               <div className="flex justify-end gap-2 border-t border-slate-100 bg-slate-50 px-5 py-3">
                 <button
                   type="button"
-                  onClick={closeFormModal}
+                  onClick={
+                    closeFormModal
+                  }
                   disabled={saving}
                   className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 disabled:opacity-50"
                 >
@@ -2072,7 +2664,8 @@ export default function Announcements() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg
+ shadow-sm hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {saving ? (
                     <RefreshCw className="h-3.5 w-3.5 animate-spin" />
@@ -2092,18 +2685,27 @@ export default function Announcements() {
         </div>
       )}
 
-      {/* ALERT DIALOG — same design as Campaign.tsx */}
+      {/* ALERT DIALOG */}
       {alert && (
         <AlertModal
           type={alert.type}
-          message={alert.message}
-          confirmText={alert.confirmText}
-          cancelText={alert.cancelText}
-          onConfirm={alert.onConfirm}
-          onClose={closeAlert}
+          message={
+            alert.message
+          }
+          confirmText={
+            alert.confirmText
+          }
+          cancelText={
+            alert.cancelText
+          }
+          onConfirm={
+            alert.onConfirm
+          }
+          onClose={
+            closeAlert
+          }
         />
       )}
     </div>
   );
 }
-

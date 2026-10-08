@@ -572,7 +572,12 @@ import axios from "axios";
 
 const API = import.meta.env.VITE_BACKEND_URL;
 
-type Period = "daily" | "weekly" | "monthly";
+// type Period = "daily" | "weekly" | "monthly";
+type Period =
+  | "daily"
+  | "weekly"
+  | "monthly"
+  | "yearly";
 
 type EventContribution = {
   id: number;
@@ -612,6 +617,10 @@ export default function EventContributions({
 
       case "monthly":
         return "This Month";
+
+        case "yearly":
+        return "This Year";
+
 
       case "daily":
       default:
