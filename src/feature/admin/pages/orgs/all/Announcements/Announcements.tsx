@@ -2168,161 +2168,265 @@ export default function Announcements() {
 
                   const blocks =
                     parseMessageBlocks(
-                      getMessage(
+                      getMessage
+                      (
                         announcement
                       )
                     );
+return (
+  <div
+    key={announcement.id}
+    className="group relative mx-auto flex min-h-[190px] w-full max-w-[360px] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
+  >
+    {/* TOP ACCENT */}
+    <div
+      className={`h-1 w-full ${
+        (announcement.priority || "").toLowerCase() ===
+        "important"
+          ? "bg-red-500"
+          : "bg-blue-500"
+      }`}
+    />
 
-                  return (
-                    <div
-                      key={
-                        announcement.id
-                      }
-                      className="group relative mx-auto flex aspect-square w-full max-w-[360px] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
-                    >
-                      {/* TOP ACCENT */}
-                      <div
-                        className={`h-1 w-full ${
-                          (
-                            announcement.priority ||
-                            ""
-                          ).toLowerCase() ===
-                          "important"
-                            ? "bg-red-500"
-                            : "bg-blue-500"
-                        }`}
-                      />
+    <div className="flex flex-1 flex-col p-2.5">
 
-                      <div className="flex min-h-0 flex-1 flex-col p-3.5">
+      {/* HEADER */}
+      <div className="flex items-start gap-2">
+        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-blue-50">
+          <Bell className="h-3.5 w-3.5 text-blue-600" />
+        </div>
 
-                        {/* HEADER */}
-                        <div className="flex items-start gap-2">
-                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-50">
-                            <Bell className="h-3.5 w-3.5 text-blue-600" />
-                          </div>
+        <div className="min-w-0 flex-1">
+          <h3
+            className="truncate text-sm font-semibold text-slate-800"
+            title={announcement.title}
+          >
+            {announcement.title}
+          </h3>
 
-                          <div className="min-w-0 flex-1">
-                            <h3
-                              className="truncate text-sm font-semibold text-slate-800"
-                              title={
-                                announcement.title
-                              }
-                            >
-                              {
-                                announcement.title
-                              }
-                            </h3>
+          <div className="mt-0.5">
+            <span
+              className={`inline-flex rounded-full border px-2 py-0.5 text-[9px] font-semibold ${priorityStyles.bg} ${priorityStyles.text} ${priorityStyles.border}`}
+            >
+              {announcement.priority || "Notice"}
+            </span>
+          </div>
+        </div>
 
-                            <div className="mt-1">
-                              <span
-                                className={`inline-flex rounded-full border px-2 py-0.5 text-[9px] font-semibold ${priorityStyles.bg} ${priorityStyles.text} ${priorityStyles.border}`}
-                              >
-                                {announcement.priority ||
-                                  "Notice"}
-                              </span>
-                            </div>
-                          </div>
+        <button
+          type="button"
+          onClick={() => setSelectedAnnouncement(announcement)}
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
+          title="View details"
+        >
+          <ChevronRight className="h-4 w-4" />
+        </button>
+      </div>
 
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setSelectedAnnouncement(
-                                announcement
-                              )
-                            }
-                            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
-                            title="View details"
-                          >
-                            <ChevronRight className="h-4 w-4" />
-                          </button>
-                        </div>
+      {/* DATES */}
+      <div className="mt-2 grid grid-cols-2 gap-2">
+        <div className="rounded-lg bg-slate-50 px-2 py-1.5">
+          <div className="flex items-center gap-1 text-[9px] font-medium uppercase tracking-wide text-slate-400">
+            <CalendarDays className="h-3 w-3" />
+            Start Date
+          </div>
 
-                        {/* MESSAGE */}
-                        <div className="mt-3 min-h-0 flex-1 overflow-hidden rounded-lg bg-slate-50/70 p-2.5">
-                          <div className="line-clamp-5 max-h-[105px] overflow-hidden text-[13px] leading-5 text-slate-600">
-                            <MessageRenderer
-                              blocks={
-                                blocks
-                              }
-                              compact
-                            />
-                          </div>
-                        </div>
+          <p className="mt-0.5 truncate text-[11px] font-semibold text-slate-600">
+            {formatDate(getStartDate(announcement))}
+          </p>
+        </div>
 
-                        {/* DATES */}
-                        <div className="mt-3 grid grid-cols-2 gap-2">
-                          <div className="rounded-lg bg-slate-50 px-2.5 py-2">
-                            <div className="flex items-center gap-1 text-[9px] font-medium uppercase tracking-wide text-slate-400">
-                              <CalendarDays className="h-3 w-3" />
-                              Start Date
-                            </div>
+        <div className="rounded-lg bg-slate-50 px-2 py-1.5">
+          <div className="flex items-center gap-1 text-[9px] font-medium uppercase tracking-wide text-slate-400">
+            <CalendarDays className="h-3 w-3" />
+            Expires
+          </div>
 
-                            <p className="mt-0.5 truncate text-[11px] font-semibold text-slate-600">
-                              {formatDate(
-                                getStartDate(
-                                  announcement
-                                )
-                              )}
-                            </p>
-                          </div>
+          <p className="mt-0.5 truncate text-[11px] font-semibold text-slate-600">
+            {formatDate(getExpiryDate(announcement))}
+          </p>
+        </div>
+      </div>
 
-                          <div className="rounded-lg bg-slate-50 px-2.5 py-2">
-                            <div className="flex items-center gap-1 text-[9px] font-medium uppercase tracking-wide text-slate-400">
-                              <CalendarDays className="h-3 w-3" />
-                              Expires
-                            </div>
+      {/* ACTIONS */}
+      <div className="mt-2 flex items-center gap-2 border-t border-slate-100 pt-2">
+        <button
+          type="button"
+          onClick={() => openEditModal(announcement)}
+          className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white py-1.5 text-[10px] font-semibold text-slate-600 transition hover:bg-slate-50"
+        >
+          <Pencil className="h-3 w-3" />
+          Edit
+        </button>
 
-                            <p className="mt-0.5 truncate text-[11px] font-semibold text-slate-600">
-                              {formatDate(
-                                getExpiryDate(
-                                  announcement
-                                )
-                              )}
-                            </p>
-                          </div>
-                        </div>
+        <button
+          type="button"
+          onClick={() => handleDelete(announcement)}
+          disabled={deletingId === announcement.id}
+          className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-red-100 bg-red-50 py-1.5 text-[10px] font-semibold text-red-600 transition hover:bg-red-100 disabled:opacity-50"
+        >
+          {deletingId === announcement.id ? (
+            <RefreshCw className="h-3 w-3 animate-spin" />
+          ) : (
+            <Trash2 className="h-3 w-3" />
+          )}
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+);
 
-                        {/* ACTIONS */}
-                        <div className="mt-3 flex items-center gap-2 border-t border-slate-100 pt-2.5">
-                          <button
-                            type="button"
-                            onClick={() =>
-                              openEditModal(
-                                announcement
-                              )
-                            }
-                            className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white py-1.5 text-[10px] font-semibold text-slate-600 transition hover:bg-slate-50"
-                          >
-                            <Pencil className="h-3 w-3" />
-                            Edit
-                          </button>
+                  // return (
+                  //   <div
+                  //     key={
+                  //       announcement.id
+                  //     }
+                  //     className="group relative mx-auto flex aspect-square w-full max-w-[360px] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
+                  //   >
+                  //     {/* TOP ACCENT */}
+                  //     <div
+                  //       className={`h-1 w-full ${
+                  //         (
+                  //           announcement.priority ||
+                  //           ""
+                  //         ).toLowerCase() ===
+                  //         "important"
+                  //           ? "bg-red-500"
+                  //           : "bg-blue-500"
+                  //       }`}
+                  //     />
 
-                          <button
-                            type="button"
-                            onClick={() =>
-                              handleDelete(
-                                announcement
-                              )
-                            }
-                            disabled={
-                              deletingId ===
-                              announcement.id
-                            }
-                            className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-red-100 bg-red-50 py-1.5 text-[10px] font-semibold text-red-600 transition hover:bg-red-100 disabled:opacity-50"
-                          >
-                            {deletingId ===
-                            announcement.id ? (
-                              <RefreshCw className="h-3 w-3 animate-spin" />
-                            ) : (
-                              <Trash2 className="h-3 w-3" />
-                            )}
+                  //     <div className="flex min-h-0 flex-1 flex-col p-3.5">
 
-                            Delete
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  );
+                  //       {/* HEADER */}
+                  //       <div className="flex items-start gap-2">
+                  //         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-50">
+                  //           <Bell className="h-3.5 w-3.5 text-blue-600" />
+                  //         </div>
+
+                  //         <div className="min-w-0 flex-1">
+                  //           <h3
+                  //             className="truncate text-sm font-semibold text-slate-800"
+                  //             title={
+                  //               announcement.title
+                  //             }
+                  //           >
+                  //             {
+                  //               announcement.title
+                  //             }
+                  //           </h3>
+
+                  //           <div className="mt-1">
+                  //             <span
+                  //               className={`inline-flex rounded-full border px-2 py-0.5 text-[9px] font-semibold ${priorityStyles.bg} ${priorityStyles.text} ${priorityStyles.border}`}
+                  //             >
+                  //               {announcement.priority ||
+                  //                 "Notice"}
+                  //             </span>
+                  //           </div>
+                  //         </div>
+
+                  //         <button
+                  //           type="button"
+                  //           onClick={() =>
+                  //             setSelectedAnnouncement(
+                  //               announcement
+                  //             )
+                  //           }
+                  //           className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
+                  //           title="View details"
+                  //         >
+                  //           <ChevronRight className="h-4 w-4" />
+                  //         </button>
+                  //       </div>
+
+                  //       {/* MESSAGE */}
+                  //       {/* <div className="mt-3 min-h-0 flex-1 overflow-hidden rounded-lg bg-slate-50/70 p-2.5">
+                  //         <div className="line-clamp-5 max-h-[105px] overflow-hidden text-[13px] leading-5 text-slate-600">
+                  //           <MessageRenderer
+                  //             blocks={
+                  //               blocks
+                  //             }
+                  //             compact
+                  //           />
+                  //         </div>
+                  //       </div> */}
+
+                  //       {/* DATES */}
+                  //       <div className="mt-3 grid grid-cols-2 gap-2">
+                  //         <div className="rounded-lg bg-slate-50 px-2.5 py-2">
+                  //           <div className="flex items-center gap-1 text-[9px] font-medium uppercase tracking-wide text-slate-400">
+                  //             <CalendarDays className="h-3 w-3" />
+                  //             Start Date
+                  //           </div>
+
+                  //           <p className="mt-0.5 truncate text-[11px] font-semibold text-slate-600">
+                  //             {formatDate(
+                  //               getStartDate(
+                  //                 announcement
+                  //               )
+                  //             )}
+                  //           </p>
+                  //         </div>
+
+                  //         <div className="rounded-lg bg-slate-50 px-2.5 py-2">
+                  //           <div className="flex items-center gap-1 text-[9px] font-medium uppercase tracking-wide text-slate-400">
+                  //             <CalendarDays className="h-3 w-3" />
+                  //             Expires
+                  //           </div>
+
+                  //           <p className="mt-0.5 truncate text-[11px] font-semibold text-slate-600">
+                  //             {formatDate(
+                  //               getExpiryDate(
+                  //                 announcement
+                  //               )
+                  //             )}
+                  //           </p>
+                  //         </div>
+                  //       </div>
+
+                  //       {/* ACTIONS */}
+                  //       <div className="mt-3 flex items-center gap-2 border-t border-slate-100 pt-2.5">
+                  //         <button
+                  //           type="button"
+                  //           onClick={() =>
+                  //             openEditModal(
+                  //               announcement
+                  //             )
+                  //           }
+                  //           className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white py-1.5 text-[10px] font-semibold text-slate-600 transition hover:bg-slate-50"
+                  //         >
+                  //           <Pencil className="h-3 w-3" />
+                  //           Edit
+                  //         </button>
+
+                  //         <button
+                  //           type="button"
+                  //           onClick={() =>
+                  //             handleDelete(
+                  //               announcement
+                  //             )
+                  //           }
+                  //           disabled={
+                  //             deletingId ===
+                  //             announcement.id
+                  //           }
+                  //           className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-red-100 bg-red-50 py-1.5 text-[10px] font-semibold text-red-600 transition hover:bg-red-100 disabled:opacity-50"
+                  //         >
+                  //           {deletingId ===
+                  //           announcement.id ? (
+                  //             <RefreshCw className="h-3 w-3 animate-spin" />
+                  //           ) : (
+                  //             <Trash2 className="h-3 w-3" />
+                  //           )}
+
+                  //           Delete
+                  //         </button>
+                  //       </div>
+                  //     </div>
+                  //   </div>
+                  // );
                 }
               )}
             </div>
