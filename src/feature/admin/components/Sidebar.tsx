@@ -1,545 +1,10 @@
-// // import React, { useState, useContext } from "react";
-// // import { Link, useLocation, useNavigate } from "react-router-dom";
-// // import { LayoutDashboard, Building2, Menu, Building, Users,ClipboardEdit,   // for Form Builder
-// //   Megaphone,MessageSquarePlus } from "lucide-react";
-// // import { AuthContext } from "../../../context/AuthContext";
-// // export default function Sidebar() {
-// //   const location = useLocation();
-// //   const navigate = useNavigate();
-
-// //   const [sidebarOpen, setSidebarOpen] = useState(false);
-// //   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-// // const { user } = useContext(AuthContext);
-// //   const links = [
-// //     {
-// //       name: "Dashboard",
-// //       path: "/admin/organisation/dashboard",
-// //       icon: <LayoutDashboard size={22} />,
-// //     },
-// //     {
-// //       // name: "Security",
-// //       name:
-// //         user?.org_type?.toUpperCase() === "EVENT" ? "Organiser" : "Security",
-// //       path: "/admin/organisation/create_security",
-// //       icon: <Building2 size={22} />,
-// //     },
-// //     {
-// //       name: "Gates",
-// //       path: "/admin/organisation/gates",
-// //       icon: <Users size={22} />,
-// //     },
-// //     // {
-// //     //   name: "Manage Tables",
-// //     //   path: "/admin/organisation/manage_tables",
-// //     //   icon: <LayoutDashboard size={22} />,
-// //     // },
-// //     // {
-// //     //   name: "Update Tables",
-// //     //   path: "/admin/organisation/update_tables",
-// //     //   icon: <LayoutDashboard size={22} />,
-// //     // },
-// //     {
-// //       name: "Manage Category",
-// //       path: "/admin/organisation/manage_forms",
-// //       icon: <LayoutDashboard size={22} />,
-// //     },
-// //     {
-// //       name: "Buisness Data",
-// //       path: "/admin/organisation/buisness_data",
-// //       icon: <LayoutDashboard size={22} />,
-// //     },
-// //     {
-// //       name: "Form Builder",
-// //       path: "/admin/organisation/form_builder",
-// //       icon: <ClipboardEdit size={22} />,
-// //     },
-// //     {
-// //       name: "Campaign",
-// //       path: "/admin/organisation/Campaign",
-// //       icon: <Megaphone size={22} />,
-// //     },
-// //     {
-// //       name: "Quick Request",
-// //       path: "/admin/organisation/quick_request",
-// //       icon: <MessageSquarePlus size={22} />,
-// //     },
-// //     // {
-// //     //   name: "Apartment",
-// //     //   path: "/admin/organisation/apartment/members",
-// //     //   icon: <Building size={22} />,
-// //     // },
-// //     // Show Apartment only if org_type is NOT EVENT or HOSPITAL
-// //     ...(!["EVENT", "HOSPITAL"].includes(user?.org_type?.toUpperCase() || "")
-// //       ? [
-// //           {
-// //             name: "Apartment",
-// //             path: "/admin/organisation/apartment/members",
-// //             icon: <Building size={22} />,
-// //           },
-// //         ]
-// //       : []),
-// //   ];
-
-// //   const isActive = (path: string) => {
-// //     return path === "/super_admin"
-// //       ? location.pathname === path
-// //       : location.pathname.startsWith(path);
-// //   };
-
-// //   return (
-// //     <>
-// //       {/* ================= DESKTOP SIDEBAR ================= */}
-// //       <aside
-// //         onMouseEnter={() => setSidebarOpen(true)}
-// //         onMouseLeave={() => setSidebarOpen(false)}
-// //         className={`hidden md:flex flex-col bg-white border-r border-gray-200 shadow-md
-// //         transition-all duration-300 ease-in-out
-// //         ${sidebarOpen ? "w-64 p-6" : "w-20 p-3"}
-// //       `}
-// //       >
-// //         {/* Logo / Title */}
-// //         <div className="flex justify-center mb-8 transition-all duration-300">
-// //           <h1
-// //             className={`font-semibold text-gray-800 transition-all duration-300
-// //             ${sidebarOpen ? "text-lg" : "text-sm"}
-// //           `}
-// //           >
-// //             {sidebarOpen ? "Admin" : "Admin"}
-// //           </h1>
-// //         </div>
-
-// //         {/* Navigation */}
-// //         <nav className="flex-1">
-// //           <ul className="space-y-3">
-// //             {links.map((link) => {
-// //               const active = isActive(link.path);
-
-// //               return (
-// //                 <li key={link.name}>
-// //                   <Link
-// //                     to={link.path}
-// //                     className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors
-// //                     ${
-// //                       active
-// //                         ? "bg-gradient-to-r from-[#020b3d] to-cyan-600 text-white shadow-lg"
-// //                         : "text-gray-700 hover:bg-cyan-50 hover:text-cyan-700"
-// //                     }
-// //                   `}
-// //                   >
-// //                     {link.icon}
-// //                     {sidebarOpen && <span>{link.name}</span>}
-// //                   </Link>
-// //                 </li>
-// //               );
-// //             })}
-// //           </ul>
-// //         </nav>
-// //       </aside>
-
-// //       {/* ================= MOBILE BOTTOM BAR ================= */}
-// //       <div className="fixed bottom-0 left-0 right-0 md:hidden z-50 bg-white border-r border-gray-200 border-t shadow">
-// //         <div className="flex justify-around items-center py-2">
-// //           {links.map((link) => {
-// //             const active = isActive(link.path);
-
-// //             return (
-// //               <button
-// //                 key={link.name}
-// //                 onClick={() => navigate(link.path)}
-// //                 className={`flex flex-col items-center justify-center w-12 h-12 rounded-lg transition
-// //                 ${active ? "text-blue-600" : "text-gray-500"}
-// //               `}
-// //               >
-// //                 {link.icon}
-// //               </button>
-// //             );
-// //           })}
-
-// //           {/* Hamburger */}
-// //           <button
-// //             onClick={() => setMobileMenuOpen(true)}
-// //             className="flex items-center justify-center w-12 h-12 rounded-lg text-gray-700"
-// //           >
-// //             <Menu size={24} />
-// //           </button>
-// //         </div>
-// //       </div>
-
-// //       {/* ================= MOBILE SIDE DRAWER ================= */}
-// //       {mobileMenuOpen && (
-// //         <div className="fixed inset-0 z-50 flex">
-// //           {/* Overlay */}
-// //           <div
-// //             className="fixed inset-0 bg-black/40"
-// //             onClick={() => setMobileMenuOpen(false)}
-// //           />
-
-// //           {/* Drawer */}
-// //           <aside className="relative w-64 bg-white border-r border-gray-200 shadow-lg p-6">
-// //             <button
-// //               className="absolute top-4 right-4 text-gray-600"
-// //               onClick={() => setMobileMenuOpen(false)}
-// //             >
-// //               ×
-// //             </button>
-
-// //             <div className="flex justify-center mb-6">
-// //               <h1 className="text-lg font-semibold">Admin</h1>
-// //             </div>
-
-// //             <nav>
-// //               <ul className="space-y-4">
-// //                 {links.map((link) => {
-// //                   const active = isActive(link.path);
-
-// //                   return (
-// //                     <li key={link.name}>
-// //                       <Link
-// //                         to={link.path}
-// //                         onClick={() => setMobileMenuOpen(false)}
-// //                         className={`flex items-center gap-3 px-3 py-2 rounded-lg transition
-// //                         ${
-// //                           active
-// //                             ? "bg-gradient-to-r from-[#020b3d] to-cyan-600 text-white shadow-lg"
-// //                             : "text-gray-700 hover:bg-cyan-50 hover:text-cyan-700"
-// //                         }
-// //                       `}
-// //                       >
-// //                         {link.icon}
-// //                         <span>{link.name}</span>
-// //                       </Link>
-// //                     </li>
-// //                   );
-// //                 })}
-// //               </ul>
-// //             </nav>
-// //           </aside>
-// //         </div>
-// //       )}
-// //     </>
-// //   );
-// // }
-// import React, { useState, useContext } from "react";
-// import { Link, useLocation, useNavigate } from "react-router-dom";
-// import { LayoutDashboard, Building2, Menu, Building, Users,ClipboardEdit,   // for Form Builder
-//   Megaphone,MessageSquarePlus,Info,Store,ClipboardListIcon,DoorOpen} from "lucide-react";
-// import { AuthContext } from "../../../context/AuthContext";
-
-// export default function Sidebar() {
-//   const location = useLocation();
-//   const navigate = useNavigate();
-
-//   const [sidebarOpen, setSidebarOpen] = useState(false);
-//   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-//   const { user } = useContext(AuthContext);
-
-//   const links = [
-//     {
-//       name: "Dashboard",
-//       path: "/admin/organisation/dashboard",
-//       icon: <LayoutDashboard size={22} />,
-//     },
-//     {
-//       name:
-//         user?.org_type?.toUpperCase() === "EVENT"
-//           ? "Organiser"
-//           : "Security",
-//       path: "/admin/organisation/create_security",
-//       icon: <Building2 size={22} />,
-//     },
-//     {
-//       name: "Gates",
-//       path: "/admin/organisation/gates",
-//       icon: <DoorOpen size={22} />,
-//     },
-//     {
-//       name: "Form Management",
-//       path: "/admin/organisation/manage_forms",
-//       icon: <ClipboardListIcon size={22} />,
-//     },
-//     {
-//       name: "Buisness Data",
-//       path: "/admin/organisation/buisness_data",
-//       icon: <LayoutDashboard size={22} />,
-//     },
-//    {
-//       name: "Form Builder",
-//       path: "/admin/organisation/form_builder",
-//       icon: <ClipboardEdit size={22} />,
-//     },
-//     {
-//       name: "Campaign",
-//       path: "/admin/organisation/Campaign",
-//       icon: <Megaphone size={22} />,
-//     },
-//      {
-//   name: "Quick Request",
-//   path: "/admin/organisation/quick_request",
-//   icon: <MessageSquarePlus size={22} />,
-// },
-// {
-//   name: "Announcements",
-//   path: "/admin/organisation/Announcements",
-//   icon: <Megaphone  size={22} />,
-// },
-// {
-//   name: "Important Information",
-//   path: "/admin/organisation/ImportantInformation",
-//   icon: <Info size={22} />,
-// },
-// // {
-// //   name: "Vendors and Service Providers",
-// //   path: "/admin/organisation/VendorsServiceProviders",
-// //   icon: <Store size={22} />,
-// // },
-// {
-//   name: "Vendors & Service Providers",
-//   path: "/admin/organisation/VendorsServiceProviders",
-//   icon: <Store size={22} strokeWidth={2} />,
-// },
-
-
-//     // {
-//     //   name: "Apartment",
-//     //   path: "/admin/organisation/apartment/members",
-//     //   icon: <Building size={22} />,
-//     // },
-//     // Show Apartment only if org_type is NOT EVENT or HOSPITAL
-//     ...(!["EVENT", "HOSPITAL"].includes(
-//       user?.org_type?.toUpperCase() || ""
-//     )
-//       ? [
-//           {
-//             name: "Apartment",
-//             path: "/admin/organisation/apartment/members",
-//             icon: <Building size={22} />,
-//           },
-//         ]
-//       : []),
-//   ];
-
-//   const isActive = (path: string) => {
-//     return location.pathname.startsWith(path);
-//   };
-
-//   return (
-//     <>
-//       {/* ================= DESKTOP SIDEBAR ================= */}
-//       <aside
-//         onMouseEnter={() => setSidebarOpen(true)}
-//         onMouseLeave={() => setSidebarOpen(false)}
-//         className={`
-//           hidden md:flex
-//           flex-col
-//           self-stretch
-//           shrink-0
-//           bg-white
-//           border-r
-//           border-gray-200
-//           shadow-md
-//           transition-all
-//           duration-300
-//           ease-in-out
-//           ${sidebarOpen ? "w-64 p-6" : "w-20 p-3"}
-//         `}
-//       >
-//         {/* Logo / Title */}
-//         <div className="flex justify-center mb-8 shrink-0">
-//           <h1
-//             className={`
-//               font-semibold
-//               text-gray-800
-//               transition-all
-//               duration-300
-//               whitespace-nowrap
-//               ${sidebarOpen ? "text-lg" : "text-sm"}
-//             `}
-//           >
-//             {sidebarOpen ? "Admin" : "AD"}
-//           </h1>
-//         </div>
-
-//         {/* Navigation */}
-//         <nav className="flex-1">
-//           <ul className="space-y-3">
-//             {links.map((link) => {
-//               const active = isActive(link.path);
-
-//               return (
-//                 <li key={link.name}>
-//                   <Link
-//                     to={link.path}
-//                     className={`
-//                       flex
-//                       items-center
-//                       gap-3
-//                       px-3
-//                       py-2
-//                       rounded-lg
-//                       transition-colors
-//                       overflow-hidden
-//                       ${
-//                         active
-//                           ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg"
-//                           : "text-gray-700 hover:bg-blue-100 hover:text-blue-500"
-//                       }
-//                     `}
-//                   >
-//                     {link.icon}
-
-//                     {sidebarOpen && (
-//                       <span className="whitespace-nowrap">
-//                         {link.name}
-//                       </span>
-//                     )}
-//                   </Link>
-//                 </li>
-//               );
-//             })}
-//           </ul>
-//         </nav>
-//       </aside>
-
-//       {/* ================= MOBILE BOTTOM BAR ================= */}
-//       <div className="fixed bottom-0 left-0 right-0 md:hidden z-50 bg-white border-t border-gray-200 shadow">
-//         <div className="flex justify-around items-center py-2">
-//           {links.map((link) => {
-//             const active = isActive(link.path);
-
-//             return (
-//               <button
-//                 key={link.name}
-//                 onClick={() => navigate(link.path)}
-//                 className={`
-//                   flex
-//                   flex-col
-//                   items-center
-//                   justify-center
-//                   w-12
-//                   h-12
-//                   rounded-lg
-//                   transition
-//                   ${active ? "text-blue-600" : "text-gray-500"}
-//                 `}
-//               >
-//                 {link.icon}
-//               </button>
-//             );
-//           })}
-
-//           {/* Hamburger */}
-//           <button
-//             onClick={() => setMobileMenuOpen(true)}
-//             className="
-//               flex
-//               items-center
-//               justify-center
-//               w-12
-//               h-12
-//               rounded-lg
-//               text-gray-700
-//             "
-//           >
-//             <Menu size={24} />
-//           </button>
-//         </div>
-//       </div>
-
-//       {/* ================= MOBILE SIDE DRAWER ================= */}
-//       {mobileMenuOpen && (
-//         <div className="fixed inset-0 z-50 flex">
-//           {/* Overlay */}
-//           <div
-//             className="absolute inset-0 bg-black/40"
-//             onClick={() => setMobileMenuOpen(false)}
-//           />
-
-//           {/* Drawer */}
-//           <aside
-//             className="
-//               relative
-//               z-10
-//               w-64
-//               h-full
-//               bg-white
-//               border-r
-//               border-gray-200
-//               shadow-lg
-//               p-6
-//             "
-//           >
-//             {/* Close Button */}
-//             <button
-//               type="button"
-//               className="
-//                 absolute
-//                 top-4
-//                 right-4
-//                 text-gray-600
-//                 text-xl
-//               "
-//               onClick={() => setMobileMenuOpen(false)}
-//             >
-//               ×
-//             </button>
-
-//             {/* Logo / Title */}
-//             <div className="flex justify-center mb-6">
-//               <h1 className="text-lg font-semibold">
-//                 Admin
-//               </h1>
-//             </div>
-
-//             {/* Navigation */}
-//             <nav>
-//               <ul className="space-y-4">
-//                 {links.map((link) => {
-//                   const active = isActive(link.path);
-
-//                   return (
-//                     <li key={link.name}>
-//                       <Link
-//                         to={link.path}
-//                         onClick={() => setMobileMenuOpen(false)}
-//                         className={`
-//                           flex
-//                           items-center
-//                           gap-3
-//                           px-3
-//                           py-2
-//                           rounded-lg
-//                           transition
-//                           ${
-//                             active
-//                               ? "bg-gradient-to-r from-[#020b3d] to-cyan-600 text-white shadow-lg"
-//                               : "text-gray-700 hover:bg-cyan-50 hover:text-cyan-700"
-//                           }
-//                         `}
-//                       >
-//                         {link.icon}
-
-//                         <span>{link.name}</span>
-//                       </Link>
-//                     </li>
-//                   );
-//                 })}
-//               </ul>
-//             </nav>
-//           </aside>
-//         </div>
-//       )}
-//     </>
-//   );
-// }
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   Building2,
   Menu,
   Building,
-  Users,
   ClipboardEdit,
   Megaphone,
   MessageSquarePlus,
@@ -558,10 +23,65 @@ export default function Sidebar() {
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [pageHeight, setPageHeight] = useState(0);
 
   const { user } = useContext(AuthContext);
 
   const orgType = user?.org_type?.toUpperCase() || "";
+
+  /*
+   * Track the complete document height so the sidebar background
+   * extends to the bottom of the page, even when the page scrolls.
+   */
+  useEffect(() => {
+    let animationFrame = 0;
+
+    const updatePageHeight = () => {
+      cancelAnimationFrame(animationFrame);
+
+      animationFrame = requestAnimationFrame(() => {
+        const documentHeight = Math.max(
+          document.documentElement.scrollHeight,
+          document.documentElement.offsetHeight,
+          document.body.scrollHeight,
+          document.body.offsetHeight,
+          window.innerHeight
+        );
+
+        setPageHeight((currentHeight) =>
+          currentHeight === documentHeight
+            ? currentHeight
+            : documentHeight
+        );
+      });
+    };
+
+    updatePageHeight();
+
+    const resizeObserver = new ResizeObserver(updatePageHeight);
+    resizeObserver.observe(document.documentElement);
+    resizeObserver.observe(document.body);
+
+    const mutationObserver = new MutationObserver(updatePageHeight);
+    mutationObserver.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      characterData: true,
+    });
+
+    window.addEventListener("resize", updatePageHeight);
+    window.addEventListener("load", updatePageHeight);
+
+    return () => {
+      cancelAnimationFrame(animationFrame);
+      resizeObserver.disconnect();
+      mutationObserver.disconnect();
+
+      window.removeEventListener("resize", updatePageHeight);
+      window.removeEventListener("load", updatePageHeight);
+    };
+  }, [location.pathname]);
 
   const links = [
     {
@@ -638,7 +158,6 @@ export default function Sidebar() {
     const currentPath = normalizedPath(location.pathname);
     const linkPath = normalizedPath(path);
 
-    // Dashboard is an exact match so it doesn't stay active on every page.
     if (linkPath === "/admin/organisation/dashboard") {
       return currentPath === linkPath;
     }
@@ -663,11 +182,14 @@ export default function Sidebar() {
       <aside
         onMouseEnter={() => setSidebarOpen(true)}
         onMouseLeave={() => setSidebarOpen(false)}
+        style={{
+          minHeight: pageHeight > 0 ? `${pageHeight}px` : "100vh",
+        }}
         className={`
           hidden md:flex
-          h-full
-          min-h-0
+          h-auto
           shrink-0
+          self-stretch
           flex-col
           overflow-hidden
           border-r border-gray-200
@@ -730,12 +252,10 @@ export default function Sidebar() {
                       }
                     `}
                   >
-                    {/* Fixed-size icon container */}
                     <span className="flex h-6 w-6 shrink-0 items-center justify-center">
                       {renderIcon(link.icon)}
                     </span>
 
-                    {/* Label */}
                     {sidebarOpen && (
                       <span className="min-w-0 flex-1 whitespace-nowrap text-sm font-medium">
                         {link.name}
@@ -871,12 +391,10 @@ export default function Sidebar() {
                           }
                         `}
                       >
-                        {/* Fixed-size icon container */}
                         <span className="flex h-6 w-6 shrink-0 items-center justify-center">
                           {renderIcon(link.icon)}
                         </span>
 
-                        {/* Allow long labels to wrap neatly in the drawer */}
                         <span className="min-w-0 flex-1 text-sm font-medium leading-5">
                           {link.name}
                         </span>
