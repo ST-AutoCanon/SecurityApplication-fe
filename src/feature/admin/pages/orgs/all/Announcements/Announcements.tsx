@@ -1715,14 +1715,23 @@ export default function Announcements() {
       null
     );
 
-    setForm({
-      title: "",
-      message: "",
-      priority: "Notice",
-      startsAt:
-        getTodayInputValue(),
-      expiresAt: "",
-    });
+    // setForm({
+    //   title: "",
+    //   message: "",
+    //   priority: "Notice",
+    //   startsAt:
+    //     getTodayInputValue(),
+    //   expiresAt: "",
+    // });
+    
+setForm({
+  title: "",
+  message: "",
+  priority: "Notice",
+  startsAt: "", // User must select the start date
+  expiresAt: "",
+});
+
 
     setMessageBlocks([
       createTextBlock(),
@@ -2041,8 +2050,9 @@ export default function Announcements() {
   /* ------------------------------------------------------------------------ */
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-4 sm:p-6">
-      <div className="mx-auto max-w-[1450px]">
+    // <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-4 sm:p-6">
+     <div className="min-h-screen bg-white p-4 sm:p-6">
+     <div className="mx-auto max-w-[1450px]">
 
         {/* PAGE HEADER */}
         <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -2078,15 +2088,18 @@ export default function Announcements() {
         </div>
 
         {/* MAIN CARD */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white/90 p-4 shadow-sm backdrop-blur-sm sm:p-5">
-          <div className="mb-4 flex items-center justify-between">
+        {/* <div className="rounded-2xl border border-slate-200/80 bg-white/90 p-4 shadow-sm backdrop-blur-sm sm:p-5"> */}
+         {/* <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm sm:p-5"> */}
+{/* <div className="rounded-2xl border border-blue-100 bg-white-50/40 p-4 shadow-sm sm:p-5">      */}
+     <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm sm:p-4">
+     <div className="mb-4 flex items-center justify-between">
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="text-sm font-semibold text-slate-800">
                   Published Announcements
                 </h2>
 
-                <span className="rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-600">
+                <span className="rounded-full bg-blue-50 px-2 py-0.5 text-[18px] font-semibold text-blue-600">
                   {announcements.length}
                 </span>
               </div>
@@ -2662,7 +2675,7 @@ return (
                       Start Date
                     </label>
 
-                    <input
+                    {/* <input
                       type="date"
                       min={getTodayInputValue()}
                       value={
@@ -2688,7 +2701,27 @@ return (
                         );
                       }}
                       className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
-                    />
+                    /> */}
+
+<input
+  type="date"
+  required
+  min={getTodayInputValue()}
+  value={form.startsAt}
+  onChange={(e) => {
+    const value = e.target.value;
+
+    setForm((prev) => ({
+      ...prev,
+      startsAt: value,
+      expiresAt:
+        prev.expiresAt && prev.expiresAt < value
+          ? ""
+          : prev.expiresAt,
+    }));
+  }}
+  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+/>
 
                     <p className="mt-1 text-[10px] text-slate-400">
                       Announcement will start from this date.
