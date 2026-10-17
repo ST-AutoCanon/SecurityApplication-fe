@@ -95,14 +95,9 @@ const UserSummaryCards = () => {
       ? `Floor ${flat.floorNumber}`
       : "--";
 
-  const twoWheelers =
-    summary?.vehicles?.twoWheelers ?? 0;
-
-  const fourWheelers =
-    summary?.vehicles?.fourWheelers ?? 0;
-
-  const totalVehicles =
-    twoWheelers + fourWheelers;
+  const twoWheelers = summary?.vehicles?.twoWheelers ?? 0;
+  const fourWheelers = summary?.vehicles?.fourWheelers ?? 0;
+  const totalVehicles = twoWheelers + fourWheelers;
 
   const cards = [
     {
@@ -110,6 +105,7 @@ const UserSummaryCards = () => {
       value: summary?.members ?? 0,
       description: "Family members",
       countLabel: "Members",
+      footer: "Your household",
       icon: Users,
       iconWrapper: "bg-purple-100",
       iconColor: "text-purple-600",
@@ -120,6 +116,7 @@ const UserSummaryCards = () => {
       value: summary?.pendingRequests ?? 0,
       description: "Awaiting approval",
       countLabel: "Requests",
+      footer: "Request status",
       icon: FileText,
       iconWrapper: "bg-violet-100",
       iconColor: "text-violet-600",
@@ -128,17 +125,44 @@ const UserSummaryCards = () => {
   ];
 
   /*
-   * ============================================================
-   * LOADING STATE
-   * ============================================================
+   * Shared card layout:
+   * - Cards stretch equally within each grid row.
+   * - Footer stays at the bottom.
+   * - Content can wrap without overflowing.
    */
+  const cardClass =
+    "flex h-full min-w-0 flex-col rounded-2xl border border-slate-200/70 bg-white p-4 shadow-sm transition-shadow duration-200 hover:shadow-md sm:p-5";
+
+  const iconClass =
+    "flex h-10 w-10 shrink-0 items-center justify-center rounded-full";
+
+  /*
+   * Responsive header:
+   * The left content can shrink and wrap.
+   * The right value retains its own space.
+   */
+  const headerClass =
+    "grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-start gap-3";
+
+  const titleClass =
+    "break-words [overflow-wrap:anywhere] text-sm font-semibold leading-5 text-slate-700";
+
+  const descriptionClass =
+    "mt-1 break-words [overflow-wrap:anywhere] text-xs leading-5 text-slate-400";
+
+  const countClass =
+    "max-w-full break-words text-right text-2xl font-bold leading-tight tabular-nums sm:text-3xl";
+
+  const footerClass =
+    "mt-auto flex min-w-0 flex-wrap items-center justify-between gap-x-2 gap-y-2 pt-5";
+
   if (loading) {
     return (
-      <div className="grid w-full grid-cols-1 items-stretch gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid w-full min-w-0 grid-cols-1 items-stretch gap-4 sm:grid-cols-2 2xl:grid-cols-4">
         {[1, 2, 3, 4].map((item) => (
           <div
             key={item}
-            className="flex min-h-[170px] items-center justify-center rounded-2xl border border-slate-100 bg-white p-5 shadow-sm"
+            className="flex min-h-[220px] items-center justify-center rounded-2xl border border-slate-200/70 bg-white p-5 shadow-sm"
           >
             <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
           </div>
@@ -147,11 +171,6 @@ const UserSummaryCards = () => {
     );
   }
 
-  /*
-   * ============================================================
-   * UI
-   * ============================================================
-   */
   return (
     <div className="w-full min-w-0">
       {error && (
@@ -161,153 +180,137 @@ const UserSummaryCards = () => {
       )}
 
       {/*
-       * Grid:
-       * Mobile          -> 1 column
-       * Small/tablet    -> 2 columns
-       * Large desktop   -> 4 columns
-       *
-       * items-stretch ensures equal heights within each row.
-       */}
-      <div className="grid w-full min-w-0 grid-cols-1 items-stretch gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {/* ======================================================
-            MY FLAT
-            ====================================================== */}
-        <div className="group relative flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white p-4 shadow-sm transition-shadow duration-200 hover:shadow-md sm:p-5">
-          <div className="flex min-h-[140px] flex-1 items-center justify-between gap-3">
-            {/* LEFT: TITLE, DESCRIPTION, ICON */}
-            <div className="flex min-w-0 flex-1 flex-col self-stretch">
-              <p className="text-sm font-semibold leading-5 text-slate-700">
-                My Flat
-              </p>
+        Responsive grid:
+        Small screens       -> 1 column
+        Tablets/desktops    -> 2 columns
+        Extra-large screens -> 4 columns
+
+        Using 2xl for four columns prevents cards from
+        becoming too narrow when a sidebar is present.
+      */}
+      <div className="grid w-full min-w-0 grid-cols-1 items-stretch gap-4 sm:grid-cols-2 2xl:grid-cols-4">
+
+        {/* MY FLAT */}
+        <div className={`${cardClass} min-h-[220px]`}>
+          <div className={headerClass}>
+            <div className="min-w-0">
+              <p className={titleClass}>My Flat</p>
 
               <p
-                className="mt-1 break-words text-xs leading-5 text-slate-400"
+                className={descriptionClass}
                 title={`${tower} • ${floor}`}
               >
-                {tower} <span aria-hidden="true">•</span> {floor}
+                {tower}
+                <span className="mx-1" aria-hidden="true">
+                  •
+                </span>
+                {floor}
               </p>
-
-              <div className="mt-auto pt-4">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100">
-                  <Home className="h-5 w-5 text-blue-600" />
-                </div>
-              </div>
             </div>
 
-            {/* RIGHT: FLAT NUMBER */}
-            <div className="flex min-w-0 max-w-[55%] flex-col items-end justify-center text-right">
+            <div className="flex min-w-0 max-w-[120px] flex-col items-end text-right">
               <h2
-                className="max-w-full break-words text-2xl font-bold leading-tight text-blue-700 sm:text-3xl"
+                className={`${countClass} text-blue-700`}
                 title={flatNumber}
               >
                 {flatNumber}
               </h2>
 
-              <p className="mt-1 text-[11px] leading-4 text-slate-400">
+              <p className="mt-1 break-words text-[11px] leading-4 text-slate-400">
                 Flat number
               </p>
             </div>
           </div>
-        </div>
 
-        {/* ======================================================
-            TOTAL VEHICLES
-            ====================================================== */}
-        <div className="group relative flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white p-4 shadow-sm transition-shadow duration-200 hover:shadow-md sm:p-5">
-          <div className="flex min-h-[140px] flex-1 flex-col">
-            <p className="text-sm font-semibold leading-5 text-slate-700">
-              Total Vehicles
-            </p>
-
-            {/* Soft-tinted vehicle panel */}
-            <div className="mt-3 flex-1 rounded-xl bg-gradient-to-br from-emerald-50 via-teal-50/70 to-emerald-50/80 p-2.5 sm:p-3">
-              <div className="grid h-full grid-cols-2 gap-2">
-                {/* TWO-WHEELERS */}
-                <div className="flex min-w-0 flex-col justify-center gap-2 rounded-lg border border-emerald-100/80 bg-white/50 p-2 sm:flex-row sm:items-center sm:gap-2.5 sm:p-2.5">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center self-start rounded-full bg-emerald-100/80 sm:self-auto">
-                    <Bike className="h-5 w-5 text-emerald-700" />
-                  </div>
-
-                  <div className="min-w-0">
-                    <p className="break-words text-[10px] font-medium leading-4 text-slate-500 sm:text-[11px]">
-                      2 Wheelers
-                    </p>
-
-                    <p className="mt-1 break-words text-xl font-bold leading-none text-emerald-700 sm:text-2xl">
-                      {twoWheelers}
-                    </p>
-                  </div>
-                </div>
-
-                {/* FOUR-WHEELERS */}
-                <div className="flex min-w-0 flex-col justify-center gap-2 rounded-lg border border-emerald-100/80 bg-white/50 p-2 sm:flex-row sm:items-center sm:gap-2.5 sm:p-2.5">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center self-start rounded-full bg-emerald-100/80 sm:self-auto">
-                    <Car className="h-5 w-5 text-emerald-700" />
-                  </div>
-
-                  <div className="min-w-0">
-                    <p className="break-words text-[10px] font-medium leading-4 text-slate-500 sm:text-[11px]">
-                      4 Wheelers
-                    </p>
-
-                    <p className="mt-1 break-words text-xl font-bold leading-none text-emerald-700 sm:text-2xl">
-                      {fourWheelers}
-                    </p>
-                  </div>
-                </div>
-              </div>
+          <div className={footerClass}>
+            <div className={`${iconClass} bg-blue-100`}>
+              <Home className="h-5 w-5 text-blue-600" />
             </div>
 
-            {/* TOTAL FOOTER */}
-            <div className="mt-3 flex flex-wrap items-center justify-between gap-1 border-t border-slate-100 pt-2.5">
-              <p className="text-xs leading-5 text-slate-500">
-                Total:{" "}
-                <span className="font-bold text-emerald-700">
-                  {totalVehicles}
-                </span>{" "}
-                {totalVehicles === 1 ? "vehicle" : "vehicles"}
+            <span className="min-w-0 break-words text-right text-xs font-medium leading-5 text-slate-400">
+              My residence
+            </span>
+          </div>
+        </div>
+
+        {/* TOTAL VEHICLES */}
+        <div className={`${cardClass} min-h-[220px]`}>
+          <div className={headerClass}>
+            <div className="min-w-0">
+              <p className={titleClass}>Total Vehicles</p>
+
+              <p className={descriptionClass}>
+                Registered vehicles
+              </p>
+            </div>
+
+            <div className="flex min-w-0 flex-col items-end text-right">
+              <h2 className={`${countClass} text-emerald-700`}>
+                {totalVehicles}
+              </h2>
+
+              <p className="mt-1 text-[11px] leading-4 text-slate-400">
+                {totalVehicles === 1 ? "Vehicle" : "Vehicles"}
+              </p>
+            </div>
+          </div>
+
+          {/* VEHICLE BREAKDOWN */}
+          <div className="mt-4 grid min-w-0 flex-1 grid-cols-2 gap-2 rounded-xl bg-gradient-to-br from-emerald-50 via-teal-50/70 to-emerald-50/80 p-2 sm:p-2.5">
+
+            {/* TWO-WHEELERS */}
+            <div className="flex min-w-0 flex-col items-center justify-center gap-2 rounded-lg border border-emerald-100/80 bg-white/70 px-1.5 py-3 text-center">
+              <div className={`${iconClass} h-9 w-9 bg-emerald-100/80`}>
+                <Bike className="h-5 w-5 text-emerald-700" />
+              </div>
+
+              <p className="max-w-full break-words text-[10px] font-medium leading-4 text-slate-500 sm:text-[11px]">
+                2 Wheelers
+              </p>
+
+              <p className="max-w-full break-words text-xl font-bold leading-tight tabular-nums text-emerald-700">
+                {twoWheelers}
+              </p>
+            </div>
+
+            {/* FOUR-WHEELERS */}
+            <div className="flex min-w-0 flex-col items-center justify-center gap-2 rounded-lg border border-emerald-100/80 bg-white/70 px-1.5 py-3 text-center">
+              <div className={`${iconClass} h-9 w-9 bg-emerald-100/80`}>
+                <Car className="h-5 w-5 text-emerald-700" />
+              </div>
+
+              <p className="max-w-full break-words text-[10px] font-medium leading-4 text-slate-500 sm:text-[11px]">
+                4 Wheelers
+              </p>
+
+              <p className="max-w-full break-words text-xl font-bold leading-tight tabular-nums text-emerald-700">
+                {fourWheelers}
               </p>
             </div>
           </div>
         </div>
 
-        {/* ======================================================
-            FLAT MEMBERS AND PENDING REQUESTS
-            ====================================================== */}
+        {/* FLAT MEMBERS & PENDING REQUESTS */}
         {cards.map((card) => {
           const Icon = card.icon;
 
           return (
             <div
               key={card.title}
-              className="group relative flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white p-4 shadow-sm transition-shadow duration-200 hover:shadow-md sm:p-5"
+              className={`${cardClass} min-h-[220px]`}
             >
-              <div className="flex min-h-[140px] flex-1 items-center justify-between gap-3">
-                {/* LEFT: TITLE, DESCRIPTION, ICON */}
-                <div className="flex min-w-0 flex-1 flex-col self-stretch">
-                  <p className="break-words text-sm font-semibold leading-5 text-slate-700">
-                    {card.title}
-                  </p>
+              <div className={headerClass}>
+                <div className="min-w-0">
+                  <p className={titleClass}>{card.title}</p>
 
-                  <p className="mt-1 break-words text-xs leading-5 text-slate-400">
+                  <p className={descriptionClass}>
                     {card.description}
                   </p>
-
-                  <div className="mt-auto pt-4">
-                    <div
-                      className={`flex h-10 w-10 items-center justify-center rounded-full ${card.iconWrapper}`}
-                    >
-                      <Icon
-                        className={`h-5 w-5 ${card.iconColor}`}
-                      />
-                    </div>
-                  </div>
                 </div>
 
-                {/* RIGHT: COUNT */}
-                <div className="flex min-w-0 max-w-[42%] flex-col items-end justify-center text-right">
+                <div className="flex min-w-0 flex-col items-end text-right">
                   <h2
-                    className={`max-w-full break-words text-3xl font-bold leading-tight ${card.valueColor}`}
+                    className={`${countClass} ${card.valueColor}`}
                   >
                     {card.value}
                   </h2>
@@ -316,6 +319,18 @@ const UserSummaryCards = () => {
                     {card.countLabel}
                   </p>
                 </div>
+              </div>
+
+              <div className={footerClass}>
+                <div className={`${iconClass} ${card.iconWrapper}`}>
+                  <Icon
+                    className={`h-5 w-5 ${card.iconColor}`}
+                  />
+                </div>
+
+                <span className="min-w-0 break-words text-right text-xs font-medium leading-5 text-slate-400">
+                  {card.footer}
+                </span>
               </div>
             </div>
           );
