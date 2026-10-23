@@ -688,6 +688,8 @@ const UpdateOrganisation = () => {
   const [loading, setLoading] = useState(false);
   const [fetchingDetails, setFetchingDetails] = useState(false);
 
+const [photoInputKey, setPhotoInputKey] = useState(0);
+
   const [alert, setAlert] = useState<{
     type: "success" | "error";
     message: string;
@@ -884,34 +886,61 @@ const UpdateOrganisation = () => {
 
   // ================= RESET =================
 
-  const resetForm = () => {
-    setSelectedOrgId(null);
+  // const resetForm = () => {
+  //   setSelectedOrgId(null);
 
-    setOrgName("");
-    setOrgType("");
-    setPhone("");
-    setEmail("");
-    setAddress("");
+  //   setOrgName("");
+  //   setOrgType("");
+  //   setPhone("");
+  //   setEmail("");
+  //   setAddress("");
 
-    setAadhaarNumber("");
-    setPanNumber("");
-    setPassportNumber("");
+  //   setAadhaarNumber("");
+  //   setPanNumber("");
+  //   setPassportNumber("");
 
-    setRegistrationStartDate("");
-    setRegistrationEndDate("");
+  //   setRegistrationStartDate("");
+  //   setRegistrationEndDate("");
 
-    setStatus("ACTIVE");
-    setIsActive(true);
+  //   setStatus("ACTIVE");
+  //   setIsActive(true);
 
-    setPhoto(null);
-    setExistingPhoto("");
+  //   setPhoto(null);
+  //   setExistingPhoto("");
 
-    setAdminFirstName("");
-    setAdminLastName("");
-    setAdminEmail("");
-    setAdminPhone("");
-  };
+  //   setAdminFirstName("");
+  //   setAdminLastName("");
+  //   setAdminEmail("");
+  //   setAdminPhone("");
+  // };
+const resetForm = () => {
+  setSelectedOrgId(null);
 
+  setOrgName("");
+  setOrgType("");
+  setPhone("");
+  setEmail("");
+  setAddress("");
+
+  setAadhaarNumber("");
+  setPanNumber("");
+  setPassportNumber("");
+
+  setRegistrationStartDate("");
+  setRegistrationEndDate("");
+
+  setStatus("ACTIVE");
+  setIsActive(true);
+
+  setPhoto(null);
+  setExistingPhoto("");
+  setPhotoInputKey((prev) => prev + 1);
+
+  setAdminFirstName("");
+  setAdminLastName("");
+  setAdminEmail("");
+  setAdminPhone("");
+};
   // ================= UI =================
 
   return (
@@ -1179,7 +1208,7 @@ const UpdateOrganisation = () => {
 
                 {/* Photo */}
 
-                <div className="flex flex-col">
+                {/* <div className="flex flex-col">
                   <label className="block mb-2 text-sm font-medium">
                     Organisation Photo
                   </label>
@@ -1187,17 +1216,36 @@ const UpdateOrganisation = () => {
                   <input
                     type="file"
                     accept="image/*"
-                    onChange={(e) => {
-                      if (e.target.files?.length) {
-                        setPhoto(e.target.files[0]);
-                      }
-                    }}
+                    // onChange={(e) => {
+                    //   if (e.target.files?.length) {
+                    //     setPhoto(e.target.files[0]);
+                    //   }
+                    // }
+                  onChange={(e) => {
+  const orgId = Number(e.target.value);
+
+  // Clear the previous organisation's photo immediately
+  setPhoto(null);
+  setExistingPhoto("");
+
+  // Reset the browser's file input
+  setPhotoInputKey((prev) => prev + 1);
+
+  setSelectedOrgId(orgId || null);
+
+  if (orgId) {
+    fetchOrganisationDetails(orgId);
+  } else {
+    resetForm();
+  }
+}}
+                  
                     className="w-full h-11 rounded-lg border border-gray-300 px-3 py-2 text-sm"
                   />
 
                   {/* New Photo */}
 
-                  {photo ? (
+                  {/* {photo ? (
                     <div className="mt-3">
                       <img
                         src={URL.createObjectURL(photo)}
@@ -1219,8 +1267,66 @@ const UpdateOrganisation = () => {
                     <p className="text-sm text-gray-500 mt-2">
                       No organisation photo
                     </p>
-                  )}
-                </div>
+                  )} */}
+
+                
+{/* Organisation Photo */}
+
+<div className="flex flex-col">
+  <label className="block mb-2 text-sm font-medium">
+    Organisation Photo
+  </label>
+
+  <input
+    key={photoInputKey}
+    type="file"
+    accept="image/jpeg,image/png,image/webp,image/gif"
+    onChange={(e) => {
+      const file = e.target.files?.[0] ?? null;
+      setPhoto(file);
+    }}
+    className="w-full min-w-0 rounded-lg border border-gray-300 px-3 py-2 text-sm"
+  />
+
+  {/* Selected file name or previously saved file name */}
+  {(photo || existingPhoto) && (
+    <p className="mt-2 break-all text-sm text-gray-600">
+      <span className="font-medium">File name: </span>
+      {photo ? photo.name : existingPhoto}
+    </p>
+  )}
+
+  {/* Newly selected photo */}
+  {photo ? (
+    <div className="mt-3">
+      <img
+        src={URL.createObjectURL(photo)}
+        alt="Selected organisation"
+        className="h-32 w-32 rounded-xl border border-gray-200 object-cover"
+      />
+      <p className="mt-1 text-xs text-blue-600">
+        New photo selected
+      </p>
+    </div>
+  ) : existingPhoto ? (
+    /* Previously saved photo */
+    <div className="mt-3">
+      <img
+        src={`${String(import.meta.env.VITE_BACKEND_URL || "").replace(/\/+$/, "")}/auth-uploads/${encodeURIComponent(existingPhoto)}`}
+        alt="Existing organisation"
+        className="h-32 w-32 rounded-xl border border-gray-200 object-cover"
+        onError={(e) => {
+          e.currentTarget.style.display = "none";
+        }}
+      />
+    </div>
+  ) : (
+    <p className="mt-2 text-sm text-gray-500">
+      No organisation photo uploaded.
+    </p>
+  )}
+</div>
+
               </div>
 
               {/* ================= ADMIN ================= */}

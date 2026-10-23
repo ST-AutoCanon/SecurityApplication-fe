@@ -206,11 +206,11 @@ export default function Sidebar() {
       path: "/user/organisation/profile",
       icon: <User size={22} />,
     },
-    {
-      name: "User Data",
-      path: "/user/organisation/user-data",
-      icon: <Users size={22} />,
-    },
+    // {
+    //   name: "User Data",
+    //   path: "/user/organisation/user-data",
+    //   icon: <Users size={22} />,
+    // },
   ];
 
   const isActive = (path: string) => {

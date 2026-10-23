@@ -429,21 +429,41 @@ export default function AdminDashboard() {
     "Import Apartment Members": <ImportMembers />,
   };
 
-  return (
-    // Constrain the application to the viewport. The content area below
-    // the top navigation becomes the only scrollable region.
-    <div className="flex h-screen flex-col overflow-hidden bg-gray-100">
-      <TopNav pageTitle={activePage} />
+  // return (
+  //   // Constrain the application to the viewport. The content area below
+  //   // the top navigation becomes the only scrollable region.
+  //   <div className="flex h-screen flex-col overflow-hidden bg-gray-100">
+  //     <TopNav pageTitle={activePage} />
 
-      <div className="flex min-h-0 flex-1 overflow-hidden">
-        <Sidebar />
+  //     <div className="flex min-h-0 flex-1 overflow-hidden">
+  //       <Sidebar />
 
-        <main className="min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 overscroll-y-contain">
-          <div className="min-h-0 w-full">
-            {pageComponents[activePage]}
-          </div>
-        </main>
-      </div>
+  //       <main className="min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 overscroll-y-contain">
+  //         <div className="min-h-0 w-full">
+  //           {pageComponents[activePage]}
+  //         </div>
+  //       </main>
+  //     </div>
+  //   </div>
+  // );
+return (
+  <div className="min-h-screen bg-gray-100">
+    {/* Top Navigation */}
+    <TopNav pageTitle={activePage} />
+
+    {/* Sidebar + Main Content */}
+    <div className="flex min-h-screen items-stretch">
+      {/* Sidebar */}
+      <Sidebar />
+
+      {/* Main Content */}
+      <main className="min-w-0 flex-1 bg-gray-50">
+        <div className="w-full">
+          {pageComponents[activePage]}
+        </div>
+      </main>
     </div>
-  );
+  </div>
+);
+
 }
