@@ -3,7 +3,7 @@ import Sidebar from "../components/Sidebar";
 import TopNav from "../components/TopNav";
 import DashboardHome from "./DashboardHome";
 import Profile from "./Profile";
-import UserData from "./UserData";
+// import UserData from "./UserData";
 import MemberQuickRequest from "./MemberQuickRequest";
 
 export default function UserDashboard() {
@@ -21,10 +21,10 @@ export default function UserDashboard() {
     pageTitle = "quick_request";
     pageContent = <MemberQuickRequest />;
   }
-   else if (pathname.includes("/user-data")) {
-    pageTitle = "User Data";
-    pageContent = <UserData />;
-  }
+  //  else if (pathname.includes("/user-data")) {
+  //   pageTitle = "User Data";
+  //   pageContent = <UserData />;
+  // }
 
   return (
     <div className="min-h-screen bg-gray-100">
