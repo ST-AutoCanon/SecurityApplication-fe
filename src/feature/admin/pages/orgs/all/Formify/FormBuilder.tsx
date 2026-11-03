@@ -1,5 +1,8062 @@
 
 
+// // // "use client";
+
+// // // import {
+// // //   useState,
+// // //   useEffect,
+// // //   useContext,
+// // //   useCallback,
+// // // } from "react";
+// // // import axios from "axios";
+// // // import * as XLSX from "xlsx";
+// // // import { AuthContext } from "../../../../../../../src/context/AuthContext";
+// // // import {
+// // //   Plus,
+// // //   Save,
+// // //   Edit2,
+// // //   Trash2,
+// // //   Eye,
+// // //   Copy,
+// // //   Check,
+// // //   FileText,
+// // //   GripVertical,
+// // //   ArrowUp,
+// // //   ArrowDown,
+// // //   Link2,
+// // //   Loader2,
+// // //   Mail,
+// // //   MessageCircle,
+// // //   Inbox,
+// // //   Download,
+// // // } from "lucide-react";
+
+// // // import Alert from "../../../../../../components/Aleartmessage";
+
+// // // // ===================== API =====================
+
+// // // const API = `${import.meta.env.VITE_BACKEND_URL}`;
+
+// // // // ===================== TYPES =====================
+
+// // // type FieldType =
+// // //   | "text"
+// // //   | "textarea"
+// // //   | "email"
+// // //   | "tel"
+// // //   | "number"
+// // //   | "date"
+// // //   | "daterange"
+// // //   | "select"
+// // //   | "radio"
+// // //   | "checkbox-group"
+// // //   | "checkbox"
+// // //   | "rating"
+// // //   | "image"
+// // //   | "document"
+// // //   | "reference-image";
+
+// // // interface FormField {
+// // //   id: string;
+// // //   type: FieldType;
+// // //   label: string;
+// // //   required: boolean;
+// // //   placeholder?: string;
+// // //   options?: string[];
+// // //   referenceUrl?: string;
+// // //   accept?: string;
+// // //   multiple?: boolean;
+// // // }
+
+// // // interface FormSchema {
+// // //   id: string;
+// // //   title: string;
+// // //   description?: string;
+// // //   fields: FormField[];
+// // //   layoutColumns?: 1 | 2 | 3;
+// // //   createdAt: string;
+// // //   updatedAt: string;
+// // // }
+
+// // // interface FormResponse {
+// // //   id: string;
+// // //   formId: string;
+// // //   values: Record<string, any>;
+// // //   createdAt: string;
+// // // }
+
+// // // // ===================== CONSTANTS =====================
+
+// // // const generateId = () => Math.random().toString(36).slice(2, 11);
+
+// // // const FIELD_TYPES: { value: FieldType; label: string }[] = [
+// // //   { value: "text", label: "📝 Text" },
+// // //   { value: "email", label: "📧 Email" },
+// // //   { value: "tel", label: "📱 Mobile Number" },
+// // //   { value: "textarea", label: "📄 Textarea" },
+// // //   { value: "number", label: "🔢 Number" },
+// // //   { value: "date", label: "📅 Date" },
+// // //   { value: "daterange", label: "📆 Date Range" },
+// // //   { value: "select", label: "📋 Dropdown" },
+// // //   { value: "radio", label: "◉ Radio Buttons" },
+// // //   { value: "checkbox-group", label: "☑️ Checkbox Group" },
+// // //   { value: "checkbox", label: "☐ Single Checkbox" },
+// // //   { value: "rating", label: "⭐ Rating" },
+// // //   { value: "image", label: "🖼️ Image Upload" },
+// // //   { value: "document", label: "📎 Document Upload" },
+// // // ];
+
+// // // // ===================== MAIN COMPONENT =====================
+
+// // // export default function FormBuilder() {
+// // //   const { user } = useContext(AuthContext);
+
+// // //   const [forms, setForms] = useState<FormSchema[]>([]);
+// // //   const [activeFormId, setActiveFormId] = useState<string | null>(null);
+// // //   const [viewMode, setViewMode] = useState<"edit" | "preview" | "responses">(
+// // //     "edit"
+// // //   );
+// // //   const [copied, setCopied] = useState(false);
+// // //   const [loading, setLoading] = useState(true);
+// // //   const [saving, setSaving] = useState(false);
+// // //   const [creating, setCreating] = useState(false);
+
+// // //   const [alert, setAlert] = useState<{
+// // //     type: "success" | "warning" | "error";
+// // //     message: string;
+// // //   } | null>(null);
+
+// // //   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+// // //   const [pendingAction, setPendingAction] = useState<
+// // //     null | { type: "create" } | { type: "switch"; formId: string }
+// // //   >(null);
+
+// // //   const [responses, setResponses] = useState<FormResponse[]>([]);
+// // //   const [responsesLoading, setResponsesLoading] = useState(false);
+// // //   const [responsesError, setResponsesError] = useState<string | null>(null);
+
+// // //   const [fieldType, setFieldType] = useState<FieldType>("text");
+// // //   const [fieldLabel, setFieldLabel] = useState("");
+// // //   const [fieldRequired, setFieldRequired] = useState(false);
+// // //   const [fieldPlaceholder, setFieldPlaceholder] = useState("");
+// // //   const [optionsInput, setOptionsInput] = useState("");
+// // //   const [editingFieldId, setEditingFieldId] = useState<string | null>(null);
+
+// // //   const [draftTitle, setDraftTitle] = useState("");
+// // //   const [draftDescription, setDraftDescription] = useState("");
+// // //   const [draftFields, setDraftFields] = useState<FormField[]>([]);
+// // //   const [draftLayoutColumns, setDraftLayoutColumns] = useState<1 | 2 | 3>(2);
+// // //   const [fieldReferenceImageUrl, setFieldReferenceImageUrl] = useState("");
+
+// // //   const [shareEmails, setShareEmails] = useState<string[]>([""]);
+// // //   const [sendingEmail, setSendingEmail] = useState(false);
+
+// // //   const activeForm = forms.find((f) => f.id === activeFormId) || null;
+
+// // //   const showOptions = ["select", "radio", "checkbox-group"].includes(fieldType);
+
+// // //   // ===================== GET FORMS =====================
+
+// // //   const loadForms = useCallback(async () => {
+// // //     try {
+// // //       setLoading(true);
+// // //       setAlert(null);
+
+// // //       const res = await axios.get(`${API}/api/forms`, {
+// // //         withCredentials: true,
+// // //       });
+
+// // //       const data: FormSchema[] = res.data.data || [];
+// // //       setForms(data);
+
+// // //       if (data.length > 0) {
+// // //         setActiveFormId((prev) => prev || data[0].id);
+// // //       }
+// // //     } catch (err: any) {
+// // //       console.error(err);
+// // //       setAlert({
+// // //         type: "error",
+// // //         message: err?.response?.data?.message || "Failed to load forms",
+// // //       });
+// // //     } finally {
+// // //       setLoading(false);
+// // //     }
+// // //   }, []);
+
+// // //   useEffect(() => {
+// // //     loadForms();
+// // //   }, [loadForms]);
+
+// // //   const getVisibleFields = (fields: FormField[] = []) =>
+// // //     fields.filter((field) => field.type !== "reference-image");
+
+// // //   // Single clean useEffect (no duplicates)
+// // //   useEffect(() => {
+// // //     if (!activeForm || creating) return;
+
+// // //     const formFields = getVisibleFields(activeForm.fields || []);
+// // //     setDraftTitle(activeForm.title);
+// // //     setDraftDescription(activeForm.description || "");
+// // //     setDraftFields(formFields);
+// // //     setDraftLayoutColumns(activeForm.layoutColumns || 2);
+// // //     resetFieldBuilder();
+// // //   }, [activeFormId, creating]);
+
+// // //   const loadResponses = useCallback(async () => {
+// // //     if (!activeFormId) return;
+
+// // //     try {
+// // //       setResponsesLoading(true);
+// // //       setResponsesError(null);
+
+// // //       const res = await axios.get(
+// // //         `${API}/api/forms/${activeFormId}/responses`,
+// // //         { withCredentials: true }
+// // //       );
+
+// // //       if (!res.data?.success) {
+// // //         setResponsesError(res.data?.message || "Failed to load responses");
+// // //         setResponses([]);
+// // //         return;
+// // //       }
+
+// // //       setResponses(res.data.data?.responses || []);
+// // //     } catch (err: any) {
+// // //       console.error(err);
+// // //       setResponsesError(
+// // //         err?.response?.data?.message || "Failed to load responses"
+// // //       );
+// // //       setResponses([]);
+// // //     } finally {
+// // //       setResponsesLoading(false);
+// // //     }
+// // //   }, [activeFormId]);
+
+// // //   useEffect(() => {
+// // //     if (viewMode === "responses" && activeFormId) {
+// // //       loadResponses();
+// // //     }
+// // //   }, [viewMode, activeFormId, loadResponses]);
+
+// // //   const resetFieldBuilder = () => {
+// // //     setFieldType("text");
+// // //     setFieldLabel("");
+// // //     setFieldRequired(false);
+// // //     setFieldPlaceholder("");
+// // //     setOptionsInput("");
+// // //     setFieldReferenceImageUrl("");
+// // //     setEditingFieldId(null);
+// // //   };
+
+// // //   const hasUnsavedChanges = () => {
+// // //     if (!activeForm) return false;
+// // //     const currentFields = getVisibleFields(activeForm.fields || []);
+// // //     return (
+// // //       draftTitle !== (activeForm.title || "") ||
+// // //       draftDescription !== (activeForm.description || "") ||
+// // //       JSON.stringify(draftFields) !== JSON.stringify(currentFields) ||
+// // //       draftLayoutColumns !== (activeForm.layoutColumns || 2)
+// // //     );
+// // //   };
+
+// // //   const doCreateNewForm = async () => {
+// // //     try {
+// // //       setCreating(true);
+// // //       setAlert(null);
+// // //       setPendingAction(null);
+
+// // //       const res = await axios.post(
+// // //         `${API}/api/forms`,
+// // //         { title: "New Form", description: "", fields: [], layoutColumns: 2 },
+// // //         { withCredentials: true }
+// // //       );
+
+// // //       const created: FormSchema = { ...res.data.data, title: "" };
+
+// // //       setForms((prev) => [created, ...prev]);
+// // //       setActiveFormId(created.id);
+// // //       setViewMode("edit");
+// // //       setDraftTitle("");
+// // //       setDraftDescription("");
+// // //       setDraftFields([]);
+// // //       setDraftLayoutColumns(2);
+// // //       resetFieldBuilder();
+// // //     } catch (err: any) {
+// // //       console.error(err);
+// // //       setAlert({
+// // //         type: "error",
+// // //         message: err?.response?.data?.message || "Failed to create form",
+// // //       });
+// // //     } finally {
+// // //       setCreating(false);
+// // //     }
+// // //   };
+
+// // //   const doSwitchForm = (formId: string) => {
+// // //     setPendingAction(null);
+// // //     setActiveFormId(formId);
+// // //     setViewMode("edit");
+// // //     resetFieldBuilder();
+// // //   };
+
+// // //   const requestCreateNewForm = (
+// // //     event?: React.MouseEvent<HTMLButtonElement>
+// // //   ) => {
+// // //     event?.preventDefault();
+// // //     event?.stopPropagation();
+
+// // //     if (activeForm && !draftTitle.trim()) {
+// // //       setAlert({
+// // //         type: "warning",
+// // //         message:
+// // //           "Please enter a form name and save the current form before creating a new form.",
+// // //       });
+// // //       return;
+// // //     }
+
+// // //     if (hasUnsavedChanges()) {
+// // //       setPendingAction({ type: "create" });
+// // //       setAlert({
+// // //         type: "warning",
+// // //         message:
+// // //           "You have unsaved changes. Save them before creating a new form, or discard to continue without saving.",
+// // //       });
+// // //       return;
+// // //     }
+// // //     doCreateNewForm();
+// // //   };
+
+// // //   const requestSwitchForm = (formId: string) => {
+// // //     if (formId === activeFormId) return;
+// // //     if (hasUnsavedChanges()) {
+// // //       setPendingAction({ type: "switch", formId });
+// // //       setAlert({
+// // //         type: "warning",
+// // //         message:
+// // //           "You have unsaved changes. Save them before switching forms, or discard to continue without saving.",
+// // //       });
+// // //       return;
+// // //     }
+// // //     doSwitchForm(formId);
+// // //   };
+
+// // //   const handleUnsavedConfirm = async () => {
+// // //     const action = pendingAction;
+// // //     const ok = await saveForm(false);
+
+// // //     if (!ok) {
+// // //       setPendingAction(null);
+// // //       return;
+// // //     }
+
+// // //     if (action?.type === "create") {
+// // //       await doCreateNewForm();
+// // //     } else if (action?.type === "switch") {
+// // //       doSwitchForm(action.formId);
+// // //     }
+// // //   };
+
+// // //   const handleUnsavedDiscard = () => {
+// // //     if (pendingAction?.type === "create") {
+// // //       doCreateNewForm();
+// // //     } else if (pendingAction?.type === "switch") {
+// // //       doSwitchForm(pendingAction.formId);
+// // //     } else {
+// // //       setPendingAction(null);
+// // //       setAlert(null);
+// // //     }
+// // //   };
+
+// // //   const createNewForm = requestCreateNewForm;
+
+// // //   const saveForm = async (showLoading = true): Promise<boolean> => {
+// // //     if (!activeFormId) return false;
+// // //     if (!draftTitle.trim()) {
+// // //       setAlert({ type: "error", message: "Title is required" });
+// // //       return false;
+// // //     }
+
+// // //     try {
+// // //       if (showLoading) setSaving(true);
+// // //       setAlert(null);
+
+// // //       const res = await axios.put(
+// // //         `${API}/api/forms/${activeFormId}`,
+// // //         {
+// // //           title: draftTitle.trim(),
+// // //           description: draftDescription,
+// // //           fields: draftFields,
+// // //           layoutColumns: draftLayoutColumns,
+// // //         },
+// // //         { withCredentials: true }
+// // //       );
+
+// // //       const updated: FormSchema = res.data.data;
+// // //       setForms((prev) =>
+// // //         prev.map((f) => (f.id === activeFormId ? updated : f))
+// // //       );
+
+// // //       setAlert({ type: "success", message: "Form saved successfully" });
+// // //       return true;
+// // //     } catch (err: any) {
+// // //       console.error(err);
+// // //       setAlert({
+// // //         type: "error",
+// // //         message: err?.response?.data?.message || "Failed to save form",
+// // //       });
+// // //       return false;
+// // //     } finally {
+// // //       if (showLoading) setSaving(false);
+// // //     }
+// // //   };
+
+// // //   const uploadFieldReferenceImage = async (file: File) => {
+// // //     const formData = new FormData();
+// // //     formData.append("image", file);
+
+// // //     try {
+// // //       setAlert(null);
+// // //       const res = await axios.post(
+// // //         `${API}/api/forms/upload-image`,
+// // //         formData,
+// // //         {
+// // //           withCredentials: true,
+// // //           headers: { "Content-Type": "multipart/form-data" },
+// // //         }
+// // //       );
+
+// // //       const url = res.data?.url;
+// // //       if (!url) throw new Error("Reference image upload did not return a URL");
+// // //       setFieldReferenceImageUrl(url);
+// // //     } catch (err: any) {
+// // //       console.error(err);
+// // //       setAlert({
+// // //         type: "error",
+// // //         message:
+// // //           err?.response?.data?.message ||
+// // //           err?.message ||
+// // //           "Reference image upload failed",
+// // //       });
+// // //     }
+// // //   };
+
+// // //   const deleteForm = (id: string) => {
+// // //     setPendingDeleteId(id);
+// // //     setAlert({
+// // //       type: "warning",
+// // //       message:
+// // //         "Are you sure you want to delete this form? This action cannot be undone.",
+// // //     });
+// // //   };
+
+// // //   const confirmDelete = async () => {
+// // //     if (!pendingDeleteId) return;
+// // //     try {
+// // //       const deletingId = pendingDeleteId;
+// // //       setAlert(null);
+// // //       setPendingDeleteId(null);
+
+// // //       await axios.delete(`${API}/api/forms/${deletingId}`, {
+// // //         withCredentials: true,
+// // //       });
+
+// // //       const updated = forms.filter((f) => f.id !== deletingId);
+// // //       setForms(updated);
+
+// // //       if (activeFormId === deletingId) {
+// // //         setActiveFormId(updated[0]?.id || null);
+// // //         setViewMode("edit");
+// // //       }
+// // //     } catch (err: any) {
+// // //       console.error(err);
+// // //       setAlert({
+// // //         type: "error",
+// // //         message: err?.response?.data?.message || "Failed to delete form",
+// // //       });
+// // //     }
+// // //   };
+
+// // //   // ===================== FIELD ACTIONS =====================
+
+// // //   const addOrUpdateField = () => {
+// // //     if (!fieldLabel.trim()) {
+// // //       setAlert({ type: "error", message: "Field label is required" });
+// // //       return;
+// // //     }
+
+// // //     let options: string[] | undefined;
+// // //     if (showOptions) {
+// // //       options = optionsInput
+// // //         .split(",")
+// // //         .map((o) => o.trim())
+// // //         .filter(Boolean);
+
+// // //       if (options.length === 0) {
+// // //         setAlert({
+// // //           type: "error",
+// // //           message: "Please provide at least one option",
+// // //         });
+// // //         return;
+// // //       }
+// // //     }
+
+// // //     const newField: FormField = {
+// // //       id: editingFieldId || generateId(),
+// // //       type: fieldType,
+// // //       label: fieldLabel.trim(),
+// // //       required: fieldRequired,
+// // //       placeholder: fieldPlaceholder.trim() || undefined,
+// // //       options,
+// // //       referenceUrl: fieldReferenceImageUrl || undefined,
+// // //     };
+
+// // //     if (fieldType === "document") {
+// // //       newField.accept =
+// // //         ".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip";
+// // //       newField.multiple = false;
+// // //     }
+
+// // //     if (editingFieldId) {
+// // //       setDraftFields((prev) =>
+// // //         prev.map((f) => (f.id === editingFieldId ? newField : f))
+// // //       );
+// // //     } else {
+// // //       setDraftFields((prev) => [...prev, newField]);
+// // //     }
+
+// // //     resetFieldBuilder();
+// // //   };
+
+// // //   const editField = (field: FormField) => {
+// // //     setEditingFieldId(field.id);
+// // //     setFieldType(field.type);
+// // //     setFieldLabel(field.label);
+// // //     setFieldRequired(field.required);
+// // //     setFieldPlaceholder(field.placeholder || "");
+// // //     setOptionsInput(field.options?.join(", ") || "");
+// // //     setFieldReferenceImageUrl(field.referenceUrl || "");
+// // //   };
+
+// // //   const deleteField = (id: string) => {
+// // //     setDraftFields((prev) => prev.filter((f) => f.id !== id));
+// // //     if (editingFieldId === id) resetFieldBuilder();
+// // //   };
+
+// // //   const moveField = (index: number, direction: "up" | "down") => {
+// // //     const newFields = [...draftFields];
+// // //     const target = direction === "up" ? index - 1 : index + 1;
+// // //     if (target < 0 || target >= newFields.length) return;
+// // //     [newFields[index], newFields[target]] = [
+// // //       newFields[target],
+// // //       newFields[index],
+// // //     ];
+// // //     setDraftFields(newFields);
+// // //   };
+
+// // //   // ===================== SHARE =====================
+
+// // //   const getFormUrl = () => {
+// // //     if (!activeFormId || !user?.organisation_id) return "";
+// // //     return `${window.location.origin}/form/${user.organisation_id}/${activeFormId}`;
+// // //   };
+
+// // //   const copyLink = () => {
+// // //     if (!activeFormId) return;
+// // //     const url = getFormUrl();
+// // //     navigator.clipboard.writeText(url);
+// // //     setCopied(true);
+// // //     setTimeout(() => setCopied(false), 2000);
+// // //   };
+
+// // //   const sendFormEmail = async () => {
+// // //     if (!activeFormId) return;
+
+// // //     const emails = shareEmails.map((e) => e.trim()).filter(Boolean);
+// // //     if (emails.length === 0) {
+// // //       setAlert({
+// // //         type: "error",
+// // //         message: "Please enter at least one email address",
+// // //       });
+// // //       return;
+// // //     }
+
+// // //     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// // //     const invalidEmails = emails.filter((e) => !emailRegex.test(e));
+// // //     if (invalidEmails.length > 0) {
+// // //       setAlert({
+// // //         type: "error",
+// // //         message: `Invalid email(s):\n${invalidEmails.join("\n")}`,
+// // //       });
+// // //       return;
+// // //     }
+
+// // //     try {
+// // //       setSendingEmail(true);
+// // //       setAlert(null);
+
+// // //       await axios.post(
+// // //         `${API}/api/forms/${activeFormId}/send-email`,
+// // //         {
+// // //           emails,
+// // //           formUrl: getFormUrl(),
+// // //           formTitle: draftTitle.trim() || "Form",
+// // //           fields: draftFields.length ? draftFields : activeForm?.fields || [],
+// // //         },
+// // //         { withCredentials: true }
+// // //       );
+
+// // //       setShareEmails([""]);
+// // //       setAlert({ type: "success", message: "Form email sent successfully" });
+// // //     } catch (err: any) {
+// // //       console.error(err);
+// // //       setAlert({
+// // //         type: "error",
+// // //         message: err?.response?.data?.message || "Failed to send email",
+// // //       });
+// // //     } finally {
+// // //       setSendingEmail(false);
+// // //     }
+// // //   };
+
+// // //   const shareViaWhatsApp = () => {
+// // //     const url = getFormUrl();
+// // //     if (!url) return;
+// // //     const text = encodeURIComponent(`Hi! Please fill out this form:\n${url}`);
+// // //     window.open(`https://wa.me/?text=${text}`, "_blank");
+// // //   };
+
+// // //   // ===================== LOADING =====================
+
+// // //   if (loading) {
+// // //     return (
+// // //       <section className="h-screen bg-slate-50 flex items-center justify-center overflow-hidden">
+// // //         <div className="flex items-center gap-2 text-slate-500">
+// // //           <Loader2 size={20} className="animate-spin" />
+// // //           Loading forms...
+// // //         </div>
+// // //       </section>
+// // //     );
+// // //   }
+
+// // //   // ===================== RENDER =====================
+
+// // //   return (
+// // //     <section className="h-screen bg-slate-50 overflow-hidden py-4 sm:py-6">
+// // //       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col min-h-0">
+// // //         {alert && (
+// // //           <Alert
+// // //             type={alert.type}
+// // //             message={alert.message}
+// // //             onClose={() => {
+// // //               if (pendingAction) {
+// // //                 handleUnsavedDiscard();
+// // //               } else {
+// // //                 setAlert(null);
+// // //                 setPendingDeleteId(null);
+// // //               }
+// // //             }}
+// // //             confirm={!!pendingDeleteId || !!pendingAction}
+// // //             onConfirm={pendingAction ? handleUnsavedConfirm : confirmDelete}
+// // //             confirmText={pendingAction ? "Save & Continue" : "Yes, Delete"}
+// // //             cancelText={pendingAction ? "Discard" : "Cancel"}
+// // //           />
+// // //         )}
+
+// // //         {/* HEADER */}
+// // //         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-4 shrink-0">
+// // //           <div className="flex-1 min-w-0">
+// // //             <span className="text-purple-600 font-semibold uppercase tracking-widest text-xs">
+// // //               Form Management
+// // //             </span>
+// // //             <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mt-1">
+// // //               Form Builder
+// // //             </h1>
+// // //           </div>
+
+// // //           <div className="flex flex-col items-end gap-2 shrink-0">
+// // //             <div className="flex flex-wrap justify-end gap-2">
+// // //               {/* NEW FORM */}
+// // //             <button
+// // //   type="button"
+// // //   onClick={createNewForm}
+// // //   disabled={creating}
+// // //   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition disabled:opacity-60"
+// // // >
+// // //                 {creating ? (
+// // //                   <>
+// // //                     <Loader2 size={15} className="animate-spin" />
+// // //                     Creating...
+// // //                   </>
+// // //                 ) : (
+// // //                   <>
+// // //                     <Plus size={15} />
+// // //                     New Form
+// // //                   </>
+// // //                 )}
+// // //               </button>
+
+// // //               {activeForm && (
+// // //                 <>
+// // //                   <button
+// // //                     onClick={() =>
+// // //                       setViewMode(viewMode === "preview" ? "edit" : "preview")
+// // //                     }
+// // //                     disabled={saving || creating}
+// // //                     className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border text-sm font-medium transition ${
+// // //                       viewMode === "preview"
+// // //                         ? "bg-purple-50 border-purple-300 text-purple-700"
+// // //                         : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+// // //                     }`}
+// // //                   >
+// // //                     <Eye size={14} />
+// // //                     {viewMode === "preview" ? "Edit" : "Preview"}
+// // //                   </button>
+
+// // //                   <button
+// // //                     onClick={() =>
+// // //                       setViewMode(
+// // //                         viewMode === "responses" ? "edit" : "responses"
+// // //                       )
+// // //                     }
+// // //                     disabled={saving || creating}
+// // //                     className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border text-sm font-medium transition ${
+// // //                       viewMode === "responses"
+// // //                         ? "bg-purple-50 border-purple-300 text-purple-700"
+// // //                         : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+// // //                     }`}
+// // //                   >
+// // //                     <Inbox size={14} />
+// // //                     Responses
+// // //                   </button>
+
+// // //                   {viewMode === "edit" && (
+// // //                    <button
+// // //   type="button"
+// // //   onClick={() => saveForm()}
+// // //   disabled={saving || creating}
+// // //   className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition disabled:opacity-60"
+// // // >
+// // //   {saving ? (
+// // //     <>
+// // //       <Loader2 size={14} className="animate-spin" />
+// // //       Saving...
+// // //     </>
+// // //   ) : (
+// // //     <>
+// // //       <Save size={14} />
+// // //       Save
+// // //     </>
+// // //   )}
+// // // </button>
+// // //                   )}
+// // //                 </>
+// // //               )}
+// // //             </div>
+
+// // //             {activeForm && (
+// // //               <div className="flex flex-wrap items-start justify-end gap-2 w-full max-w-[720px]">
+// // //                 {shareEmails.map((email, index) => (
+// // //                   <div
+// // //                     key={index}
+// // //                     className="flex items-center gap-1.5 min-w-[220px] max-w-[280px] flex-1"
+// // //                   >
+// // //                     <input
+// // //                       type="email"
+// // //                       value={email}
+// // //                       onChange={(e) => {
+// // //                         const updated = [...shareEmails];
+// // //                         updated[index] = e.target.value;
+// // //                         setShareEmails(updated);
+// // //                       }}
+// // //                       placeholder="recipient@email.com"
+// // //                       className="w-full px-2.5 py-2 rounded-lg border border-slate-200 bg-white text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20"
+// // //                     />
+// // //                     {shareEmails.length > 1 && (
+// // //                       <button
+// // //                         type="button"
+// // //                         onClick={() =>
+// // //                           setShareEmails(
+// // //                             shareEmails.filter((_, i) => i !== index)
+// // //                           )
+// // //                         }
+// // //                         className="p-2 rounded-lg text-red-500 hover:bg-red-50 transition shrink-0"
+// // //                       >
+// // //                         <Trash2 size={14} />
+// // //                       </button>
+// // //                     )}
+// // //                   </div>
+// // //                 ))}
+
+// // //                 <div className="flex items-center gap-2 shrink-0">
+// // //                   <button
+// // //                     type="button"
+// // //                     onClick={() => setShareEmails([...shareEmails, ""])}
+// // //                     className="inline-flex items-center gap-1 text-xs font-medium text-purple-600 hover:text-purple-700"
+// // //                   >
+// // //                     <Plus size={13} />
+// // //                     Add another email
+// // //                   </button>
+
+// // //                   <button
+// // //                     onClick={sendFormEmail}
+// // //                     disabled={
+// // //                       sendingEmail || shareEmails.every((e) => !e.trim())
+// // //                     }
+// // //                     className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-purple-600 text-white text-sm font-medium hover:bg-purple-700 transition disabled:opacity-60"
+// // //                   >
+// // //                     {sendingEmail ? (
+// // //                       <Loader2 size={14} className="animate-spin" />
+// // //                     ) : (
+// // //                       <Mail size={14} />
+// // //                     )}
+// // //                     Send
+// // //                   </button>
+// // //                 </div>
+// // //               </div>
+// // //             )}
+// // //           </div>
+// // //         </div>
+
+// // //         {/* MAIN GRID */}
+// // //         <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_260px] gap-5 flex-1 min-h-0 overflow-hidden">
+// // //           <div className="min-w-0 min-h-0 overflow-hidden">
+// // //             {!activeForm ? (
+// // //               <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
+// // //                 <FileText size={36} className="mx-auto text-slate-300 mb-3" />
+// // //                 <p className="text-base text-slate-500 mb-4">
+// // //                   No form selected
+// // //                 </p>
+// // //                 <button
+// // //                   type="button"
+// // //                   onClick={createNewForm}
+// // //                   disabled={creating || saving}
+// // //                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition disabled:opacity-60"
+// // //                 >
+// // //                   {creating ? (
+// // //                     <>
+// // //                       <Loader2 size={15} className="animate-spin" />
+// // //                       Creating...
+// // //                     </>
+// // //                   ) : (
+// // //                     <>
+// // //                       <Plus size={15} />
+// // //                       Create Form
+// // //                     </>
+// // //                   )}
+// // //                 </button>
+// // //               </div>
+// // //             ) : viewMode === "preview" ? (
+// // //               <div className="h-full min-h-0 overflow-y-auto">
+// // //                 <FormPreview
+// // //                   schema={{
+// // //                     ...activeForm,
+// // //                     title: draftTitle,
+// // //                     description: draftDescription,
+// // //                     fields: draftFields,
+// // //                     layoutColumns: draftLayoutColumns,
+// // //                   }}
+// // //                   onBack={() => setViewMode("edit")}
+// // //                 />
+// // //               </div>
+// // //             ) : viewMode === "responses" ? (
+// // //               <div className="h-full min-h-0 overflow-hidden">
+// // //                 <FormResponses
+// // //                   formTitle={draftTitle || activeForm.title}
+// // //                   fields={
+// // //                     draftFields.length
+// // //                       ? draftFields
+// // //                       : activeForm.fields || []
+// // //                   }
+// // //                   responses={responses}
+// // //                   loading={responsesLoading}
+// // //                   error={responsesError}
+// // //                   onRefresh={loadResponses}
+// // //                   onBack={() => setViewMode("edit")}
+// // //                 />
+// // //               </div>
+// // //             ) : (
+// // //               <div className="h-full min-h-0 overflow-y-auto pr-1">
+// // //                 <div className="space-y-4">
+// // //                   {/* FORM HEADER */}
+// // //                   <div className="bg-white rounded-xl border border-slate-200 p-3.5 sm:p-4 space-y-4">
+// // //                     <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3">
+// // //                       <div className="flex-1 min-w-0">
+// // //                         <label className="block text-[11px] font-medium text-slate-500 mb-1">
+// // //                           Form Name
+// // //                         </label>
+// // //                         <input
+// // //                           type="text"
+// // //                           value={draftTitle}
+// // //                           onChange={(e) => setDraftTitle(e.target.value)}
+// // //                           className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
+// // //                           placeholder="e.g. Employee Survey"
+// // //                         />
+// // //                       </div>
+
+// // //                       <div className="sm:w-[180px] shrink-0">
+// // //                         <label className="block text-[11px] font-medium text-slate-500 mb-1">
+// // //                           Fields per row
+// // //                         </label>
+// // //                         <select
+// // //                           value={draftLayoutColumns}
+// // //                           onChange={(e) =>
+// // //                             setDraftLayoutColumns(
+// // //                               Number(e.target.value) as 1 | 2 | 3
+// // //                             )
+// // //                           }
+// // //                           className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
+// // //                         >
+// // //                           <option value={1}>1 column</option>
+// // //                           <option value={2}>2 columns</option>
+// // //                           <option value={3}>3 columns</option>
+// // //                         </select>
+// // //                       </div>
+
+// // //                       <div className="flex-1 min-w-0">
+// // //                         <label className="block text-[11px] font-medium text-slate-500 mb-1">
+// // //                           Description
+// // //                         </label>
+// // //                         <input
+// // //                           type="text"
+// // //                           value={draftDescription}
+// // //                           onChange={(e) => setDraftDescription(e.target.value)}
+// // //                           className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
+// // //                           placeholder="Short description..."
+// // //                         />
+// // //                       </div>
+
+// // //                       <div className="sm:w-[280px] shrink-0">
+// // //                         <label className="block text-[11px] font-medium text-slate-500 mb-1">
+// // //                           Share Link
+// // //                         </label>
+// // //                         <div className="flex items-center gap-1.5">
+// // //                           <div className="flex-1 min-w-0 flex items-center gap-1.5 px-2.5 py-2 rounded-lg border border-slate-200 bg-slate-50 text-xs font-mono text-purple-600 truncate">
+// // //                             <Link2
+// // //                               size={12}
+// // //                               className="shrink-0 text-slate-400"
+// // //                             />
+// // //                             <span className="truncate">
+// // //                               /form/{user?.organisation_id ?? "org"}/
+// // //                               {activeFormId}
+// // //                             </span>
+// // //                           </div>
+// // //                           <button
+// // //                             onClick={copyLink}
+// // //                             title="Copy link"
+// // //                             className="shrink-0 p-2 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-purple-600 transition"
+// // //                           >
+// // //                             {copied ? (
+// // //                               <Check size={14} className="text-emerald-600" />
+// // //                             ) : (
+// // //                               <Copy size={14} />
+// // //                             )}
+// // //                           </button>
+// // //                           <button
+// // //                             onClick={shareViaWhatsApp}
+// // //                             title="Share via WhatsApp"
+// // //                             className="shrink-0 p-2 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-emerald-50 hover:text-emerald-600 transition"
+// // //                           >
+// // //                             <MessageCircle size={14} />
+// // //                           </button>
+// // //                         </div>
+// // //                       </div>
+// // //                     </div>
+// // //                   </div>
+
+// // //                   {/* BUILDER */}
+// // //                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+// // //                     {/* ADD FIELD */}
+// // //                     <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5">
+// // //                       <h3 className="text-base font-bold text-slate-900 mb-0.5">
+// // //                         Add Form Fields
+// // //                       </h3>
+// // //                       <p className="text-xs text-slate-500 mb-4">
+// // //                         Configure fields for your form
+// // //                       </p>
+
+// // //                       <div className="space-y-3">
+// // //                         <div>
+// // //                           <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+// // //                             Field Type
+// // //                           </label>
+// // //                           <select
+// // //                             value={fieldType}
+// // //                             onChange={(e) =>
+// // //                               setFieldType(e.target.value as FieldType)
+// // //                             }
+// // //                             className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
+// // //                           >
+// // //                             {FIELD_TYPES.map((t) => (
+// // //                               <option key={t.value} value={t.value}>
+// // //                                 {t.label}
+// // //                               </option>
+// // //                             ))}
+// // //                           </select>
+// // //                         </div>
+
+// // //                         <div>
+// // //                           <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+// // //                             Field Label
+// // //                           </label>
+// // //                           <input
+// // //                             type="text"
+// // //                             value={fieldLabel}
+// // //                             onChange={(e) => setFieldLabel(e.target.value)}
+// // //                             className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
+// // //                             placeholder="e.g. Your Name"
+// // //                           />
+// // //                         </div>
+
+// // //                         <div>
+// // //                           <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+// // //                             Placeholder (optional)
+// // //                           </label>
+// // //                           <input
+// // //                             type="text"
+// // //                             value={fieldPlaceholder}
+// // //                             onChange={(e) =>
+// // //                               setFieldPlaceholder(e.target.value)
+// // //                             }
+// // //                             className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
+// // //                             placeholder="e.g. Enter your full name"
+// // //                           />
+// // //                         </div>
+
+// // //                         {showOptions && (
+// // //                           <div>
+// // //                             <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+// // //                               Options (comma separated)
+// // //                             </label>
+// // //                             <input
+// // //                               type="text"
+// // //                               value={optionsInput}
+// // //                               onChange={(e) => setOptionsInput(e.target.value)}
+// // //                               className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
+// // //                               placeholder="Option 1, Option 2, Option 3"
+// // //                             />
+// // //                           </div>
+// // //                         )}
+
+// // //                         {/* REFERENCE IMAGE */}
+// // //                         <div className="rounded-xl border border-dashed border-purple-200 bg-purple-50/40 p-3">
+// // //                           <div className="flex items-center justify-between gap-3 mb-2">
+// // //                             <div>
+// // //                               <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-purple-700">
+// // //                                 Field reference image
+// // //                               </p>
+// // //                               <p className="text-[10px] text-slate-500 mt-0.5">
+// // //                                 Optional image shown under this field
+// // //                               </p>
+// // //                             </div>
+// // //                             {fieldReferenceImageUrl && (
+// // //                               <button
+// // //                                 type="button"
+// // //                                 onClick={() => setFieldReferenceImageUrl("")}
+// // //                                 className="text-[10px] text-red-600 hover:text-red-700 font-medium"
+// // //                               >
+// // //                                 Remove
+// // //                               </button>
+// // //                             )}
+// // //                           </div>
+// // //                           <input
+// // //                             type="file"
+// // //                             accept="image/*"
+// // //                             onChange={(e) => {
+// // //                               const file = e.target.files?.[0];
+// // //                               if (file) uploadFieldReferenceImage(file);
+// // //                             }}
+// // //                             className="block w-full text-[11px] text-slate-600 file:mr-2 file:rounded-lg file:border-0 file:bg-purple-600 file:px-2 file:py-1.5 file:text-[11px] file:font-medium file:text-white hover:file:bg-purple-700"
+// // //                           />
+// // //                           {fieldReferenceImageUrl && (
+// // //                             <div className="mt-3 overflow-hidden rounded-lg border border-purple-200 bg-white">
+// // //                               <img
+// // //                                 src={fieldReferenceImageUrl}
+// // //                                 alt="Field reference"
+// // //                                 className="h-28 w-full object-cover"
+// // //                               />
+// // //                             </div>
+// // //                           )}
+// // //                         </div>
+
+// // //                         <label className="inline-flex items-center gap-2 text-xs font-medium text-slate-600 cursor-pointer">
+// // //                           <input
+// // //                             type="checkbox"
+// // //                             checked={fieldRequired}
+// // //                             onChange={(e) =>
+// // //                               setFieldRequired(e.target.checked)
+// // //                             }
+// // //                             className="rounded border-slate-300 text-purple-600 focus:ring-purple-500"
+// // //                           />
+// // //                           Required Field
+// // //                         </label>
+
+// // //                         <button
+// // //                           onClick={addOrUpdateField}
+// // //                           className="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition"
+// // //                         >
+// // //                           {editingFieldId ? (
+// // //                             <>
+// // //                               <Edit2 size={15} />
+// // //                               Update Field
+// // //                             </>
+// // //                           ) : (
+// // //                             <>
+// // //                               <Plus size={15} />
+// // //                               Add Field
+// // //                             </>
+// // //                           )}
+// // //                         </button>
+
+// // //                         {editingFieldId && (
+// // //                           <button
+// // //                             onClick={resetFieldBuilder}
+// // //                             className="w-full text-xs text-slate-500 hover:text-slate-700"
+// // //                           >
+// // //                             Cancel editing
+// // //                           </button>
+// // //                         )}
+// // //                       </div>
+// // //                     </div>
+
+// // //                     {/* ADDED FIELDS */}
+// // //                     <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5">
+// // //                       <h3 className="text-base font-bold text-slate-900 mb-3">
+// // //                         Added Fields ({draftFields.length})
+// // //                       </h3>
+
+// // //                       {draftFields.length === 0 ? (
+// // //                         <div className="py-12 text-center border-2 border-dashed border-slate-200 rounded-lg">
+// // //                           <p className="text-xs text-slate-400">
+// // //                             No fields added yet
+// // //                           </p>
+// // //                         </div>
+// // //                       ) : (
+// // //                         <div className="space-y-2 max-h-[380px] overflow-y-auto">
+// // //                           {draftFields.map((field, index) => (
+// // //                             <div
+// // //                               key={field.id}
+// // //                               className="flex items-center gap-2 p-3 rounded-lg border border-slate-200 bg-slate-50 hover:border-slate-300 transition"
+// // //                             >
+// // //                               <GripVertical
+// // //                                 size={14}
+// // //                                 className="text-slate-300 shrink-0"
+// // //                               />
+
+// // //                               <div className="min-w-0 flex-1">
+// // //                                 <div className="flex items-center gap-1.5 flex-wrap">
+// // //                                   <span className="text-sm font-medium text-slate-900">
+// // //                                     {field.label}
+// // //                                   </span>
+// // //                                   <span className="text-[11px] text-slate-400">
+// // //                                     ({field.type})
+// // //                                   </span>
+// // //                                   {field.required && (
+// // //                                     <span className="text-[11px] text-red-500 font-medium">
+// // //                                       *
+// // //                                     </span>
+// // //                                   )}
+// // //                                 </div>
+
+// // //                                 {field.type === "image" ? (
+// // //                                   <div className="mt-2 flex items-center gap-2">
+// // //                                     <div className="flex h-10 w-14 items-center justify-center rounded-md border border-dashed border-purple-300 bg-gradient-to-br from-purple-100 via-white to-pink-100 text-[8px] font-semibold text-purple-600">
+// // //                                       IMG
+// // //                                     </div>
+// // //                                     <p className="text-[11px] text-slate-500">
+// // //                                       Image upload field
+// // //                                     </p>
+// // //                                   </div>
+// // //                                 ) : field.type === "document" ? (
+// // //                                   <div className="mt-2 flex items-center gap-2">
+// // //                                     <div className="flex h-10 w-14 items-center justify-center rounded-md border border-dashed border-purple-300 bg-gradient-to-br from-purple-100 via-white to-pink-100 text-[8px] font-semibold text-purple-600">
+// // //                                       DOC
+// // //                                     </div>
+// // //                                     <p className="text-[11px] text-slate-500">
+// // //                                       Document upload field
+// // //                                     </p>
+// // //                                   </div>
+// // //                                 ) : field.options ? (
+// // //                                   <p className="text-[11px] text-slate-400 mt-0.5 truncate">
+// // //                                     {field.options.join(", ")}
+// // //                                   </p>
+// // //                                 ) : null}
+// // //                               </div>
+
+// // //                               <div className="flex items-center gap-0.5 shrink-0">
+// // //                                 <button
+// // //                                   onClick={() => moveField(index, "up")}
+// // //                                   disabled={index === 0}
+// // //                                   className="p-1.5 rounded-md text-slate-400 hover:bg-white disabled:opacity-30 transition"
+// // //                                 >
+// // //                                   <ArrowUp size={13} />
+// // //                                 </button>
+// // //                                 <button
+// // //                                   onClick={() => moveField(index, "down")}
+// // //                                   disabled={index === draftFields.length - 1}
+// // //                                   className="p-1.5 rounded-md text-slate-400 hover:bg-white disabled:opacity-30 transition"
+// // //                                 >
+// // //                                   <ArrowDown size={13} />
+// // //                                 </button>
+// // //                                 <button
+// // //                                   onClick={() => editField(field)}
+// // //                                   className="p-1.5 rounded-md bg-purple-600 text-white hover:bg-purple-700 transition"
+// // //                                 >
+// // //                                   <Edit2 size={13} />
+// // //                                 </button>
+// // //                                 <button
+// // //                                   onClick={() => deleteField(field.id)}
+// // //                                   className="p-1.5 rounded-md bg-red-500 text-white hover:bg-red-600 transition"
+// // //                                 >
+// // //                                   <Trash2 size={13} />
+// // //                                 </button>
+// // //                               </div>
+// // //                             </div>
+// // //                           ))}
+// // //                         </div>
+// // //                       )}
+// // //                     </div>
+// // //                   </div>
+// // //                 </div>
+// // //               </div>
+// // //             )}
+// // //           </div>
+
+// // //           {/* SIDEBAR */}
+// // //           <aside className="bg-white rounded-xl border border-slate-200 p-4 h-fit max-h-full overflow-hidden">
+// // //             <h3 className="text-xs font-semibold text-slate-900 mb-3">
+// // //               Your Forms ({forms.length})
+// // //             </h3>
+
+// // //             {forms.length === 0 ? (
+// // //               <div className="py-8 text-center">
+// // //                 <FileText size={24} className="mx-auto text-slate-300 mb-2" />
+// // //                 <p className="text-xs text-slate-400">No forms yet</p>
+// // //                 <button
+// // //                   type="button"
+// // //                   onClick={createNewForm}
+// // //                   className="mt-2 text-xs font-medium text-purple-600 hover:underline"
+// // //                 >
+// // //                   Create your first form
+// // //                 </button>
+// // //               </div>
+// // //             ) : (
+// // //               <div className="space-y-1.5 max-h-[70vh] overflow-y-auto">
+// // //                 {forms.map((form) => (
+// // //                   <div
+// // //                     key={form.id}
+// // //                     onClick={() => requestSwitchForm(form.id)}
+// // //                     className={`flex items-center justify-between gap-2 p-2.5 rounded-lg cursor-pointer transition border ${
+// // //                       activeFormId === form.id
+// // //                         ? "bg-purple-50 border-purple-300"
+// // //                         : "bg-slate-50 border-transparent hover:bg-slate-100"
+// // //                     }`}
+// // //                   >
+// // //                     <div className="min-w-0">
+// // //                       <p className="text-sm font-medium text-slate-900 truncate">
+// // //                         {form.title || "No title"}
+// // //                       </p>
+// // //                       <p className="text-[11px] text-slate-400 mt-0.5">
+// // //                         {(form.fields || []).length} field
+// // //                         {(form.fields || []).length !== 1 ? "s" : ""}
+// // //                       </p>
+// // //                     </div>
+// // //                     <button
+// // //                       onClick={(e) => {
+// // //                         e.stopPropagation();
+// // //                         deleteForm(form.id);
+// // //                       }}
+// // //                       className="p-1 rounded-md text-slate-400 hover:text-red-500 hover:bg-red-50 transition"
+// // //                     >
+// // //                       <Trash2 size={13} />
+// // //                     </button>
+// // //                   </div>
+// // //                 ))}
+// // //               </div>
+// // //             )}
+// // //           </aside>
+// // //         </div>
+// // //       </div>
+// // //     </section>
+// // //   );
+// // // }
+
+// // // // ======================================================
+// // // // RESPONSES
+// // // // ======================================================
+
+// // // function FormResponses({
+// // //   formTitle,
+// // //   fields,
+// // //   responses,
+// // //   loading,
+// // //   error,
+// // //   onRefresh,
+// // //   onBack,
+// // // }: {
+// // //   formTitle: string;
+// // //   fields: FormField[];
+// // //   responses: FormResponse[];
+// // //   loading: boolean;
+// // //   error: string | null;
+// // //   onRefresh: () => void;
+// // //   onBack: () => void;
+// // // }) {
+// // //   const formatValue = (val: any) => {
+// // //     if (val == null || val === "") return "—";
+// // //     if (Array.isArray(val)) return val.length ? val.join(", ") : "—";
+// // //     if (typeof val === "object" && ("start" in val || "end" in val)) {
+// // //       return `Start Date: ${val.start || "—"} | End Date: ${val.end || "—"}`;
+// // //     }
+// // //     if (typeof val === "object") {
+// // //       if (val.url || val.name || val.originalname) {
+// // //         return val.name || val.originalname || val.url || "File";
+// // //       }
+// // //       return JSON.stringify(val);
+// // //     }
+// // //     return String(val);
+// // //   };
+
+// // //   const visibleFields = fields.filter((f) => f.type !== "reference-image");
+
+// // //   const columns =
+// // //     visibleFields.length > 0
+// // //       ? visibleFields.map((f) => ({ key: f.id, label: f.label }))
+// // //       : (() => {
+// // //           const first = responses[0]?.values;
+// // //           if (!first || typeof first !== "object") return [];
+// // //           return Object.keys(first).map((key) => ({ key, label: key }));
+// // //         })();
+
+// // //   const downloadExcel = () => {
+// // //     if (responses.length === 0) {
+// // //       alert("No responses to download");
+// // //       return;
+// // //     }
+
+// // //     const excelData = responses.map((r, index) => {
+// // //       const row: any = {
+// // //         "#": responses.length - index,
+// // //       };
+
+// // //       columns.forEach((col) => {
+// // //         const value = r.values?.[col.key];
+// // //         row[col.label] = formatValue(value);
+// // //       });
+
+// // //       return row;
+// // //     });
+
+// // //     const worksheet = XLSX.utils.json_to_sheet(excelData);
+
+// // //     const colWidths = Object.keys(excelData[0] || {}).map((key) => ({
+// // //       wch: Math.max(key.length + 2, 18),
+// // //     }));
+// // //     worksheet["!cols"] = colWidths;
+
+// // //     const workbook = XLSX.utils.book_new();
+// // //     XLSX.utils.book_append_sheet(workbook, worksheet, "Responses");
+
+// // //     const fileName = `${formTitle || "Form"}_Responses_${new Date()
+// // //       .toISOString()
+// // //       .slice(0, 10)}.xlsx`;
+
+// // //     XLSX.writeFile(workbook, fileName);
+// // //   };
+
+// // //   if (loading) {
+// // //     return (
+// // //       <div className="bg-white rounded-xl border border-slate-200 h-full flex items-center justify-center gap-2 text-slate-500">
+// // //         <Loader2 size={18} className="animate-spin" />
+// // //         Loading responses...
+// // //       </div>
+// // //     );
+// // //   }
+
+// // //   return (
+// // //     <div className="bg-white rounded-xl border border-slate-200 overflow-hidden h-full min-h-0 flex flex-col">
+// // //       {/* HEADER */}
+// // //       <div className="px-5 sm:px-6 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
+// // //         <div className="min-w-0">
+// // //           <h2 className="text-lg font-bold text-slate-900">Responses</h2>
+// // //           <p className="text-xs text-slate-500 mt-0.5 truncate">
+// // //             {formTitle} · {responses.length} response
+// // //             {responses.length !== 1 ? "s" : ""}
+// // //           </p>
+// // //         </div>
+
+// // //         <div className="flex items-center gap-2 shrink-0">
+// // //           <button
+// // //             onClick={downloadExcel}
+// // //             disabled={responses.length === 0}
+// // //             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+// // //           >
+// // //             <Download size={14} />
+// // //             Download Excel
+// // //           </button>
+
+// // //           <button
+// // //             onClick={onRefresh}
+// // //             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 transition"
+// // //           >
+// // //             Refresh
+// // //           </button>
+
+// // //           <button
+// // //             onClick={onBack}
+// // //             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 transition"
+// // //           >
+// // //             ← Back to editor
+// // //           </button>
+// // //         </div>
+// // //       </div>
+
+// // //       {error && (
+// // //         <div className="mx-5 mt-4 px-3 py-2 bg-red-50 border border-red-200 text-red-800 rounded-lg text-sm shrink-0">
+// // //           {error}
+// // //         </div>
+// // //       )}
+
+// // //       {responses.length === 0 ? (
+// // //         <div className="flex-1 flex flex-col items-center justify-center text-center min-h-0">
+// // //           <Inbox size={32} className="mx-auto text-slate-300 mb-2" />
+// // //           <p className="text-sm text-slate-500">No responses yet</p>
+// // //           <p className="text-xs text-slate-400 mt-1">
+// // //             Share the form link to start collecting answers
+// // //           </p>
+// // //         </div>
+// // //       ) : columns.length === 0 ? (
+// // //         <div className="flex-1 min-h-0 overflow-auto p-5 space-y-3">
+// // //           <p className="text-xs text-slate-500 mb-2">
+// // //             Could not map field labels — showing raw response data
+// // //           </p>
+// // //           {responses.map((r, idx) => (
+// // //             <pre
+// // //               key={r.id}
+// // //               className="text-xs bg-slate-50 border border-slate-200 rounded-lg p-3 overflow-x-auto"
+// // //             >
+// // //               #{responses.length - idx}
+// // //               {"\n"}
+// // //               {JSON.stringify(r.values, null, 2)}
+// // //             </pre>
+// // //           ))}
+// // //         </div>
+// // //       ) : (
+// // //         <div className="flex-1 min-h-0 min-w-0 overflow-auto overscroll-contain">
+// // //           <table className="min-w-max w-full text-sm border-collapse">
+// // //             <thead className="sticky top-0 z-20">
+// // //               <tr className="bg-slate-50 border-b border-slate-200">
+// // //                 <th className="sticky left-0 top-0 z-30 bg-slate-50 text-left px-4 py-3 font-semibold text-slate-600 whitespace-nowrap border-r border-slate-100">
+// // //                   #
+// // //                 </th>
+// // //                 {columns.map((col) => (
+// // //                   <th
+// // //                     key={col.key}
+// // //                     className="text-left px-4 py-3 font-semibold text-slate-600 whitespace-nowrap min-w-[180px] max-w-[320px]"
+// // //                   >
+// // //                     {col.label}
+// // //                   </th>
+// // //                 ))}
+// // //               </tr>
+// // //             </thead>
+// // //             <tbody>
+// // //               {responses.map((r, idx) => (
+// // //                 <tr
+// // //                   key={r.id}
+// // //                   className="border-b border-slate-100 hover:bg-slate-50/80 transition"
+// // //                 >
+// // //                   <td className="sticky left-0 z-10 bg-white px-4 py-3 text-slate-400 tabular-nums align-top border-r border-slate-100">
+// // //                     {responses.length - idx}
+// // //                   </td>
+
+// // //                   {columns.map((col) => {
+// // //                     const value = r.values?.[col.key];
+// // //                     const field = visibleFields.find((f) => f.id === col.key);
+// // //                     const isImageField = field?.type === "image";
+// // //                     const isDocumentField = field?.type === "document";
+
+// // //                     const imageUrl =
+// // //                       typeof value === "string" ? value : value?.url || "";
+
+// // //                     return (
+// // //                       <td
+// // //                         key={col.key}
+// // //                         className="px-4 py-3 text-slate-800 align-top min-w-[180px] max-w-[320px] whitespace-normal break-words"
+// // //                         title={
+// // //                           typeof value === "object"
+// // //                             ? JSON.stringify(value)
+// // //                             : formatValue(value)
+// // //                         }
+// // //                       >
+// // //                         {isImageField && value ? (
+// // //                           <div className="flex flex-col gap-2">
+// // //                             <img
+// // //                               src={imageUrl}
+// // //                               alt={
+// // //                                 typeof value === "string"
+// // //                                   ? "Uploaded image"
+// // //                                   : value?.name || "Uploaded image"
+// // //                               }
+// // //                               className="h-20 w-20 object-cover rounded-lg border border-slate-200 bg-slate-50"
+// // //                             />
+// // //                             <div className="flex items-center gap-3">
+// // //                               <a
+// // //                                 href={imageUrl}
+// // //                                 target="_blank"
+// // //                                 rel="noreferrer"
+// // //                                 className="inline-flex text-xs text-purple-600 hover:text-purple-700 underline"
+// // //                               >
+// // //                                 View
+// // //                               </a>
+// // //                               <a
+// // //                                 href={imageUrl}
+// // //                                 target="_blank"
+// // //                                 rel="noreferrer"
+// // //                                 download
+// // //                                 className="inline-flex text-xs text-slate-600 hover:text-slate-800 underline"
+// // //                               >
+// // //                                 Download
+// // //                               </a>
+// // //                             </div>
+// // //                           </div>
+// // //                         ) : isDocumentField && value ? (
+// // //                           <div className="flex flex-col gap-2">
+// // //                             {(Array.isArray(value) ? value : [value]).map(
+// // //                               (file: any, i: number) => {
+// // //                                 const url =
+// // //                                   typeof file === "string"
+// // //                                     ? file
+// // //                                     : file.url || file.path || "";
+// // //                                 const name =
+// // //                                   typeof file === "string"
+// // //                                     ? "Document"
+// // //                                     : file.name ||
+// // //                                       file.originalname ||
+// // //                                       "Document";
+// // //                                 return (
+// // //                                   <div
+// // //                                     key={i}
+// // //                                     className="flex items-center gap-2"
+// // //                                   >
+// // //                                     <FileText
+// // //                                       size={16}
+// // //                                       className="text-purple-600 shrink-0"
+// // //                                     />
+// // //                                     <span className="text-xs truncate max-w-[140px]">
+// // //                                       {name}
+// // //                                     </span>
+// // //                                     <a
+// // //                                       href={url}
+// // //                                       target="_blank"
+// // //                                       rel="noreferrer"
+// // //                                       className="text-xs text-purple-600 underline"
+// // //                                     >
+// // //                                       View
+// // //                                     </a>
+// // //                                     <a
+// // //                                       href={url}
+// // //                                       download
+// // //                                       className="text-xs text-slate-600 underline"
+// // //                                     >
+// // //                                       Download
+// // //                                     </a>
+// // //                                   </div>
+// // //                                 );
+// // //                               }
+// // //                             )}
+// // //                           </div>
+// // //                         ) : (
+// // //                           <div className="max-w-[320px] whitespace-normal break-words leading-5">
+// // //                             {formatValue(value)}
+// // //                           </div>
+// // //                         )}
+// // //                       </td>
+// // //                     );
+// // //                   })}
+// // //                 </tr>
+// // //               ))}
+// // //             </tbody>
+// // //           </table>
+// // //         </div>
+// // //       )}
+// // //     </div>
+// // //   );
+// // // }
+
+// // // // ======================================================
+// // // // PREVIEW (view-only – no submit, no data entry)
+// // // // ======================================================
+
+// // // function FormPreview({
+// // //   schema,
+// // //   onBack,
+// // // }: {
+// // //   schema: FormSchema;
+// // //   onBack: () => void;
+// // // }) {
+// // //   const visibleFields = (schema.fields || []).filter(
+// // //     (field: any) => field.type !== "reference-image"
+// // //   );
+
+// // //   return (
+// // //     <div className="bg-white rounded-xl border border-slate-200 overflow-hidden w-full max-w-full">
+// // //       <div className="px-5 sm:px-8 pt-6 pb-5 border-b border-slate-100 text-center">
+// // //         <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
+// // //           {schema.title || "Untitled Form"}
+// // //         </h2>
+// // //         {schema.description && (
+// // //           <p className="text-slate-500 text-sm mt-1.5 max-w-xl mx-auto">
+// // //             {schema.description}
+// // //           </p>
+// // //         )}
+// // //         <p className="text-[11px] text-purple-600 font-medium mt-2 uppercase tracking-wide">
+// // //           Preview Mode · View Only
+// // //         </p>
+// // //       </div>
+
+// // //       <div
+// // //         className="p-5 sm:p-8 grid gap-5 max-w-4xl mx-auto"
+// // //         style={{
+// // //           gridTemplateColumns: `repeat(${schema.layoutColumns || 2}, minmax(0, 1fr))`,
+// // //         }}
+// // //       >
+// // //         {visibleFields.length === 0 ? (
+// // //           <p className="col-span-full text-center text-sm text-slate-400 py-8">
+// // //             No fields added yet
+// // //           </p>
+// // //         ) : (
+// // //           visibleFields.map((field: any) => (
+// // //             <div
+// // //               key={field.id}
+// // //               className={field.type === "textarea" ? "col-span-full" : ""}
+// // //             >
+// // //               <label className="block text-sm font-semibold text-slate-800 mb-1.5">
+// // //                 {field.label}
+// // //                 {field.required && <span className="text-red-500 ml-1">*</span>}
+// // //               </label>
+
+// // //               {field.referenceUrl && (
+// // //                 <div className="mb-3 overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
+// // //                   <img
+// // //                     src={field.referenceUrl}
+// // //                     alt={field.label}
+// // //                     className="max-h-64 w-full object-cover"
+// // //                   />
+// // //                 </div>
+// // //               )}
+
+// // //               {/* Read-only field renderings */}
+// // //               {field.type === "image" ? (
+// // //                 <div className="rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-xs text-slate-400">
+// // //                   Image upload field
+// // //                 </div>
+// // //               ) : field.type === "document" ? (
+// // //                 <div className="rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-xs text-slate-400">
+// // //                   Document upload field
+// // //                 </div>
+// // //               ) : field.type === "textarea" ? (
+// // //                 <textarea
+// // //                   disabled
+// // //                   placeholder={field.placeholder || ""}
+// // //                   className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-100 text-sm text-slate-500 cursor-not-allowed resize-none"
+// // //                   rows={3}
+// // //                 />
+// // //               ) : field.type === "select" ? (
+// // //                 <select
+// // //                   disabled
+// // //                   className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-100 text-sm text-slate-500 cursor-not-allowed"
+// // //                 >
+// // //                   <option>-- Select --</option>
+// // //                   {field.options?.map((opt: string) => (
+// // //                     <option key={opt}>{opt}</option>
+// // //                   ))}
+// // //                 </select>
+// // //               ) : field.type === "radio" ? (
+// // //                 <div className="space-y-2">
+// // //                   {field.options?.map((opt: string) => (
+// // //                     <label
+// // //                       key={opt}
+// // //                       className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-slate-500 cursor-not-allowed"
+// // //                     >
+// // //                       <input
+// // //                         type="radio"
+// // //                         disabled
+// // //                         className="accent-purple-600"
+// // //                       />
+// // //                       {opt}
+// // //                     </label>
+// // //                   ))}
+// // //                 </div>
+// // //               ) : field.type === "checkbox-group" ? (
+// // //                 <div className="space-y-2">
+// // //                   {field.options?.map((opt: string) => (
+// // //                     <label
+// // //                       key={opt}
+// // //                       className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-slate-500 cursor-not-allowed"
+// // //                     >
+// // //                       <input
+// // //                         type="checkbox"
+// // //                         disabled
+// // //                         className="rounded accent-purple-600"
+// // //                       />
+// // //                       {opt}
+// // //                     </label>
+// // //                   ))}
+// // //                 </div>
+// // //               ) : field.type === "checkbox" ? (
+// // //                 <label className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-slate-500 cursor-not-allowed">
+// // //                   <input
+// // //                     type="checkbox"
+// // //                     disabled
+// // //                     className="rounded accent-purple-600"
+// // //                   />
+// // //                   {field.placeholder || "Yes"}
+// // //                 </label>
+// // //               ) : field.type === "rating" ? (
+// // //                 <div className="flex items-center gap-1">
+// // //                   {[1, 2, 3, 4, 5].map((star) => (
+// // //                     <span key={star} className="text-2xl text-slate-300">
+// // //                       ★
+// // //                     </span>
+// // //                   ))}
+// // //                   <span className="ml-2 text-xs text-slate-400">Rating</span>
+// // //                 </div>
+// // //               ) : field.type === "daterange" ? (
+// // //                 <div className="grid gap-3 sm:grid-cols-2">
+// // //                   <div>
+// // //                     <label className="mb-1 block text-xs font-medium text-slate-500">
+// // //                       Start date
+// // //                     </label>
+// // //                     <input
+// // //                       type="date"
+// // //                       disabled
+// // //                       className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-100 text-sm text-slate-500 cursor-not-allowed"
+// // //                     />
+// // //                   </div>
+// // //                   <div>
+// // //                     <label className="mb-1 block text-xs font-medium text-slate-500">
+// // //                       End date
+// // //                     </label>
+// // //                     <input
+// // //                       type="date"
+// // //                       disabled
+// // //                       className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-100 text-sm text-slate-500 cursor-not-allowed"
+// // //                     />
+// // //                   </div>
+// // //                 </div>
+// // //               ) : (
+// // //                 <input
+// // //                   type={
+// // //                     field.type === "email"
+// // //                       ? "email"
+// // //                       : field.type === "tel"
+// // //                       ? "tel"
+// // //                       : field.type === "number"
+// // //                       ? "number"
+// // //                       : field.type === "date"
+// // //                       ? "date"
+// // //                       : "text"
+// // //                   }
+// // //                   disabled
+// // //                   placeholder={field.placeholder || ""}
+// // //                   className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-100 text-sm text-slate-500 cursor-not-allowed"
+// // //                 />
+// // //               )}
+// // //             </div>
+// // //           ))
+// // //         )}
+// // //       </div>
+
+// // //       <div className="px-5 sm:px-8 pb-6 text-center">
+// // //         <button
+// // //           onClick={onBack}
+// // //           className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-purple-600 text-white text-sm font-medium hover:bg-purple-700 transition"
+// // //         >
+// // //           ← Back to editor
+// // //         </button>
+// // //       </div>
+// // //     </div>
+// // //   );
+// // // }
+
+// // "use client";
+
+// // import {
+// //   useState,
+// //   useEffect,
+// //   useContext,
+// //   useCallback,
+// // } from "react";
+// // import axios from "axios";
+// // import * as XLSX from "xlsx";
+// // import { AuthContext } from "../../../../../../../src/context/AuthContext";
+// // import {
+// //   Plus,
+// //   Save,
+// //   Edit2,
+// //   Trash2,
+// //   Eye,
+// //   Copy,
+// //   Check,
+// //   FileText,
+// //   GripVertical,
+// //   ArrowUp,
+// //   ArrowDown,
+// //   Link2,
+// //   Loader2,
+// //   Mail,
+// //   MessageCircle,
+// //   Inbox,
+// //   Download,
+// //   Users,
+// //   Search,
+// // } from "lucide-react";
+
+// // import Alert from "../../../../../../components/Aleartmessage";
+
+// // // ===================== API =====================
+
+// // const API = `${import.meta.env.VITE_BACKEND_URL}`;
+
+// // // ===================== TYPES =====================
+
+// // type FieldType =
+// //   | "text"
+// //   | "textarea"
+// //   | "email"
+// //   | "tel"
+// //   | "number"
+// //   | "date"
+// //   | "daterange"
+// //   | "select"
+// //   | "radio"
+// //   | "checkbox-group"
+// //   | "checkbox"
+// //   | "rating"
+// //   | "image"
+// //   | "document"
+// //   | "reference-image";
+
+// // interface FormField {
+// //   id: string;
+// //   type: FieldType;
+// //   label: string;
+// //   required: boolean;
+// //   placeholder?: string;
+// //   options?: string[];
+// //   referenceUrl?: string;
+// //   accept?: string;
+// //   multiple?: boolean;
+// // }
+
+// // interface FormSchema {
+// //   id: string;
+// //   title: string;
+// //   description?: string;
+// //   fields: FormField[];
+// //   layoutColumns?: 1 | 2 | 3;
+// //   createdAt: string;
+// //   updatedAt: string;
+// //   assignedMemberIds?: string[];
+// // }
+
+// // interface FormResponse {
+// //   id: string;
+// //   formId: string;
+// //   values: Record<string, any>;
+// //   createdAt: string;
+// // }
+
+// // interface Member {
+// //   id: string;
+// //   name: string;
+// //   email: string | null;
+// //   mobile: string | null;
+// //   flat: string | null;
+// //   memberCode?: string;
+// //   memberType?: string;
+// // }
+
+// // // ===================== CONSTANTS =====================
+
+// // const generateId = () => Math.random().toString(36).slice(2, 11);
+
+// // const FIELD_TYPES: { value: FieldType; label: string }[] = [
+// //   { value: "text", label: "📝 Text" },
+// //   { value: "email", label: "📧 Email" },
+// //   { value: "tel", label: "📱 Mobile Number" },
+// //   { value: "textarea", label: "📄 Textarea" },
+// //   { value: "number", label: "🔢 Number" },
+// //   { value: "date", label: "📅 Date" },
+// //   { value: "daterange", label: "📆 Date Range" },
+// //   { value: "select", label: "📋 Dropdown" },
+// //   { value: "radio", label: "◉ Radio Buttons" },
+// //   { value: "checkbox-group", label: "☑️ Checkbox Group" },
+// //   { value: "checkbox", label: "☐ Single Checkbox" },
+// //   { value: "rating", label: "⭐ Rating" },
+// //   { value: "image", label: "🖼️ Image Upload" },
+// //   { value: "document", label: "📎 Document Upload" },
+// // ];
+
+// // // ===================== MAIN COMPONENT =====================
+
+// // export default function FormBuilder() {
+// //   const { user } = useContext(AuthContext);
+
+// //   const [forms, setForms] = useState<FormSchema[]>([]);
+// //   const [activeFormId, setActiveFormId] = useState<string | null>(null);
+// //   const [viewMode, setViewMode] = useState<"edit" | "preview" | "responses">(
+// //     "edit"
+// //   );
+// //   const [copied, setCopied] = useState(false);
+// //   const [loading, setLoading] = useState(true);
+// //   const [saving, setSaving] = useState(false);
+// //   const [assigning, setAssigning] = useState(false);
+// //   const [creating, setCreating] = useState(false);
+
+// //   const [alert, setAlert] = useState<{
+// //     type: "success" | "warning" | "error";
+// //     message: string;
+// //   } | null>(null);
+
+// //   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+// //   const [pendingAction, setPendingAction] = useState<
+// //     null | { type: "create" } | { type: "switch"; formId: string }
+// //   >(null);
+
+// //   const [responses, setResponses] = useState<FormResponse[]>([]);
+// //   const [responsesLoading, setResponsesLoading] = useState(false);
+// //   const [responsesError, setResponsesError] = useState<string | null>(null);
+
+// //   const [fieldType, setFieldType] = useState<FieldType>("text");
+// //   const [fieldLabel, setFieldLabel] = useState("");
+// //   const [fieldRequired, setFieldRequired] = useState(false);
+// //   const [fieldPlaceholder, setFieldPlaceholder] = useState("");
+// //   const [optionsInput, setOptionsInput] = useState("");
+// //   const [editingFieldId, setEditingFieldId] = useState<string | null>(null);
+
+// //   const [draftTitle, setDraftTitle] = useState("");
+// //   const [draftDescription, setDraftDescription] = useState("");
+// //   const [draftFields, setDraftFields] = useState<FormField[]>([]);
+// //   const [draftLayoutColumns, setDraftLayoutColumns] = useState<1 | 2 | 3>(2);
+// //   const [fieldReferenceImageUrl, setFieldReferenceImageUrl] = useState("");
+
+// //   const [shareEmails, setShareEmails] = useState<string[]>([""]);
+// //   const [sendingEmail, setSendingEmail] = useState(false);
+
+// //   // ===== MEMBER ASSIGNMENT =====
+// //   const [members, setMembers] = useState<Member[]>([]);
+// //   const [selectedMemberIds, setSelectedMemberIds] = useState<string[]>([]);
+// //   const [memberSearch, setMemberSearch] = useState("");
+// //   const [membersLoading, setMembersLoading] = useState(false);
+
+// //   const activeForm = forms.find((f) => f.id === activeFormId) || null;
+
+// //   const showOptions = ["select", "radio", "checkbox-group"].includes(fieldType);
+
+// //   // ===================== GET FORMS =====================
+
+// //   const loadForms = useCallback(async () => {
+// //     try {
+// //       setLoading(true);
+// //       setAlert(null);
+
+// //       const res = await axios.get(`${API}/api/forms`, {
+// //         withCredentials: true,
+// //       });
+
+// //       const data: FormSchema[] = res.data.data || [];
+// //       setForms(data);
+
+// //       if (data.length > 0) {
+// //         setActiveFormId((prev) => prev || data[0].id);
+// //       }
+// //     } catch (err: any) {
+// //       console.error(err);
+// //       setAlert({
+// //         type: "error",
+// //         message: err?.response?.data?.message || "Failed to load forms",
+// //       });
+// //     } finally {
+// //       setLoading(false);
+// //     }
+// //   }, []);
+
+// //   // ===================== GET MEMBERS =====================
+
+// //   const loadMembers = useCallback(async () => {
+// //     try {
+// //       setMembersLoading(true);
+// //       const res = await axios.get(`${API}/api/forms/members`, {
+// //         withCredentials: true,
+// //       });
+// //       if (res.data?.success) {
+// //         setMembers(res.data.data || []);
+// //       }
+// //     } catch (err: any) {
+// //       console.error("Failed to load members", err);
+// //       setAlert({
+// //         type: "error",
+// //         message:
+// //           err?.response?.data?.message || "Failed to load members for assignment",
+// //       });
+// //     } finally {
+// //       setMembersLoading(false);
+// //     }
+// //   }, []);
+
+// //   useEffect(() => {
+// //     loadForms();
+// //     loadMembers();
+// //   }, [loadForms, loadMembers]);
+
+// //   const getVisibleFields = (fields: FormField[] = []) =>
+// //     fields.filter((field) => field.type !== "reference-image");
+
+// //   // Single clean useEffect (no duplicates)
+// //   useEffect(() => {
+// //     if (!activeForm || creating) return;
+
+// //     const formFields = getVisibleFields(activeForm.fields || []);
+// //     setDraftTitle(activeForm.title);
+// //     setDraftDescription(activeForm.description || "");
+// //     setDraftFields(formFields);
+// //     setDraftLayoutColumns(activeForm.layoutColumns || 2);
+
+// //     // Pre-select assigned members
+// //     setSelectedMemberIds(
+// //       (activeForm.assignedMemberIds || []).map(String)
+// //     );
+
+// //     resetFieldBuilder();
+// //   }, [activeFormId, creating]);
+
+// //   const loadResponses = useCallback(async () => {
+// //     if (!activeFormId) return;
+
+// //     try {
+// //       setResponsesLoading(true);
+// //       setResponsesError(null);
+
+// //       const res = await axios.get(
+// //         `${API}/api/forms/${activeFormId}/responses`,
+// //         { withCredentials: true }
+// //       );
+
+// //       if (!res.data?.success) {
+// //         setResponsesError(res.data?.message || "Failed to load responses");
+// //         setResponses([]);
+// //         return;
+// //       }
+
+// //       setResponses(res.data.data?.responses || []);
+// //     } catch (err: any) {
+// //       console.error(err);
+// //       setResponsesError(
+// //         err?.response?.data?.message || "Failed to load responses"
+// //       );
+// //       setResponses([]);
+// //     } finally {
+// //       setResponsesLoading(false);
+// //     }
+// //   }, [activeFormId]);
+
+// //   useEffect(() => {
+// //     if (viewMode === "responses" && activeFormId) {
+// //       loadResponses();
+// //     }
+// //   }, [viewMode, activeFormId, loadResponses]);
+
+// //   const resetFieldBuilder = () => {
+// //     setFieldType("text");
+// //     setFieldLabel("");
+// //     setFieldRequired(false);
+// //     setFieldPlaceholder("");
+// //     setOptionsInput("");
+// //     setFieldReferenceImageUrl("");
+// //     setEditingFieldId(null);
+// //   };
+
+// //   const hasUnsavedChanges = () => {
+// //     if (!activeForm) return false;
+// //     const currentFields = getVisibleFields(activeForm.fields || []);
+// //     return (
+// //       draftTitle !== (activeForm.title || "") ||
+// //       draftDescription !== (activeForm.description || "") ||
+// //       JSON.stringify(draftFields) !== JSON.stringify(currentFields) ||
+// //       draftLayoutColumns !== (activeForm.layoutColumns || 2)
+// //     );
+// //   };
+
+// //   const doCreateNewForm = async () => {
+// //     try {
+// //       setCreating(true);
+// //       setAlert(null);
+// //       setPendingAction(null);
+
+// //       const res = await axios.post(
+// //         `${API}/api/forms`,
+// //         {
+// //           title: "New Form",
+// //           description: "",
+// //           fields: [],
+// //           layoutColumns: 2,
+// //           assignedMemberIds: [],
+// //         },
+// //         { withCredentials: true }
+// //       );
+
+// //       const created: FormSchema = { ...res.data.data, title: "" };
+
+// //       setForms((prev) => [created, ...prev]);
+// //       setActiveFormId(created.id);
+// //       setViewMode("edit");
+// //       setDraftTitle("");
+// //       setDraftDescription("");
+// //       setDraftFields([]);
+// //       setDraftLayoutColumns(2);
+// //       setSelectedMemberIds([]);
+// //       resetFieldBuilder();
+// //     } catch (err: any) {
+// //       console.error(err);
+// //       setAlert({
+// //         type: "error",
+// //         message: err?.response?.data?.message || "Failed to create form",
+// //       });
+// //     } finally {
+// //       setCreating(false);
+// //     }
+// //   };
+
+// //   const doSwitchForm = (formId: string) => {
+// //     setPendingAction(null);
+// //     setActiveFormId(formId);
+// //     setViewMode("edit");
+// //     resetFieldBuilder();
+// //   };
+
+// //   const requestCreateNewForm = (
+// //     event?: React.MouseEvent<HTMLButtonElement>
+// //   ) => {
+// //     event?.preventDefault();
+// //     event?.stopPropagation();
+
+// //     if (activeForm && !draftTitle.trim()) {
+// //       setAlert({
+// //         type: "warning",
+// //         message:
+// //           "Please enter a form name and save the current form before creating a new form.",
+// //       });
+// //       return;
+// //     }
+
+// //     if (hasUnsavedChanges()) {
+// //       setPendingAction({ type: "create" });
+// //       setAlert({
+// //         type: "warning",
+// //         message:
+// //           "You have unsaved changes. Save them before creating a new form, or discard to continue without saving.",
+// //       });
+// //       return;
+// //     }
+// //     doCreateNewForm();
+// //   };
+
+// //   const requestSwitchForm = (formId: string) => {
+// //     if (formId === activeFormId) return;
+// //     if (hasUnsavedChanges()) {
+// //       setPendingAction({ type: "switch", formId });
+// //       setAlert({
+// //         type: "warning",
+// //         message:
+// //           "You have unsaved changes. Save them before switching forms, or discard to continue without saving.",
+// //       });
+// //       return;
+// //     }
+// //     doSwitchForm(formId);
+// //   };
+
+// //   const handleUnsavedConfirm = async () => {
+// //     const action = pendingAction;
+// //     const ok = await saveForm(false);
+
+// //     if (!ok) {
+// //       setPendingAction(null);
+// //       return;
+// //     }
+
+// //     if (action?.type === "create") {
+// //       await doCreateNewForm();
+// //     } else if (action?.type === "switch") {
+// //       doSwitchForm(action.formId);
+// //     }
+// //   };
+
+// //   const handleUnsavedDiscard = () => {
+// //     if (pendingAction?.type === "create") {
+// //       doCreateNewForm();
+// //     } else if (pendingAction?.type === "switch") {
+// //       doSwitchForm(pendingAction.formId);
+// //     } else {
+// //       setPendingAction(null);
+// //       setAlert(null);
+// //     }
+// //   };
+
+// //   const createNewForm = requestCreateNewForm;
+
+// //   const saveForm = async (showLoading = true): Promise<boolean> => {
+// //     if (!activeFormId) return false;
+// //     if (!draftTitle.trim()) {
+// //       setAlert({ type: "error", message: "Title is required" });
+// //       return false;
+// //     }
+
+// //     try {
+// //       if (showLoading) setSaving(true);
+// //       setAlert(null);
+
+// //       const res = await axios.put(
+// //         `${API}/api/forms/${activeFormId}`,
+// //         {
+// //           title: draftTitle.trim(),
+// //           description: draftDescription,
+// //           fields: draftFields,
+// //           layoutColumns: draftLayoutColumns,
+// //         },
+// //         { withCredentials: true }
+// //       );
+
+// //       const updated: FormSchema = res.data.data;
+// //       setForms((prev) =>
+// //         prev.map((f) => (f.id === activeFormId ? updated : f))
+// //       );
+
+// //       // Keep local selected in sync if backend returns them
+// //       if (updated.assignedMemberIds) {
+// //         setSelectedMemberIds(updated.assignedMemberIds.map(String));
+// //       }
+
+// //       setAlert({ type: "success", message: "Form saved successfully" });
+// //       return true;
+// //     } catch (err: any) {
+// //       console.error(err);
+// //       setAlert({
+// //         type: "error",
+// //         message: err?.response?.data?.message || "Failed to save form",
+// //       });
+// //       return false;
+// //     } finally {
+// //       if (showLoading) setSaving(false);
+// //     }
+// //   };
+
+// //   const assignMembers = async () => {
+// //     if (!activeFormId) return;
+
+// //     try {
+// //       setAssigning(true);
+// //       setAlert(null);
+// //       const res = await axios.put(
+// //         `${API}/api/forms/${activeFormId}/assign`,
+// //         { assignedMemberIds: selectedMemberIds },
+// //         { withCredentials: true }
+// //       );
+
+// //       const assignedMemberIds = res.data?.data?.assignedMemberIds || [];
+// //       setForms((prev) =>
+// //         prev.map((form) =>
+// //           form.id === activeFormId
+// //             ? { ...form, assignedMemberIds }
+// //             : form
+// //         )
+// //       );
+// //       setSelectedMemberIds(assignedMemberIds.map(String));
+// //       setAlert({ type: "success", message: "Members assigned successfully" });
+// //     } catch (err: any) {
+// //       console.error(err);
+// //       setAlert({
+// //         type: "error",
+// //         message: err?.response?.data?.message || "Failed to assign members",
+// //       });
+// //     } finally {
+// //       setAssigning(false);
+// //     }
+// //   };
+
+// //   const uploadFieldReferenceImage = async (file: File) => {
+// //     const formData = new FormData();
+// //     formData.append("image", file);
+
+// //     try {
+// //       setAlert(null);
+// //       const res = await axios.post(
+// //         `${API}/api/forms/upload-image`,
+// //         formData,
+// //         {
+// //           withCredentials: true,
+// //           headers: { "Content-Type": "multipart/form-data" },
+// //         }
+// //       );
+
+// //       const url = res.data?.url;
+// //       if (!url) throw new Error("Reference image upload did not return a URL");
+// //       setFieldReferenceImageUrl(url);
+// //     } catch (err: any) {
+// //       console.error(err);
+// //       setAlert({
+// //         type: "error",
+// //         message:
+// //           err?.response?.data?.message ||
+// //           err?.message ||
+// //           "Reference image upload failed",
+// //       });
+// //     }
+// //   };
+
+// //   const deleteForm = (id: string) => {
+// //     setPendingDeleteId(id);
+// //     setAlert({
+// //       type: "warning",
+// //       message:
+// //         "Are you sure you want to delete this form? This action cannot be undone.",
+// //     });
+// //   };
+
+// //   const confirmDelete = async () => {
+// //     if (!pendingDeleteId) return;
+// //     try {
+// //       const deletingId = pendingDeleteId;
+// //       setAlert(null);
+// //       setPendingDeleteId(null);
+
+// //       await axios.delete(`${API}/api/forms/${deletingId}`, {
+// //         withCredentials: true,
+// //       });
+
+// //       const updated = forms.filter((f) => f.id !== deletingId);
+// //       setForms(updated);
+
+// //       if (activeFormId === deletingId) {
+// //         setActiveFormId(updated[0]?.id || null);
+// //         setViewMode("edit");
+// //         setSelectedMemberIds([]);
+// //       }
+// //     } catch (err: any) {
+// //       console.error(err);
+// //       setAlert({
+// //         type: "error",
+// //         message: err?.response?.data?.message || "Failed to delete form",
+// //       });
+// //     }
+// //   };
+
+// //   // ===================== FIELD ACTIONS =====================
+
+// //   const addOrUpdateField = () => {
+// //     if (!fieldLabel.trim()) {
+// //       setAlert({ type: "error", message: "Field label is required" });
+// //       return;
+// //     }
+
+// //     let options: string[] | undefined;
+// //     if (showOptions) {
+// //       options = optionsInput
+// //         .split(",")
+// //         .map((o) => o.trim())
+// //         .filter(Boolean);
+
+// //       if (options.length === 0) {
+// //         setAlert({
+// //           type: "error",
+// //           message: "Please provide at least one option",
+// //         });
+// //         return;
+// //       }
+// //     }
+
+// //     const newField: FormField = {
+// //       id: editingFieldId || generateId(),
+// //       type: fieldType,
+// //       label: fieldLabel.trim(),
+// //       required: fieldRequired,
+// //       placeholder: fieldPlaceholder.trim() || undefined,
+// //       options,
+// //       referenceUrl: fieldReferenceImageUrl || undefined,
+// //     };
+
+// //     if (fieldType === "document") {
+// //       newField.accept =
+// //         ".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip";
+// //       newField.multiple = false;
+// //     }
+
+// //     if (editingFieldId) {
+// //       setDraftFields((prev) =>
+// //         prev.map((f) => (f.id === editingFieldId ? newField : f))
+// //       );
+// //     } else {
+// //       setDraftFields((prev) => [...prev, newField]);
+// //     }
+
+// //     resetFieldBuilder();
+// //   };
+
+// //   const editField = (field: FormField) => {
+// //     setEditingFieldId(field.id);
+// //     setFieldType(field.type);
+// //     setFieldLabel(field.label);
+// //     setFieldRequired(field.required);
+// //     setFieldPlaceholder(field.placeholder || "");
+// //     setOptionsInput(field.options?.join(", ") || "");
+// //     setFieldReferenceImageUrl(field.referenceUrl || "");
+// //   };
+
+// //   const deleteField = (id: string) => {
+// //     setDraftFields((prev) => prev.filter((f) => f.id !== id));
+// //     if (editingFieldId === id) resetFieldBuilder();
+// //   };
+
+// //   const moveField = (index: number, direction: "up" | "down") => {
+// //     const newFields = [...draftFields];
+// //     const target = direction === "up" ? index - 1 : index + 1;
+// //     if (target < 0 || target >= newFields.length) return;
+// //     [newFields[index], newFields[target]] = [
+// //       newFields[target],
+// //       newFields[index],
+// //     ];
+// //     setDraftFields(newFields);
+// //   };
+
+// //   // ===================== SHARE =====================
+
+// //   const getFormUrl = () => {
+// //     if (!activeFormId || !user?.organisation_id) return "";
+// //     return `${window.location.origin}/form/${user.organisation_id}/${activeFormId}`;
+// //   };
+
+// //   const copyLink = () => {
+// //     if (!activeFormId) return;
+// //     const url = getFormUrl();
+// //     navigator.clipboard.writeText(url);
+// //     setCopied(true);
+// //     setTimeout(() => setCopied(false), 2000);
+// //   };
+
+// //   const sendFormEmail = async () => {
+// //     if (!activeFormId) return;
+
+// //     const emails = shareEmails.map((e) => e.trim()).filter(Boolean);
+// //     if (emails.length === 0) {
+// //       setAlert({
+// //         type: "error",
+// //         message: "Please enter at least one email address",
+// //       });
+// //       return;
+// //     }
+
+// //     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// //     const invalidEmails = emails.filter((e) => !emailRegex.test(e));
+// //     if (invalidEmails.length > 0) {
+// //       setAlert({
+// //         type: "error",
+// //         message: `Invalid email(s):\n${invalidEmails.join("\n")}`,
+// //       });
+// //       return;
+// //     }
+
+// //     try {
+// //       setSendingEmail(true);
+// //       setAlert(null);
+
+// //       await axios.post(
+// //         `${API}/api/forms/${activeFormId}/send-email`,
+// //         {
+// //           emails,
+// //           formUrl: getFormUrl(),
+// //           formTitle: draftTitle.trim() || "Form",
+// //           fields: draftFields.length ? draftFields : activeForm?.fields || [],
+// //         },
+// //         { withCredentials: true }
+// //       );
+
+// //       setShareEmails([""]);
+// //       setAlert({ type: "success", message: "Form email sent successfully" });
+// //     } catch (err: any) {
+// //       console.error(err);
+// //       setAlert({
+// //         type: "error",
+// //         message: err?.response?.data?.message || "Failed to send email",
+// //       });
+// //     } finally {
+// //       setSendingEmail(false);
+// //     }
+// //   };
+
+// //   const shareViaWhatsApp = () => {
+// //     const url = getFormUrl();
+// //     if (!url) return;
+// //     const text = encodeURIComponent(`Hi! Please fill out this form:\n${url}`);
+// //     window.open(`https://wa.me/?text=${text}`, "_blank");
+// //   };
+
+// //   // ===================== LOADING =====================
+
+// //   if (loading) {
+// //     return (
+// //       <section className="h-screen bg-slate-50 flex items-center justify-center overflow-hidden">
+// //         <div className="flex items-center gap-2 text-slate-500">
+// //           <Loader2 size={20} className="animate-spin" />
+// //           Loading forms...
+// //         </div>
+// //       </section>
+// //     );
+// //   }
+// // // ===================== MEMBER ASSIGN DROPDOWN =====================
+
+// // function MemberAssignDropdown({
+// //   members,
+// //   membersLoading,
+// //   selectedMemberIds,
+// //   onChange,
+// //   search,
+// //   onSearchChange,
+// // }: {
+// //   members: Member[];
+// //   membersLoading: boolean;
+// //   selectedMemberIds: string[];
+// //   onChange: (ids: string[]) => void;
+// //   search: string;
+// //   onSearchChange: (v: string) => void;
+// // }) {
+// //   const [open, setOpen] = useState(false);
+
+// //   const filtered = members.filter((m) => {
+// //     if (!search.trim()) return true;
+// //     const q = search.toLowerCase();
+// //     return (
+// //       m.name.toLowerCase().includes(q) ||
+// //       (m.flat || "").toLowerCase().includes(q) ||
+// //       (m.mobile || "").includes(q) ||
+// //       (m.email || "").toLowerCase().includes(q)
+// //     );
+// //   });
+
+// //   const selectedMembers = members.filter((m) =>
+// //     selectedMemberIds.includes(m.id)
+// //   );
+
+// //   const toggle = (id: string) => {
+// //     onChange(
+// //       selectedMemberIds.includes(id)
+// //         ? selectedMemberIds.filter((x) => x !== id)
+// //         : [...selectedMemberIds, id]
+// //     );
+// //   };
+
+// //   const selectAll = () => onChange(filtered.map((m) => m.id));
+// //   const clearAll = () => onChange([]);
+
+// //   return (
+// //     <div className="relative">
+// //       {/* Trigger */}
+// //       <button
+// //         type="button"
+// //         onClick={() => setOpen((v) => !v)}
+// //         className="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-50 text-sm text-left hover:border-purple-300 focus:outline-none focus:ring-1 focus:ring-purple-500/20 focus:border-purple-500 transition"
+// //       >
+// //         <span className="truncate text-slate-700">
+// //           {selectedMembers.length === 0
+// //             ? "Select members…"
+// //             : selectedMembers.length <= 2
+// //             ? selectedMembers.map((m) => m.name).join(", ")
+// //             : `${selectedMembers
+// //                 .slice(0, 2)
+// //                 .map((m) => m.name)
+// //                 .join(", ")} +${selectedMembers.length - 2} more`}
+// //         </span>
+// //         <span className="text-slate-400 shrink-0 text-xs">
+// //           {open ? "▲" : "▼"}
+// //         </span>
+// //       </button>
+
+// //       {/* Dropdown panel */}
+// //       {open && (
+// //         <div className="absolute left-0 top-full z-[100] mt-1.5 w-full rounded-xl border border-slate-200 bg-white shadow-lg overflow-hidden">
+// //           {/* Search */}
+// //           <div className="p-2 border-b border-slate-100">
+// //             <div className="relative">
+// //               <Search
+// //                 size={14}
+// //                 className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400"
+// //               />
+// //               <input
+// //                 type="text"
+// //                 value={search}
+// //                 onChange={(e) => onSearchChange(e.target.value)}
+// //                 placeholder="Search by name, flat, mobile..."
+// //                 className="w-full pl-8 pr-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20"
+// //                 autoFocus
+// //               />
+// //             </div>
+// //           </div>
+
+// //           {/* Select all / Clear */}
+// //           <div className="flex items-center gap-3 px-3 py-2 text-xs border-b border-slate-100 bg-slate-50/80">
+// //             <button
+// //               type="button"
+// //               onClick={selectAll}
+// //               disabled={filtered.length === 0}
+// //               className="text-purple-600 hover:underline font-medium disabled:opacity-40"
+// //             >
+// //               Select all
+// //               {search.trim() ? ` (${filtered.length})` : ""}
+// //             </button>
+// //             <button
+// //               type="button"
+// //               onClick={clearAll}
+// //               disabled={selectedMemberIds.length === 0}
+// //               className="text-slate-500 hover:underline disabled:opacity-40"
+// //             >
+// //               Clear
+// //             </button>
+// //             <span className="ml-auto text-slate-400">
+// //               {selectedMemberIds.length} selected
+// //             </span>
+// //           </div>
+
+// //           {/* Checkbox list */}
+// //           <div className="max-h-56 overflow-y-auto divide-y divide-slate-100">
+// //             {membersLoading ? (
+// //               <div className="flex items-center justify-center py-8 text-slate-400 text-sm gap-2">
+// //                 <Loader2 size={16} className="animate-spin" />
+// //                 Loading members...
+// //               </div>
+// //             ) : filtered.length === 0 ? (
+// //               <div className="py-8 text-center text-sm text-slate-400">
+// //                 {members.length === 0 ? "No members found" : "No matches"}
+// //               </div>
+// //             ) : (
+// //               filtered.map((m) => {
+// //                 const checked = selectedMemberIds.includes(m.id);
+// //                 return (
+// //                   <label
+// //                     key={m.id}
+// //                     className={`flex items-center gap-3 px-3 py-2.5 cursor-pointer transition ${
+// //                       checked ? "bg-purple-50" : "hover:bg-slate-50"
+// //                     }`}
+// //                   >
+// //                     <input
+// //                       type="checkbox"
+// //                       checked={checked}
+// //                       onChange={() => toggle(m.id)}
+// //                       className="rounded border-slate-300 text-purple-600 focus:ring-purple-500"
+// //                     />
+// //                     <div className="min-w-0 flex-1">
+// //                       <p className="text-sm font-medium text-slate-800 truncate">
+// //                         {m.name}
+// //                       </p>
+// //                       <p className="text-[11px] text-slate-500 truncate">
+// //                         {[m.flat, m.mobile, m.email]
+// //                           .filter(Boolean)
+// //                           .join(" · ")}
+// //                       </p>
+// //                     </div>
+// //                   </label>
+// //                 );
+// //               })
+// //             )}
+// //           </div>
+
+// //           {/* Done */}
+// //           <div className="p-2 border-t border-slate-100 bg-slate-50/80">
+// //             <button
+// //               type="button"
+// //               onClick={() => setOpen(false)}
+// //               className="w-full py-2 rounded-lg bg-purple-600 text-white text-sm font-medium hover:bg-purple-700 transition"
+// //             >
+// //               Done
+// //             </button>
+// //           </div>
+// //         </div>
+// //       )}
+// //     </div>
+// //   );
+// // }
+// //   // ===================== RENDER =====================
+
+// //   return (
+// //     <section className="h-screen bg-slate-50 overflow-hidden py-4 sm:py-6">
+// //       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col min-h-0">
+// //         {alert && (
+// //           <Alert
+// //             type={alert.type}
+// //             message={alert.message}
+// //             onClose={() => {
+// //               if (pendingAction) {
+// //                 handleUnsavedDiscard();
+// //               } else {
+// //                 setAlert(null);
+// //                 setPendingDeleteId(null);
+// //               }
+// //             }}
+// //             confirm={!!pendingDeleteId || !!pendingAction}
+// //             onConfirm={pendingAction ? handleUnsavedConfirm : confirmDelete}
+// //             confirmText={pendingAction ? "Save & Continue" : "Yes, Delete"}
+// //             cancelText={pendingAction ? "Discard" : "Cancel"}
+// //           />
+// //         )}
+
+// //         {/* HEADER */}
+// //         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-4 shrink-0">
+// //           <div className="flex-1 min-w-0">
+// //             <span className="text-purple-600 font-semibold uppercase tracking-widest text-xs">
+// //               Form Management
+// //             </span>
+// //             <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mt-1">
+// //               Form Builder
+// //             </h1>
+// //           </div>
+
+// //           <div className="flex flex-col items-end gap-2 shrink-0">
+// //             <div className="flex flex-wrap justify-end gap-2">
+// //               {/* NEW FORM */}
+// //               <button
+// //                 type="button"
+// //                 onClick={createNewForm}
+// //                 disabled={creating}
+// //                 className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition disabled:opacity-60"
+// //               >
+// //                 {creating ? (
+// //                   <>
+// //                     <Loader2 size={15} className="animate-spin" />
+// //                     Creating...
+// //                   </>
+// //                 ) : (
+// //                   <>
+// //                     <Plus size={15} />
+// //                     New Form
+// //                   </>
+// //                 )}
+// //               </button>
+
+// //               {activeForm && (
+// //                 <>
+// //                   <button
+// //                     onClick={() =>
+// //                       setViewMode(viewMode === "preview" ? "edit" : "preview")
+// //                     }
+// //                     disabled={saving || creating}
+// //                     className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border text-sm font-medium transition ${
+// //                       viewMode === "preview"
+// //                         ? "bg-purple-50 border-purple-300 text-purple-700"
+// //                         : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+// //                     }`}
+// //                   >
+// //                     <Eye size={14} />
+// //                     {viewMode === "preview" ? "Edit" : "Preview"}
+// //                   </button>
+
+// //                   <button
+// //                     onClick={() =>
+// //                       setViewMode(
+// //                         viewMode === "responses" ? "edit" : "responses"
+// //                       )
+// //                     }
+// //                     disabled={saving || creating}
+// //                     className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border text-sm font-medium transition ${
+// //                       viewMode === "responses"
+// //                         ? "bg-purple-50 border-purple-300 text-purple-700"
+// //                         : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+// //                     }`}
+// //                   >
+// //                     <Inbox size={14} />
+// //                     Responses
+// //                   </button>
+
+// //                   {viewMode === "edit" && (
+// //                     <button
+// //                       type="button"
+// //                       onClick={() => saveForm()}
+// //                       disabled={saving || creating}
+// //                       className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition disabled:opacity-60"
+// //                     >
+// //                       {saving ? (
+// //                         <>
+// //                           <Loader2 size={14} className="animate-spin" />
+// //                           Saving...
+// //                         </>
+// //                       ) : (
+// //                         <>
+// //                           <Save size={14} />
+// //                           Save
+// //                         </>
+// //                       )}
+// //                     </button>
+// //                   )}
+// //                 </>
+// //               )}
+// //             </div>
+
+// //             {activeForm && (
+// //               <div className="flex flex-wrap items-start justify-end gap-2 w-full max-w-[720px]">
+// //                 {shareEmails.map((email, index) => (
+// //                   <div
+// //                     key={index}
+// //                     className="flex items-center gap-1.5 min-w-[220px] max-w-[280px] flex-1"
+// //                   >
+// //                     <input
+// //                       type="email"
+// //                       value={email}
+// //                       onChange={(e) => {
+// //                         const updated = [...shareEmails];
+// //                         updated[index] = e.target.value;
+// //                         setShareEmails(updated);
+// //                       }}
+// //                       placeholder="recipient@email.com"
+// //                       className="w-full px-2.5 py-2 rounded-lg border border-slate-200 bg-white text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20"
+// //                     />
+// //                     {shareEmails.length > 1 && (
+// //                       <button
+// //                         type="button"
+// //                         onClick={() =>
+// //                           setShareEmails(
+// //                             shareEmails.filter((_, i) => i !== index)
+// //                           )
+// //                         }
+// //                         className="p-2 rounded-lg text-red-500 hover:bg-red-50 transition shrink-0"
+// //                       >
+// //                         <Trash2 size={14} />
+// //                       </button>
+// //                     )}
+// //                   </div>
+// //                 ))}
+
+// //                 <div className="flex items-center gap-2 shrink-0">
+// //                   <button
+// //                     type="button"
+// //                     onClick={() => setShareEmails([...shareEmails, ""])}
+// //                     className="inline-flex items-center gap-1 text-xs font-medium text-purple-600 hover:text-purple-700"
+// //                   >
+// //                     <Plus size={13} />
+// //                     Add another email
+// //                   </button>
+
+// //                   <button
+// //                     onClick={sendFormEmail}
+// //                     disabled={
+// //                       sendingEmail || shareEmails.every((e) => !e.trim())
+// //                     }
+// //                     className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-purple-600 text-white text-sm font-medium hover:bg-purple-700 transition disabled:opacity-60"
+// //                   >
+// //                     {sendingEmail ? (
+// //                       <Loader2 size={14} className="animate-spin" />
+// //                     ) : (
+// //                       <Mail size={14} />
+// //                     )}
+// //                     Send
+// //                   </button>
+// //                 </div>
+// //               </div>
+// //             )}
+// //           </div>
+// //         </div>
+
+// //         {/* MAIN GRID */}
+// //         <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_260px] gap-5 flex-1 min-h-0 overflow-visible">
+// //           <div className="min-w-0 min-h-0 overflow-hidden">
+// //             {!activeForm ? (
+// //               <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
+// //                 <FileText size={36} className="mx-auto text-slate-300 mb-3" />
+// //                 <p className="text-base text-slate-500 mb-4">
+// //                   No form selected
+// //                 </p>
+// //                 <button
+// //                   type="button"
+// //                   onClick={createNewForm}
+// //                   disabled={creating || saving}
+// //                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition disabled:opacity-60"
+// //                 >
+// //                   {creating ? (
+// //                     <>
+// //                       <Loader2 size={15} className="animate-spin" />
+// //                       Creating...
+// //                     </>
+// //                   ) : (
+// //                     <>
+// //                       <Plus size={15} />
+// //                       Create Form
+// //                     </>
+// //                   )}
+// //                 </button>
+// //               </div>
+// //             ) : viewMode === "preview" ? (
+// //               <div className="h-full min-h-0 overflow-y-auto">
+// //                 <FormPreview
+// //                   schema={{
+// //                     ...activeForm,
+// //                     title: draftTitle,
+// //                     description: draftDescription,
+// //                     fields: draftFields,
+// //                     layoutColumns: draftLayoutColumns,
+// //                   }}
+// //                   onBack={() => setViewMode("edit")}
+// //                 />
+// //               </div>
+// //             ) : viewMode === "responses" ? (
+// //               <div className="h-full min-h-0 overflow-hidden">
+// //                 <FormResponses
+// //                   formTitle={draftTitle || activeForm.title}
+// //                   fields={
+// //                     draftFields.length
+// //                       ? draftFields
+// //                       : activeForm.fields || []
+// //                   }
+// //                   responses={responses}
+// //                   loading={responsesLoading}
+// //                   error={responsesError}
+// //                   onRefresh={loadResponses}
+// //                   onBack={() => setViewMode("edit")}
+// //                 />
+// //               </div>
+// //             ) : (
+// //               <div className="h-full min-h-0 overflow-y-auto pr-1">
+// //                 <div className="space-y-4">
+// //                   {/* FORM HEADER */}
+// //                   <div className="bg-white rounded-xl border border-slate-200 p-3.5 sm:p-4 space-y-4">
+// //                     <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3">
+// //                       <div className="flex-1 min-w-0">
+// //                         <label className="block text-[11px] font-medium text-slate-500 mb-1">
+// //                           Form Name
+// //                         </label>
+// //                         <input
+// //                           type="text"
+// //                           value={draftTitle}
+// //                           onChange={(e) => setDraftTitle(e.target.value)}
+// //                           className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
+// //                           placeholder="e.g. Employee Survey"
+// //                         />
+// //                       </div>
+
+// //                       <div className="sm:w-[180px] shrink-0">
+// //                         <label className="block text-[11px] font-medium text-slate-500 mb-1">
+// //                           Fields per row
+// //                         </label>
+// //                         <select
+// //                           value={draftLayoutColumns}
+// //                           onChange={(e) =>
+// //                             setDraftLayoutColumns(
+// //                               Number(e.target.value) as 1 | 2 | 3
+// //                             )
+// //                           }
+// //                           className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
+// //                         >
+// //                           <option value={1}>1 column</option>
+// //                           <option value={2}>2 columns</option>
+// //                           <option value={3}>3 columns</option>
+// //                         </select>
+// //                       </div>
+
+// //                       <div className="flex-1 min-w-0">
+// //                         <label className="block text-[11px] font-medium text-slate-500 mb-1">
+// //                           Description
+// //                         </label>
+// //                         <input
+// //                           type="text"
+// //                           value={draftDescription}
+// //                           onChange={(e) => setDraftDescription(e.target.value)}
+// //                           className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
+// //                           placeholder="Short description..."
+// //                         />
+// //                       </div>
+
+// //                       <div className="sm:w-[280px] shrink-0">
+// //                         <label className="block text-[11px] font-medium text-slate-500 mb-1">
+// //                           Share Link
+// //                         </label>
+// //                         <div className="flex items-center gap-1.5">
+// //                           <div className="flex-1 min-w-0 flex items-center gap-1.5 px-2.5 py-2 rounded-lg border border-slate-200 bg-slate-50 text-xs font-mono text-purple-600 truncate">
+// //                             <Link2
+// //                               size={12}
+// //                               className="shrink-0 text-slate-400"
+// //                             />
+// //                             <span className="truncate">
+// //                               /form/{user?.organisation_id ?? "org"}/
+// //                               {activeFormId}
+// //                             </span>
+// //                           </div>
+// //                           <button
+// //                             onClick={copyLink}
+// //                             title="Copy link"
+// //                             className="shrink-0 p-2 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-purple-600 transition"
+// //                           >
+// //                             {copied ? (
+// //                               <Check size={14} className="text-emerald-600" />
+// //                             ) : (
+// //                               <Copy size={14} />
+// //                             )}
+// //                           </button>
+// //                           <button
+// //                             onClick={shareViaWhatsApp}
+// //                             title="Share via WhatsApp"
+// //                             className="shrink-0 p-2 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-emerald-50 hover:text-emerald-600 transition"
+// //                           >
+// //                             <MessageCircle size={14} />
+// //                           </button>
+// //                         </div>
+// //                       </div>
+// //                     </div>
+// //                   </div>
+
+// //                   {/* BUILDER */}
+// //                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+// //                     {/* ADD FIELD */}
+// //                     <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5">
+// //                       <h3 className="text-base font-bold text-slate-900 mb-0.5">
+// //                         Add Form Fields
+// //                       </h3>
+// //                       <p className="text-xs text-slate-500 mb-4">
+// //                         Configure fields for your form
+// //                       </p>
+
+// //                       <div className="space-y-3">
+// //                         <div>
+// //                           <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+// //                             Field Type
+// //                           </label>
+// //                           <select
+// //                             value={fieldType}
+// //                             onChange={(e) =>
+// //                               setFieldType(e.target.value as FieldType)
+// //                             }
+// //                             className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
+// //                           >
+// //                             {FIELD_TYPES.map((t) => (
+// //                               <option key={t.value} value={t.value}>
+// //                                 {t.label}
+// //                               </option>
+// //                             ))}
+// //                           </select>
+// //                         </div>
+
+// //                         <div>
+// //                           <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+// //                             Field Label
+// //                           </label>
+// //                           <input
+// //                             type="text"
+// //                             value={fieldLabel}
+// //                             onChange={(e) => setFieldLabel(e.target.value)}
+// //                             className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
+// //                             placeholder="e.g. Your Name"
+// //                           />
+// //                         </div>
+
+// //                         <div>
+// //                           <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+// //                             Placeholder (optional)
+// //                           </label>
+// //                           <input
+// //                             type="text"
+// //                             value={fieldPlaceholder}
+// //                             onChange={(e) =>
+// //                               setFieldPlaceholder(e.target.value)
+// //                             }
+// //                             className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
+// //                             placeholder="e.g. Enter your full name"
+// //                           />
+// //                         </div>
+
+// //                         {showOptions && (
+// //                           <div>
+// //                             <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+// //                               Options (comma separated)
+// //                             </label>
+// //                             <input
+// //                               type="text"
+// //                               value={optionsInput}
+// //                               onChange={(e) => setOptionsInput(e.target.value)}
+// //                               className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
+// //                               placeholder="Option 1, Option 2, Option 3"
+// //                             />
+// //                           </div>
+// //                         )}
+
+// //                         {/* REFERENCE IMAGE */}
+// //                         <div className="rounded-xl border border-dashed border-purple-200 bg-purple-50/40 p-3">
+// //                           <div className="flex items-center justify-between gap-3 mb-2">
+// //                             <div>
+// //                               <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-purple-700">
+// //                                 Field reference image
+// //                               </p>
+// //                               <p className="text-[10px] text-slate-500 mt-0.5">
+// //                                 Optional image shown under this field
+// //                               </p>
+// //                             </div>
+// //                             {fieldReferenceImageUrl && (
+// //                               <button
+// //                                 type="button"
+// //                                 onClick={() => setFieldReferenceImageUrl("")}
+// //                                 className="text-[10px] text-red-600 hover:text-red-700 font-medium"
+// //                               >
+// //                                 Remove
+// //                               </button>
+// //                             )}
+// //                           </div>
+// //                           <input
+// //                             type="file"
+// //                             accept="image/*"
+// //                             onChange={(e) => {
+// //                               const file = e.target.files?.[0];
+// //                               if (file) uploadFieldReferenceImage(file);
+// //                             }}
+// //                             className="block w-full text-[11px] text-slate-600 file:mr-2 file:rounded-lg file:border-0 file:bg-purple-600 file:px-2 file:py-1.5 file:text-[11px] file:font-medium file:text-white hover:file:bg-purple-700"
+// //                           />
+// //                           {fieldReferenceImageUrl && (
+// //                             <div className="mt-3 overflow-hidden rounded-lg border border-purple-200 bg-white">
+// //                               <img
+// //                                 src={fieldReferenceImageUrl}
+// //                                 alt="Field reference"
+// //                                 className="h-28 w-full object-cover"
+// //                               />
+// //                             </div>
+// //                           )}
+// //                         </div>
+
+// //                         <label className="inline-flex items-center gap-2 text-xs font-medium text-slate-600 cursor-pointer">
+// //                           <input
+// //                             type="checkbox"
+// //                             checked={fieldRequired}
+// //                             onChange={(e) =>
+// //                               setFieldRequired(e.target.checked)
+// //                             }
+// //                             className="rounded border-slate-300 text-purple-600 focus:ring-purple-500"
+// //                           />
+// //                           Required Field
+// //                         </label>
+
+// //                         <button
+// //                           onClick={addOrUpdateField}
+// //                           className="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition"
+// //                         >
+// //                           {editingFieldId ? (
+// //                             <>
+// //                               <Edit2 size={15} />
+// //                               Update Field
+// //                             </>
+// //                           ) : (
+// //                             <>
+// //                               <Plus size={15} />
+// //                               Add Field
+// //                             </>
+// //                           )}
+// //                         </button>
+
+// //                         {editingFieldId && (
+// //                           <button
+// //                             onClick={resetFieldBuilder}
+// //                             className="w-full text-xs text-slate-500 hover:text-slate-700"
+// //                           >
+// //                             Cancel editing
+// //                           </button>
+// //                         )}
+// //                       </div>
+// //                     </div>
+
+// //                     {/* ADDED FIELDS */}
+// //                     <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5">
+// //                       <h3 className="text-base font-bold text-slate-900 mb-3">
+// //                         Added Fields ({draftFields.length})
+// //                       </h3>
+
+// //                       {draftFields.length === 0 ? (
+// //                         <div className="py-12 text-center border-2 border-dashed border-slate-200 rounded-lg">
+// //                           <p className="text-xs text-slate-400">
+// //                             No fields added yet
+// //                           </p>
+// //                         </div>
+// //                       ) : (
+// //                         <div className="space-y-2 max-h-[380px] overflow-y-auto">
+// //                           {draftFields.map((field, index) => (
+// //                             <div
+// //                               key={field.id}
+// //                               className="flex items-center gap-2 p-3 rounded-lg border border-slate-200 bg-slate-50 hover:border-slate-300 transition"
+// //                             >
+// //                               <GripVertical
+// //                                 size={14}
+// //                                 className="text-slate-300 shrink-0"
+// //                               />
+
+// //                               <div className="min-w-0 flex-1">
+// //                                 <div className="flex items-center gap-1.5 flex-wrap">
+// //                                   <span className="text-sm font-medium text-slate-900">
+// //                                     {field.label}
+// //                                   </span>
+// //                                   <span className="text-[11px] text-slate-400">
+// //                                     ({field.type})
+// //                                   </span>
+// //                                   {field.required && (
+// //                                     <span className="text-[11px] text-red-500 font-medium">
+// //                                       *
+// //                                     </span>
+// //                                   )}
+// //                                 </div>
+
+// //                                 {field.type === "image" ? (
+// //                                   <div className="mt-2 flex items-center gap-2">
+// //                                     <div className="flex h-10 w-14 items-center justify-center rounded-md border border-dashed border-purple-300 bg-gradient-to-br from-purple-100 via-white to-pink-100 text-[8px] font-semibold text-purple-600">
+// //                                       IMG
+// //                                     </div>
+// //                                     <p className="text-[11px] text-slate-500">
+// //                                       Image upload field
+// //                                     </p>
+// //                                   </div>
+// //                                 ) : field.type === "document" ? (
+// //                                   <div className="mt-2 flex items-center gap-2">
+// //                                     <div className="flex h-10 w-14 items-center justify-center rounded-md border border-dashed border-purple-300 bg-gradient-to-br from-purple-100 via-white to-pink-100 text-[8px] font-semibold text-purple-600">
+// //                                       DOC
+// //                                     </div>
+// //                                     <p className="text-[11px] text-slate-500">
+// //                                       Document upload field
+// //                                     </p>
+// //                                   </div>
+// //                                 ) : field.options ? (
+// //                                   <p className="text-[11px] text-slate-400 mt-0.5 truncate">
+// //                                     {field.options.join(", ")}
+// //                                   </p>
+// //                                 ) : null}
+// //                               </div>
+
+// //                               <div className="flex items-center gap-0.5 shrink-0">
+// //                                 <button
+// //                                   onClick={() => moveField(index, "up")}
+// //                                   disabled={index === 0}
+// //                                   className="p-1.5 rounded-md text-slate-400 hover:bg-white disabled:opacity-30 transition"
+// //                                 >
+// //                                   <ArrowUp size={13} />
+// //                                 </button>
+// //                                 <button
+// //                                   onClick={() => moveField(index, "down")}
+// //                                   disabled={index === draftFields.length - 1}
+// //                                   className="p-1.5 rounded-md text-slate-400 hover:bg-white disabled:opacity-30 transition"
+// //                                 >
+// //                                   <ArrowDown size={13} />
+// //                                 </button>
+// //                                 <button
+// //                                   onClick={() => editField(field)}
+// //                                   className="p-1.5 rounded-md bg-purple-600 text-white hover:bg-purple-700 transition"
+// //                                 >
+// //                                   <Edit2 size={13} />
+// //                                 </button>
+// //                                 <button
+// //                                   onClick={() => deleteField(field.id)}
+// //                                   className="p-1.5 rounded-md bg-red-500 text-white hover:bg-red-600 transition"
+// //                                 >
+// //                                   <Trash2 size={13} />
+// //                                 </button>
+// //                               </div>
+// //                             </div>
+// //                           ))}
+// //                         </div>
+// //                       )}
+// //                     </div>
+// //                   </div>
+// //                 </div>
+// //               </div>
+// //             )}
+// //           </div>
+
+// //           {/* SIDEBAR */}
+// //           <aside className="space-y-4 h-fit max-h-full overflow-visible">
+// //             {activeForm && viewMode === "edit" && (
+// //               <div className="bg-white rounded-xl border border-slate-200 p-4">
+// //                 <div className="flex items-start justify-between gap-2 mb-3">
+// //                   <div className="flex items-center gap-2">
+// //                     <Users size={16} className="text-purple-600" />
+// //                     <div>
+// //                       <h3 className="text-sm font-bold text-slate-900">
+// //                         Assign Users
+// //                       </h3>
+// //                       <p className="text-[11px] text-slate-500 mt-0.5">
+// //                         Save assignments separately
+// //                       </p>
+// //                     </div>
+// //                   </div>
+// //                   <span className="text-[11px] font-medium text-purple-700 bg-purple-50 px-2 py-1 rounded-full shrink-0">
+// //                     {selectedMemberIds.length}
+// //                   </span>
+// //                 </div>
+
+// //                 <MemberAssignDropdown
+// //                   members={members}
+// //                   membersLoading={membersLoading}
+// //                   selectedMemberIds={selectedMemberIds}
+// //                   onChange={setSelectedMemberIds}
+// //                   search={memberSearch}
+// //                   onSearchChange={setMemberSearch}
+// //                 />
+// //                 <button
+// //                   type="button"
+// //                   onClick={assignMembers}
+// //                   disabled={assigning || saving}
+// //                   className="mt-3 w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition disabled:opacity-60"
+// //                 >
+// //                   {assigning ? (
+// //                     <Loader2 size={14} className="animate-spin" />
+// //                   ) : (
+// //                     <Users size={14} />
+// //                   )}
+// //                   {assigning ? "Assigning..." : "Assign"}
+// //                 </button>
+// //               </div>
+// //             )}
+
+// //             <div className="bg-white rounded-xl border border-slate-200 p-4">
+// //             <h3 className="text-xs font-semibold text-slate-900 mb-3">
+// //               Your Forms ({forms.length})
+// //             </h3>
+
+// //             {forms.length === 0 ? (
+// //               <div className="py-8 text-center">
+// //                 <FileText size={24} className="mx-auto text-slate-300 mb-2" />
+// //                 <p className="text-xs text-slate-400">No forms yet</p>
+// //                 <button
+// //                   type="button"
+// //                   onClick={createNewForm}
+// //                   className="mt-2 text-xs font-medium text-purple-600 hover:underline"
+// //                 >
+// //                   Create your first form
+// //                 </button>
+// //               </div>
+// //             ) : (
+// //               <div className="space-y-1.5 max-h-[70vh] overflow-y-auto">
+// //                 {forms.map((form) => (
+// //                   <div
+// //                     key={form.id}
+// //                     onClick={() => requestSwitchForm(form.id)}
+// //                     className={`flex items-center justify-between gap-2 p-2.5 rounded-lg cursor-pointer transition border ${
+// //                       activeFormId === form.id
+// //                         ? "bg-purple-50 border-purple-300"
+// //                         : "bg-slate-50 border-transparent hover:bg-slate-100"
+// //                     }`}
+// //                   >
+// //                     <div className="min-w-0">
+// //                       <p className="text-sm font-medium text-slate-900 truncate">
+// //                         {form.title || "No title"}
+// //                       </p>
+// //                       <p className="text-[11px] text-slate-400 mt-0.5">
+// //                         {(form.fields || []).length} field
+// //                         {(form.fields || []).length !== 1 ? "s" : ""}
+// //                         {(form.assignedMemberIds?.length ?? 0) > 0 && (
+// //                           <> · {form.assignedMemberIds!.length} users</>
+// //                         )}
+// //                       </p>
+// //                     </div>
+// //                     <button
+// //                       onClick={(e) => {
+// //                         e.stopPropagation();
+// //                         deleteForm(form.id);
+// //                       }}
+// //                       className="p-1 rounded-md text-slate-400 hover:text-red-500 hover:bg-red-50 transition"
+// //                     >
+// //                       <Trash2 size={13} />
+// //                     </button>
+// //                   </div>
+// //                 ))}
+// //               </div>
+// //             )}
+// //             </div>
+// //           </aside>
+// //         </div>
+// //       </div>
+// //     </section>
+// //   );
+// // }
+
+// // // ======================================================
+// // // RESPONSES
+// // // ======================================================
+
+// // function FormResponses({
+// //   formTitle,
+// //   fields,
+// //   responses,
+// //   loading,
+// //   error,
+// //   onRefresh,
+// //   onBack,
+// // }: {
+// //   formTitle: string;
+// //   fields: FormField[];
+// //   responses: FormResponse[];
+// //   loading: boolean;
+// //   error: string | null;
+// //   onRefresh: () => void;
+// //   onBack: () => void;
+// // }) {
+// //   const formatValue = (val: any) => {
+// //     if (val == null || val === "") return "—";
+// //     if (Array.isArray(val)) return val.length ? val.join(", ") : "—";
+// //     if (typeof val === "object" && ("start" in val || "end" in val)) {
+// //       return `Start Date: ${val.start || "—"} | End Date: ${val.end || "—"}`;
+// //     }
+// //     if (typeof val === "object") {
+// //       if (val.url || val.name || val.originalname) {
+// //         return val.name || val.originalname || val.url || "File";
+// //       }
+// //       return JSON.stringify(val);
+// //     }
+// //     return String(val);
+// //   };
+
+// //   const visibleFields = fields.filter((f) => f.type !== "reference-image");
+
+// //   const columns =
+// //     visibleFields.length > 0
+// //       ? visibleFields.map((f) => ({ key: f.id, label: f.label }))
+// //       : (() => {
+// //           const first = responses[0]?.values;
+// //           if (!first || typeof first !== "object") return [];
+// //           return Object.keys(first).map((key) => ({ key, label: key }));
+// //         })();
+
+// //   const downloadExcel = () => {
+// //     if (responses.length === 0) {
+// //       alert("No responses to download");
+// //       return;
+// //     }
+
+// //     const excelData = responses.map((r, index) => {
+// //       const row: any = {
+// //         "#": responses.length - index,
+// //       };
+
+// //       columns.forEach((col) => {
+// //         const value = r.values?.[col.key];
+// //         row[col.label] = formatValue(value);
+// //       });
+
+// //       return row;
+// //     });
+
+// //     const worksheet = XLSX.utils.json_to_sheet(excelData);
+
+// //     const colWidths = Object.keys(excelData[0] || {}).map((key) => ({
+// //       wch: Math.max(key.length + 2, 18),
+// //     }));
+// //     worksheet["!cols"] = colWidths;
+
+// //     const workbook = XLSX.utils.book_new();
+// //     XLSX.utils.book_append_sheet(workbook, worksheet, "Responses");
+
+// //     const fileName = `${formTitle || "Form"}_Responses_${new Date()
+// //       .toISOString()
+// //       .slice(0, 10)}.xlsx`;
+
+// //     XLSX.writeFile(workbook, fileName);
+// //   };
+
+// //   if (loading) {
+// //     return (
+// //       <div className="bg-white rounded-xl border border-slate-200 h-full flex items-center justify-center gap-2 text-slate-500">
+// //         <Loader2 size={18} className="animate-spin" />
+// //         Loading responses...
+// //       </div>
+// //     );
+// //   }
+
+// //   return (
+// //     <div className="bg-white rounded-xl border border-slate-200 overflow-hidden h-full min-h-0 flex flex-col">
+// //       {/* HEADER */}
+// //       <div className="px-5 sm:px-6 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
+// //         <div className="min-w-0">
+// //           <h2 className="text-lg font-bold text-slate-900">Responses</h2>
+// //           <p className="text-xs text-slate-500 mt-0.5 truncate">
+// //             {formTitle} · {responses.length} response
+// //             {responses.length !== 1 ? "s" : ""}
+// //           </p>
+// //         </div>
+
+// //         <div className="flex items-center gap-2 shrink-0">
+// //           <button
+// //             onClick={downloadExcel}
+// //             disabled={responses.length === 0}
+// //             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+// //           >
+// //             <Download size={14} />
+// //             Download Excel
+// //           </button>
+
+// //           <button
+// //             onClick={onRefresh}
+// //             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 transition"
+// //           >
+// //             Refresh
+// //           </button>
+
+// //           <button
+// //             onClick={onBack}
+// //             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 transition"
+// //           >
+// //             ← Back to editor
+// //           </button>
+// //         </div>
+// //       </div>
+
+// //       {error && (
+// //         <div className="mx-5 mt-4 px-3 py-2 bg-red-50 border border-red-200 text-red-800 rounded-lg text-sm shrink-0">
+// //           {error}
+// //         </div>
+// //       )}
+
+// //       {responses.length === 0 ? (
+// //         <div className="flex-1 flex flex-col items-center justify-center text-center min-h-0">
+// //           <Inbox size={32} className="mx-auto text-slate-300 mb-2" />
+// //           <p className="text-sm text-slate-500">No responses yet</p>
+// //           <p className="text-xs text-slate-400 mt-1">
+// //             Share the form link to start collecting answers
+// //           </p>
+// //         </div>
+// //       ) : columns.length === 0 ? (
+// //         <div className="flex-1 min-h-0 overflow-auto p-5 space-y-3">
+// //           <p className="text-xs text-slate-500 mb-2">
+// //             Could not map field labels — showing raw response data
+// //           </p>
+// //           {responses.map((r, idx) => (
+// //             <pre
+// //               key={r.id}
+// //               className="text-xs bg-slate-50 border border-slate-200 rounded-lg p-3 overflow-x-auto"
+// //             >
+// //               #{responses.length - idx}
+// //               {"\n"}
+// //               {JSON.stringify(r.values, null, 2)}
+// //             </pre>
+// //           ))}
+// //         </div>
+// //       ) : (
+// //         <div className="flex-1 min-h-0 min-w-0 overflow-auto overscroll-contain">
+// //           <table className="min-w-max w-full text-sm border-collapse">
+// //             <thead className="sticky top-0 z-20">
+// //               <tr className="bg-slate-50 border-b border-slate-200">
+// //                 <th className="sticky left-0 top-0 z-30 bg-slate-50 text-left px-4 py-3 font-semibold text-slate-600 whitespace-nowrap border-r border-slate-100">
+// //                   #
+// //                 </th>
+// //                 {columns.map((col) => (
+// //                   <th
+// //                     key={col.key}
+// //                     className="text-left px-4 py-3 font-semibold text-slate-600 whitespace-nowrap min-w-[180px] max-w-[320px]"
+// //                   >
+// //                     {col.label}
+// //                   </th>
+// //                 ))}
+// //               </tr>
+// //             </thead>
+// //             <tbody>
+// //               {responses.map((r, idx) => (
+// //                 <tr
+// //                   key={r.id}
+// //                   className="border-b border-slate-100 hover:bg-slate-50/80 transition"
+// //                 >
+// //                   <td className="sticky left-0 z-10 bg-white px-4 py-3 text-slate-400 tabular-nums align-top border-r border-slate-100">
+// //                     {responses.length - idx}
+// //                   </td>
+
+// //                   {columns.map((col) => {
+// //                     const value = r.values?.[col.key];
+// //                     const field = visibleFields.find((f) => f.id === col.key);
+// //                     const isImageField = field?.type === "image";
+// //                     const isDocumentField = field?.type === "document";
+
+// //                     const imageUrl =
+// //                       typeof value === "string" ? value : value?.url || "";
+
+// //                     return (
+// //                       <td
+// //                         key={col.key}
+// //                         className="px-4 py-3 text-slate-800 align-top min-w-[180px] max-w-[320px] whitespace-normal break-words"
+// //                         title={
+// //                           typeof value === "object"
+// //                             ? JSON.stringify(value)
+// //                             : formatValue(value)
+// //                         }
+// //                       >
+// //                         {isImageField && value ? (
+// //                           <div className="flex flex-col gap-2">
+// //                             <img
+// //                               src={imageUrl}
+// //                               alt={
+// //                                 typeof value === "string"
+// //                                   ? "Uploaded image"
+// //                                   : value?.name || "Uploaded image"
+// //                               }
+// //                               className="h-20 w-20 object-cover rounded-lg border border-slate-200 bg-slate-50"
+// //                             />
+// //                             <div className="flex items-center gap-3">
+// //                               <a
+// //                                 href={imageUrl}
+// //                                 target="_blank"
+// //                                 rel="noreferrer"
+// //                                 className="inline-flex text-xs text-purple-600 hover:text-purple-700 underline"
+// //                               >
+// //                                 View
+// //                               </a>
+// //                               <a
+// //                                 href={imageUrl}
+// //                                 target="_blank"
+// //                                 rel="noreferrer"
+// //                                 download
+// //                                 className="inline-flex text-xs text-slate-600 hover:text-slate-800 underline"
+// //                               >
+// //                                 Download
+// //                               </a>
+// //                             </div>
+// //                           </div>
+// //                         ) : isDocumentField && value ? (
+// //                           <div className="flex flex-col gap-2">
+// //                             {(Array.isArray(value) ? value : [value]).map(
+// //                               (file: any, i: number) => {
+// //                                 const url =
+// //                                   typeof file === "string"
+// //                                     ? file
+// //                                     : file.url || file.path || "";
+// //                                 const name =
+// //                                   typeof file === "string"
+// //                                     ? "Document"
+// //                                     : file.name ||
+// //                                       file.originalname ||
+// //                                       "Document";
+// //                                 return (
+// //                                   <div
+// //                                     key={i}
+// //                                     className="flex items-center gap-2"
+// //                                   >
+// //                                     <FileText
+// //                                       size={16}
+// //                                       className="text-purple-600 shrink-0"
+// //                                     />
+// //                                     <span className="text-xs truncate max-w-[140px]">
+// //                                       {name}
+// //                                     </span>
+// //                                     <a
+// //                                       href={url}
+// //                                       target="_blank"
+// //                                       rel="noreferrer"
+// //                                       className="text-xs text-purple-600 underline"
+// //                                     >
+// //                                       View
+// //                                     </a>
+// //                                     <a
+// //                                       href={url}
+// //                                       download
+// //                                       className="text-xs text-slate-600 underline"
+// //                                     >
+// //                                       Download
+// //                                     </a>
+// //                                   </div>
+// //                                 );
+// //                               }
+// //                             )}
+// //                           </div>
+// //                         ) : (
+// //                           <div className="max-w-[320px] whitespace-normal break-words leading-5">
+// //                             {formatValue(value)}
+// //                           </div>
+// //                         )}
+// //                       </td>
+// //                     );
+// //                   })}
+// //                 </tr>
+// //               ))}
+// //             </tbody>
+// //           </table>
+// //         </div>
+// //       )}
+// //     </div>
+// //   );
+// // }
+
+// // // ======================================================
+// // // PREVIEW (view-only – no submit, no data entry)
+// // // ======================================================
+
+// // function FormPreview({
+// //   schema,
+// //   onBack,
+// // }: {
+// //   schema: FormSchema;
+// //   onBack: () => void;
+// // }) {
+// //   const visibleFields = (schema.fields || []).filter(
+// //     (field: any) => field.type !== "reference-image"
+// //   );
+
+// //   return (
+// //     <div className="bg-white rounded-xl border border-slate-200 overflow-hidden w-full max-w-full">
+// //       <div className="px-5 sm:px-8 pt-6 pb-5 border-b border-slate-100 text-center">
+// //         <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
+// //           {schema.title || "Untitled Form"}
+// //         </h2>
+// //         {schema.description && (
+// //           <p className="text-slate-500 text-sm mt-1.5 max-w-xl mx-auto">
+// //             {schema.description}
+// //           </p>
+// //         )}
+// //         <p className="text-[11px] text-purple-600 font-medium mt-2 uppercase tracking-wide">
+// //           Preview Mode · View Only
+// //         </p>
+// //       </div>
+
+// //       <div
+// //         className="p-5 sm:p-8 grid gap-5 max-w-4xl mx-auto"
+// //         style={{
+// //           gridTemplateColumns: `repeat(${schema.layoutColumns || 2}, minmax(0, 1fr))`,
+// //         }}
+// //       >
+// //         {visibleFields.length === 0 ? (
+// //           <p className="col-span-full text-center text-sm text-slate-400 py-8">
+// //             No fields added yet
+// //           </p>
+// //         ) : (
+// //           visibleFields.map((field: any) => (
+// //             <div
+// //               key={field.id}
+// //               className={field.type === "textarea" ? "col-span-full" : ""}
+// //             >
+// //               <label className="block text-sm font-semibold text-slate-800 mb-1.5">
+// //                 {field.label}
+// //                 {field.required && <span className="text-red-500 ml-1">*</span>}
+// //               </label>
+
+// //               {field.referenceUrl && (
+// //                 <div className="mb-3 overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
+// //                   <img
+// //                     src={field.referenceUrl}
+// //                     alt={field.label}
+// //                     className="max-h-64 w-full object-cover"
+// //                   />
+// //                 </div>
+// //               )}
+
+// //               {/* Read-only field renderings */}
+// //               {field.type === "image" ? (
+// //                 <div className="rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-xs text-slate-400">
+// //                   Image upload field
+// //                 </div>
+// //               ) : field.type === "document" ? (
+// //                 <div className="rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-xs text-slate-400">
+// //                   Document upload field
+// //                 </div>
+// //               ) : field.type === "textarea" ? (
+// //                 <textarea
+// //                   disabled
+// //                   placeholder={field.placeholder || ""}
+// //                   className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-100 text-sm text-slate-500 cursor-not-allowed resize-none"
+// //                   rows={3}
+// //                 />
+// //               ) : field.type === "select" ? (
+// //                 <select
+// //                   disabled
+// //                   className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-100 text-sm text-slate-500 cursor-not-allowed"
+// //                 >
+// //                   <option>-- Select --</option>
+// //                   {field.options?.map((opt: string) => (
+// //                     <option key={opt}>{opt}</option>
+// //                   ))}
+// //                 </select>
+// //               ) : field.type === "radio" ? (
+// //                 <div className="space-y-2">
+// //                   {field.options?.map((opt: string) => (
+// //                     <label
+// //                       key={opt}
+// //                       className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-slate-500 cursor-not-allowed"
+// //                     >
+// //                       <input
+// //                         type="radio"
+// //                         disabled
+// //                         className="accent-purple-600"
+// //                       />
+// //                       {opt}
+// //                     </label>
+// //                   ))}
+// //                 </div>
+// //               ) : field.type === "checkbox-group" ? (
+// //                 <div className="space-y-2">
+// //                   {field.options?.map((opt: string) => (
+// //                     <label
+// //                       key={opt}
+// //                       className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-slate-500 cursor-not-allowed"
+// //                     >
+// //                       <input
+// //                         type="checkbox"
+// //                         disabled
+// //                         className="rounded accent-purple-600"
+// //                       />
+// //                       {opt}
+// //                     </label>
+// //                   ))}
+// //                 </div>
+// //               ) : field.type === "checkbox" ? (
+// //                 <label className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-slate-500 cursor-not-allowed">
+// //                   <input
+// //                     type="checkbox"
+// //                     disabled
+// //                     className="rounded accent-purple-600"
+// //                   />
+// //                   {field.placeholder || "Yes"}
+// //                 </label>
+// //               ) : field.type === "rating" ? (
+// //                 <div className="flex items-center gap-1">
+// //                   {[1, 2, 3, 4, 5].map((star) => (
+// //                     <span key={star} className="text-2xl text-slate-300">
+// //                       ★
+// //                     </span>
+// //                   ))}
+// //                   <span className="ml-2 text-xs text-slate-400">Rating</span>
+// //                 </div>
+// //               ) : field.type === "daterange" ? (
+// //                 <div className="grid gap-3 sm:grid-cols-2">
+// //                   <div>
+// //                     <label className="mb-1 block text-xs font-medium text-slate-500">
+// //                       Start date
+// //                     </label>
+// //                     <input
+// //                       type="date"
+// //                       disabled
+// //                       className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-100 text-sm text-slate-500 cursor-not-allowed"
+// //                     />
+// //                   </div>
+// //                   <div>
+// //                     <label className="mb-1 block text-xs font-medium text-slate-500">
+// //                       End date
+// //                     </label>
+// //                     <input
+// //                       type="date"
+// //                       disabled
+// //                       className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-100 text-sm text-slate-500 cursor-not-allowed"
+// //                     />
+// //                   </div>
+// //                 </div>
+// //               ) : (
+// //                 <input
+// //                   type={
+// //                     field.type === "email"
+// //                       ? "email"
+// //                       : field.type === "tel"
+// //                       ? "tel"
+// //                       : field.type === "number"
+// //                       ? "number"
+// //                       : field.type === "date"
+// //                       ? "date"
+// //                       : "text"
+// //                   }
+// //                   disabled
+// //                   placeholder={field.placeholder || ""}
+// //                   className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-100 text-sm text-slate-500 cursor-not-allowed"
+// //                 />
+// //               )}
+// //             </div>
+// //           ))
+// //         )}
+// //       </div>
+
+// //       <div className="px-5 sm:px-8 pb-6 text-center">
+// //         <button
+// //           onClick={onBack}
+// //           className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-purple-600 text-white text-sm font-medium hover:bg-purple-700 transition"
+// //         >
+// //           ← Back to editor
+// //         </button>
+// //       </div>
+// //     </div>
+// //   );
+// // }
+
+// "use client";
+
+// import {
+//   useState,
+//   useEffect,
+//   useContext,
+//   useCallback,
+// } from "react";
+// import axios from "axios";
+// import * as XLSX from "xlsx";
+// import { AuthContext } from "../../../../../../../src/context/AuthContext";
+// import {
+//   Plus,
+//   Save,
+//   Edit2,
+//   Trash2,
+//   Eye,
+//   Copy,
+//   Check,
+//   FileText,
+//   GripVertical,
+//   ArrowUp,
+//   ArrowDown,
+//   Link2,
+//   Loader2,
+//   Mail,
+//   MessageCircle,
+//   Inbox,
+//   Download,
+//   Users,
+//   Search,
+// } from "lucide-react";
+
+// import Alert from "../../../../../../components/Aleartmessage";
+
+// // ===================== API =====================
+
+// const API = `${import.meta.env.VITE_BACKEND_URL}`;
+
+// // ===================== TYPES =====================
+
+// type FieldType =
+//   | "text"
+//   | "textarea"
+//   | "email"
+//   | "tel"
+//   | "number"
+//   | "date"
+//   | "daterange"
+//   | "select"
+//   | "radio"
+//   | "checkbox-group"
+//   | "checkbox"
+//   | "rating"
+//   | "image"
+//   | "document"
+//   | "reference-image";
+
+// interface FormField {
+//   id: string;
+//   type: FieldType;
+//   label: string;
+//   required: boolean;
+//   placeholder?: string;
+//   options?: string[];
+//   referenceUrl?: string;
+//   accept?: string;
+//   multiple?: boolean;
+// }
+
+// interface FormSchema {
+//   id: string;
+//   title: string;
+//   description?: string;
+//   fields: FormField[];
+//   layoutColumns?: 1 | 2 | 3;
+//   createdAt: string;
+//   updatedAt: string;
+//   assignedMemberIds?: string[];
+// }
+
+// interface FormResponse {
+//   id: string;
+//   formId: string;
+//   values: Record<string, any>;
+//   createdAt: string;
+// }
+
+// interface Member {
+//   id: string;
+//   name: string;
+//   email: string | null;
+//   mobile: string | null;
+//   flat: string | null;
+//   memberCode?: string;
+//   memberType?: string;
+// }
+
+// // ===================== CONSTANTS =====================
+
+// const generateId = () => Math.random().toString(36).slice(2, 11);
+
+// const FIELD_TYPES: { value: FieldType; label: string }[] = [
+//   { value: "text", label: "📝 Text" },
+//   { value: "email", label: "📧 Email" },
+//   { value: "tel", label: "📱 Mobile Number" },
+//   { value: "textarea", label: "📄 Textarea" },
+//   { value: "number", label: "🔢 Number" },
+//   { value: "date", label: "📅 Date" },
+//   { value: "daterange", label: "📆 Date Range" },
+//   { value: "select", label: "📋 Dropdown" },
+//   { value: "radio", label: "◉ Radio Buttons" },
+//   { value: "checkbox-group", label: "☑️ Checkbox Group" },
+//   { value: "checkbox", label: "☐ Single Checkbox" },
+//   { value: "rating", label: "⭐ Rating" },
+//   { value: "image", label: "🖼️ Image Upload" },
+//   { value: "document", label: "📎 Document Upload" },
+// ];
+
+// // ===================== MAIN COMPONENT =====================
+
+// export default function FormBuilder() {
+//   const { user } = useContext(AuthContext);
+
+//   const [forms, setForms] = useState<FormSchema[]>([]);
+//   const [activeFormId, setActiveFormId] = useState<string | null>(null);
+//   const [viewMode, setViewMode] = useState<"edit" | "preview" | "responses">(
+//     "edit"
+//   );
+//   const [copied, setCopied] = useState(false);
+//   const [loading, setLoading] = useState(true);
+//   const [saving, setSaving] = useState(false);
+//   const [assigning, setAssigning] = useState(false);
+//   const [creating, setCreating] = useState(false);
+
+//   const [alert, setAlert] = useState<{
+//     type: "success" | "warning" | "error";
+//     message: string;
+//   } | null>(null);
+
+//   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+//   const [pendingAction, setPendingAction] = useState<
+//     null | { type: "create" } | { type: "switch"; formId: string }
+//   >(null);
+
+//   const [responses, setResponses] = useState<FormResponse[]>([]);
+//   const [responsesLoading, setResponsesLoading] = useState(false);
+//   const [responsesError, setResponsesError] = useState<string | null>(null);
+
+//   const [fieldType, setFieldType] = useState<FieldType>("text");
+//   const [fieldLabel, setFieldLabel] = useState("");
+//   const [fieldRequired, setFieldRequired] = useState(false);
+//   const [fieldPlaceholder, setFieldPlaceholder] = useState("");
+//   const [optionsInput, setOptionsInput] = useState("");
+//   const [editingFieldId, setEditingFieldId] = useState<string | null>(null);
+
+//   const [draftTitle, setDraftTitle] = useState("");
+//   const [draftDescription, setDraftDescription] = useState("");
+//   const [draftFields, setDraftFields] = useState<FormField[]>([]);
+//   const [draftLayoutColumns, setDraftLayoutColumns] = useState<1 | 2 | 3>(2);
+//   const [fieldReferenceImageUrl, setFieldReferenceImageUrl] = useState("");
+
+//   const [shareEmails, setShareEmails] = useState<string[]>([""]);
+//   const [sendingEmail, setSendingEmail] = useState(false);
+
+//   // ===== MEMBER ASSIGNMENT =====
+//   const [members, setMembers] = useState<Member[]>([]);
+//   const [selectedMemberIds, setSelectedMemberIds] = useState<string[]>([]);
+//   const [memberSearch, setMemberSearch] = useState("");
+//   const [membersLoading, setMembersLoading] = useState(false);
+// const [uploadingFieldId, setUploadingFieldId] = useState<string | null>(null);
+//   const activeForm = forms.find((f) => f.id === activeFormId) || null;
+
+//   const showOptions = ["select", "radio", "checkbox-group"].includes(fieldType);
+
+//   // ===================== GET FORMS =====================
+
+//   const loadForms = useCallback(async () => {
+//     try {
+//       setLoading(true);
+//       setAlert(null);
+
+//       const res = await axios.get(`${API}/api/forms`, {
+//         withCredentials: true,
+//       });
+
+//       const data: FormSchema[] = res.data.data || [];
+//       setForms(data);
+
+//       if (data.length > 0) {
+//         setActiveFormId((prev) => prev || data[0].id);
+//       }
+//     } catch (err: any) {
+//       console.error(err);
+//       setAlert({
+//         type: "error",
+//         message: err?.response?.data?.message || "Failed to load forms",
+//       });
+//     } finally {
+//       setLoading(false);
+//     }
+//   }, []);
+
+//   // ===================== GET MEMBERS =====================
+
+//   const loadMembers = useCallback(async () => {
+//     try {
+//       setMembersLoading(true);
+//       const res = await axios.get(`${API}/api/forms/members`, {
+//         withCredentials: true,
+//       });
+//       if (res.data?.success) {
+//         setMembers(res.data.data || []);
+//       }
+//     } catch (err) {
+//       console.error("Failed to load members", err);
+//     } finally {
+//       setMembersLoading(false);
+//     }
+//   }, []);
+
+//   useEffect(() => {
+//     loadForms();
+//     loadMembers();
+//   }, [loadForms, loadMembers]);
+
+//   const getVisibleFields = (fields: FormField[] = []) =>
+//     fields.filter((field) => field.type !== "reference-image");
+
+//   // Single clean useEffect (no duplicates)
+//   useEffect(() => {
+//     if (!activeForm || creating) return;
+
+//     const formFields = getVisibleFields(activeForm.fields || []);
+//     setDraftTitle(activeForm.title);
+//     setDraftDescription(activeForm.description || "");
+//     setDraftFields(formFields);
+//     setDraftLayoutColumns(activeForm.layoutColumns || 2);
+
+//     // Pre-select assigned members
+//     setSelectedMemberIds(
+//       (activeForm.assignedMemberIds || []).map(String)
+//     );
+
+//     resetFieldBuilder();
+//   }, [activeFormId, creating]);
+
+//   const loadResponses = useCallback(async () => {
+//     if (!activeFormId) return;
+
+//     try {
+//       setResponsesLoading(true);
+//       setResponsesError(null);
+
+//       const res = await axios.get(
+//         `${API}/api/forms/${activeFormId}/responses`,
+//         { withCredentials: true }
+//       );
+
+//       if (!res.data?.success) {
+//         setResponsesError(res.data?.message || "Failed to load responses");
+//         setResponses([]);
+//         return;
+//       }
+
+//       setResponses(res.data.data?.responses || []);
+//     } catch (err: any) {
+//       console.error(err);
+//       setResponsesError(
+//         err?.response?.data?.message || "Failed to load responses"
+//       );
+//       setResponses([]);
+//     } finally {
+//       setResponsesLoading(false);
+//     }
+//   }, [activeFormId]);
+
+//   useEffect(() => {
+//     if (viewMode === "responses" && activeFormId) {
+//       loadResponses();
+//     }
+//   }, [viewMode, activeFormId, loadResponses]);
+
+//   const resetFieldBuilder = () => {
+//     setFieldType("text");
+//     setFieldLabel("");
+//     setFieldRequired(false);
+//     setFieldPlaceholder("");
+//     setOptionsInput("");
+//     setFieldReferenceImageUrl("");
+//     setEditingFieldId(null);
+//   };
+
+//   const hasUnsavedChanges = () => {
+//     if (!activeForm) return false;
+//     const currentFields = getVisibleFields(activeForm.fields || []);
+//     return (
+//       draftTitle !== (activeForm.title || "") ||
+//       draftDescription !== (activeForm.description || "") ||
+//       JSON.stringify(draftFields) !== JSON.stringify(currentFields) ||
+//       draftLayoutColumns !== (activeForm.layoutColumns || 2)
+//     );
+//   };
+// const uploadFile = async (
+//   file: File,
+//   type: "image" | "document",
+//   formId: string,
+// ): Promise<string> => {
+//   const formData = new FormData();
+//   formData.append(type === "image" ? "image" : "file", file);
+
+//   const endpoint =
+//     type === "image"
+//       ? `${API}/api/forms/upload-image`
+//       : `${API}/api/forms/upload-file`;
+
+//   const { data } = await axios.post(endpoint, formData, {
+//     withCredentials: true,
+//     headers: { "Content-Type": "multipart/form-data" },
+//   });
+
+//   if (!data?.success || !data.url) {
+//     throw new Error(data?.message || "Upload failed");
+//   }
+//   return data.url; // store the public URL, not just the name
+// };
+//   const doCreateNewForm = async () => {
+//     try {
+//       setCreating(true);
+//       setAlert(null);
+//       setPendingAction(null);
+
+//       const res = await axios.post(
+//         `${API}/api/forms`,
+//         {
+//           title: "New Form",
+//           description: "",
+//           fields: [],
+//           layoutColumns: 2,
+//           assignedMemberIds: [],
+//         },
+//         { withCredentials: true }
+//       );
+
+//       const created: FormSchema = { ...res.data.data, title: "" };
+
+//       setForms((prev) => [created, ...prev]);
+//       setActiveFormId(created.id);
+//       setViewMode("edit");
+//       setDraftTitle("");
+//       setDraftDescription("");
+//       setDraftFields([]);
+//       setDraftLayoutColumns(2);
+//       setSelectedMemberIds([]);
+//       resetFieldBuilder();
+//     } catch (err: any) {
+//       console.error(err);
+//       setAlert({
+//         type: "error",
+//         message: err?.response?.data?.message || "Failed to create form",
+//       });
+//     } finally {
+//       setCreating(false);
+//     }
+//   };
+
+//   const doSwitchForm = (formId: string) => {
+//     setPendingAction(null);
+//     setActiveFormId(formId);
+//     setViewMode("edit");
+//     resetFieldBuilder();
+//   };
+
+//   const requestCreateNewForm = (
+//     event?: React.MouseEvent<HTMLButtonElement>
+//   ) => {
+//     event?.preventDefault();
+//     event?.stopPropagation();
+
+//     if (activeForm && !draftTitle.trim()) {
+//       setAlert({
+//         type: "warning",
+//         message:
+//           "Please enter a form name and save the current form before creating a new form.",
+//       });
+//       return;
+//     }
+
+//     if (hasUnsavedChanges()) {
+//       setPendingAction({ type: "create" });
+//       setAlert({
+//         type: "warning",
+//         message:
+//           "You have unsaved changes. Save them before creating a new form, or discard to continue without saving.",
+//       });
+//       return;
+//     }
+//     doCreateNewForm();
+//   };
+
+//   const requestSwitchForm = (formId: string) => {
+//     if (formId === activeFormId) return;
+//     if (hasUnsavedChanges()) {
+//       setPendingAction({ type: "switch", formId });
+//       setAlert({
+//         type: "warning",
+//         message:
+//           "You have unsaved changes. Save them before switching forms, or discard to continue without saving.",
+//       });
+//       return;
+//     }
+//     doSwitchForm(formId);
+//   };
+
+//   const handleUnsavedConfirm = async () => {
+//     const action = pendingAction;
+//     const ok = await saveForm(false);
+
+//     if (!ok) {
+//       setPendingAction(null);
+//       return;
+//     }
+
+//     if (action?.type === "create") {
+//       await doCreateNewForm();
+//     } else if (action?.type === "switch") {
+//       doSwitchForm(action.formId);
+//     }
+//   };
+
+//   const handleUnsavedDiscard = () => {
+//     if (pendingAction?.type === "create") {
+//       doCreateNewForm();
+//     } else if (pendingAction?.type === "switch") {
+//       doSwitchForm(pendingAction.formId);
+//     } else {
+//       setPendingAction(null);
+//       setAlert(null);
+//     }
+//   };
+
+//   const createNewForm = requestCreateNewForm;
+
+//   const saveForm = async (showLoading = true): Promise<boolean> => {
+//     if (!activeFormId) return false;
+//     if (!draftTitle.trim()) {
+//       setAlert({ type: "error", message: "Title is required" });
+//       return false;
+//     }
+
+//     try {
+//       if (showLoading) setSaving(true);
+//       setAlert(null);
+
+//       const res = await axios.put(
+//         `${API}/api/forms/${activeFormId}`,
+//         {
+//           title: draftTitle.trim(),
+//           description: draftDescription,
+//           fields: draftFields,
+//           layoutColumns: draftLayoutColumns,
+//         },
+//         { withCredentials: true }
+//       );
+
+//       const updated: FormSchema = res.data.data;
+//       setForms((prev) =>
+//         prev.map((f) => (f.id === activeFormId ? updated : f))
+//       );
+
+//       setAlert({ type: "success", message: "Form saved successfully" });
+//       return true;
+//     } catch (err: any) {
+//       console.error(err);
+//       setAlert({
+//         type: "error",
+//         message: err?.response?.data?.message || "Failed to save form",
+//       });
+//       return false;
+//     } finally {
+//       if (showLoading) setSaving(false);
+//     }
+//   };
+
+//   const assignMembers = async () => {
+//     if (!activeFormId) return;
+
+//     try {
+//       setAssigning(true);
+//       setAlert(null);
+//       const res = await axios.put(
+//         `${API}/api/forms/${activeFormId}/assign`,
+//         { assignedMemberIds: selectedMemberIds },
+//         { withCredentials: true },
+//       );
+
+//       const assignedMemberIds = (res.data?.data?.assignedMemberIds || []).map(
+//         String,
+//       );
+//       setForms((previous) =>
+//         previous.map((form) =>
+//           form.id === activeFormId ? { ...form, assignedMemberIds } : form,
+//         ),
+//       );
+//       setSelectedMemberIds(assignedMemberIds);
+//       setAlert({ type: "success", message: "Members assigned successfully" });
+//     } catch (err: any) {
+//       console.error(err);
+//       setAlert({
+//         type: "error",
+//         message: err?.response?.data?.message || "Failed to assign members",
+//       });
+//     } finally {
+//       setAssigning(false);
+//     }
+//   };
+
+//   const uploadFieldReferenceImage = async (file: File) => {
+//     const formData = new FormData();
+//     formData.append("image", file);
+
+//     try {
+//       setAlert(null);
+//       const res = await axios.post(
+//         `${API}/api/forms/upload-image`,
+//         formData,
+//         {
+//           withCredentials: true,
+//           headers: { "Content-Type": "multipart/form-data" },
+//         }
+//       );
+
+//       const url = res.data?.url;
+//       if (!url) throw new Error("Reference image upload did not return a URL");
+//       setFieldReferenceImageUrl(url);
+//     } catch (err: any) {
+//       console.error(err);
+//       setAlert({
+//         type: "error",
+//         message:
+//           err?.response?.data?.message ||
+//           err?.message ||
+//           "Reference image upload failed",
+//       });
+//     }
+//   };
+
+//   const deleteForm = (id: string) => {
+//     setPendingDeleteId(id);
+//     setAlert({
+//       type: "warning",
+//       message:
+//         "Are you sure you want to delete this form? This action cannot be undone.",
+//     });
+//   };
+
+//   const confirmDelete = async () => {
+//     if (!pendingDeleteId) return;
+//     try {
+//       const deletingId = pendingDeleteId;
+//       setAlert(null);
+//       setPendingDeleteId(null);
+
+//       await axios.delete(`${API}/api/forms/${deletingId}`, {
+//         withCredentials: true,
+//       });
+
+//       const updated = forms.filter((f) => f.id !== deletingId);
+//       setForms(updated);
+
+//       if (activeFormId === deletingId) {
+//         setActiveFormId(updated[0]?.id || null);
+//         setViewMode("edit");
+//         setSelectedMemberIds([]);
+//       }
+//     } catch (err: any) {
+//       console.error(err);
+//       setAlert({
+//         type: "error",
+//         message: err?.response?.data?.message || "Failed to delete form",
+//       });
+//     }
+//   };
+
+//   // ===================== FIELD ACTIONS =====================
+
+//   const addOrUpdateField = () => {
+//     if (!fieldLabel.trim()) {
+//       setAlert({ type: "error", message: "Field label is required" });
+//       return;
+//     }
+
+//     let options: string[] | undefined;
+//     if (showOptions) {
+//       options = optionsInput
+//         .split(",")
+//         .map((o) => o.trim())
+//         .filter(Boolean);
+
+//       if (options.length === 0) {
+//         setAlert({
+//           type: "error",
+//           message: "Please provide at least one option",
+//         });
+//         return;
+//       }
+//     }
+
+//     const newField: FormField = {
+//       id: editingFieldId || generateId(),
+//       type: fieldType,
+//       label: fieldLabel.trim(),
+//       required: fieldRequired,
+//       placeholder: fieldPlaceholder.trim() || undefined,
+//       options,
+//       referenceUrl: fieldReferenceImageUrl || undefined,
+//     };
+
+//     if (fieldType === "document") {
+//       newField.accept =
+//         ".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip";
+//       newField.multiple = false;
+//     }
+
+//     if (editingFieldId) {
+//       setDraftFields((prev) =>
+//         prev.map((f) => (f.id === editingFieldId ? newField : f))
+//       );
+//     } else {
+//       setDraftFields((prev) => [...prev, newField]);
+//     }
+
+//     resetFieldBuilder();
+//   };
+
+//   const editField = (field: FormField) => {
+//     setEditingFieldId(field.id);
+//     setFieldType(field.type);
+//     setFieldLabel(field.label);
+//     setFieldRequired(field.required);
+//     setFieldPlaceholder(field.placeholder || "");
+//     setOptionsInput(field.options?.join(", ") || "");
+//     setFieldReferenceImageUrl(field.referenceUrl || "");
+//   };
+
+//   const deleteField = (id: string) => {
+//     setDraftFields((prev) => prev.filter((f) => f.id !== id));
+//     if (editingFieldId === id) resetFieldBuilder();
+//   };
+
+//   const moveField = (index: number, direction: "up" | "down") => {
+//     const newFields = [...draftFields];
+//     const target = direction === "up" ? index - 1 : index + 1;
+//     if (target < 0 || target >= newFields.length) return;
+//     [newFields[index], newFields[target]] = [
+//       newFields[target],
+//       newFields[index],
+//     ];
+//     setDraftFields(newFields);
+//   };
+
+//   // ===================== SHARE =====================
+
+//   const getFormUrl = () => {
+//     if (!activeFormId || !user?.organisation_id) return "";
+//     return `${window.location.origin}/form/${user.organisation_id}/${activeFormId}`;
+//   };
+
+//   const copyLink = () => {
+//     if (!activeFormId) return;
+//     const url = getFormUrl();
+//     navigator.clipboard.writeText(url);
+//     setCopied(true);
+//     setTimeout(() => setCopied(false), 2000);
+//   };
+
+//   const sendFormEmail = async () => {
+//     if (!activeFormId) return;
+
+//     const emails = shareEmails.map((e) => e.trim()).filter(Boolean);
+//     if (emails.length === 0) {
+//       setAlert({
+//         type: "error",
+//         message: "Please enter at least one email address",
+//       });
+//       return;
+//     }
+
+//     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+//     const invalidEmails = emails.filter((e) => !emailRegex.test(e));
+//     if (invalidEmails.length > 0) {
+//       setAlert({
+//         type: "error",
+//         message: `Invalid email(s):\n${invalidEmails.join("\n")}`,
+//       });
+//       return;
+//     }
+
+//     try {
+//       setSendingEmail(true);
+//       setAlert(null);
+
+//       await axios.post(
+//         `${API}/api/forms/${activeFormId}/send-email`,
+//         {
+//           emails,
+//           formUrl: getFormUrl(),
+//           formTitle: draftTitle.trim() || "Form",
+//           fields: draftFields.length ? draftFields : activeForm?.fields || [],
+//         },
+//         { withCredentials: true }
+//       );
+
+//       setShareEmails([""]);
+//       setAlert({ type: "success", message: "Form email sent successfully" });
+//     } catch (err: any) {
+//       console.error(err);
+//       setAlert({
+//         type: "error",
+//         message: err?.response?.data?.message || "Failed to send email",
+//       });
+//     } finally {
+//       setSendingEmail(false);
+//     }
+//   };
+
+//   const shareViaWhatsApp = () => {
+//     const url = getFormUrl();
+//     if (!url) return;
+//     const text = encodeURIComponent(`Hi! Please fill out this form:\n${url}`);
+//     window.open(`https://wa.me/?text=${text}`, "_blank");
+//   };
+
+//   // ===================== LOADING =====================
+
+//   if (loading) {
+//     return (
+//       <section className="h-screen bg-slate-50 flex items-center justify-center overflow-hidden">
+//         <div className="flex items-center gap-2 text-slate-500">
+//           <Loader2 size={20} className="animate-spin" />
+//           Loading forms...
+//         </div>
+//       </section>
+//     );
+//   }
+
+//   // ===================== RENDER =====================
+
+//   return (
+//     <section className="h-screen bg-slate-50 overflow-hidden py-4 sm:py-6">
+//       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col min-h-0">
+//         {alert && (
+//           <Alert
+//             type={alert.type}
+//             message={alert.message}
+//             onClose={() => {
+//               if (pendingAction) {
+//                 handleUnsavedDiscard();
+//               } else {
+//                 setAlert(null);
+//                 setPendingDeleteId(null);
+//               }
+//             }}
+//             confirm={!!pendingDeleteId || !!pendingAction}
+//             onConfirm={pendingAction ? handleUnsavedConfirm : confirmDelete}
+//             confirmText={pendingAction ? "Save & Continue" : "Yes, Delete"}
+//             cancelText={pendingAction ? "Discard" : "Cancel"}
+//           />
+//         )}
+
+//         {/* HEADER */}
+//         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-4 shrink-0">
+//           <div className="flex-1 min-w-0">
+//             <span className="text-purple-600 font-semibold uppercase tracking-widest text-xs">
+//               Form Management
+//             </span>
+//             <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mt-1">
+//               Form Builder
+//             </h1>
+//           </div>
+
+//           <div className="flex flex-col items-end gap-2 shrink-0">
+//             <div className="flex flex-wrap justify-end gap-2">
+//               {/* NEW FORM */}
+//               <button
+//                 type="button"
+//                 onClick={createNewForm}
+//                 disabled={creating}
+//                 className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition disabled:opacity-60"
+//               >
+//                 {creating ? (
+//                   <>
+//                     <Loader2 size={15} className="animate-spin" />
+//                     Creating...
+//                   </>
+//                 ) : (
+//                   <>
+//                     <Plus size={15} />
+//                     New Form
+//                   </>
+//                 )}
+//               </button>
+
+//               {activeForm && (
+//                 <>
+//                   <button
+//                     onClick={() =>
+//                       setViewMode(viewMode === "preview" ? "edit" : "preview")
+//                     }
+//                     disabled={saving || creating}
+//                     className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border text-sm font-medium transition ${
+//                       viewMode === "preview"
+//                         ? "bg-purple-50 border-purple-300 text-purple-700"
+//                         : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+//                     }`}
+//                   >
+//                     <Eye size={14} />
+//                     {viewMode === "preview" ? "Edit" : "Preview"}
+//                   </button>
+
+//                   <button
+//                     onClick={() =>
+//                       setViewMode(
+//                         viewMode === "responses" ? "edit" : "responses"
+//                       )
+//                     }
+//                     disabled={saving || creating}
+//                     className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border text-sm font-medium transition ${
+//                       viewMode === "responses"
+//                         ? "bg-purple-50 border-purple-300 text-purple-700"
+//                         : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+//                     }`}
+//                   >
+//                     <Inbox size={14} />
+//                     Responses
+//                   </button>
+
+//                   {viewMode === "edit" && (
+//                     <button
+//                       type="button"
+//                       onClick={() => saveForm()}
+//                       disabled={saving || creating}
+//                       className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition disabled:opacity-60"
+//                     >
+//                       {saving ? (
+//                         <>
+//                           <Loader2 size={14} className="animate-spin" />
+//                           Saving...
+//                         </>
+//                       ) : (
+//                         <>
+//                           <Save size={14} />
+//                           Save
+//                         </>
+//                       )}
+//                     </button>
+//                   )}
+//                 </>
+//               )}
+//             </div>
+
+//             {activeForm && (
+//               <div className="flex flex-wrap items-start justify-end gap-2 w-full max-w-[720px]">
+//                 {shareEmails.map((email, index) => (
+//                   <div
+//                     key={index}
+//                     className="flex items-center gap-1.5 min-w-[220px] max-w-[280px] flex-1"
+//                   >
+//                     <input
+//                       type="email"
+//                       value={email}
+//                       onChange={(e) => {
+//                         const updated = [...shareEmails];
+//                         updated[index] = e.target.value;
+//                         setShareEmails(updated);
+//                       }}
+//                       placeholder="recipient@email.com"
+//                       className="w-full px-2.5 py-2 rounded-lg border border-slate-200 bg-white text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20"
+//                     />
+//                     {shareEmails.length > 1 && (
+//                       <button
+//                         type="button"
+//                         onClick={() =>
+//                           setShareEmails(
+//                             shareEmails.filter((_, i) => i !== index)
+//                           )
+//                         }
+//                         className="p-2 rounded-lg text-red-500 hover:bg-red-50 transition shrink-0"
+//                       >
+//                         <Trash2 size={14} />
+//                       </button>
+//                     )}
+//                   </div>
+//                 ))}
+
+//                 <div className="flex items-center gap-2 shrink-0">
+//                   <button
+//                     type="button"
+//                     onClick={() => setShareEmails([...shareEmails, ""])}
+//                     className="inline-flex items-center gap-1 text-xs font-medium text-purple-600 hover:text-purple-700"
+//                   >
+//                     <Plus size={13} />
+//                     Add another email
+//                   </button>
+
+//                   <button
+//                     onClick={sendFormEmail}
+//                     disabled={
+//                       sendingEmail || shareEmails.every((e) => !e.trim())
+//                     }
+//                     className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-purple-600 text-white text-sm font-medium hover:bg-purple-700 transition disabled:opacity-60"
+//                   >
+//                     {sendingEmail ? (
+//                       <Loader2 size={14} className="animate-spin" />
+//                     ) : (
+//                       <Mail size={14} />
+//                     )}
+//                     Send
+//                   </button>
+//                 </div>
+//               </div>
+//             )}
+//           </div>
+//         </div>
+
+//         {/* MAIN GRID */}
+//         <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_260px] gap-5 flex-1 min-h-0 overflow-hidden">
+//           <div className="min-w-0 min-h-0 overflow-hidden">
+//             {!activeForm ? (
+//               <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
+//                 <FileText size={36} className="mx-auto text-slate-300 mb-3" />
+//                 <p className="text-base text-slate-500 mb-4">
+//                   No form selected
+//                 </p>
+//                 <button
+//                   type="button"
+//                   onClick={createNewForm}
+//                   disabled={creating || saving}
+//                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition disabled:opacity-60"
+//                 >
+//                   {creating ? (
+//                     <>
+//                       <Loader2 size={15} className="animate-spin" />
+//                       Creating...
+//                     </>
+//                   ) : (
+//                     <>
+//                       <Plus size={15} />
+//                       Create Form
+//                     </>
+//                   )}
+//                 </button>
+//               </div>
+//             ) : viewMode === "preview" ? (
+//               <div className="h-full min-h-0 overflow-y-auto">
+//                 <FormPreview
+//                   schema={{
+//                     ...activeForm,
+//                     title: draftTitle,
+//                     description: draftDescription,
+//                     fields: draftFields,
+//                     layoutColumns: draftLayoutColumns,
+//                   }}
+//                   onBack={() => setViewMode("edit")}
+//                 />
+//               </div>
+//             ) : viewMode === "responses" ? (
+//               <div className="h-full min-h-0 overflow-hidden">
+//                 <FormResponses
+//                   formTitle={draftTitle || activeForm.title}
+//                   fields={
+//                     draftFields.length
+//                       ? draftFields
+//                       : activeForm.fields || []
+//                   }
+//                   responses={responses}
+//                   loading={responsesLoading}
+//                   error={responsesError}
+//                   onRefresh={loadResponses}
+//                   onBack={() => setViewMode("edit")}
+//                 />
+//               </div>
+//             ) : (
+//               <div className="h-full min-h-0 overflow-y-auto pr-1">
+//                 <div className="space-y-4">
+//                   {/* FORM HEADER */}
+//                   <div className="bg-white rounded-xl border border-slate-200 p-3.5 sm:p-4 space-y-4">
+//                     <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3">
+//                       <div className="flex-1 min-w-0">
+//                         <label className="block text-[11px] font-medium text-slate-500 mb-1">
+//                           Form Name
+//                         </label>
+//                         <input
+//                           type="text"
+//                           value={draftTitle}
+//                           onChange={(e) => setDraftTitle(e.target.value)}
+//                           className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
+//                           placeholder="e.g. Employee Survey"
+//                         />
+//                       </div>
+
+//                       <div className="sm:w-[180px] shrink-0">
+//                         <label className="block text-[11px] font-medium text-slate-500 mb-1">
+//                           Fields per row
+//                         </label>
+//                         <select
+//                           value={draftLayoutColumns}
+//                           onChange={(e) =>
+//                             setDraftLayoutColumns(
+//                               Number(e.target.value) as 1 | 2 | 3
+//                             )
+//                           }
+//                           className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
+//                         >
+//                           <option value={1}>1 column</option>
+//                           <option value={2}>2 columns</option>
+//                           <option value={3}>3 columns</option>
+//                         </select>
+//                       </div>
+
+//                       <div className="flex-1 min-w-0">
+//                         <label className="block text-[11px] font-medium text-slate-500 mb-1">
+//                           Description
+//                         </label>
+//                         <input
+//                           type="text"
+//                           value={draftDescription}
+//                           onChange={(e) => setDraftDescription(e.target.value)}
+//                           className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
+//                           placeholder="Short description..."
+//                         />
+//                       </div>
+
+//                       <div className="sm:w-[280px] shrink-0">
+//                         <label className="block text-[11px] font-medium text-slate-500 mb-1">
+//                           Share Link
+//                         </label>
+//                         <div className="flex items-center gap-1.5">
+//                           <div className="flex-1 min-w-0 flex items-center gap-1.5 px-2.5 py-2 rounded-lg border border-slate-200 bg-slate-50 text-xs font-mono text-purple-600 truncate">
+//                             <Link2
+//                               size={12}
+//                               className="shrink-0 text-slate-400"
+//                             />
+//                             <span className="truncate">
+//                               /form/{user?.organisation_id ?? "org"}/
+//                               {activeFormId}
+//                             </span>
+//                           </div>
+//                           <button
+//                             onClick={copyLink}
+//                             title="Copy link"
+//                             className="shrink-0 p-2 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-purple-600 transition"
+//                           >
+//                             {copied ? (
+//                               <Check size={14} className="text-emerald-600" />
+//                             ) : (
+//                               <Copy size={14} />
+//                             )}
+//                           </button>
+//                           <button
+//                             onClick={shareViaWhatsApp}
+//                             title="Share via WhatsApp"
+//                             className="shrink-0 p-2 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-emerald-50 hover:text-emerald-600 transition"
+//                           >
+//                             <MessageCircle size={14} />
+//                           </button>
+//                         </div>
+//                       </div>
+//                     </div>
+//                   </div>
+
+//                   {/* ========== ASSIGN TO USERS ========== */}
+//                   <div className="hidden bg-white rounded-xl border border-slate-200 p-4 sm:p-5">
+//                     <div className="flex items-center justify-between mb-3">
+//                       <div className="flex items-center gap-2">
+//                         <Users size={16} className="text-purple-600" />
+//                         <div>
+//                           <h3 className="text-base font-bold text-slate-900">
+//                             Assign to Users
+//                           </h3>
+//                           <p className="text-xs text-slate-500 mt-0.5">
+//                             Selected members will see this form on their side
+//                           </p>
+//                         </div>
+//                       </div>
+//                       <span className="text-xs font-medium text-purple-700 bg-purple-50 px-2.5 py-1 rounded-full">
+//                         {selectedMemberIds.length} selected
+//                       </span>
+//                     </div>
+
+//                     <button
+//                       type="button"
+//                       onClick={assignMembers}
+//                       disabled={assigning || saving || membersLoading}
+//                       className="mb-3 w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition disabled:opacity-60"
+//                     >
+//                       {assigning ? (
+//                         <Loader2 size={14} className="animate-spin" />
+//                       ) : (
+//                         <Users size={14} />
+//                       )}
+//                       {assigning ? "Assigning..." : "Assign users"}
+//                     </button>
+
+//                     {/* Search */}
+//                     <div className="relative mb-3">
+//                       <Search
+//                         size={14}
+//                         className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+//                       />
+//                       <input
+//                         type="text"
+//                         value={memberSearch}
+//                         onChange={(e) => setMemberSearch(e.target.value)}
+//                         placeholder="Search by name, flat, mobile..."
+//                         className="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20"
+//                       />
+//                     </div>
+
+//                     {/* Select All / Clear */}
+//                     <div className="flex items-center gap-3 mb-2 text-xs">
+//                       <button
+//                         type="button"
+//                         onClick={() =>
+//                           setSelectedMemberIds(members.map((m) => m.id))
+//                         }
+//                         className="text-purple-600 hover:underline font-medium"
+//                       >
+//                         Select all
+//                       </button>
+//                       <button
+//                         type="button"
+//                         onClick={() => setSelectedMemberIds([])}
+//                         className="text-slate-500 hover:underline"
+//                       >
+//                         Clear
+//                       </button>
+//                     </div>
+
+//                     {/* Member list */}
+//                     <div className="max-h-56 overflow-y-auto border border-slate-100 rounded-lg divide-y divide-slate-100">
+//                       {membersLoading ? (
+//                         <div className="flex items-center justify-center py-8 text-slate-400 text-sm gap-2">
+//                           <Loader2 size={16} className="animate-spin" />
+//                           Loading members...
+//                         </div>
+//                       ) : members.length === 0 ? (
+//                         <div className="py-8 text-center text-sm text-slate-400">
+//                           No members found
+//                         </div>
+//                       ) : (
+//                         members
+//                           .filter((m) => {
+//                             if (!memberSearch.trim()) return true;
+//                             const q = memberSearch.toLowerCase();
+//                             return (
+//                               m.name.toLowerCase().includes(q) ||
+//                               (m.flat || "").toLowerCase().includes(q) ||
+//                               (m.mobile || "").includes(q) ||
+//                               (m.email || "").toLowerCase().includes(q)
+//                             );
+//                           })
+//                           .map((m) => {
+//                             const checked = selectedMemberIds.includes(m.id);
+//                             return (
+//                               <label
+//                                 key={m.id}
+//                                 className={`flex items-center gap-3 px-3 py-2.5 cursor-pointer transition ${
+//                                   checked
+//                                     ? "bg-purple-50"
+//                                     : "hover:bg-slate-50"
+//                                 }`}
+//                               >
+//                                 <input
+//                                   type="checkbox"
+//                                   checked={checked}
+//                                   onChange={(e) => {
+//                                     setSelectedMemberIds((prev) =>
+//                                       e.target.checked
+//                                         ? [...prev, m.id]
+//                                         : prev.filter((id) => id !== m.id)
+//                                     );
+//                                   }}
+//                                   className="rounded border-slate-300 text-purple-600 focus:ring-purple-500"
+//                                 />
+//                                 <div className="min-w-0 flex-1">
+//                                   <p className="text-sm font-medium text-slate-800 truncate">
+//                                     {m.name}
+//                                   </p>
+//                                   <p className="text-[11px] text-slate-500 truncate">
+//                                     {[m.flat, m.mobile, m.email]
+//                                       .filter(Boolean)
+//                                       .join(" · ")}
+//                                   </p>
+//                                 </div>
+//                               </label>
+//                             );
+//                           })
+//                       )}
+//                     </div>
+//                   </div>
+
+//                   {/* BUILDER */}
+//                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+//                     {/* ADD FIELD */}
+//                     <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5">
+//                       <h3 className="text-base font-bold text-slate-900 mb-0.5">
+//                         Add Form Fields
+//                       </h3>
+//                       <p className="text-xs text-slate-500 mb-4">
+//                         Configure fields for your form
+//                       </p>
+
+//                       <div className="space-y-3">
+//                         <div>
+//                           <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+//                             Field Type
+//                           </label>
+//                           <select
+//                             value={fieldType}
+//                             onChange={(e) =>
+//                               setFieldType(e.target.value as FieldType)
+//                             }
+//                             className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
+//                           >
+//                             {FIELD_TYPES.map((t) => (
+//                               <option key={t.value} value={t.value}>
+//                                 {t.label}
+//                               </option>
+//                             ))}
+//                           </select>
+//                         </div>
+
+//                         <div>
+//                           <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+//                             Field Label
+//                           </label>
+//                           <input
+//                             type="text"
+//                             value={fieldLabel}
+//                             onChange={(e) => setFieldLabel(e.target.value)}
+//                             className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
+//                             placeholder="e.g. Your Name"
+//                           />
+//                         </div>
+
+//                         <div>
+//                           <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+//                             Placeholder (optional)
+//                           </label>
+//                           <input
+//                             type="text"
+//                             value={fieldPlaceholder}
+//                             onChange={(e) =>
+//                               setFieldPlaceholder(e.target.value)
+//                             }
+//                             className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
+//                             placeholder="e.g. Enter your full name"
+//                           />
+//                         </div>
+
+//                         {showOptions && (
+//                           <div>
+//                             <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+//                               Options (comma separated)
+//                             </label>
+//                             <input
+//                               type="text"
+//                               value={optionsInput}
+//                               onChange={(e) => setOptionsInput(e.target.value)}
+//                               className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
+//                               placeholder="Option 1, Option 2, Option 3"
+//                             />
+//                           </div>
+//                         )}
+
+//                         {/* REFERENCE IMAGE */}
+//                         <div className="rounded-xl border border-dashed border-purple-200 bg-purple-50/40 p-3">
+//                           <div className="flex items-center justify-between gap-3 mb-2">
+//                             <div>
+//                               <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-purple-700">
+//                                 Field reference image
+//                               </p>
+//                               <p className="text-[10px] text-slate-500 mt-0.5">
+//                                 Optional image shown under this field
+//                               </p>
+//                             </div>
+//                             {fieldReferenceImageUrl && (
+//                               <button
+//                                 type="button"
+//                                 onClick={() => setFieldReferenceImageUrl("")}
+//                                 className="text-[10px] text-red-600 hover:text-red-700 font-medium"
+//                               >
+//                                 Remove
+//                               </button>
+//                             )}
+//                           </div>
+//                           <input
+//                             type="file"
+//                             accept="image/*"
+//                             onChange={(e) => {
+//                               const file = e.target.files?.[0];
+//                               if (file) uploadFieldReferenceImage(file);
+//                             }}
+//                             className="block w-full text-[11px] text-slate-600 file:mr-2 file:rounded-lg file:border-0 file:bg-purple-600 file:px-2 file:py-1.5 file:text-[11px] file:font-medium file:text-white hover:file:bg-purple-700"
+//                           />
+//                           {fieldReferenceImageUrl && (
+//                             <div className="mt-3 overflow-hidden rounded-lg border border-purple-200 bg-white">
+//                               <img
+//                                 src={fieldReferenceImageUrl}
+//                                 alt="Field reference"
+//                                 className="h-28 w-full object-cover"
+//                               />
+//                             </div>
+//                           )}
+//                         </div>
+
+//                         <label className="inline-flex items-center gap-2 text-xs font-medium text-slate-600 cursor-pointer">
+//                           <input
+//                             type="checkbox"
+//                             checked={fieldRequired}
+//                             onChange={(e) =>
+//                               setFieldRequired(e.target.checked)
+//                             }
+//                             className="rounded border-slate-300 text-purple-600 focus:ring-purple-500"
+//                           />
+//                           Required Field
+//                         </label>
+
+//                         <button
+//                           onClick={addOrUpdateField}
+//                           className="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition"
+//                         >
+//                           {editingFieldId ? (
+//                             <>
+//                               <Edit2 size={15} />
+//                               Update Field
+//                             </>
+//                           ) : (
+//                             <>
+//                               <Plus size={15} />
+//                               Add Field
+//                             </>
+//                           )}
+//                         </button>
+
+//                         {editingFieldId && (
+//                           <button
+//                             onClick={resetFieldBuilder}
+//                             className="w-full text-xs text-slate-500 hover:text-slate-700"
+//                           >
+//                             Cancel editing
+//                           </button>
+//                         )}
+//                       </div>
+//                     </div>
+
+//                     {/* ADDED FIELDS */}
+//                     <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5">
+//                       <h3 className="text-base font-bold text-slate-900 mb-3">
+//                         Added Fields ({draftFields.length})
+//                       </h3>
+
+//                       {draftFields.length === 0 ? (
+//                         <div className="py-12 text-center border-2 border-dashed border-slate-200 rounded-lg">
+//                           <p className="text-xs text-slate-400">
+//                             No fields added yet
+//                           </p>
+//                         </div>
+//                       ) : (
+//                         <div className="space-y-2 max-h-[380px] overflow-y-auto">
+//                           {draftFields.map((field, index) => (
+//                             <div
+//                               key={field.id}
+//                               className="flex items-center gap-2 p-3 rounded-lg border border-slate-200 bg-slate-50 hover:border-slate-300 transition"
+//                             >
+//                               <GripVertical
+//                                 size={14}
+//                                 className="text-slate-300 shrink-0"
+//                               />
+
+//                               <div className="min-w-0 flex-1">
+//                                 <div className="flex items-center gap-1.5 flex-wrap">
+//                                   <span className="text-sm font-medium text-slate-900">
+//                                     {field.label}
+//                                   </span>
+//                                   <span className="text-[11px] text-slate-400">
+//                                     ({field.type})
+//                                   </span>
+//                                   {field.required && (
+//                                     <span className="text-[11px] text-red-500 font-medium">
+//                                       *
+//                                     </span>
+//                                   )}
+//                                 </div>
+
+//                                 {field.type === "image" ? (
+//                                   <div className="mt-2 flex items-center gap-2">
+//                                     <div className="flex h-10 w-14 items-center justify-center rounded-md border border-dashed border-purple-300 bg-gradient-to-br from-purple-100 via-white to-pink-100 text-[8px] font-semibold text-purple-600">
+//                                       IMG
+//                                     </div>
+//                                     <p className="text-[11px] text-slate-500">
+//                                       Image upload field
+//                                     </p>
+//                                   </div>
+//                                 ) : field.type === "document" ? (
+//                                   <div className="mt-2 flex items-center gap-2">
+//                                     <div className="flex h-10 w-14 items-center justify-center rounded-md border border-dashed border-purple-300 bg-gradient-to-br from-purple-100 via-white to-pink-100 text-[8px] font-semibold text-purple-600">
+//                                       DOC
+//                                     </div>
+//                                     <p className="text-[11px] text-slate-500">
+//                                       Document upload field
+//                                     </p>
+//                                   </div>
+//                                 ) : field.options ? (
+//                                   <p className="text-[11px] text-slate-400 mt-0.5 truncate">
+//                                     {field.options.join(", ")}
+//                                   </p>
+//                                 ) : null}
+//                               </div>
+
+//                               <div className="flex items-center gap-0.5 shrink-0">
+//                                 <button
+//                                   onClick={() => moveField(index, "up")}
+//                                   disabled={index === 0}
+//                                   className="p-1.5 rounded-md text-slate-400 hover:bg-white disabled:opacity-30 transition"
+//                                 >
+//                                   <ArrowUp size={13} />
+//                                 </button>
+//                                 <button
+//                                   onClick={() => moveField(index, "down")}
+//                                   disabled={index === draftFields.length - 1}
+//                                   className="p-1.5 rounded-md text-slate-400 hover:bg-white disabled:opacity-30 transition"
+//                                 >
+//                                   <ArrowDown size={13} />
+//                                 </button>
+//                                 <button
+//                                   onClick={() => editField(field)}
+//                                   className="p-1.5 rounded-md bg-purple-600 text-white hover:bg-purple-700 transition"
+//                                 >
+//                                   <Edit2 size={13} />
+//                                 </button>
+//                                 <button
+//                                   onClick={() => deleteField(field.id)}
+//                                   className="p-1.5 rounded-md bg-red-500 text-white hover:bg-red-600 transition"
+//                                 >
+//                                   <Trash2 size={13} />
+//                                 </button>
+//                               </div>
+//                             </div>
+//                           ))}
+//                         </div>
+//                       )}
+//                     </div>
+//                   </div>
+//                 </div>
+//               </div>
+//             )}
+//           </div>
+
+//           {/* SIDEBAR */}
+//           <aside className="bg-white rounded-xl border border-slate-200 p-4 h-full max-h-full overflow-y-auto">
+//             {activeForm && viewMode === "edit" && (
+//               <div className="mb-4 rounded-lg border border-purple-100 bg-purple-50/40 p-3">
+//                 <div className="flex items-start justify-between gap-2 mb-3">
+//                   <div className="flex items-center gap-2">
+//                     <Users size={15} className="text-purple-600 shrink-0" />
+//                     <div>
+//                       <h3 className="text-sm font-bold text-slate-900">
+//                         Assign users
+//                       </h3>
+//                       <p className="text-[11px] text-slate-500 mt-0.5">
+//                         Choose members for this form
+//                       </p>
+//                     </div>
+//                   </div>
+//                   <span className="text-[11px] font-medium text-purple-700 bg-white px-2 py-1 rounded-full shrink-0">
+//                     {selectedMemberIds.length}
+//                   </span>
+//                 </div>
+
+//                 <div className="relative mb-2">
+//                   <Search
+//                     size={13}
+//                     className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400"
+//                   />
+//                   <input
+//                     type="text"
+//                     value={memberSearch}
+//                     onChange={(e) => setMemberSearch(e.target.value)}
+//                     placeholder="Search users..."
+//                     className="w-full pl-8 pr-2.5 py-2 rounded-lg border border-slate-200 bg-white text-xs outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20"
+//                   />
+//                 </div>
+
+//                 <div className="flex items-center gap-3 mb-2 text-[11px]">
+//                   <button
+//                     type="button"
+//                     onClick={() => setSelectedMemberIds(members.map((m) => m.id))}
+//                     className="text-purple-600 hover:underline font-medium"
+//                   >
+//                     Select all
+//                   </button>
+//                   <button
+//                     type="button"
+//                     onClick={() => setSelectedMemberIds([])}
+//                     className="text-slate-500 hover:underline"
+//                   >
+//                     Clear
+//                   </button>
+//                 </div>
+
+//                 <div className="max-h-48 overflow-y-auto rounded-lg border border-slate-200 bg-white divide-y divide-slate-100">
+//                   {membersLoading ? (
+//                     <div className="py-6 text-center text-xs text-slate-400">
+//                       Loading users...
+//                     </div>
+//                   ) : members.length === 0 ? (
+//                     <div className="py-6 text-center text-xs text-slate-400">
+//                       No users found
+//                     </div>
+//                   ) : (
+//                     members
+//                       .filter((member) => {
+//                         if (!memberSearch.trim()) return true;
+//                         const query = memberSearch.toLowerCase();
+//                         return (
+//                           member.name.toLowerCase().includes(query) ||
+//                           (member.flat || "").toLowerCase().includes(query) ||
+//                           (member.mobile || "").includes(query) ||
+//                           (member.email || "").toLowerCase().includes(query)
+//                         );
+//                       })
+//                       .map((member) => (
+//                         <label
+//                           key={member.id}
+//                           className="flex items-center gap-2 px-2.5 py-2 cursor-pointer hover:bg-purple-50"
+//                         >
+//                           <input
+//                             type="checkbox"
+//                             checked={selectedMemberIds.includes(member.id)}
+//                             onChange={(event) =>
+//                               setSelectedMemberIds((previous) =>
+//                                 event.target.checked
+//                                   ? [...previous, member.id]
+//                                   : previous.filter((id) => id !== member.id),
+//                               )
+//                             }
+//                             className="rounded border-slate-300 text-purple-600 focus:ring-purple-500"
+//                           />
+//                           <span className="min-w-0">
+//                             <span className="block text-xs font-medium text-slate-800 truncate">
+//                               {member.name}
+//                             </span>
+//                             <span className="block text-[10px] text-slate-500 truncate">
+//                               {[member.flat, member.mobile, member.email]
+//                                 .filter(Boolean)
+//                                 .join(" · ")}
+//                             </span>
+//                           </span>
+//                         </label>
+//                       ))
+//                   )}
+//                 </div>
+
+//                 <button
+//                   type="button"
+//                   onClick={assignMembers}
+//                   disabled={assigning || saving || membersLoading}
+//                   className="mt-3 w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-purple-600 text-white text-xs font-semibold hover:bg-purple-700 transition disabled:opacity-60"
+//                 >
+//                   {assigning ? (
+//                     <Loader2 size={13} className="animate-spin" />
+//                   ) : (
+//                     <Users size={13} />
+//                   )}
+//                   {assigning ? "Assigning..." : "Assign users"}
+//                 </button>
+//               </div>
+//             )}
+
+//             <h3 className="text-xs font-semibold text-slate-900 mb-3">
+//               Your Forms ({forms.length})
+//             </h3>
+
+//             {forms.length === 0 ? (
+//               <div className="py-8 text-center">
+//                 <FileText size={24} className="mx-auto text-slate-300 mb-2" />
+//                 <p className="text-xs text-slate-400">No forms yet</p>
+//                 <button
+//                   type="button"
+//                   onClick={createNewForm}
+//                   className="mt-2 text-xs font-medium text-purple-600 hover:underline"
+//                 >
+//                   Create your first form
+//                 </button>
+//               </div>
+//             ) : (
+//               <div className="space-y-1.5 max-h-[42vh] overflow-y-auto">
+//                 {forms.map((form) => (
+//                   <div
+//                     key={form.id}
+//                     onClick={() => requestSwitchForm(form.id)}
+//                     className={`flex items-center justify-between gap-2 p-2.5 rounded-lg cursor-pointer transition border ${
+//                       activeFormId === form.id
+//                         ? "bg-purple-50 border-purple-300"
+//                         : "bg-slate-50 border-transparent hover:bg-slate-100"
+//                     }`}
+//                   >
+//                     <div className="min-w-0">
+//                       <p className="text-sm font-medium text-slate-900 truncate">
+//                         {form.title || "No title"}
+//                       </p>
+//                       <p className="text-[11px] text-slate-400 mt-0.5">
+//                         {(form.fields || []).length} field
+//                         {(form.fields || []).length !== 1 ? "s" : ""}
+//                         {(form.assignedMemberIds?.length ?? 0) > 0 && (
+//                           <> · {form.assignedMemberIds!.length} users</>
+//                         )}
+//                       </p>
+//                     </div>
+//                     <button
+//                       onClick={(e) => {
+//                         e.stopPropagation();
+//                         deleteForm(form.id);
+//                       }}
+//                       className="p-1 rounded-md text-slate-400 hover:text-red-500 hover:bg-red-50 transition"
+//                     >
+//                       <Trash2 size={13} />
+//                     </button>
+//                   </div>
+//                 ))}
+//               </div>
+//             )}
+//           </aside>
+//         </div>
+//       </div>
+//     </section>
+//   );
+// }
+
+// // ======================================================
+// // RESPONSES
+// // ======================================================
+
+// function FormResponses({
+//   formTitle,
+//   fields,
+//   responses,
+//   loading,
+//   error,
+//   onRefresh,
+//   onBack,
+// }: {
+//   formTitle: string;
+//   fields: FormField[];
+//   responses: FormResponse[];
+//   loading: boolean;
+//   error: string | null;
+//   onRefresh: () => void;
+//   onBack: () => void;
+// }) {
+//   const formatValue = (val: any) => {
+//     if (val == null || val === "") return "—";
+//     if (Array.isArray(val)) return val.length ? val.join(", ") : "—";
+//     if (typeof val === "object" && ("start" in val || "end" in val)) {
+//       return `Start Date: ${val.start || "—"} | End Date: ${val.end || "—"}`;
+//     }
+//     if (typeof val === "object") {
+//       if (val.url || val.name || val.originalname) {
+//         return val.name || val.originalname || val.url || "File";
+//       }
+//       return JSON.stringify(val);
+//     }
+//     return String(val);
+//   };
+
+//   const visibleFields = fields.filter((f) => f.type !== "reference-image");
+
+//   const columns =
+//     visibleFields.length > 0
+//       ? visibleFields.map((f) => ({ key: f.id, label: f.label }))
+//       : (() => {
+//           const first = responses[0]?.values;
+//           if (!first || typeof first !== "object") return [];
+//           return Object.keys(first).map((key) => ({ key, label: key }));
+//         })();
+
+//   const downloadExcel = () => {
+//     if (responses.length === 0) {
+//       alert("No responses to download");
+//       return;
+//     }
+
+//     const excelData = responses.map((r, index) => {
+//       const row: any = {
+//         "#": responses.length - index,
+//       };
+
+//       columns.forEach((col) => {
+//         const value = r.values?.[col.key];
+//         row[col.label] = formatValue(value);
+//       });
+
+//       return row;
+//     });
+
+//     const worksheet = XLSX.utils.json_to_sheet(excelData);
+
+//     const colWidths = Object.keys(excelData[0] || {}).map((key) => ({
+//       wch: Math.max(key.length + 2, 18),
+//     }));
+//     worksheet["!cols"] = colWidths;
+
+//     const workbook = XLSX.utils.book_new();
+//     XLSX.utils.book_append_sheet(workbook, worksheet, "Responses");
+
+//     const fileName = `${formTitle || "Form"}_Responses_${new Date()
+//       .toISOString()
+//       .slice(0, 10)}.xlsx`;
+
+//     XLSX.writeFile(workbook, fileName);
+//   };
+
+//   if (loading) {
+//     return (
+//       <div className="bg-white rounded-xl border border-slate-200 h-full flex items-center justify-center gap-2 text-slate-500">
+//         <Loader2 size={18} className="animate-spin" />
+//         Loading responses...
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div className="bg-white rounded-xl border border-slate-200 overflow-hidden h-full min-h-0 flex flex-col">
+//       {/* HEADER */}
+//       <div className="px-5 sm:px-6 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
+//         <div className="min-w-0">
+//           <h2 className="text-lg font-bold text-slate-900">Responses</h2>
+//           <p className="text-xs text-slate-500 mt-0.5 truncate">
+//             {formTitle} · {responses.length} response
+//             {responses.length !== 1 ? "s" : ""}
+//           </p>
+//         </div>
+
+//         <div className="flex items-center gap-2 shrink-0">
+//           <button
+//             onClick={downloadExcel}
+//             disabled={responses.length === 0}
+//             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+//           >
+//             <Download size={14} />
+//             Download Excel
+//           </button>
+
+//           <button
+//             onClick={onRefresh}
+//             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 transition"
+//           >
+//             Refresh
+//           </button>
+
+//           <button
+//             onClick={onBack}
+//             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 transition"
+//           >
+//             ← Back to editor
+//           </button>
+//         </div>
+//       </div>
+
+//       {error && (
+//         <div className="mx-5 mt-4 px-3 py-2 bg-red-50 border border-red-200 text-red-800 rounded-lg text-sm shrink-0">
+//           {error}
+//         </div>
+//       )}
+
+//       {responses.length === 0 ? (
+//         <div className="flex-1 flex flex-col items-center justify-center text-center min-h-0">
+//           <Inbox size={32} className="mx-auto text-slate-300 mb-2" />
+//           <p className="text-sm text-slate-500">No responses yet</p>
+//           <p className="text-xs text-slate-400 mt-1">
+//             Share the form link to start collecting answers
+//           </p>
+//         </div>
+//       ) : columns.length === 0 ? (
+//         <div className="flex-1 min-h-0 overflow-auto p-5 space-y-3">
+//           <p className="text-xs text-slate-500 mb-2">
+//             Could not map field labels — showing raw response data
+//           </p>
+//           {responses.map((r, idx) => (
+//             <pre
+//               key={r.id}
+//               className="text-xs bg-slate-50 border border-slate-200 rounded-lg p-3 overflow-x-auto"
+//             >
+//               #{responses.length - idx}
+//               {"\n"}
+//               {JSON.stringify(r.values, null, 2)}
+//             </pre>
+//           ))}
+//         </div>
+//       ) : (
+//         <div className="flex-1 min-h-0 min-w-0 overflow-auto overscroll-contain">
+//           <table className="min-w-max w-full text-sm border-collapse">
+//             <thead className="sticky top-0 z-20">
+//               <tr className="bg-slate-50 border-b border-slate-200">
+//                 <th className="sticky left-0 top-0 z-30 bg-slate-50 text-left px-4 py-3 font-semibold text-slate-600 whitespace-nowrap border-r border-slate-100">
+//                   #
+//                 </th>
+//                 {columns.map((col) => (
+//                   <th
+//                     key={col.key}
+//                     className="text-left px-4 py-3 font-semibold text-slate-600 whitespace-nowrap min-w-[180px] max-w-[320px]"
+//                   >
+//                     {col.label}
+//                   </th>
+//                 ))}
+//               </tr>
+//             </thead>
+//             <tbody>
+//               {responses.map((r, idx) => (
+//                 <tr
+//                   key={r.id}
+//                   className="border-b border-slate-100 hover:bg-slate-50/80 transition"
+//                 >
+//                   <td className="sticky left-0 z-10 bg-white px-4 py-3 text-slate-400 tabular-nums align-top border-r border-slate-100">
+//                     {responses.length - idx}
+//                   </td>
+
+//                   {columns.map((col) => {
+//                     const value = r.values?.[col.key];
+//                     const field = visibleFields.find((f) => f.id === col.key);
+//                     const isImageField = field?.type === "image";
+//                     const isDocumentField = field?.type === "document";
+
+//                     const imageUrl =
+//                       typeof value === "string" ? value : value?.url || "";
+
+//                     return (
+//                       <td
+//                         key={col.key}
+//                         className="px-4 py-3 text-slate-800 align-top min-w-[180px] max-w-[320px] whitespace-normal break-words"
+//                         title={
+//                           typeof value === "object"
+//                             ? JSON.stringify(value)
+//                             : formatValue(value)
+//                         }
+//                       >
+//                         {isImageField && value ? (
+//                           <div className="flex flex-col gap-2">
+//                             <img
+//                               src={imageUrl}
+//                               alt={
+//                                 typeof value === "string"
+//                                   ? "Uploaded image"
+//                                   : value?.name || "Uploaded image"
+//                               }
+//                               className="h-20 w-20 object-cover rounded-lg border border-slate-200 bg-slate-50"
+//                             />
+//                             <div className="flex items-center gap-3">
+//                               <a
+//                                 href={imageUrl}
+//                                 target="_blank"
+//                                 rel="noreferrer"
+//                                 className="inline-flex text-xs text-purple-600 hover:text-purple-700 underline"
+//                               >
+//                                 View
+//                               </a>
+//                               <a
+//                                 href={imageUrl}
+//                                 target="_blank"
+//                                 rel="noreferrer"
+//                                 download
+//                                 className="inline-flex text-xs text-slate-600 hover:text-slate-800 underline"
+//                               >
+//                                 Download
+//                               </a>
+//                             </div>
+//                           </div>
+//                         ) : isDocumentField && value ? (
+//                           <div className="flex flex-col gap-2">
+//                             {(Array.isArray(value) ? value : [value]).map(
+//                               (file: any, i: number) => {
+//                                 const url =
+//                                   typeof file === "string"
+//                                     ? file
+//                                     : file.url || file.path || "";
+//                                 const name =
+//                                   typeof file === "string"
+//                                     ? "Document"
+//                                     : file.name ||
+//                                       file.originalname ||
+//                                       "Document";
+//                                 return (
+//                                   <div
+//                                     key={i}
+//                                     className="flex items-center gap-2"
+//                                   >
+//                                     <FileText
+//                                       size={16}
+//                                       className="text-purple-600 shrink-0"
+//                                     />
+//                                     <span className="text-xs truncate max-w-[140px]">
+//                                       {name}
+//                                     </span>
+//                                     <a
+//                                       href={url}
+//                                       target="_blank"
+//                                       rel="noreferrer"
+//                                       className="text-xs text-purple-600 underline"
+//                                     >
+//                                       View
+//                                     </a>
+//                                     <a
+//                                       href={url}
+//                                       download
+//                                       className="text-xs text-slate-600 underline"
+//                                     >
+//                                       Download
+//                                     </a>
+//                                   </div>
+//                                 );
+//                               }
+//                             )}
+//                           </div>
+//                         ) : (
+//                           <div className="max-w-[320px] whitespace-normal break-words leading-5">
+//                             {formatValue(value)}
+//                           </div>
+//                         )}
+//                       </td>
+//                     );
+//                   })}
+//                 </tr>
+//               ))}
+//             </tbody>
+//           </table>
+//         </div>
+//       )}
+//     </div>
+//   );
+// }
+
+// // ======================================================
+// // PREVIEW (view-only – no submit, no data entry)
+// // ======================================================
+
+// function FormPreview({
+//   schema,
+//   onBack,
+// }: {
+//   schema: FormSchema;
+//   onBack: () => void;
+// }) {
+//   const visibleFields = (schema.fields || []).filter(
+//     (field: any) => field.type !== "reference-image"
+//   );
+
+//   return (
+//     <div className="bg-white rounded-xl border border-slate-200 overflow-hidden w-full max-w-full">
+//       <div className="px-5 sm:px-8 pt-6 pb-5 border-b border-slate-100 text-center">
+//         <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
+//           {schema.title || "Untitled Form"}
+//         </h2>
+//         {schema.description && (
+//           <p className="text-slate-500 text-sm mt-1.5 max-w-xl mx-auto">
+//             {schema.description}
+//           </p>
+//         )}
+//         <p className="text-[11px] text-purple-600 font-medium mt-2 uppercase tracking-wide">
+//           Preview Mode · View Only
+//         </p>
+//       </div>
+
+//       <div
+//         className="p-5 sm:p-8 grid gap-5 max-w-4xl mx-auto"
+//         style={{
+//           gridTemplateColumns: `repeat(${schema.layoutColumns || 2}, minmax(0, 1fr))`,
+//         }}
+//       >
+//         {visibleFields.length === 0 ? (
+//           <p className="col-span-full text-center text-sm text-slate-400 py-8">
+//             No fields added yet
+//           </p>
+//         ) : (
+//           visibleFields.map((field: any) => (
+//             <div
+//               key={field.id}
+//               className={field.type === "textarea" ? "col-span-full" : ""}
+//             >
+//               <label className="block text-sm font-semibold text-slate-800 mb-1.5">
+//                 {field.label}
+//                 {field.required && <span className="text-red-500 ml-1">*</span>}
+//               </label>
+
+//               {field.referenceUrl && (
+//                 <div className="mb-3 overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
+//                   <img
+//                     src={field.referenceUrl}
+//                     alt={field.label}
+//                     className="max-h-64 w-full object-cover"
+//                   />
+//                 </div>
+//               )}
+
+//               {/* Read-only field renderings */}
+//               {field.type === "image" ? (
+//                 <div className="rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-xs text-slate-400">
+//                   Image upload field
+//                 </div>
+//               ) : field.type === "document" ? (
+//                 <div className="rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-xs text-slate-400">
+//                   Document upload field
+//                 </div>
+//               ) : field.type === "textarea" ? (
+//                 <textarea
+//                   disabled
+//                   placeholder={field.placeholder || ""}
+//                   className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-100 text-sm text-slate-500 cursor-not-allowed resize-none"
+//                   rows={3}
+//                 />
+//               ) : field.type === "select" ? (
+//                 <select
+//                   disabled
+//                   className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-100 text-sm text-slate-500 cursor-not-allowed"
+//                 >
+//                   <option>-- Select --</option>
+//                   {field.options?.map((opt: string) => (
+//                     <option key={opt}>{opt}</option>
+//                   ))}
+//                 </select>
+//               ) : field.type === "radio" ? (
+//                 <div className="space-y-2">
+//                   {field.options?.map((opt: string) => (
+//                     <label
+//                       key={opt}
+//                       className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-slate-500 cursor-not-allowed"
+//                     >
+//                       <input
+//                         type="radio"
+//                         disabled
+//                         className="accent-purple-600"
+//                       />
+//                       {opt}
+//                     </label>
+//                   ))}
+//                 </div>
+//               ) : field.type === "checkbox-group" ? (
+//                 <div className="space-y-2">
+//                   {field.options?.map((opt: string) => (
+//                     <label
+//                       key={opt}
+//                       className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-slate-500 cursor-not-allowed"
+//                     >
+//                       <input
+//                         type="checkbox"
+//                         disabled
+//                         className="rounded accent-purple-600"
+//                       />
+//                       {opt}
+//                     </label>
+//                   ))}
+//                 </div>
+//               ) : field.type === "checkbox" ? (
+//                 <label className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-slate-500 cursor-not-allowed">
+//                   <input
+//                     type="checkbox"
+//                     disabled
+//                     className="rounded accent-purple-600"
+//                   />
+//                   {field.placeholder || "Yes"}
+//                 </label>
+//               ) : field.type === "rating" ? (
+//                 <div className="flex items-center gap-1">
+//                   {[1, 2, 3, 4, 5].map((star) => (
+//                     <span key={star} className="text-2xl text-slate-300">
+//                       ★
+//                     </span>
+//                   ))}
+//                   <span className="ml-2 text-xs text-slate-400">Rating</span>
+//                 </div>
+//               ) : field.type === "daterange" ? (
+//                 <div className="grid gap-3 sm:grid-cols-2">
+//                   <div>
+//                     <label className="mb-1 block text-xs font-medium text-slate-500">
+//                       Start date
+//                     </label>
+//                     <input
+//                       type="date"
+//                       disabled
+//                       className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-100 text-sm text-slate-500 cursor-not-allowed"
+//                     />
+//                   </div>
+//                   <div>
+//                     <label className="mb-1 block text-xs font-medium text-slate-500">
+//                       End date
+//                     </label>
+//                     <input
+//                       type="date"
+//                       disabled
+//                       className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-100 text-sm text-slate-500 cursor-not-allowed"
+//                     />
+//                   </div>
+//                 </div>
+//               ) : (
+//                 <input
+//                   type={
+//                     field.type === "email"
+//                       ? "email"
+//                       : field.type === "tel"
+//                       ? "tel"
+//                       : field.type === "number"
+//                       ? "number"
+//                       : field.type === "date"
+//                       ? "date"
+//                       : "text"
+//                   }
+//                   disabled
+//                   placeholder={field.placeholder || ""}
+//                   className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-100 text-sm text-slate-500 cursor-not-allowed"
+//                 />
+//               )}
+//             </div>
+//           ))
+//         )}
+//       </div>
+
+//       <div className="px-5 sm:px-8 pb-6 text-center">
+//         <button
+//           onClick={onBack}
+//           className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-purple-600 text-white text-sm font-medium hover:bg-purple-700 transition"
+//         >
+//           ← Back to editor
+//         </button>
+//       </div>
+//     </div>
+//   );
+// }
+
+// "use client";
+
+// import {
+//   useState,
+//   useEffect,
+//   useContext,
+//   useCallback,
+// } from "react";
+// import axios from "axios";
+// import * as XLSX from "xlsx";
+// import { AuthContext } from "../../../../../../../src/context/AuthContext";
+// import {
+//   Plus,
+//   Save,
+//   Edit2,
+//   Trash2,
+//   Eye,
+//   Copy,
+//   Check,
+//   FileText,
+//   GripVertical,
+//   ArrowUp,
+//   ArrowDown,
+//   Link2,
+//   Loader2,
+//   Mail,
+//   MessageCircle,
+//   Inbox,
+//   Download,
+//   Users,
+//   Search,
+// } from "lucide-react";
+
+// import Alert from "../../../../../../components/Aleartmessage";
+
+// // ===================== API =====================
+
+// const API = `${import.meta.env.VITE_BACKEND_URL}`;
+
+// // ===================== TYPES =====================
+
+// type FieldType =
+//   | "text"
+//   | "textarea"
+//   | "email"
+//   | "tel"
+//   | "number"
+//   | "date"
+//   | "daterange"
+//   | "select"
+//   | "radio"
+//   | "checkbox-group"
+//   | "checkbox"
+//   | "rating"
+//   | "image"
+//   | "document"
+//   | "reference-image";
+
+// interface FormField {
+//   id: string;
+//   type: FieldType;
+//   label: string;
+//   required: boolean;
+//   placeholder?: string;
+//   options?: string[];
+//   referenceUrl?: string;
+//   accept?: string;
+//   multiple?: boolean;
+// }
+
+// interface FormSchema {
+//   id: string;
+//   title: string;
+//   description?: string;
+//   fields: FormField[];
+//   layoutColumns?: 1 | 2 | 3;
+//   createdAt: string;
+//   updatedAt: string;
+//   assignedMemberIds?: string[];
+// }
+
+// interface FormResponse {
+//   id: string;
+//   formId: string;
+//   values: Record<string, any>;
+//   createdAt: string;
+// }
+
+// interface Member {
+//   id: string;
+//   name: string;
+//   email: string | null;
+//   mobile: string | null;
+//   flat: string | null;
+//   memberCode?: string;
+//   memberType?: string;
+// }
+
+// // ===================== CONSTANTS =====================
+
+// const generateId = () => Math.random().toString(36).slice(2, 11);
+
+// const FIELD_TYPES: { value: FieldType; label: string }[] = [
+//   { value: "text", label: "📝 Text" },
+//   { value: "email", label: "📧 Email" },
+//   { value: "tel", label: "📱 Mobile Number" },
+//   { value: "textarea", label: "📄 Textarea" },
+//   { value: "number", label: "🔢 Number" },
+//   { value: "date", label: "📅 Date" },
+//   { value: "daterange", label: "📆 Date Range" },
+//   { value: "select", label: "📋 Dropdown" },
+//   { value: "radio", label: "◉ Radio Buttons" },
+//   { value: "checkbox-group", label: "☑️ Checkbox Group" },
+//   { value: "checkbox", label: "☐ Single Checkbox" },
+//   { value: "rating", label: "⭐ Rating" },
+//   { value: "image", label: "🖼️ Image Upload" },
+//   { value: "document", label: "📎 Document Upload" },
+// ];
+
+// // ===================== MAIN COMPONENT =====================
+
+// export default function FormBuilder() {
+//   const { user } = useContext(AuthContext);
+
+//   const [forms, setForms] = useState<FormSchema[]>([]);
+//   const [activeFormId, setActiveFormId] = useState<string | null>(null);
+//   const [viewMode, setViewMode] = useState<"edit" | "preview" | "responses">(
+//     "edit"
+//   );
+//   const [copied, setCopied] = useState(false);
+//   const [loading, setLoading] = useState(true);
+//   const [saving, setSaving] = useState(false);
+//   const [assigning, setAssigning] = useState(false);
+//   const [creating, setCreating] = useState(false);
+
+//   const [alert, setAlert] = useState<{
+//     type: "success" | "warning" | "error";
+//     message: string;
+//   } | null>(null);
+
+//   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+//   const [pendingAction, setPendingAction] = useState<
+//     null | { type: "create" } | { type: "switch"; formId: string }
+//   >(null);
+
+//   const [responses, setResponses] = useState<FormResponse[]>([]);
+//   const [responsesLoading, setResponsesLoading] = useState(false);
+//   const [responsesError, setResponsesError] = useState<string | null>(null);
+
+//   const [fieldType, setFieldType] = useState<FieldType>("text");
+//   const [fieldLabel, setFieldLabel] = useState("");
+//   const [fieldRequired, setFieldRequired] = useState(false);
+//   const [fieldPlaceholder, setFieldPlaceholder] = useState("");
+//   const [optionsInput, setOptionsInput] = useState("");
+//   const [editingFieldId, setEditingFieldId] = useState<string | null>(null);
+
+//   const [draftTitle, setDraftTitle] = useState("");
+//   const [draftDescription, setDraftDescription] = useState("");
+//   const [draftFields, setDraftFields] = useState<FormField[]>([]);
+//   const [draftLayoutColumns, setDraftLayoutColumns] = useState<1 | 2 | 3>(2);
+//   const [fieldReferenceImageUrl, setFieldReferenceImageUrl] = useState("");
+
+//   const [shareEmails, setShareEmails] = useState<string[]>([""]);
+//   const [sendingEmail, setSendingEmail] = useState(false);
+
+//   // ===== MEMBER ASSIGNMENT =====
+//   const [members, setMembers] = useState<Member[]>([]);
+//   const [selectedMemberIds, setSelectedMemberIds] = useState<string[]>([]);
+//   const [memberSearch, setMemberSearch] = useState("");
+//   const [membersLoading, setMembersLoading] = useState(false);
+//   const [uploadingFieldId, setUploadingFieldId] = useState<string | null>(null);
+
+//   const activeForm = forms.find((f) => f.id === activeFormId) || null;
+
+//   const showOptions = ["select", "radio", "checkbox-group"].includes(fieldType);
+
+//   // ===================== GET FORMS =====================
+
+//   const loadForms = useCallback(async () => {
+//     try {
+//       setLoading(true);
+//       setAlert(null);
+
+//       const res = await axios.get(`${API}/api/forms`, {
+//         withCredentials: true,
+//       });
+
+//       const data: FormSchema[] = res.data.data || [];
+//       setForms(data);
+
+//       if (data.length > 0) {
+//         setActiveFormId((prev) => prev || data[0].id);
+//       }
+//     } catch (err: any) {
+//       console.error(err);
+//       setAlert({
+//         type: "error",
+//         message: err?.response?.data?.message || "Failed to load forms",
+//       });
+//     } finally {
+//       setLoading(false);
+//     }
+//   }, []);
+
+//   // ===================== GET MEMBERS =====================
+
+//   const loadMembers = useCallback(async () => {
+//     try {
+//       setMembersLoading(true);
+//       const res = await axios.get(`${API}/api/forms/members`, {
+//         withCredentials: true,
+//       });
+//       if (res.data?.success) {
+//         setMembers(res.data.data || []);
+//       }
+//     } catch (err) {
+//       console.error("Failed to load members", err);
+//     } finally {
+//       setMembersLoading(false);
+//     }
+//   }, []);
+
+//   useEffect(() => {
+//     loadForms();
+//     loadMembers();
+//   }, [loadForms, loadMembers]);
+
+//   const getVisibleFields = (fields: FormField[] = []) =>
+//     fields.filter((field) => field.type !== "reference-image");
+
+//   // Single clean useEffect (no duplicates)
+//   useEffect(() => {
+//     if (!activeForm || creating) return;
+
+//     const formFields = getVisibleFields(activeForm.fields || []);
+//     setDraftTitle(activeForm.title);
+//     setDraftDescription(activeForm.description || "");
+//     setDraftFields(formFields);
+//     setDraftLayoutColumns(activeForm.layoutColumns || 2);
+
+//     // Pre-select assigned members
+//     setSelectedMemberIds(
+//       (activeForm.assignedMemberIds || []).map(String)
+//     );
+
+//     resetFieldBuilder();
+//   }, [activeFormId, creating]);
+
+//   const loadResponses = useCallback(async () => {
+//     if (!activeFormId) return;
+
+//     try {
+//       setResponsesLoading(true);
+//       setResponsesError(null);
+
+//       const res = await axios.get(
+//         `${API}/api/forms/${activeFormId}/responses`,
+//         { withCredentials: true }
+//       );
+
+//       if (!res.data?.success) {
+//         setResponsesError(res.data?.message || "Failed to load responses");
+//         setResponses([]);
+//         return;
+//       }
+
+//       setResponses(res.data.data?.responses || []);
+//     } catch (err: any) {
+//       console.error(err);
+//       setResponsesError(
+//         err?.response?.data?.message || "Failed to load responses"
+//       );
+//       setResponses([]);
+//     } finally {
+//       setResponsesLoading(false);
+//     }
+//   }, [activeFormId]);
+
+//   useEffect(() => {
+//     if (viewMode === "responses" && activeFormId) {
+//       loadResponses();
+//     }
+//   }, [viewMode, activeFormId, loadResponses]);
+
+//   const resetFieldBuilder = () => {
+//     setFieldType("text");
+//     setFieldLabel("");
+//     setFieldRequired(false);
+//     setFieldPlaceholder("");
+//     setOptionsInput("");
+//     setFieldReferenceImageUrl("");
+//     setEditingFieldId(null);
+//   };
+
+//   const hasUnsavedChanges = () => {
+//     if (!activeForm) return false;
+//     const currentFields = getVisibleFields(activeForm.fields || []);
+//     return (
+//       draftTitle !== (activeForm.title || "") ||
+//       draftDescription !== (activeForm.description || "") ||
+//       JSON.stringify(draftFields) !== JSON.stringify(currentFields) ||
+//       draftLayoutColumns !== (activeForm.layoutColumns || 2)
+//     );
+//   };
+
+//   const uploadFile = async (
+//     file: File,
+//     type: "image" | "document",
+//     formId: string,
+//   ): Promise<string> => {
+//     const formData = new FormData();
+//     formData.append(type === "image" ? "image" : "file", file);
+
+//     const endpoint =
+//       type === "image"
+//         ? `${API}/api/forms/upload-image`
+//         : `${API}/api/forms/upload-file`;
+
+//     const { data } = await axios.post(endpoint, formData, {
+//       withCredentials: true,
+//       headers: { "Content-Type": "multipart/form-data" },
+//     });
+
+//     if (!data?.success || !data.url) {
+//       throw new Error(data?.message || "Upload failed");
+//     }
+//     return data.url;
+//   };
+
+//   const doCreateNewForm = async () => {
+//     try {
+//       setCreating(true);
+//       setAlert(null);
+//       setPendingAction(null);
+
+//       const res = await axios.post(
+//         `${API}/api/forms`,
+//         {
+//           title: "New Form",
+//           description: "",
+//           fields: [],
+//           layoutColumns: 2,
+//           assignedMemberIds: [],
+//         },
+//         { withCredentials: true }
+//       );
+
+//       const created: FormSchema = { ...res.data.data, title: "" };
+
+//       setForms((prev) => [created, ...prev]);
+//       setActiveFormId(created.id);
+//       setViewMode("edit");
+//       setDraftTitle("");
+//       setDraftDescription("");
+//       setDraftFields([]);
+//       setDraftLayoutColumns(2);
+//       setSelectedMemberIds([]);
+//       resetFieldBuilder();
+//     } catch (err: any) {
+//       console.error(err);
+//       setAlert({
+//         type: "error",
+//         message: err?.response?.data?.message || "Failed to create form",
+//       });
+//     } finally {
+//       setCreating(false);
+//     }
+//   };
+
+//   const doSwitchForm = (formId: string) => {
+//     setPendingAction(null);
+//     setActiveFormId(formId);
+//     setViewMode("edit");
+//     resetFieldBuilder();
+//   };
+
+//   const requestCreateNewForm = (
+//     event?: React.MouseEvent<HTMLButtonElement>
+//   ) => {
+//     event?.preventDefault();
+//     event?.stopPropagation();
+
+//     if (activeForm && !draftTitle.trim()) {
+//       setAlert({
+//         type: "warning",
+//         message:
+//           "Please enter a form name and save the current form before creating a new form.",
+//       });
+//       return;
+//     }
+
+//     if (hasUnsavedChanges()) {
+//       setPendingAction({ type: "create" });
+//       setAlert({
+//         type: "warning",
+//         message:
+//           "You have unsaved changes. Save them before creating a new form, or discard to continue without saving.",
+//       });
+//       return;
+//     }
+//     doCreateNewForm();
+//   };
+
+//   const requestSwitchForm = (formId: string) => {
+//     if (formId === activeFormId) return;
+//     if (hasUnsavedChanges()) {
+//       setPendingAction({ type: "switch", formId });
+//       setAlert({
+//         type: "warning",
+//         message:
+//           "You have unsaved changes. Save them before switching forms, or discard to continue without saving.",
+//       });
+//       return;
+//     }
+//     doSwitchForm(formId);
+//   };
+
+//   const handleUnsavedConfirm = async () => {
+//     const action = pendingAction;
+//     const ok = await saveForm(false);
+
+//     if (!ok) {
+//       setPendingAction(null);
+//       return;
+//     }
+
+//     if (action?.type === "create") {
+//       await doCreateNewForm();
+//     } else if (action?.type === "switch") {
+//       doSwitchForm(action.formId);
+//     }
+//   };
+
+//   const handleUnsavedDiscard = () => {
+//     if (pendingAction?.type === "create") {
+//       doCreateNewForm();
+//     } else if (pendingAction?.type === "switch") {
+//       doSwitchForm(pendingAction.formId);
+//     } else {
+//       setPendingAction(null);
+//       setAlert(null);
+//     }
+//   };
+
+//   const createNewForm = requestCreateNewForm;
+
+//   const saveForm = async (showLoading = true): Promise<boolean> => {
+//     if (!activeFormId) return false;
+//     if (!draftTitle.trim()) {
+//       setAlert({ type: "error", message: "Title is required" });
+//       return false;
+//     }
+
+//     try {
+//       if (showLoading) setSaving(true);
+//       setAlert(null);
+
+//       const res = await axios.put(
+//         `${API}/api/forms/${activeFormId}`,
+//         {
+//           title: draftTitle.trim(),
+//           description: draftDescription,
+//           fields: draftFields,
+//           layoutColumns: draftLayoutColumns,
+//         },
+//         { withCredentials: true }
+//       );
+
+//       const updated: FormSchema = res.data.data;
+//       setForms((prev) =>
+//         prev.map((f) => (f.id === activeFormId ? updated : f))
+//       );
+
+//       setAlert({ type: "success", message: "Form saved successfully" });
+//       return true;
+//     } catch (err: any) {
+//       console.error(err);
+//       setAlert({
+//         type: "error",
+//         message: err?.response?.data?.message || "Failed to save form",
+//       });
+//       return false;
+//     } finally {
+//       if (showLoading) setSaving(false);
+//     }
+//   };
+
+//   const assignMembers = async () => {
+//     if (!activeFormId) return;
+
+//     try {
+//       setAssigning(true);
+//       setAlert(null);
+//       const res = await axios.put(
+//         `${API}/api/forms/${activeFormId}/assign`,
+//         { assignedMemberIds: selectedMemberIds },
+//         { withCredentials: true },
+//       );
+
+//       const assignedMemberIds = (res.data?.data?.assignedMemberIds || []).map(
+//         String,
+//       );
+//       setForms((previous) =>
+//         previous.map((form) =>
+//           form.id === activeFormId ? { ...form, assignedMemberIds } : form,
+//         ),
+//       );
+//       setSelectedMemberIds(assignedMemberIds);
+//       setAlert({ type: "success", message: "Members assigned successfully" });
+//     } catch (err: any) {
+//       console.error(err);
+//       setAlert({
+//         type: "error",
+//         message: err?.response?.data?.message || "Failed to assign members",
+//       });
+//     } finally {
+//       setAssigning(false);
+//     }
+//   };
+
+//   const uploadFieldReferenceImage = async (file: File) => {
+//     const formData = new FormData();
+//     formData.append("image", file);
+
+//     try {
+//       setAlert(null);
+//       const res = await axios.post(
+//         `${API}/api/forms/upload-image`,
+//         formData,
+//         {
+//           withCredentials: true,
+//           headers: { "Content-Type": "multipart/form-data" },
+//         }
+//       );
+
+//       const url = res.data?.url;
+//       if (!url) throw new Error("Reference image upload did not return a URL");
+//       setFieldReferenceImageUrl(url);
+//     } catch (err: any) {
+//       console.error(err);
+//       setAlert({
+//         type: "error",
+//         message:
+//           err?.response?.data?.message ||
+//           err?.message ||
+//           "Reference image upload failed",
+//       });
+//     }
+//   };
+
+//   const deleteForm = (id: string) => {
+//     setPendingDeleteId(id);
+//     setAlert({
+//       type: "warning",
+//       message:
+//         "Are you sure you want to delete this form? This action cannot be undone.",
+//     });
+//   };
+
+//   const confirmDelete = async () => {
+//     if (!pendingDeleteId) return;
+//     try {
+//       const deletingId = pendingDeleteId;
+//       setAlert(null);
+//       setPendingDeleteId(null);
+
+//       await axios.delete(`${API}/api/forms/${deletingId}`, {
+//         withCredentials: true,
+//       });
+
+//       const updated = forms.filter((f) => f.id !== deletingId);
+//       setForms(updated);
+
+//       if (activeFormId === deletingId) {
+//         setActiveFormId(updated[0]?.id || null);
+//         setViewMode("edit");
+//         setSelectedMemberIds([]);
+//       }
+//     } catch (err: any) {
+//       console.error(err);
+//       setAlert({
+//         type: "error",
+//         message: err?.response?.data?.message || "Failed to delete form",
+//       });
+//     }
+//   };
+
+//   // ===================== FIELD ACTIONS =====================
+
+//   const addOrUpdateField = () => {
+//     if (!fieldLabel.trim()) {
+//       setAlert({ type: "error", message: "Field label is required" });
+//       return;
+//     }
+
+//     let options: string[] | undefined;
+//     if (showOptions) {
+//       options = optionsInput
+//         .split(",")
+//         .map((o) => o.trim())
+//         .filter(Boolean);
+
+//       if (options.length === 0) {
+//         setAlert({
+//           type: "error",
+//           message: "Please provide at least one option",
+//         });
+//         return;
+//       }
+//     }
+
+//     const newField: FormField = {
+//       id: editingFieldId || generateId(),
+//       type: fieldType,
+//       label: fieldLabel.trim(),
+//       required: fieldRequired,
+//       placeholder: fieldPlaceholder.trim() || undefined,
+//       options,
+//       referenceUrl: fieldReferenceImageUrl || undefined,
+//     };
+
+//     if (fieldType === "document") {
+//       newField.accept =
+//         ".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip";
+//       newField.multiple = false;
+//     }
+
+//     if (editingFieldId) {
+//       setDraftFields((prev) =>
+//         prev.map((f) => (f.id === editingFieldId ? newField : f))
+//       );
+//     } else {
+//       setDraftFields((prev) => [...prev, newField]);
+//     }
+
+//     resetFieldBuilder();
+//   };
+
+//   const editField = (field: FormField) => {
+//     setEditingFieldId(field.id);
+//     setFieldType(field.type);
+//     setFieldLabel(field.label);
+//     setFieldRequired(field.required);
+//     setFieldPlaceholder(field.placeholder || "");
+//     setOptionsInput(field.options?.join(", ") || "");
+//     setFieldReferenceImageUrl(field.referenceUrl || "");
+//   };
+
+//   const deleteField = (id: string) => {
+//     setDraftFields((prev) => prev.filter((f) => f.id !== id));
+//     if (editingFieldId === id) resetFieldBuilder();
+//   };
+
+//   const moveField = (index: number, direction: "up" | "down") => {
+//     const newFields = [...draftFields];
+//     const target = direction === "up" ? index - 1 : index + 1;
+//     if (target < 0 || target >= newFields.length) return;
+//     [newFields[index], newFields[target]] = [
+//       newFields[target],
+//       newFields[index],
+//     ];
+//     setDraftFields(newFields);
+//   };
+
+//   // ===================== SHARE =====================
+
+//   const getFormUrl = () => {
+//     if (!activeFormId || !user?.organisation_id) return "";
+//     return `${window.location.origin}/form/${user.organisation_id}/${activeFormId}`;
+//   };
+
+//   const copyLink = () => {
+//     if (!activeFormId) return;
+//     const url = getFormUrl();
+//     navigator.clipboard.writeText(url);
+//     setCopied(true);
+//     setTimeout(() => setCopied(false), 2000);
+//   };
+
+//   const sendFormEmail = async () => {
+//     if (!activeFormId) return;
+
+//     const emails = shareEmails.map((e) => e.trim()).filter(Boolean);
+//     if (emails.length === 0) {
+//       setAlert({
+//         type: "error",
+//         message: "Please enter at least one email address",
+//       });
+//       return;
+//     }
+
+//     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+//     const invalidEmails = emails.filter((e) => !emailRegex.test(e));
+//     if (invalidEmails.length > 0) {
+//       setAlert({
+//         type: "error",
+//         message: `Invalid email(s):\n${invalidEmails.join("\n")}`,
+//       });
+//       return;
+//     }
+
+//     try {
+//       setSendingEmail(true);
+//       setAlert(null);
+
+//       await axios.post(
+//         `${API}/api/forms/${activeFormId}/send-email`,
+//         {
+//           emails,
+//           formUrl: getFormUrl(),
+//           formTitle: draftTitle.trim() || "Form",
+//           fields: draftFields.length ? draftFields : activeForm?.fields || [],
+//         },
+//         { withCredentials: true }
+//       );
+
+//       setShareEmails([""]);
+//       setAlert({ type: "success", message: "Form email sent successfully" });
+//     } catch (err: any) {
+//       console.error(err);
+//       setAlert({
+//         type: "error",
+//         message: err?.response?.data?.message || "Failed to send email",
+//       });
+//     } finally {
+//       setSendingEmail(false);
+//     }
+//   };
+
+//   const shareViaWhatsApp = () => {
+//     const url = getFormUrl();
+//     if (!url) return;
+//     const text = encodeURIComponent(`Hi! Please fill out this form:\n${url}`);
+//     window.open(`https://wa.me/?text=${text}`, "_blank");
+//   };
+
+//   // ===================== LOADING =====================
+
+//   if (loading) {
+//     return (
+//       <section className="h-screen bg-slate-50 flex items-center justify-center overflow-hidden">
+//         <div className="flex items-center gap-2 text-slate-500">
+//           <Loader2 size={20} className="animate-spin" />
+//           Loading forms...
+//         </div>
+//       </section>
+//     );
+//   }
+
+//   // ===================== RENDER =====================
+
+//   return (
+//     <section className="h-screen bg-slate-50 overflow-hidden py-4 sm:py-6">
+//       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col min-h-0">
+//         {alert && (
+//           <Alert
+//             type={alert.type}
+//             message={alert.message}
+//             onClose={() => {
+//               if (pendingAction) {
+//                 handleUnsavedDiscard();
+//               } else {
+//                 setAlert(null);
+//                 setPendingDeleteId(null);
+//               }
+//             }}
+//             confirm={!!pendingDeleteId || !!pendingAction}
+//             onConfirm={pendingAction ? handleUnsavedConfirm : confirmDelete}
+//             confirmText={pendingAction ? "Save & Continue" : "Yes, Delete"}
+//             cancelText={pendingAction ? "Discard" : "Cancel"}
+//           />
+//         )}
+
+//         {/* HEADER */}
+//         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-4 shrink-0">
+//           <div className="flex-1 min-w-0">
+//             <span className="text-purple-600 font-semibold uppercase tracking-widest text-xs">
+//               Form Management
+//             </span>
+//             <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mt-1">
+//               Form Builder
+//             </h1>
+//           </div>
+
+//           <div className="flex flex-col items-end gap-2 shrink-0">
+//             <div className="flex flex-wrap justify-end gap-2">
+//               {/* NEW FORM */}
+//               <button
+//                 type="button"
+//                 onClick={createNewForm}
+//                 disabled={creating}
+//                 className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition disabled:opacity-60"
+//               >
+//                 {creating ? (
+//                   <>
+//                     <Loader2 size={15} className="animate-spin" />
+//                     Creating...
+//                   </>
+//                 ) : (
+//                   <>
+//                     <Plus size={15} />
+//                     New Form
+//                   </>
+//                 )}
+//               </button>
+
+//               {activeForm && (
+//                 <>
+//                   <button
+//                     onClick={() =>
+//                       setViewMode(viewMode === "preview" ? "edit" : "preview")
+//                     }
+//                     disabled={saving || creating}
+//                     className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border text-sm font-medium transition ${
+//                       viewMode === "preview"
+//                         ? "bg-purple-50 border-purple-300 text-purple-700"
+//                         : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+//                     }`}
+//                   >
+//                     <Eye size={14} />
+//                     {viewMode === "preview" ? "Edit" : "Preview"}
+//                   </button>
+
+//                   <button
+//                     onClick={() =>
+//                       setViewMode(
+//                         viewMode === "responses" ? "edit" : "responses"
+//                       )
+//                     }
+//                     disabled={saving || creating}
+//                     className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border text-sm font-medium transition ${
+//                       viewMode === "responses"
+//                         ? "bg-purple-50 border-purple-300 text-purple-700"
+//                         : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+//                     }`}
+//                   >
+//                     <Inbox size={14} />
+//                     Responses
+//                   </button>
+
+//                   {viewMode === "edit" && (
+//                     <button
+//                       type="button"
+//                       onClick={() => saveForm()}
+//                       disabled={saving || creating}
+//                       className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition disabled:opacity-60"
+//                     >
+//                       {saving ? (
+//                         <>
+//                           <Loader2 size={14} className="animate-spin" />
+//                           Saving...
+//                         </>
+//                       ) : (
+//                         <>
+//                           <Save size={14} />
+//                           Save
+//                         </>
+//                       )}
+//                     </button>
+//                   )}
+//                 </>
+//               )}
+//             </div>
+
+//             {activeForm && (
+//               <div className="flex flex-wrap items-start justify-end gap-2 w-full max-w-[720px]">
+//                 {shareEmails.map((email, index) => (
+//                   <div
+//                     key={index}
+//                     className="flex items-center gap-1.5 min-w-[220px] max-w-[280px] flex-1"
+//                   >
+//                     <input
+//                       type="email"
+//                       value={email}
+//                       onChange={(e) => {
+//                         const updated = [...shareEmails];
+//                         updated[index] = e.target.value;
+//                         setShareEmails(updated);
+//                       }}
+//                       placeholder="recipient@email.com"
+//                       className="w-full px-2.5 py-2 rounded-lg border border-slate-200 bg-white text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20"
+//                     />
+//                     {shareEmails.length > 1 && (
+//                       <button
+//                         type="button"
+//                         onClick={() =>
+//                           setShareEmails(
+//                             shareEmails.filter((_, i) => i !== index)
+//                           )
+//                         }
+//                         className="p-2 rounded-lg text-red-500 hover:bg-red-50 transition shrink-0"
+//                       >
+//                         <Trash2 size={14} />
+//                       </button>
+//                     )}
+//                   </div>
+//                 ))}
+
+//                 <div className="flex items-center gap-2 shrink-0">
+//                   <button
+//                     type="button"
+//                     onClick={() => setShareEmails([...shareEmails, ""])}
+//                     className="inline-flex items-center gap-1 text-xs font-medium text-purple-600 hover:text-purple-700"
+//                   >
+//                     <Plus size={13} />
+//                     Add another email
+//                   </button>
+
+//                   <button
+//                     onClick={sendFormEmail}
+//                     disabled={
+//                       sendingEmail || shareEmails.every((e) => !e.trim())
+//                     }
+//                     className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-purple-600 text-white text-sm font-medium hover:bg-purple-700 transition disabled:opacity-60"
+//                   >
+//                     {sendingEmail ? (
+//                       <Loader2 size={14} className="animate-spin" />
+//                     ) : (
+//                       <Mail size={14} />
+//                     )}
+//                     Send
+//                   </button>
+//                 </div>
+//               </div>
+//             )}
+//           </div>
+//         </div>
+
+//         {/* MAIN GRID */}
+//         <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_260px] gap-5 flex-1 min-h-0 overflow-hidden">
+//           <div className="min-w-0 min-h-0 overflow-hidden">
+//             {!activeForm ? (
+//               <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
+//                 <FileText size={36} className="mx-auto text-slate-300 mb-3" />
+//                 <p className="text-base text-slate-500 mb-4">
+//                   No form selected
+//                 </p>
+//                 <button
+//                   type="button"
+//                   onClick={createNewForm}
+//                   disabled={creating || saving}
+//                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition disabled:opacity-60"
+//                 >
+//                   {creating ? (
+//                     <>
+//                       <Loader2 size={15} className="animate-spin" />
+//                       Creating...
+//                     </>
+//                   ) : (
+//                     <>
+//                       <Plus size={15} />
+//                       Create Form
+//                     </>
+//                   )}
+//                 </button>
+//               </div>
+//             ) : viewMode === "preview" ? (
+//               <div className="h-full min-h-0 overflow-y-auto">
+//                 <FormPreview
+//                   schema={{
+//                     ...activeForm,
+//                     title: draftTitle,
+//                     description: draftDescription,
+//                     fields: draftFields,
+//                     layoutColumns: draftLayoutColumns,
+//                   }}
+//                   onBack={() => setViewMode("edit")}
+//                 />
+//               </div>
+//             ) : viewMode === "responses" ? (
+//               <div className="h-full min-h-0 overflow-hidden">
+//                 <FormResponses
+//                   formTitle={draftTitle || activeForm.title}
+//                   fields={
+//                     draftFields.length
+//                       ? draftFields
+//                       : activeForm.fields || []
+//                   }
+//                   responses={responses}
+//                   loading={responsesLoading}
+//                   error={responsesError}
+//                   onRefresh={loadResponses}
+//                   onBack={() => setViewMode("edit")}
+//                 />
+//               </div>
+//             ) : (
+//               <div className="h-full min-h-0 overflow-y-auto pr-1">
+//                 <div className="space-y-4">
+//                   {/* FORM HEADER */}
+//                   <div className="bg-white rounded-xl border border-slate-200 p-3.5 sm:p-4 space-y-4">
+//                     <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3">
+//                       <div className="flex-1 min-w-0">
+//                         <label className="block text-[11px] font-medium text-slate-500 mb-1">
+//                           Form Name
+//                         </label>
+//                         <input
+//                           type="text"
+//                           value={draftTitle}
+//                           onChange={(e) => setDraftTitle(e.target.value)}
+//                           className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
+//                           placeholder="e.g. Employee Survey"
+//                         />
+//                       </div>
+
+//                       <div className="sm:w-[180px] shrink-0">
+//                         <label className="block text-[11px] font-medium text-slate-500 mb-1">
+//                           Fields per row
+//                         </label>
+//                         <select
+//                           value={draftLayoutColumns}
+//                           onChange={(e) =>
+//                             setDraftLayoutColumns(
+//                               Number(e.target.value) as 1 | 2 | 3
+//                             )
+//                           }
+//                           className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
+//                         >
+//                           <option value={1}>1 column</option>
+//                           <option value={2}>2 columns</option>
+//                           <option value={3}>3 columns</option>
+//                         </select>
+//                       </div>
+
+//                       <div className="flex-1 min-w-0">
+//                         <label className="block text-[11px] font-medium text-slate-500 mb-1">
+//                           Description
+//                         </label>
+//                         <input
+//                           type="text"
+//                           value={draftDescription}
+//                           onChange={(e) => setDraftDescription(e.target.value)}
+//                           className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
+//                           placeholder="Short description..."
+//                         />
+//                       </div>
+
+//                       <div className="sm:w-[280px] shrink-0">
+//                         <label className="block text-[11px] font-medium text-slate-500 mb-1">
+//                           Share Link
+//                         </label>
+//                         <div className="flex items-center gap-1.5">
+//                           <div className="flex-1 min-w-0 flex items-center gap-1.5 px-2.5 py-2 rounded-lg border border-slate-200 bg-slate-50 text-xs font-mono text-purple-600 truncate">
+//                             <Link2
+//                               size={12}
+//                               className="shrink-0 text-slate-400"
+//                             />
+//                             <span className="truncate">
+//                               /form/{user?.organisation_id ?? "org"}/
+//                               {activeFormId}
+//                             </span>
+//                           </div>
+//                           <button
+//                             onClick={copyLink}
+//                             title="Copy link"
+//                             className="shrink-0 p-2 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-purple-600 transition"
+//                           >
+//                             {copied ? (
+//                               <Check size={14} className="text-emerald-600" />
+//                             ) : (
+//                               <Copy size={14} />
+//                             )}
+//                           </button>
+//                           <button
+//                             onClick={shareViaWhatsApp}
+//                             title="Share via WhatsApp"
+//                             className="shrink-0 p-2 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-emerald-50 hover:text-emerald-600 transition"
+//                           >
+//                             <MessageCircle size={14} />
+//                           </button>
+//                         </div>
+//                       </div>
+//                     </div>
+//                   </div>
+
+//                   {/* ========== ASSIGN TO USERS (hidden – moved to sidebar) ========== */}
+//                   <div className="hidden bg-white rounded-xl border border-slate-200 p-4 sm:p-5">
+//                     {/* ... kept for reference, not rendered ... */}
+//                   </div>
+
+//                   {/* BUILDER */}
+//                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+//                     {/* ADD FIELD */}
+//                     <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5">
+//                       <h3 className="text-base font-bold text-slate-900 mb-0.5">
+//                         Add Form Fields
+//                       </h3>
+//                       <p className="text-xs text-slate-500 mb-4">
+//                         Configure fields for your form
+//                       </p>
+
+//                       <div className="space-y-3">
+//                         <div>
+//                           <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+//                             Field Type
+//                           </label>
+//                           <select
+//                             value={fieldType}
+//                             onChange={(e) =>
+//                               setFieldType(e.target.value as FieldType)
+//                             }
+//                             className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
+//                           >
+//                             {FIELD_TYPES.map((t) => (
+//                               <option key={t.value} value={t.value}>
+//                                 {t.label}
+//                               </option>
+//                             ))}
+//                           </select>
+//                         </div>
+
+//                         <div>
+//                           <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+//                             Field Label
+//                           </label>
+//                           <input
+//                             type="text"
+//                             value={fieldLabel}
+//                             onChange={(e) => setFieldLabel(e.target.value)}
+//                             className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
+//                             placeholder="e.g. Your Name"
+//                           />
+//                         </div>
+
+//                         <div>
+//                           <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+//                             Placeholder (optional)
+//                           </label>
+//                           <input
+//                             type="text"
+//                             value={fieldPlaceholder}
+//                             onChange={(e) =>
+//                               setFieldPlaceholder(e.target.value)
+//                             }
+//                             className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
+//                             placeholder="e.g. Enter your full name"
+//                           />
+//                         </div>
+
+//                         {showOptions && (
+//                           <div>
+//                             <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+//                               Options (comma separated)
+//                             </label>
+//                             <input
+//                               type="text"
+//                               value={optionsInput}
+//                               onChange={(e) => setOptionsInput(e.target.value)}
+//                               className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
+//                               placeholder="Option 1, Option 2, Option 3"
+//                             />
+//                           </div>
+//                         )}
+
+//                         {/* REFERENCE IMAGE */}
+//                         <div className="rounded-xl border border-dashed border-purple-200 bg-purple-50/40 p-3">
+//                           <div className="flex items-center justify-between gap-3 mb-2">
+//                             <div>
+//                               <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-purple-700">
+//                                 Field reference image
+//                               </p>
+//                               <p className="text-[10px] text-slate-500 mt-0.5">
+//                                 Optional image shown under this field
+//                               </p>
+//                             </div>
+//                             {fieldReferenceImageUrl && (
+//                               <button
+//                                 type="button"
+//                                 onClick={() => setFieldReferenceImageUrl("")}
+//                                 className="text-[10px] text-red-600 hover:text-red-700 font-medium"
+//                               >
+//                                 Remove
+//                               </button>
+//                             )}
+//                           </div>
+//                           <input
+//                             type="file"
+//                             accept="image/*"
+//                             onChange={(e) => {
+//                               const file = e.target.files?.[0];
+//                               if (file) uploadFieldReferenceImage(file);
+//                             }}
+//                             className="block w-full text-[11px] text-slate-600 file:mr-2 file:rounded-lg file:border-0 file:bg-purple-600 file:px-2 file:py-1.5 file:text-[11px] file:font-medium file:text-white hover:file:bg-purple-700"
+//                           />
+//                           {fieldReferenceImageUrl && (
+//                             <div className="mt-3 overflow-hidden rounded-lg border border-purple-200 bg-white">
+//                               <img
+//                                 src={fieldReferenceImageUrl}
+//                                 alt="Field reference"
+//                                 className="h-28 w-full object-cover"
+//                               />
+//                             </div>
+//                           )}
+//                         </div>
+
+//                         <label className="inline-flex items-center gap-2 text-xs font-medium text-slate-600 cursor-pointer">
+//                           <input
+//                             type="checkbox"
+//                             checked={fieldRequired}
+//                             onChange={(e) =>
+//                               setFieldRequired(e.target.checked)
+//                             }
+//                             className="rounded border-slate-300 text-purple-600 focus:ring-purple-500"
+//                           />
+//                           Required Field
+//                         </label>
+
+//                         <button
+//                           onClick={addOrUpdateField}
+//                           className="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition"
+//                         >
+//                           {editingFieldId ? (
+//                             <>
+//                               <Edit2 size={15} />
+//                               Update Field
+//                             </>
+//                           ) : (
+//                             <>
+//                               <Plus size={15} />
+//                               Add Field
+//                             </>
+//                           )}
+//                         </button>
+
+//                         {editingFieldId && (
+//                           <button
+//                             onClick={resetFieldBuilder}
+//                             className="w-full text-xs text-slate-500 hover:text-slate-700"
+//                           >
+//                             Cancel editing
+//                           </button>
+//                         )}
+//                       </div>
+//                     </div>
+
+//                     {/* ADDED FIELDS */}
+//                     <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5">
+//                       <h3 className="text-base font-bold text-slate-900 mb-3">
+//                         Added Fields ({draftFields.length})
+//                       </h3>
+
+//                       {draftFields.length === 0 ? (
+//                         <div className="py-12 text-center border-2 border-dashed border-slate-200 rounded-lg">
+//                           <p className="text-xs text-slate-400">
+//                             No fields added yet
+//                           </p>
+//                         </div>
+//                       ) : (
+//                         <div className="space-y-2 max-h-[380px] overflow-y-auto">
+//                           {draftFields.map((field, index) => (
+//                             <div
+//                               key={field.id}
+//                               className="flex items-center gap-2 p-3 rounded-lg border border-slate-200 bg-slate-50 hover:border-slate-300 transition"
+//                             >
+//                               <GripVertical
+//                                 size={14}
+//                                 className="text-slate-300 shrink-0"
+//                               />
+
+//                               <div className="min-w-0 flex-1">
+//                                 <div className="flex items-center gap-1.5 flex-wrap">
+//                                   <span className="text-sm font-medium text-slate-900">
+//                                     {field.label}
+//                                   </span>
+//                                   <span className="text-[11px] text-slate-400">
+//                                     ({field.type})
+//                                   </span>
+//                                   {field.required && (
+//                                     <span className="text-[11px] text-red-500 font-medium">
+//                                       *
+//                                     </span>
+//                                   )}
+//                                 </div>
+
+//                                 {field.type === "image" ? (
+//                                   <div className="mt-2 flex items-center gap-2">
+//                                     <div className="flex h-10 w-14 items-center justify-center rounded-md border border-dashed border-purple-300 bg-gradient-to-br from-purple-100 via-white to-pink-100 text-[8px] font-semibold text-purple-600">
+//                                       IMG
+//                                     </div>
+//                                     <p className="text-[11px] text-slate-500">
+//                                       Image upload field
+//                                     </p>
+//                                   </div>
+//                                 ) : field.type === "document" ? (
+//                                   <div className="mt-2 flex items-center gap-2">
+//                                     <div className="flex h-10 w-14 items-center justify-center rounded-md border border-dashed border-purple-300 bg-gradient-to-br from-purple-100 via-white to-pink-100 text-[8px] font-semibold text-purple-600">
+//                                       DOC
+//                                     </div>
+//                                     <p className="text-[11px] text-slate-500">
+//                                       Document upload field
+//                                     </p>
+//                                   </div>
+//                                 ) : field.options ? (
+//                                   <p className="text-[11px] text-slate-400 mt-0.5 truncate">
+//                                     {field.options.join(", ")}
+//                                   </p>
+//                                 ) : null}
+//                               </div>
+
+//                               <div className="flex items-center gap-0.5 shrink-0">
+//                                 <button
+//                                   onClick={() => moveField(index, "up")}
+//                                   disabled={index === 0}
+//                                   className="p-1.5 rounded-md text-slate-400 hover:bg-white disabled:opacity-30 transition"
+//                                 >
+//                                   <ArrowUp size={13} />
+//                                 </button>
+//                                 <button
+//                                   onClick={() => moveField(index, "down")}
+//                                   disabled={index === draftFields.length - 1}
+//                                   className="p-1.5 rounded-md text-slate-400 hover:bg-white disabled:opacity-30 transition"
+//                                 >
+//                                   <ArrowDown size={13} />
+//                                 </button>
+//                                 <button
+//                                   onClick={() => editField(field)}
+//                                   className="p-1.5 rounded-md bg-purple-600 text-white hover:bg-purple-700 transition"
+//                                 >
+//                                   <Edit2 size={13} />
+//                                 </button>
+//                                 <button
+//                                   onClick={() => deleteField(field.id)}
+//                                   className="p-1.5 rounded-md bg-red-500 text-white hover:bg-red-600 transition"
+//                                 >
+//                                   <Trash2 size={13} />
+//                                 </button>
+//                               </div>
+//                             </div>
+//                           ))}
+//                         </div>
+//                       )}
+//                     </div>
+//                   </div>
+//                 </div>
+//               </div>
+//             )}
+//           </div>
+
+//           {/* SIDEBAR */}
+//           <aside className="bg-white rounded-xl border border-slate-200 p-4 h-full max-h-full overflow-y-auto">
+//             {activeForm && viewMode === "edit" && (
+//               <div className="mb-4 rounded-lg border border-purple-100 bg-purple-50/40 p-3">
+//                 <div className="flex items-start justify-between gap-2 mb-3">
+//                   <div className="flex items-center gap-2">
+//                     <Users size={15} className="text-purple-600 shrink-0" />
+//                     <div>
+//                       <h3 className="text-sm font-bold text-slate-900">
+//                         Assign users
+//                       </h3>
+//                       <p className="text-[11px] text-slate-500 mt-0.5">
+//                         Choose members for this form
+//                       </p>
+//                     </div>
+//                   </div>
+//                   <span className="text-[11px] font-medium text-purple-700 bg-white px-2 py-1 rounded-full shrink-0">
+//                     {selectedMemberIds.length}
+//                   </span>
+//                 </div>
+
+//                 <div className="relative mb-2">
+//                   <Search
+//                     size={13}
+//                     className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400"
+//                   />
+//                   <input
+//                     type="text"
+//                     value={memberSearch}
+//                     onChange={(e) => setMemberSearch(e.target.value)}
+//                     placeholder="Search users..."
+//                     className="w-full pl-8 pr-2.5 py-2 rounded-lg border border-slate-200 bg-white text-xs outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20"
+//                   />
+//                 </div>
+
+//                 <div className="flex items-center gap-3 mb-2 text-[11px]">
+//                   <button
+//                     type="button"
+//                     onClick={() => setSelectedMemberIds(members.map((m) => m.id))}
+//                     className="text-purple-600 hover:underline font-medium"
+//                   >
+//                     Select all
+//                   </button>
+//                   <button
+//                     type="button"
+//                     onClick={() => setSelectedMemberIds([])}
+//                     className="text-slate-500 hover:underline"
+//                   >
+//                     Clear
+//                   </button>
+//                 </div>
+
+//                 <div className="max-h-48 overflow-y-auto rounded-lg border border-slate-200 bg-white divide-y divide-slate-100">
+//                   {membersLoading ? (
+//                     <div className="py-6 text-center text-xs text-slate-400">
+//                       Loading users...
+//                     </div>
+//                   ) : members.length === 0 ? (
+//                     <div className="py-6 text-center text-xs text-slate-400">
+//                       No users found
+//                     </div>
+//                   ) : (
+//                     members
+//                       .filter((member) => {
+//                         if (!memberSearch.trim()) return true;
+//                         const query = memberSearch.toLowerCase();
+//                         return (
+//                           member.name.toLowerCase().includes(query) ||
+//                           (member.flat || "").toLowerCase().includes(query) ||
+//                           (member.mobile || "").includes(query) ||
+//                           (member.email || "").toLowerCase().includes(query)
+//                         );
+//                       })
+//                       .map((member) => (
+//                         <label
+//                           key={member.id}
+//                           className="flex items-center gap-2 px-2.5 py-2 cursor-pointer hover:bg-purple-50"
+//                         >
+//                           <input
+//                             type="checkbox"
+//                             checked={selectedMemberIds.includes(member.id)}
+//                             onChange={(event) =>
+//                               setSelectedMemberIds((previous) =>
+//                                 event.target.checked
+//                                   ? [...previous, member.id]
+//                                   : previous.filter((id) => id !== member.id),
+//                               )
+//                             }
+//                             className="rounded border-slate-300 text-purple-600 focus:ring-purple-500"
+//                           />
+//                           <span className="min-w-0">
+//                             <span className="block text-xs font-medium text-slate-800 truncate">
+//                               {member.name}
+//                             </span>
+//                             <span className="block text-[10px] text-slate-500 truncate">
+//                               {[member.flat, member.mobile, member.email]
+//                                 .filter(Boolean)
+//                                 .join(" · ")}
+//                             </span>
+//                           </span>
+//                         </label>
+//                       ))
+//                   )}
+//                 </div>
+
+//                 <button
+//                   type="button"
+//                   onClick={assignMembers}
+//                   disabled={assigning || saving || membersLoading}
+//                   className="mt-3 w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-purple-600 text-white text-xs font-semibold hover:bg-purple-700 transition disabled:opacity-60"
+//                 >
+//                   {assigning ? (
+//                     <Loader2 size={13} className="animate-spin" />
+//                   ) : (
+//                     <Users size={13} />
+//                   )}
+//                   {assigning ? "Assigning..." : "Assign users"}
+//                 </button>
+//               </div>
+//             )}
+
+//             <h3 className="text-xs font-semibold text-slate-900 mb-3">
+//               Your Forms ({forms.length})
+//             </h3>
+
+//             {forms.length === 0 ? (
+//               <div className="py-8 text-center">
+//                 <FileText size={24} className="mx-auto text-slate-300 mb-2" />
+//                 <p className="text-xs text-slate-400">No forms yet</p>
+//                 <button
+//                   type="button"
+//                   onClick={createNewForm}
+//                   className="mt-2 text-xs font-medium text-purple-600 hover:underline"
+//                 >
+//                   Create your first form
+//                 </button>
+//               </div>
+//             ) : (
+//               <div className="space-y-1.5 max-h-[42vh] overflow-y-auto">
+//                 {forms.map((form) => (
+//                   <div
+//                     key={form.id}
+//                     onClick={() => requestSwitchForm(form.id)}
+//                     className={`flex items-center justify-between gap-2 p-2.5 rounded-lg cursor-pointer transition border ${
+//                       activeFormId === form.id
+//                         ? "bg-purple-50 border-purple-300"
+//                         : "bg-slate-50 border-transparent hover:bg-slate-100"
+//                     }`}
+//                   >
+//                     <div className="min-w-0">
+//                       <p className="text-sm font-medium text-slate-900 truncate">
+//                         {form.title || "No title"}
+//                       </p>
+//                       <p className="text-[11px] text-slate-400 mt-0.5">
+//                         {(form.fields || []).length} field
+//                         {(form.fields || []).length !== 1 ? "s" : ""}
+//                         {(form.assignedMemberIds?.length ?? 0) > 0 && (
+//                           <> · {form.assignedMemberIds!.length} users</>
+//                         )}
+//                       </p>
+//                     </div>
+//                     <button
+//                       onClick={(e) => {
+//                         e.stopPropagation();
+//                         deleteForm(form.id);
+//                       }}
+//                       className="p-1 rounded-md text-slate-400 hover:text-red-500 hover:bg-red-50 transition"
+//                     >
+//                       <Trash2 size={13} />
+//                     </button>
+//                   </div>
+//                 ))}
+//               </div>
+//             )}
+//           </aside>
+//         </div>
+//       </div>
+//     </section>
+//   );
+// }
+
+// // ======================================================
+// // RESPONSES
+// // ======================================================
+
+// function FormResponses({
+//   formTitle,
+//   fields,
+//   responses,
+//   loading,
+//   error,
+//   onRefresh,
+//   onBack,
+// }: {
+//   formTitle: string;
+//   fields: FormField[];
+//   responses: FormResponse[];
+//   loading: boolean;
+//   error: string | null;
+//   onRefresh: () => void;
+//   onBack: () => void;
+// }) {
+//   // ===== Proper download helper (works for cross-origin files) =====
+//   const forceDownload = async (url: string, filename?: string) => {
+//     try {
+//       const response = await fetch(url, {
+//         credentials: "include", // remove if files are public
+//       });
+
+//       if (!response.ok) throw new Error("Failed to fetch file");
+
+//       const blob = await response.blob();
+//       const blobUrl = window.URL.createObjectURL(blob);
+
+//       const link = document.createElement("a");
+//       link.href = blobUrl;
+//       link.download = filename || url.split("/").pop()?.split("?")[0] || "download";
+//       document.body.appendChild(link);
+//       link.click();
+//       link.remove();
+
+//       window.URL.revokeObjectURL(blobUrl);
+//     } catch (err) {
+//       console.error("Download failed", err);
+//       // Fallback: open in new tab
+//       window.open(url, "_blank");
+//     }
+//   };
+
+//   const formatValue = (val: any) => {
+//     if (val == null || val === "") return "—";
+//     if (Array.isArray(val)) return val.length ? val.join(", ") : "—";
+//     if (typeof val === "object" && ("start" in val || "end" in val)) {
+//       return `Start Date: ${val.start || "—"} | End Date: ${val.end || "—"}`;
+//     }
+//     if (typeof val === "object") {
+//       if (val.url || val.name || val.originalname) {
+//         return val.name || val.originalname || val.url || "File";
+//       }
+//       return JSON.stringify(val);
+//     }
+//     return String(val);
+//   };
+
+//   const visibleFields = fields.filter((f) => f.type !== "reference-image");
+
+//   const columns =
+//     visibleFields.length > 0
+//       ? visibleFields.map((f) => ({ key: f.id, label: f.label }))
+//       : (() => {
+//           const first = responses[0]?.values;
+//           if (!first || typeof first !== "object") return [];
+//           return Object.keys(first).map((key) => ({ key, label: key }));
+//         })();
+
+//   const downloadExcel = () => {
+//     if (responses.length === 0) {
+//       alert("No responses to download");
+//       return;
+//     }
+
+//     const excelData = responses.map((r, index) => {
+//       const row: any = {
+//         "#": responses.length - index,
+//       };
+
+//       columns.forEach((col) => {
+//         const value = r.values?.[col.key];
+//         row[col.label] = formatValue(value);
+//       });
+
+//       return row;
+//     });
+
+//     const worksheet = XLSX.utils.json_to_sheet(excelData);
+
+//     const colWidths = Object.keys(excelData[0] || {}).map((key) => ({
+//       wch: Math.max(key.length + 2, 18),
+//     }));
+//     worksheet["!cols"] = colWidths;
+
+//     const workbook = XLSX.utils.book_new();
+//     XLSX.utils.book_append_sheet(workbook, worksheet, "Responses");
+
+//     const fileName = `${formTitle || "Form"}_Responses_${new Date()
+//       .toISOString()
+//       .slice(0, 10)}.xlsx`;
+
+//     XLSX.writeFile(workbook, fileName);
+//   };
+
+//   if (loading) {
+//     return (
+//       <div className="bg-white rounded-xl border border-slate-200 h-full flex items-center justify-center gap-2 text-slate-500">
+//         <Loader2 size={18} className="animate-spin" />
+//         Loading responses...
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div className="bg-white rounded-xl border border-slate-200 overflow-hidden h-full min-h-0 flex flex-col">
+//       {/* HEADER */}
+//       <div className="px-5 sm:px-6 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
+//         <div className="min-w-0">
+//           <h2 className="text-lg font-bold text-slate-900">Responses</h2>
+//           <p className="text-xs text-slate-500 mt-0.5 truncate">
+//             {formTitle} · {responses.length} response
+//             {responses.length !== 1 ? "s" : ""}
+//           </p>
+//         </div>
+
+//         <div className="flex items-center gap-2 shrink-0">
+//           <button
+//             onClick={downloadExcel}
+//             disabled={responses.length === 0}
+//             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+//           >
+//             <Download size={14} />
+//             Download Excel
+//           </button>
+
+//           <button
+//             onClick={onRefresh}
+//             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 transition"
+//           >
+//             Refresh
+//           </button>
+
+//           <button
+//             onClick={onBack}
+//             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 transition"
+//           >
+//             ← Back to editor
+//           </button>
+//         </div>
+//       </div>
+
+//       {error && (
+//         <div className="mx-5 mt-4 px-3 py-2 bg-red-50 border border-red-200 text-red-800 rounded-lg text-sm shrink-0">
+//           {error}
+//         </div>
+//       )}
+
+//       {responses.length === 0 ? (
+//         <div className="flex-1 flex flex-col items-center justify-center text-center min-h-0">
+//           <Inbox size={32} className="mx-auto text-slate-300 mb-2" />
+//           <p className="text-sm text-slate-500">No responses yet</p>
+//           <p className="text-xs text-slate-400 mt-1">
+//             Share the form link to start collecting answers
+//           </p>
+//         </div>
+//       ) : columns.length === 0 ? (
+//         <div className="flex-1 min-h-0 overflow-auto p-5 space-y-3">
+//           <p className="text-xs text-slate-500 mb-2">
+//             Could not map field labels — showing raw response data
+//           </p>
+//           {responses.map((r, idx) => (
+//             <pre
+//               key={r.id}
+//               className="text-xs bg-slate-50 border border-slate-200 rounded-lg p-3 overflow-x-auto"
+//             >
+//               #{responses.length - idx}
+//               {"\n"}
+//               {JSON.stringify(r.values, null, 2)}
+//             </pre>
+//           ))}
+//         </div>
+//       ) : (
+//         <div className="flex-1 min-h-0 min-w-0 overflow-auto overscroll-contain">
+//           <table className="min-w-max w-full text-sm border-collapse">
+//             <thead className="sticky top-0 z-20">
+//               <tr className="bg-slate-50 border-b border-slate-200">
+//                 <th className="sticky left-0 top-0 z-30 bg-slate-50 text-left px-4 py-3 font-semibold text-slate-600 whitespace-nowrap border-r border-slate-100">
+//                   #
+//                 </th>
+//                 {columns.map((col) => (
+//                   <th
+//                     key={col.key}
+//                     className="text-left px-4 py-3 font-semibold text-slate-600 whitespace-nowrap min-w-[180px] max-w-[320px]"
+//                   >
+//                     {col.label}
+//                   </th>
+//                 ))}
+//               </tr>
+//             </thead>
+//             <tbody>
+//               {responses.map((r, idx) => (
+//                 <tr
+//                   key={r.id}
+//                   className="border-b border-slate-100 hover:bg-slate-50/80 transition"
+//                 >
+//                   <td className="sticky left-0 z-10 bg-white px-4 py-3 text-slate-400 tabular-nums align-top border-r border-slate-100">
+//                     {responses.length - idx}
+//                   </td>
+
+//                   {columns.map((col) => {
+//                     const value = r.values?.[col.key];
+//                     const field = visibleFields.find((f) => f.id === col.key);
+//                     const isImageField = field?.type === "image";
+//                     const isDocumentField = field?.type === "document";
+
+//                     const imageUrl =
+//                       typeof value === "string" ? value : value?.url || "";
+
+//                     return (
+//                       <td
+//                         key={col.key}
+//                         className="px-4 py-3 text-slate-800 align-top min-w-[180px] max-w-[320px] whitespace-normal break-words"
+//                         title={
+//                           typeof value === "object"
+//                             ? JSON.stringify(value)
+//                             : formatValue(value)
+//                         }
+//                       >
+//                         {isImageField && value ? (
+//                           <div className="flex flex-col gap-2">
+//                             <img
+//                               src={imageUrl}
+//                               alt={
+//                                 typeof value === "string"
+//                                   ? "Uploaded image"
+//                                   : value?.name || "Uploaded image"
+//                               }
+//                               className="h-20 w-20 object-cover rounded-lg border border-slate-200 bg-slate-50"
+//                             />
+//                             <div className="flex items-center gap-3">
+//                               <a
+//                                 href={imageUrl}
+//                                 target="_blank"
+//                                 rel="noreferrer"
+//                                 className="inline-flex text-xs text-purple-600 hover:text-purple-700 underline"
+//                               >
+//                                 View
+//                               </a>
+//                               <button
+//                                 type="button"
+//                                 onClick={() =>
+//                                   forceDownload(
+//                                     imageUrl,
+//                                     typeof value === "string"
+//                                       ? undefined
+//                                       : value?.name || value?.originalname || "image"
+//                                   )
+//                                 }
+//                                 className="inline-flex text-xs text-slate-600 hover:text-slate-800 underline"
+//                               >
+//                                 Download
+//                               </button>
+//                             </div>
+//                           </div>
+//                         ) : isDocumentField && value ? (
+//                           <div className="flex flex-col gap-2">
+//                             {(Array.isArray(value) ? value : [value]).map(
+//                               (file: any, i: number) => {
+//                                 const url =
+//                                   typeof file === "string"
+//                                     ? file
+//                                     : file.url || file.path || "";
+//                                 const name =
+//                                   typeof file === "string"
+//                                     ? "Document"
+//                                     : file.name ||
+//                                       file.originalname ||
+//                                       "Document";
+//                                 return (
+//                                   <div
+//                                     key={i}
+//                                     className="flex items-center gap-2"
+//                                   >
+//                                     <FileText
+//                                       size={16}
+//                                       className="text-purple-600 shrink-0"
+//                                     />
+//                                     <span className="text-xs truncate max-w-[140px]">
+//                                       {name}
+//                                     </span>
+//                                     <a
+//                                       href={url}
+//                                       target="_blank"
+//                                       rel="noreferrer"
+//                                       className="text-xs text-purple-600 underline"
+//                                     >
+//                                       View
+//                                     </a>
+//                                     <button
+//                                       type="button"
+//                                       onClick={() => forceDownload(url, name)}
+//                                       className="text-xs text-slate-600 underline"
+//                                     >
+//                                       Download
+//                                     </button>
+//                                   </div>
+//                                 );
+//                               }
+//                             )}
+//                           </div>
+//                         ) : (
+//                           <div className="max-w-[320px] whitespace-normal break-words leading-5">
+//                             {formatValue(value)}
+//                           </div>
+//                         )}
+//                       </td>
+//                     );
+//                   })}
+//                 </tr>
+//               ))}
+//             </tbody>
+//           </table>
+//         </div>
+//       )}
+//     </div>
+//   );
+// }
+
+// // ======================================================
+// // PREVIEW (view-only – no submit, no data entry)
+// // ======================================================
+
+// function FormPreview({
+//   schema,
+//   onBack,
+// }: {
+//   schema: FormSchema;
+//   onBack: () => void;
+// }) {
+//   const visibleFields = (schema.fields || []).filter(
+//     (field: any) => field.type !== "reference-image"
+//   );
+
+//   return (
+//     <div className="bg-white rounded-xl border border-slate-200 overflow-hidden w-full max-w-full">
+//       <div className="px-5 sm:px-8 pt-6 pb-5 border-b border-slate-100 text-center">
+//         <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
+//           {schema.title || "Untitled Form"}
+//         </h2>
+//         {schema.description && (
+//           <p className="text-slate-500 text-sm mt-1.5 max-w-xl mx-auto">
+//             {schema.description}
+//           </p>
+//         )}
+//         <p className="text-[11px] text-purple-600 font-medium mt-2 uppercase tracking-wide">
+//           Preview Mode · View Only
+//         </p>
+//       </div>
+
+//       <div
+//         className="p-5 sm:p-8 grid gap-5 max-w-4xl mx-auto"
+//         style={{
+//           gridTemplateColumns: `repeat(${schema.layoutColumns || 2}, minmax(0, 1fr))`,
+//         }}
+//       >
+//         {visibleFields.length === 0 ? (
+//           <p className="col-span-full text-center text-sm text-slate-400 py-8">
+//             No fields added yet
+//           </p>
+//         ) : (
+//           visibleFields.map((field: any) => (
+//             <div
+//               key={field.id}
+//               className={field.type === "textarea" ? "col-span-full" : ""}
+//             >
+//               <label className="block text-sm font-semibold text-slate-800 mb-1.5">
+//                 {field.label}
+//                 {field.required && <span className="text-red-500 ml-1">*</span>}
+//               </label>
+
+//               {field.referenceUrl && (
+//                 <div className="mb-3 overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
+//                   <img
+//                     src={field.referenceUrl}
+//                     alt={field.label}
+//                     className="max-h-64 w-full object-cover"
+//                   />
+//                 </div>
+//               )}
+
+//               {/* Read-only field renderings */}
+//               {field.type === "image" ? (
+//                 <div className="rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-xs text-slate-400">
+//                   Image upload field
+//                 </div>
+//               ) : field.type === "document" ? (
+//                 <div className="rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-xs text-slate-400">
+//                   Document upload field
+//                 </div>
+//               ) : field.type === "textarea" ? (
+//                 <textarea
+//                   disabled
+//                   placeholder={field.placeholder || ""}
+//                   className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-100 text-sm text-slate-500 cursor-not-allowed resize-none"
+//                   rows={3}
+//                 />
+//               ) : field.type === "select" ? (
+//                 <select
+//                   disabled
+//                   className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-100 text-sm text-slate-500 cursor-not-allowed"
+//                 >
+//                   <option>-- Select --</option>
+//                   {field.options?.map((opt: string) => (
+//                     <option key={opt}>{opt}</option>
+//                   ))}
+//                 </select>
+//               ) : field.type === "radio" ? (
+//                 <div className="space-y-2">
+//                   {field.options?.map((opt: string) => (
+//                     <label
+//                       key={opt}
+//                       className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-slate-500 cursor-not-allowed"
+//                     >
+//                       <input
+//                         type="radio"
+//                         disabled
+//                         className="accent-purple-600"
+//                       />
+//                       {opt}
+//                     </label>
+//                   ))}
+//                 </div>
+//               ) : field.type === "checkbox-group" ? (
+//                 <div className="space-y-2">
+//                   {field.options?.map((opt: string) => (
+//                     <label
+//                       key={opt}
+//                       className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-slate-500 cursor-not-allowed"
+//                     >
+//                       <input
+//                         type="checkbox"
+//                         disabled
+//                         className="rounded accent-purple-600"
+//                       />
+//                       {opt}
+//                     </label>
+//                   ))}
+//                 </div>
+//               ) : field.type === "checkbox" ? (
+//                 <label className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-slate-500 cursor-not-allowed">
+//                   <input
+//                     type="checkbox"
+//                     disabled
+//                     className="rounded accent-purple-600"
+//                   />
+//                   {field.placeholder || "Yes"}
+//                 </label>
+//               ) : field.type === "rating" ? (
+//                 <div className="flex items-center gap-1">
+//                   {[1, 2, 3, 4, 5].map((star) => (
+//                     <span key={star} className="text-2xl text-slate-300">
+//                       ★
+//                     </span>
+//                   ))}
+//                   <span className="ml-2 text-xs text-slate-400">Rating</span>
+//                 </div>
+//               ) : field.type === "daterange" ? (
+//                 <div className="grid gap-3 sm:grid-cols-2">
+//                   <div>
+//                     <label className="mb-1 block text-xs font-medium text-slate-500">
+//                       Start date
+//                     </label>
+//                     <input
+//                       type="date"
+//                       disabled
+//                       className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-100 text-sm text-slate-500 cursor-not-allowed"
+//                     />
+//                   </div>
+//                   <div>
+//                     <label className="mb-1 block text-xs font-medium text-slate-500">
+//                       End date
+//                     </label>
+//                     <input
+//                       type="date"
+//                       disabled
+//                       className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-100 text-sm text-slate-500 cursor-not-allowed"
+//                     />
+//                   </div>
+//                 </div>
+//               ) : (
+//                 <input
+//                   type={
+//                     field.type === "email"
+//                       ? "email"
+//                       : field.type === "tel"
+//                       ? "tel"
+//                       : field.type === "number"
+//                       ? "number"
+//                       : field.type === "date"
+//                       ? "date"
+//                       : "text"
+//                   }
+//                   disabled
+//                   placeholder={field.placeholder || ""}
+//                   className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-100 text-sm text-slate-500 cursor-not-allowed"
+//                 />
+//               )}
+//             </div>
+//           ))
+//         )}
+//       </div>
+
+//       <div className="px-5 sm:px-8 pb-6 text-center">
+//         <button
+//           onClick={onBack}
+//           className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-purple-600 text-white text-sm font-medium hover:bg-purple-700 transition"
+//         >
+//           ← Back to editor
+//         </button>
+//       </div>
+//     </div>
+//   );
+// }
+
 "use client";
 
 import {
@@ -29,6 +8086,8 @@ import {
   MessageCircle,
   Inbox,
   Download,
+  Users,
+  Search,
 } from "lucide-react";
 
 import Alert from "../../../../../../components/Aleartmessage";
@@ -76,6 +8135,7 @@ interface FormSchema {
   layoutColumns?: 1 | 2 | 3;
   createdAt: string;
   updatedAt: string;
+  assignedMemberIds?: string[];
 }
 
 interface FormResponse {
@@ -83,6 +8143,16 @@ interface FormResponse {
   formId: string;
   values: Record<string, any>;
   createdAt: string;
+}
+
+interface Member {
+  id: string;
+  name: string;
+  email: string | null;
+  mobile: string | null;
+  flat: string | null;
+  memberCode?: string;
+  memberType?: string;
 }
 
 // ===================== CONSTANTS =====================
@@ -119,6 +8189,7 @@ export default function FormBuilder() {
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [assigning, setAssigning] = useState(false);
   const [creating, setCreating] = useState(false);
 
   const [alert, setAlert] = useState<{
@@ -150,6 +8221,13 @@ export default function FormBuilder() {
 
   const [shareEmails, setShareEmails] = useState<string[]>([""]);
   const [sendingEmail, setSendingEmail] = useState(false);
+
+  // ===== MEMBER ASSIGNMENT =====
+  const [members, setMembers] = useState<Member[]>([]);
+  const [selectedMemberIds, setSelectedMemberIds] = useState<string[]>([]);
+  const [memberSearch, setMemberSearch] = useState("");
+  const [membersLoading, setMembersLoading] = useState(false);
+  const [uploadingFieldId, setUploadingFieldId] = useState<string | null>(null);
 
   const activeForm = forms.find((f) => f.id === activeFormId) || null;
 
@@ -183,9 +8261,28 @@ export default function FormBuilder() {
     }
   }, []);
 
+  // ===================== GET MEMBERS =====================
+
+  const loadMembers = useCallback(async () => {
+    try {
+      setMembersLoading(true);
+      const res = await axios.get(`${API}/api/forms/members`, {
+        withCredentials: true,
+      });
+      if (res.data?.success) {
+        setMembers(res.data.data || []);
+      }
+    } catch (err) {
+      console.error("Failed to load members", err);
+    } finally {
+      setMembersLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     loadForms();
-  }, [loadForms]);
+    loadMembers();
+  }, [loadForms, loadMembers]);
 
   const getVisibleFields = (fields: FormField[] = []) =>
     fields.filter((field) => field.type !== "reference-image");
@@ -199,6 +8296,12 @@ export default function FormBuilder() {
     setDraftDescription(activeForm.description || "");
     setDraftFields(formFields);
     setDraftLayoutColumns(activeForm.layoutColumns || 2);
+
+    // Pre-select assigned members
+    setSelectedMemberIds(
+      (activeForm.assignedMemberIds || []).map(String)
+    );
+
     resetFieldBuilder();
   }, [activeFormId, creating]);
 
@@ -259,6 +8362,30 @@ export default function FormBuilder() {
     );
   };
 
+  const uploadFile = async (
+    file: File,
+    type: "image" | "document",
+    formId: string,
+  ): Promise<string> => {
+    const formData = new FormData();
+    formData.append(type === "image" ? "image" : "file", file);
+
+    const endpoint =
+      type === "image"
+        ? `${API}/api/forms/upload-image`
+        : `${API}/api/forms/upload-file`;
+
+    const { data } = await axios.post(endpoint, formData, {
+      withCredentials: true,
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    if (!data?.success || !data.url) {
+      throw new Error(data?.message || "Upload failed");
+    }
+    return data.url;
+  };
+
   const doCreateNewForm = async () => {
     try {
       setCreating(true);
@@ -267,7 +8394,13 @@ export default function FormBuilder() {
 
       const res = await axios.post(
         `${API}/api/forms`,
-        { title: "New Form", description: "", fields: [], layoutColumns: 2 },
+        {
+          title: "New Form",
+          description: "",
+          fields: [],
+          layoutColumns: 2,
+          assignedMemberIds: [],
+        },
         { withCredentials: true }
       );
 
@@ -280,6 +8413,7 @@ export default function FormBuilder() {
       setDraftDescription("");
       setDraftFields([]);
       setDraftLayoutColumns(2);
+      setSelectedMemberIds([]);
       resetFieldBuilder();
     } catch (err: any) {
       console.error(err);
@@ -410,6 +8544,39 @@ export default function FormBuilder() {
     }
   };
 
+  const assignMembers = async () => {
+    if (!activeFormId) return;
+
+    try {
+      setAssigning(true);
+      setAlert(null);
+      const res = await axios.put(
+        `${API}/api/forms/${activeFormId}/assign`,
+        { assignedMemberIds: selectedMemberIds },
+        { withCredentials: true },
+      );
+
+      const assignedMemberIds = (res.data?.data?.assignedMemberIds || []).map(
+        String,
+      );
+      setForms((previous) =>
+        previous.map((form) =>
+          form.id === activeFormId ? { ...form, assignedMemberIds } : form,
+        ),
+      );
+      setSelectedMemberIds(assignedMemberIds);
+      setAlert({ type: "success", message: "Members assigned successfully" });
+    } catch (err: any) {
+      console.error(err);
+      setAlert({
+        type: "error",
+        message: err?.response?.data?.message || "Failed to assign members",
+      });
+    } finally {
+      setAssigning(false);
+    }
+  };
+
   const uploadFieldReferenceImage = async (file: File) => {
     const formData = new FormData();
     formData.append("image", file);
@@ -466,6 +8633,7 @@ export default function FormBuilder() {
       if (activeFormId === deletingId) {
         setActiveFormId(updated[0]?.id || null);
         setViewMode("edit");
+        setSelectedMemberIds([]);
       }
     } catch (err: any) {
       console.error(err);
@@ -629,8 +8797,8 @@ export default function FormBuilder() {
 
   if (loading) {
     return (
-      <section className="h-screen bg-slate-50 flex items-center justify-center overflow-hidden">
-        <div className="flex items-center gap-2 text-slate-500">
+      <section className="h-screen bg-gray-50 flex items-center justify-center overflow-hidden">
+        <div className="flex items-center gap-2 text-gray-500">
           <Loader2 size={20} className="animate-spin" />
           Loading forms...
         </div>
@@ -641,7 +8809,7 @@ export default function FormBuilder() {
   // ===================== RENDER =====================
 
   return (
-    <section className="h-screen bg-slate-50 overflow-hidden py-4 sm:py-6">
+    <section className="h-screen bg-gray-50 overflow-hidden py-4 sm:py-6">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col min-h-0">
         {alert && (
           <Alert
@@ -665,10 +8833,10 @@ export default function FormBuilder() {
         {/* HEADER */}
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-4 shrink-0">
           <div className="flex-1 min-w-0">
-            <span className="text-purple-600 font-semibold uppercase tracking-widest text-xs">
+            <span className="text-blue-600 font-semibold uppercase tracking-widest text-xs">
               Form Management
             </span>
-            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mt-1">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mt-1">
               Form Builder
             </h1>
           </div>
@@ -676,12 +8844,12 @@ export default function FormBuilder() {
           <div className="flex flex-col items-end gap-2 shrink-0">
             <div className="flex flex-wrap justify-end gap-2">
               {/* NEW FORM */}
-            <button
-  type="button"
-  onClick={createNewForm}
-  disabled={creating}
-  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition disabled:opacity-60"
->
+              <button
+                type="button"
+                onClick={createNewForm}
+                disabled={creating}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm font-semibold shadow-lg hover:opacity-90 transition disabled:opacity-60"
+              >
                 {creating ? (
                   <>
                     <Loader2 size={15} className="animate-spin" />
@@ -704,8 +8872,8 @@ export default function FormBuilder() {
                     disabled={saving || creating}
                     className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border text-sm font-medium transition ${
                       viewMode === "preview"
-                        ? "bg-purple-50 border-purple-300 text-purple-700"
-                        : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                        ? "bg-blue-50 border-blue-300 text-blue-700"
+                        : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
                     }`}
                   >
                     <Eye size={14} />
@@ -721,8 +8889,8 @@ export default function FormBuilder() {
                     disabled={saving || creating}
                     className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border text-sm font-medium transition ${
                       viewMode === "responses"
-                        ? "bg-purple-50 border-purple-300 text-purple-700"
-                        : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                        ? "bg-blue-50 border-blue-300 text-blue-700"
+                        : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
                     }`}
                   >
                     <Inbox size={14} />
@@ -730,24 +8898,24 @@ export default function FormBuilder() {
                   </button>
 
                   {viewMode === "edit" && (
-                   <button
-  type="button"
-  onClick={() => saveForm()}
-  disabled={saving || creating}
-  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition disabled:opacity-60"
->
-  {saving ? (
-    <>
-      <Loader2 size={14} className="animate-spin" />
-      Saving...
-    </>
-  ) : (
-    <>
-      <Save size={14} />
-      Save
-    </>
-  )}
-</button>
+                    <button
+                      type="button"
+                      onClick={() => saveForm()}
+                      disabled={saving || creating}
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm font-semibold shadow-lg hover:opacity-90 transition disabled:opacity-60"
+                    >
+                      {saving ? (
+                        <>
+                          <Loader2 size={14} className="animate-spin" />
+                          Saving...
+                        </>
+                      ) : (
+                        <>
+                          <Save size={14} />
+                          Save
+                        </>
+                      )}
+                    </button>
                   )}
                 </>
               )}
@@ -769,7 +8937,7 @@ export default function FormBuilder() {
                         setShareEmails(updated);
                       }}
                       placeholder="recipient@email.com"
-                      className="w-full px-2.5 py-2 rounded-lg border border-slate-200 bg-white text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20"
+                      className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500 text-sm"
                     />
                     {shareEmails.length > 1 && (
                       <button
@@ -791,7 +8959,7 @@ export default function FormBuilder() {
                   <button
                     type="button"
                     onClick={() => setShareEmails([...shareEmails, ""])}
-                    className="inline-flex items-center gap-1 text-xs font-medium text-purple-600 hover:text-purple-700"
+                    className="inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700"
                   >
                     <Plus size={13} />
                     Add another email
@@ -802,7 +8970,7 @@ export default function FormBuilder() {
                     disabled={
                       sendingEmail || shareEmails.every((e) => !e.trim())
                     }
-                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-purple-600 text-white text-sm font-medium hover:bg-purple-700 transition disabled:opacity-60"
+                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm font-medium shadow-lg hover:opacity-90 transition disabled:opacity-60"
                   >
                     {sendingEmail ? (
                       <Loader2 size={14} className="animate-spin" />
@@ -821,16 +8989,16 @@ export default function FormBuilder() {
         <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_260px] gap-5 flex-1 min-h-0 overflow-hidden">
           <div className="min-w-0 min-h-0 overflow-hidden">
             {!activeForm ? (
-              <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
-                <FileText size={36} className="mx-auto text-slate-300 mb-3" />
-                <p className="text-base text-slate-500 mb-4">
+              <div className="bg-white rounded-xl border border-gray-200 py-16 text-center">
+                <FileText size={36} className="mx-auto text-gray-300 mb-3" />
+                <p className="text-base text-gray-500 mb-4">
                   No form selected
                 </p>
                 <button
                   type="button"
                   onClick={createNewForm}
                   disabled={creating || saving}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition disabled:opacity-60"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm font-semibold shadow-lg hover:opacity-90 transition disabled:opacity-60"
                 >
                   {creating ? (
                     <>
@@ -878,23 +9046,23 @@ export default function FormBuilder() {
               <div className="h-full min-h-0 overflow-y-auto pr-1">
                 <div className="space-y-4">
                   {/* FORM HEADER */}
-                  <div className="bg-white rounded-xl border border-slate-200 p-3.5 sm:p-4 space-y-4">
+                  <div className="bg-white rounded-xl border border-gray-200 p-3.5 sm:p-4 space-y-4">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3">
                       <div className="flex-1 min-w-0">
-                        <label className="block text-[11px] font-medium text-slate-500 mb-1">
-                          Form Name
+                        <label className="block mb-2 text-sm font-medium">
+                          Form Name<span className="text-red-500">*</span>
                         </label>
                         <input
                           type="text"
                           value={draftTitle}
                           onChange={(e) => setDraftTitle(e.target.value)}
-                          className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
+                          className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500 text-sm"
                           placeholder="e.g. Employee Survey"
                         />
                       </div>
 
                       <div className="sm:w-[180px] shrink-0">
-                        <label className="block text-[11px] font-medium text-slate-500 mb-1">
+                        <label className="block mb-2 text-sm font-medium">
                           Fields per row
                         </label>
                         <select
@@ -904,7 +9072,7 @@ export default function FormBuilder() {
                               Number(e.target.value) as 1 | 2 | 3
                             )
                           }
-                          className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
+                          className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500 text-sm"
                         >
                           <option value={1}>1 column</option>
                           <option value={2}>2 columns</option>
@@ -913,27 +9081,27 @@ export default function FormBuilder() {
                       </div>
 
                       <div className="flex-1 min-w-0">
-                        <label className="block text-[11px] font-medium text-slate-500 mb-1">
+                        <label className="block mb-2 text-sm font-medium">
                           Description
                         </label>
                         <input
                           type="text"
                           value={draftDescription}
                           onChange={(e) => setDraftDescription(e.target.value)}
-                          className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
+                          className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500 text-sm"
                           placeholder="Short description..."
                         />
                       </div>
 
                       <div className="sm:w-[280px] shrink-0">
-                        <label className="block text-[11px] font-medium text-slate-500 mb-1">
+                        <label className="block mb-2 text-sm font-medium">
                           Share Link
                         </label>
                         <div className="flex items-center gap-1.5">
-                          <div className="flex-1 min-w-0 flex items-center gap-1.5 px-2.5 py-2 rounded-lg border border-slate-200 bg-slate-50 text-xs font-mono text-purple-600 truncate">
+                          <div className="flex-1 min-w-0 flex items-center gap-1.5 h-11 px-3 rounded-lg border border-gray-300 bg-gray-50 text-xs font-mono text-blue-600 truncate">
                             <Link2
                               size={12}
-                              className="shrink-0 text-slate-400"
+                              className="shrink-0 text-gray-400"
                             />
                             <span className="truncate">
                               /form/{user?.organisation_id ?? "org"}/
@@ -943,7 +9111,7 @@ export default function FormBuilder() {
                           <button
                             onClick={copyLink}
                             title="Copy link"
-                            className="shrink-0 p-2 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-purple-600 transition"
+                            className="shrink-0 p-2 rounded-lg border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition"
                           >
                             {copied ? (
                               <Check size={14} className="text-emerald-600" />
@@ -954,7 +9122,7 @@ export default function FormBuilder() {
                           <button
                             onClick={shareViaWhatsApp}
                             title="Share via WhatsApp"
-                            className="shrink-0 p-2 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-emerald-50 hover:text-emerald-600 transition"
+                            className="shrink-0 p-2 rounded-lg border border-gray-300 bg-white text-gray-600 hover:bg-emerald-50 hover:text-emerald-600 transition"
                           >
                             <MessageCircle size={14} />
                           </button>
@@ -963,20 +9131,25 @@ export default function FormBuilder() {
                     </div>
                   </div>
 
+                  {/* ========== ASSIGN TO USERS (hidden – moved to sidebar) ========== */}
+                  <div className="hidden bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
+                    {/* ... kept for reference, not rendered ... */}
+                  </div>
+
                   {/* BUILDER */}
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     {/* ADD FIELD */}
-                    <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5">
-                      <h3 className="text-base font-bold text-slate-900 mb-0.5">
+                    <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
+                      <h3 className="text-base font-bold text-gray-900 mb-0.5">
                         Add Form Fields
                       </h3>
-                      <p className="text-xs text-slate-500 mb-4">
+                      <p className="text-xs text-gray-500 mb-4">
                         Configure fields for your form
                       </p>
 
                       <div className="space-y-3">
                         <div>
-                          <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                          <label className="block mb-2 text-sm font-medium">
                             Field Type
                           </label>
                           <select
@@ -984,7 +9157,7 @@ export default function FormBuilder() {
                             onChange={(e) =>
                               setFieldType(e.target.value as FieldType)
                             }
-                            className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
+                            className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500 text-sm"
                           >
                             {FIELD_TYPES.map((t) => (
                               <option key={t.value} value={t.value}>
@@ -995,20 +9168,20 @@ export default function FormBuilder() {
                         </div>
 
                         <div>
-                          <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                            Field Label
+                          <label className="block mb-2 text-sm font-medium">
+                            Field Label<span className="text-red-500">*</span>
                           </label>
                           <input
                             type="text"
                             value={fieldLabel}
                             onChange={(e) => setFieldLabel(e.target.value)}
-                            className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
+                            className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500 text-sm"
                             placeholder="e.g. Your Name"
                           />
                         </div>
 
                         <div>
-                          <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                          <label className="block mb-2 text-sm font-medium">
                             Placeholder (optional)
                           </label>
                           <input
@@ -1017,34 +9190,34 @@ export default function FormBuilder() {
                             onChange={(e) =>
                               setFieldPlaceholder(e.target.value)
                             }
-                            className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
+                            className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500 text-sm"
                             placeholder="e.g. Enter your full name"
                           />
                         </div>
 
                         {showOptions && (
                           <div>
-                            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                            <label className="block mb-2 text-sm font-medium">
                               Options (comma separated)
                             </label>
                             <input
                               type="text"
                               value={optionsInput}
                               onChange={(e) => setOptionsInput(e.target.value)}
-                              className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition"
+                              className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500 text-sm"
                               placeholder="Option 1, Option 2, Option 3"
                             />
                           </div>
                         )}
 
                         {/* REFERENCE IMAGE */}
-                        <div className="rounded-xl border border-dashed border-purple-200 bg-purple-50/40 p-3">
+                        <div className="rounded-xl border border-dashed border-blue-200 bg-blue-50/40 p-3">
                           <div className="flex items-center justify-between gap-3 mb-2">
                             <div>
-                              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-purple-700">
+                              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-blue-700">
                                 Field reference image
                               </p>
-                              <p className="text-[10px] text-slate-500 mt-0.5">
+                              <p className="text-[10px] text-gray-500 mt-0.5">
                                 Optional image shown under this field
                               </p>
                             </div>
@@ -1065,10 +9238,10 @@ export default function FormBuilder() {
                               const file = e.target.files?.[0];
                               if (file) uploadFieldReferenceImage(file);
                             }}
-                            className="block w-full text-[11px] text-slate-600 file:mr-2 file:rounded-lg file:border-0 file:bg-purple-600 file:px-2 file:py-1.5 file:text-[11px] file:font-medium file:text-white hover:file:bg-purple-700"
+                            className="block w-full text-[11px] text-gray-600 file:mr-2 file:rounded-lg file:border-0 file:bg-gradient-to-r file:from-blue-600 file:to-blue-500 file:px-2 file:py-1.5 file:text-[11px] file:font-medium file:text-white hover:file:opacity-90"
                           />
                           {fieldReferenceImageUrl && (
-                            <div className="mt-3 overflow-hidden rounded-lg border border-purple-200 bg-white">
+                            <div className="mt-3 overflow-hidden rounded-lg border border-blue-200 bg-white">
                               <img
                                 src={fieldReferenceImageUrl}
                                 alt="Field reference"
@@ -1078,21 +9251,21 @@ export default function FormBuilder() {
                           )}
                         </div>
 
-                        <label className="inline-flex items-center gap-2 text-xs font-medium text-slate-600 cursor-pointer">
+                        <label className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 cursor-pointer">
                           <input
                             type="checkbox"
                             checked={fieldRequired}
                             onChange={(e) =>
                               setFieldRequired(e.target.checked)
                             }
-                            className="rounded border-slate-300 text-purple-600 focus:ring-purple-500"
+                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                           />
                           Required Field
                         </label>
 
                         <button
                           onClick={addOrUpdateField}
-                          className="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition"
+                          className="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm font-semibold shadow-lg hover:opacity-90 transition"
                         >
                           {editingFieldId ? (
                             <>
@@ -1110,7 +9283,7 @@ export default function FormBuilder() {
                         {editingFieldId && (
                           <button
                             onClick={resetFieldBuilder}
-                            className="w-full text-xs text-slate-500 hover:text-slate-700"
+                            className="w-full text-xs text-gray-500 hover:text-gray-700"
                           >
                             Cancel editing
                           </button>
@@ -1119,14 +9292,14 @@ export default function FormBuilder() {
                     </div>
 
                     {/* ADDED FIELDS */}
-                    <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5">
-                      <h3 className="text-base font-bold text-slate-900 mb-3">
+                    <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
+                      <h3 className="text-base font-bold text-gray-900 mb-3">
                         Added Fields ({draftFields.length})
                       </h3>
 
                       {draftFields.length === 0 ? (
-                        <div className="py-12 text-center border-2 border-dashed border-slate-200 rounded-lg">
-                          <p className="text-xs text-slate-400">
+                        <div className="py-12 text-center border-2 border-dashed border-gray-200 rounded-lg">
+                          <p className="text-xs text-gray-400">
                             No fields added yet
                           </p>
                         </div>
@@ -1135,19 +9308,19 @@ export default function FormBuilder() {
                           {draftFields.map((field, index) => (
                             <div
                               key={field.id}
-                              className="flex items-center gap-2 p-3 rounded-lg border border-slate-200 bg-slate-50 hover:border-slate-300 transition"
+                              className="flex items-center gap-2 p-3 rounded-lg border border-gray-200 bg-gray-50 hover:border-gray-300 transition"
                             >
                               <GripVertical
                                 size={14}
-                                className="text-slate-300 shrink-0"
+                                className="text-gray-300 shrink-0"
                               />
 
                               <div className="min-w-0 flex-1">
                                 <div className="flex items-center gap-1.5 flex-wrap">
-                                  <span className="text-sm font-medium text-slate-900">
+                                  <span className="text-sm font-medium text-gray-900">
                                     {field.label}
                                   </span>
-                                  <span className="text-[11px] text-slate-400">
+                                  <span className="text-[11px] text-gray-400">
                                     ({field.type})
                                   </span>
                                   {field.required && (
@@ -1159,24 +9332,24 @@ export default function FormBuilder() {
 
                                 {field.type === "image" ? (
                                   <div className="mt-2 flex items-center gap-2">
-                                    <div className="flex h-10 w-14 items-center justify-center rounded-md border border-dashed border-purple-300 bg-gradient-to-br from-purple-100 via-white to-pink-100 text-[8px] font-semibold text-purple-600">
+                                    <div className="flex h-10 w-14 items-center justify-center rounded-md border border-dashed border-blue-300 bg-gradient-to-br from-blue-100 via-white to-blue-50 text-[8px] font-semibold text-blue-600">
                                       IMG
                                     </div>
-                                    <p className="text-[11px] text-slate-500">
+                                    <p className="text-[11px] text-gray-500">
                                       Image upload field
                                     </p>
                                   </div>
                                 ) : field.type === "document" ? (
                                   <div className="mt-2 flex items-center gap-2">
-                                    <div className="flex h-10 w-14 items-center justify-center rounded-md border border-dashed border-purple-300 bg-gradient-to-br from-purple-100 via-white to-pink-100 text-[8px] font-semibold text-purple-600">
+                                    <div className="flex h-10 w-14 items-center justify-center rounded-md border border-dashed border-blue-300 bg-gradient-to-br from-blue-100 via-white to-blue-50 text-[8px] font-semibold text-blue-600">
                                       DOC
                                     </div>
-                                    <p className="text-[11px] text-slate-500">
+                                    <p className="text-[11px] text-gray-500">
                                       Document upload field
                                     </p>
                                   </div>
                                 ) : field.options ? (
-                                  <p className="text-[11px] text-slate-400 mt-0.5 truncate">
+                                  <p className="text-[11px] text-gray-400 mt-0.5 truncate">
                                     {field.options.join(", ")}
                                   </p>
                                 ) : null}
@@ -1186,20 +9359,20 @@ export default function FormBuilder() {
                                 <button
                                   onClick={() => moveField(index, "up")}
                                   disabled={index === 0}
-                                  className="p-1.5 rounded-md text-slate-400 hover:bg-white disabled:opacity-30 transition"
+                                  className="p-1.5 rounded-md text-gray-400 hover:bg-white disabled:opacity-30 transition"
                                 >
                                   <ArrowUp size={13} />
                                 </button>
                                 <button
                                   onClick={() => moveField(index, "down")}
                                   disabled={index === draftFields.length - 1}
-                                  className="p-1.5 rounded-md text-slate-400 hover:bg-white disabled:opacity-30 transition"
+                                  className="p-1.5 rounded-md text-gray-400 hover:bg-white disabled:opacity-30 transition"
                                 >
                                   <ArrowDown size={13} />
                                 </button>
                                 <button
                                   onClick={() => editField(field)}
-                                  className="p-1.5 rounded-md bg-purple-600 text-white hover:bg-purple-700 transition"
+                                  className="p-1.5 rounded-md bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg hover:opacity-90 transition"
                                 >
                                   <Edit2 size={13} />
                                 </button>
@@ -1222,42 +9395,164 @@ export default function FormBuilder() {
           </div>
 
           {/* SIDEBAR */}
-          <aside className="bg-white rounded-xl border border-slate-200 p-4 h-fit max-h-full overflow-hidden">
-            <h3 className="text-xs font-semibold text-slate-900 mb-3">
+          <aside className="bg-white rounded-xl border border-gray-200 p-4 h-full max-h-full overflow-y-auto">
+            {activeForm && viewMode === "edit" && (
+              <div className="mb-4 rounded-lg border border-blue-100 bg-blue-50/40 p-3">
+                <div className="flex items-start justify-between gap-2 mb-3">
+                  <div className="flex items-center gap-2">
+                    <Users size={15} className="text-blue-600 shrink-0" />
+                    <div>
+                      <h3 className="text-sm font-bold text-gray-900">
+                        Assign users
+                      </h3>
+                      <p className="text-[11px] text-gray-500 mt-0.5">
+                        Choose members for this form
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-[11px] font-medium text-blue-700 bg-white px-2 py-1 rounded-full shrink-0">
+                    {selectedMemberIds.length}
+                  </span>
+                </div>
+
+                <div className="relative mb-2">
+                  <Search
+                    size={13}
+                    className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400"
+                  />
+                  <input
+                    type="text"
+                    value={memberSearch}
+                    onChange={(e) => setMemberSearch(e.target.value)}
+                    placeholder="Search users..."
+                    className="w-full h-11 pl-8 pr-2.5 rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500 text-xs"
+                  />
+                </div>
+
+                <div className="flex items-center gap-3 mb-2 text-[11px]">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedMemberIds(members.map((m) => m.id))}
+                    className="text-blue-600 hover:underline font-medium"
+                  >
+                    Select all
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedMemberIds([])}
+                    className="text-gray-500 hover:underline"
+                  >
+                    Clear
+                  </button>
+                </div>
+
+                <div className="max-h-48 overflow-y-auto rounded-lg border border-gray-200 bg-white divide-y divide-gray-100">
+                  {membersLoading ? (
+                    <div className="py-6 text-center text-xs text-gray-400">
+                      Loading users...
+                    </div>
+                  ) : members.length === 0 ? (
+                    <div className="py-6 text-center text-xs text-gray-400">
+                      No users found
+                    </div>
+                  ) : (
+                    members
+                      .filter((member) => {
+                        if (!memberSearch.trim()) return true;
+                        const query = memberSearch.toLowerCase();
+                        return (
+                          member.name.toLowerCase().includes(query) ||
+                          (member.flat || "").toLowerCase().includes(query) ||
+                          (member.mobile || "").includes(query) ||
+                          (member.email || "").toLowerCase().includes(query)
+                        );
+                      })
+                      .map((member) => (
+                        <label
+                          key={member.id}
+                          className="flex items-center gap-2 px-2.5 py-2 cursor-pointer hover:bg-blue-50"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={selectedMemberIds.includes(member.id)}
+                            onChange={(event) =>
+                              setSelectedMemberIds((previous) =>
+                                event.target.checked
+                                  ? [...previous, member.id]
+                                  : previous.filter((id) => id !== member.id),
+                              )
+                            }
+                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                          />
+                          <span className="min-w-0">
+                            <span className="block text-xs font-medium text-gray-800 truncate">
+                              {member.name}
+                            </span>
+                            <span className="block text-[10px] text-gray-500 truncate">
+                              {[member.flat, member.mobile, member.email]
+                                .filter(Boolean)
+                                .join(" · ")}
+                            </span>
+                          </span>
+                        </label>
+                      ))
+                  )}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={assignMembers}
+                  disabled={assigning || saving || membersLoading}
+                  className="mt-3 w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white text-xs font-semibold shadow-lg hover:opacity-90 transition disabled:opacity-60"
+                >
+                  {assigning ? (
+                    <Loader2 size={13} className="animate-spin" />
+                  ) : (
+                    <Users size={13} />
+                  )}
+                  {assigning ? "Assigning..." : "Assign users"}
+                </button>
+              </div>
+            )}
+
+            <h3 className="text-xs font-semibold text-gray-900 mb-3">
               Your Forms ({forms.length})
             </h3>
 
             {forms.length === 0 ? (
               <div className="py-8 text-center">
-                <FileText size={24} className="mx-auto text-slate-300 mb-2" />
-                <p className="text-xs text-slate-400">No forms yet</p>
+                <FileText size={24} className="mx-auto text-gray-300 mb-2" />
+                <p className="text-xs text-gray-400">No forms yet</p>
                 <button
                   type="button"
                   onClick={createNewForm}
-                  className="mt-2 text-xs font-medium text-purple-600 hover:underline"
+                  className="mt-2 text-xs font-medium text-blue-600 hover:underline"
                 >
                   Create your first form
                 </button>
               </div>
             ) : (
-              <div className="space-y-1.5 max-h-[70vh] overflow-y-auto">
+              <div className="space-y-1.5 max-h-[42vh] overflow-y-auto">
                 {forms.map((form) => (
                   <div
                     key={form.id}
                     onClick={() => requestSwitchForm(form.id)}
                     className={`flex items-center justify-between gap-2 p-2.5 rounded-lg cursor-pointer transition border ${
                       activeFormId === form.id
-                        ? "bg-purple-50 border-purple-300"
-                        : "bg-slate-50 border-transparent hover:bg-slate-100"
+                        ? "bg-blue-50 border-blue-300"
+                        : "bg-gray-50 border-transparent hover:bg-gray-100"
                     }`}
                   >
                     <div className="min-w-0">
-                      <p className="text-sm font-medium text-slate-900 truncate">
+                      <p className="text-sm font-medium text-gray-900 truncate">
                         {form.title || "No title"}
                       </p>
-                      <p className="text-[11px] text-slate-400 mt-0.5">
+                      <p className="text-[11px] text-gray-400 mt-0.5">
                         {(form.fields || []).length} field
                         {(form.fields || []).length !== 1 ? "s" : ""}
+                        {(form.assignedMemberIds?.length ?? 0) > 0 && (
+                          <> · {form.assignedMemberIds!.length} users</>
+                        )}
                       </p>
                     </div>
                     <button
@@ -1265,7 +9560,7 @@ export default function FormBuilder() {
                         e.stopPropagation();
                         deleteForm(form.id);
                       }}
-                      className="p-1 rounded-md text-slate-400 hover:text-red-500 hover:bg-red-50 transition"
+                      className="p-1 rounded-md text-gray-400 hover:text-red-500 hover:bg-red-50 transition"
                     >
                       <Trash2 size={13} />
                     </button>
@@ -1301,6 +9596,33 @@ function FormResponses({
   onRefresh: () => void;
   onBack: () => void;
 }) {
+  // ===== Proper download helper (works for cross-origin files) =====
+  const forceDownload = async (url: string, filename?: string) => {
+    try {
+      const response = await fetch(url, {
+        credentials: "include", // remove if files are public
+      });
+
+      if (!response.ok) throw new Error("Failed to fetch file");
+
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = filename || url.split("/").pop()?.split("?")[0] || "download";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (err) {
+      console.error("Download failed", err);
+      // Fallback: open in new tab
+      window.open(url, "_blank");
+    }
+  };
+
   const formatValue = (val: any) => {
     if (val == null || val === "") return "—";
     if (Array.isArray(val)) return val.length ? val.join(", ") : "—";
@@ -1365,7 +9687,7 @@ function FormResponses({
 
   if (loading) {
     return (
-      <div className="bg-white rounded-xl border border-slate-200 h-full flex items-center justify-center gap-2 text-slate-500">
+      <div className="bg-white rounded-xl border border-gray-200 h-full flex items-center justify-center gap-2 text-gray-500">
         <Loader2 size={18} className="animate-spin" />
         Loading responses...
       </div>
@@ -1373,12 +9695,12 @@ function FormResponses({
   }
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden h-full min-h-0 flex flex-col">
+    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden h-full min-h-0 flex flex-col">
       {/* HEADER */}
-      <div className="px-5 sm:px-6 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
+      <div className="px-5 sm:px-6 py-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
         <div className="min-w-0">
-          <h2 className="text-lg font-bold text-slate-900">Responses</h2>
-          <p className="text-xs text-slate-500 mt-0.5 truncate">
+          <h2 className="text-lg font-bold text-gray-900">Responses</h2>
+          <p className="text-xs text-gray-500 mt-0.5 truncate">
             {formTitle} · {responses.length} response
             {responses.length !== 1 ? "s" : ""}
           </p>
@@ -1388,7 +9710,7 @@ function FormResponses({
           <button
             onClick={downloadExcel}
             disabled={responses.length === 0}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Download size={14} />
             Download Excel
@@ -1396,14 +9718,14 @@ function FormResponses({
 
           <button
             onClick={onRefresh}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 transition"
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
           >
             Refresh
           </button>
 
           <button
             onClick={onBack}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 transition"
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
           >
             ← Back to editor
           </button>
@@ -1418,21 +9740,21 @@ function FormResponses({
 
       {responses.length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center text-center min-h-0">
-          <Inbox size={32} className="mx-auto text-slate-300 mb-2" />
-          <p className="text-sm text-slate-500">No responses yet</p>
-          <p className="text-xs text-slate-400 mt-1">
+          <Inbox size={32} className="mx-auto text-gray-300 mb-2" />
+          <p className="text-sm text-gray-500">No responses yet</p>
+          <p className="text-xs text-gray-400 mt-1">
             Share the form link to start collecting answers
           </p>
         </div>
       ) : columns.length === 0 ? (
         <div className="flex-1 min-h-0 overflow-auto p-5 space-y-3">
-          <p className="text-xs text-slate-500 mb-2">
+          <p className="text-xs text-gray-500 mb-2">
             Could not map field labels — showing raw response data
           </p>
           {responses.map((r, idx) => (
             <pre
               key={r.id}
-              className="text-xs bg-slate-50 border border-slate-200 rounded-lg p-3 overflow-x-auto"
+              className="text-xs bg-gray-50 border border-gray-200 rounded-lg p-3 overflow-x-auto"
             >
               #{responses.length - idx}
               {"\n"}
@@ -1444,14 +9766,14 @@ function FormResponses({
         <div className="flex-1 min-h-0 min-w-0 overflow-auto overscroll-contain">
           <table className="min-w-max w-full text-sm border-collapse">
             <thead className="sticky top-0 z-20">
-              <tr className="bg-slate-50 border-b border-slate-200">
-                <th className="sticky left-0 top-0 z-30 bg-slate-50 text-left px-4 py-3 font-semibold text-slate-600 whitespace-nowrap border-r border-slate-100">
+              <tr className="bg-gray-50 border-b border-gray-200">
+                <th className="sticky left-0 top-0 z-30 bg-gray-50 text-left px-4 py-3 font-semibold text-gray-600 whitespace-nowrap border-r border-gray-100">
                   #
                 </th>
                 {columns.map((col) => (
                   <th
                     key={col.key}
-                    className="text-left px-4 py-3 font-semibold text-slate-600 whitespace-nowrap min-w-[180px] max-w-[320px]"
+                    className="text-left px-4 py-3 font-semibold text-gray-600 whitespace-nowrap min-w-[180px] max-w-[320px]"
                   >
                     {col.label}
                   </th>
@@ -1462,9 +9784,9 @@ function FormResponses({
               {responses.map((r, idx) => (
                 <tr
                   key={r.id}
-                  className="border-b border-slate-100 hover:bg-slate-50/80 transition"
+                  className="border-b border-gray-100 hover:bg-gray-50/80 transition"
                 >
-                  <td className="sticky left-0 z-10 bg-white px-4 py-3 text-slate-400 tabular-nums align-top border-r border-slate-100">
+                  <td className="sticky left-0 z-10 bg-white px-4 py-3 text-gray-400 tabular-nums align-top border-r border-gray-100">
                     {responses.length - idx}
                   </td>
 
@@ -1480,7 +9802,7 @@ function FormResponses({
                     return (
                       <td
                         key={col.key}
-                        className="px-4 py-3 text-slate-800 align-top min-w-[180px] max-w-[320px] whitespace-normal break-words"
+                        className="px-4 py-3 text-gray-800 align-top min-w-[180px] max-w-[320px] whitespace-normal break-words"
                         title={
                           typeof value === "object"
                             ? JSON.stringify(value)
@@ -1496,26 +9818,31 @@ function FormResponses({
                                   ? "Uploaded image"
                                   : value?.name || "Uploaded image"
                               }
-                              className="h-20 w-20 object-cover rounded-lg border border-slate-200 bg-slate-50"
+                              className="h-20 w-20 object-cover rounded-lg border border-gray-200 bg-gray-50"
                             />
                             <div className="flex items-center gap-3">
                               <a
                                 href={imageUrl}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="inline-flex text-xs text-purple-600 hover:text-purple-700 underline"
+                                className="inline-flex text-xs text-blue-600 hover:text-blue-700 underline"
                               >
                                 View
                               </a>
-                              <a
-                                href={imageUrl}
-                                target="_blank"
-                                rel="noreferrer"
-                                download
-                                className="inline-flex text-xs text-slate-600 hover:text-slate-800 underline"
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  forceDownload(
+                                    imageUrl,
+                                    typeof value === "string"
+                                      ? undefined
+                                      : value?.name || value?.originalname || "image"
+                                  )
+                                }
+                                className="inline-flex text-xs text-gray-600 hover:text-gray-800 underline"
                               >
                                 Download
-                              </a>
+                              </button>
                             </div>
                           </div>
                         ) : isDocumentField && value ? (
@@ -1539,7 +9866,7 @@ function FormResponses({
                                   >
                                     <FileText
                                       size={16}
-                                      className="text-purple-600 shrink-0"
+                                      className="text-blue-600 shrink-0"
                                     />
                                     <span className="text-xs truncate max-w-[140px]">
                                       {name}
@@ -1548,17 +9875,17 @@ function FormResponses({
                                       href={url}
                                       target="_blank"
                                       rel="noreferrer"
-                                      className="text-xs text-purple-600 underline"
+                                      className="text-xs text-blue-600 underline"
                                     >
                                       View
                                     </a>
-                                    <a
-                                      href={url}
-                                      download
-                                      className="text-xs text-slate-600 underline"
+                                    <button
+                                      type="button"
+                                      onClick={() => forceDownload(url, name)}
+                                      className="text-xs text-gray-600 underline"
                                     >
                                       Download
-                                    </a>
+                                    </button>
                                   </div>
                                 );
                               }
@@ -1598,17 +9925,17 @@ function FormPreview({
   );
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden w-full max-w-full">
-      <div className="px-5 sm:px-8 pt-6 pb-5 border-b border-slate-100 text-center">
-        <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
+    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden w-full max-w-full">
+      <div className="px-5 sm:px-8 pt-6 pb-5 border-b border-gray-100 text-center">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
           {schema.title || "Untitled Form"}
         </h2>
         {schema.description && (
-          <p className="text-slate-500 text-sm mt-1.5 max-w-xl mx-auto">
+          <p className="text-gray-500 text-sm mt-1.5 max-w-xl mx-auto">
             {schema.description}
           </p>
         )}
-        <p className="text-[11px] text-purple-600 font-medium mt-2 uppercase tracking-wide">
+        <p className="text-[11px] text-blue-600 font-medium mt-2 uppercase tracking-wide">
           Preview Mode · View Only
         </p>
       </div>
@@ -1620,7 +9947,7 @@ function FormPreview({
         }}
       >
         {visibleFields.length === 0 ? (
-          <p className="col-span-full text-center text-sm text-slate-400 py-8">
+          <p className="col-span-full text-center text-sm text-gray-400 py-8">
             No fields added yet
           </p>
         ) : (
@@ -1629,13 +9956,13 @@ function FormPreview({
               key={field.id}
               className={field.type === "textarea" ? "col-span-full" : ""}
             >
-              <label className="block text-sm font-semibold text-slate-800 mb-1.5">
+              <label className="block mb-2 text-sm font-medium">
                 {field.label}
                 {field.required && <span className="text-red-500 ml-1">*</span>}
               </label>
 
               {field.referenceUrl && (
-                <div className="mb-3 overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
+                <div className="mb-3 overflow-hidden rounded-xl border border-gray-200 bg-gray-50">
                   <img
                     src={field.referenceUrl}
                     alt={field.label}
@@ -1646,24 +9973,24 @@ function FormPreview({
 
               {/* Read-only field renderings */}
               {field.type === "image" ? (
-                <div className="rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-xs text-slate-400">
+                <div className="rounded-lg border border-dashed border-gray-300 bg-gray-50 px-4 py-6 text-center text-xs text-gray-400">
                   Image upload field
                 </div>
               ) : field.type === "document" ? (
-                <div className="rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-xs text-slate-400">
+                <div className="rounded-lg border border-dashed border-gray-300 bg-gray-50 px-4 py-6 text-center text-xs text-gray-400">
                   Document upload field
                 </div>
               ) : field.type === "textarea" ? (
                 <textarea
                   disabled
                   placeholder={field.placeholder || ""}
-                  className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-100 text-sm text-slate-500 cursor-not-allowed resize-none"
+                  className="w-full h-24 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500 text-sm text-gray-500 cursor-not-allowed resize-none bg-gray-100"
                   rows={3}
                 />
               ) : field.type === "select" ? (
                 <select
                   disabled
-                  className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-100 text-sm text-slate-500 cursor-not-allowed"
+                  className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500 text-sm text-gray-500 cursor-not-allowed bg-gray-100"
                 >
                   <option>-- Select --</option>
                   {field.options?.map((opt: string) => (
@@ -1675,12 +10002,12 @@ function FormPreview({
                   {field.options?.map((opt: string) => (
                     <label
                       key={opt}
-                      className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-slate-500 cursor-not-allowed"
+                      className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-500 cursor-not-allowed"
                     >
                       <input
                         type="radio"
                         disabled
-                        className="accent-purple-600"
+                        className="accent-blue-600"
                       />
                       {opt}
                     </label>
@@ -1691,55 +10018,55 @@ function FormPreview({
                   {field.options?.map((opt: string) => (
                     <label
                       key={opt}
-                      className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-slate-500 cursor-not-allowed"
+                      className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-500 cursor-not-allowed"
                     >
                       <input
                         type="checkbox"
                         disabled
-                        className="rounded accent-purple-600"
+                        className="rounded accent-blue-600"
                       />
                       {opt}
                     </label>
                   ))}
                 </div>
               ) : field.type === "checkbox" ? (
-                <label className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-slate-500 cursor-not-allowed">
+                <label className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-500 cursor-not-allowed">
                   <input
                     type="checkbox"
                     disabled
-                    className="rounded accent-purple-600"
+                    className="rounded accent-blue-600"
                   />
                   {field.placeholder || "Yes"}
                 </label>
               ) : field.type === "rating" ? (
                 <div className="flex items-center gap-1">
                   {[1, 2, 3, 4, 5].map((star) => (
-                    <span key={star} className="text-2xl text-slate-300">
+                    <span key={star} className="text-2xl text-gray-300">
                       ★
                     </span>
                   ))}
-                  <span className="ml-2 text-xs text-slate-400">Rating</span>
+                  <span className="ml-2 text-xs text-gray-400">Rating</span>
                 </div>
               ) : field.type === "daterange" ? (
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div>
-                    <label className="mb-1 block text-xs font-medium text-slate-500">
+                    <label className="block mb-2 text-sm font-medium text-gray-500">
                       Start date
                     </label>
                     <input
                       type="date"
                       disabled
-                      className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-100 text-sm text-slate-500 cursor-not-allowed"
+                      className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500 text-sm text-gray-500 cursor-not-allowed bg-gray-100"
                     />
                   </div>
                   <div>
-                    <label className="mb-1 block text-xs font-medium text-slate-500">
+                    <label className="block mb-2 text-sm font-medium text-gray-500">
                       End date
                     </label>
                     <input
                       type="date"
                       disabled
-                      className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-100 text-sm text-slate-500 cursor-not-allowed"
+                      className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500 text-sm text-gray-500 cursor-not-allowed bg-gray-100"
                     />
                   </div>
                 </div>
@@ -1758,7 +10085,7 @@ function FormPreview({
                   }
                   disabled
                   placeholder={field.placeholder || ""}
-                  className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-100 text-sm text-slate-500 cursor-not-allowed"
+                  className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500 text-sm text-gray-500 cursor-not-allowed bg-gray-100"
                 />
               )}
             </div>
@@ -1769,7 +10096,7 @@ function FormPreview({
       <div className="px-5 sm:px-8 pb-6 text-center">
         <button
           onClick={onBack}
-          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-purple-600 text-white text-sm font-medium hover:bg-purple-700 transition"
+          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm font-medium shadow-lg hover:opacity-90 transition"
         >
           ← Back to editor
         </button>

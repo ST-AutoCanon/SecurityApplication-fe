@@ -3,21 +3,12662 @@
 
 
 
+// // // "use client";
+
+// // // import React, { useState, useEffect, useContext, useCallback, useRef } from "react";
+// // // import axios from "axios";
+// // // import * as XLSX from "xlsx";
+// // // import { AuthContext } from "../../../../../../context/AuthContext"; // ← adjust path
+// // // import {
+// // //   Mail,
+// // //   Upload,
+// // //   Calendar,
+// // //   ChevronDown,
+// // //   Link2,
+// // //   Smile,
+// // //   ArrowLeft,
+// // //   Send,
+// // //   FileText,
+// // //   Image as ImageIcon,
+// // //   Type as TypeIcon,
+// // //   Square,
+// // //   Minus,
+// // //   Trash2,
+// // //   Loader2,
+// // //   Check,
+// // //   Plus,
+// // //   CheckCircle,
+// // //   XCircle,
+// // //   AlertTriangle,
+// // //   X,
+// // // } from "lucide-react";
+// // // import {
+// // //   FaFacebook,
+// // //   FaInstagram,
+// // //   FaLinkedin,
+// // //   FaTwitter,
+// // //   FaWhatsapp,
+// // // } from "react-icons/fa";
+
+// // // const API = String(import.meta.env.VITE_BACKEND_URL);
+
+// // // // ===================== ALERT MODAL =====================
+// // // type AlertType = "success" | "warning" | "error";
+
+// // // interface AlertState {
+// // //   type: AlertType;
+// // //   message: string;
+// // // }
+
+// // // const AlertModal = ({
+// // //   type,
+// // //   message,
+// // //   onClose,
+// // // }: {
+// // //   type: AlertType;
+// // //   message: string;
+// // //   onClose: () => void;
+// // // }) => {
+// // //   useEffect(() => {
+// // //     if (type === "warning") {
+// // //       const timer = setTimeout(onClose, 3000);
+// // //       return () => clearTimeout(timer);
+// // //     }
+// // //   }, [type, onClose]);
+
+// // //   useEffect(() => {
+// // //     const handleKeyDown = (event: KeyboardEvent) => {
+// // //       if (event.key === "Enter" || event.key === "Escape") {
+// // //         event.preventDefault();
+// // //         onClose();
+// // //       }
+// // //     };
+// // //     window.addEventListener("keydown", handleKeyDown);
+// // //     return () => window.removeEventListener("keydown", handleKeyDown);
+// // //   }, [onClose]);
+
+// // //   const config =
+// // //     type === "success"
+// // //       ? {
+// // //           borderColor: "#10b981",
+// // //           iconColor: "#10b981",
+// // //           buttonBg: "#10b981",
+// // //           title: "Success",
+// // //           Icon: CheckCircle,
+// // //         }
+// // //       : type === "warning"
+// // //         ? {
+// // //             borderColor: "#eab308",
+// // //             iconColor: "#eab308",
+// // //             buttonBg: "#eab308",
+// // //             title: "Warning",
+// // //             Icon: AlertTriangle,
+// // //           }
+// // //         : {
+// // //             borderColor: "#f43f5e",
+// // //             iconColor: "#f43f5e",
+// // //             buttonBg: "#f43f5e",
+// // //             title: "Error",
+// // //             Icon: XCircle,
+// // //           };
+
+// // //   const Icon = config.Icon;
+
+// // //   return (
+// // //     <div
+// // //       style={{
+// // //         position: "fixed",
+// // //         inset: 0,
+// // //         zIndex: 9999,
+// // //         display: "flex",
+// // //         alignItems: "center",
+// // //         justifyContent: "center",
+// // //         background: "rgba(15, 23, 42, 0.45)",
+// // //       }}
+// // //     >
+// // //       <div
+// // //         style={{
+// // //           width: 380,
+// // //           overflow: "hidden",
+// // //           borderRadius: 12,
+// // //           background: "#fff",
+// // //           boxShadow: "0 25px 50px rgba(0,0,0,0.25)",
+// // //           borderLeft: `4px solid ${config.borderColor}`,
+// // //         }}
+// // //       >
+// // //         <div
+// // //           style={{
+// // //             display: "flex",
+// // //             alignItems: "center",
+// // //             justifyContent: "space-between",
+// // //             background: "#020b3d",
+// // //             padding: "14px 20px",
+// // //             color: "#fff",
+// // //           }}
+// // //         >
+// // //           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+// // //             <Icon size={24} color={config.iconColor} />
+// // //             <h2 style={{ margin: 0, fontSize: 17, fontWeight: 600 }}>
+// // //               {config.title}
+// // //             </h2>
+// // //           </div>
+// // //           <button
+// // //             type="button"
+// // //             onClick={onClose}
+// // //             style={{
+// // //               background: "transparent",
+// // //               border: "none",
+// // //               color: "#fff",
+// // //               cursor: "pointer",
+// // //               padding: 4,
+// // //               borderRadius: 4,
+// // //               display: "flex",
+// // //               alignItems: "center",
+// // //             }}
+// // //           >
+// // //             <X size={18} />
+// // //           </button>
+// // //         </div>
+
+// // //         <div style={{ padding: "22px 20px" }}>
+// // //           <p
+// // //             style={{
+// // //               margin: 0,
+// // //               fontSize: 14,
+// // //               lineHeight: 1.6,
+// // //               color: "#475569",
+// // //             }}
+// // //           >
+// // //             {message}
+// // //           </p>
+// // //         </div>
+
+// // //         <div
+// // //           style={{
+// // //             display: "flex",
+// // //             justifyContent: "flex-end",
+// // //             gap: 10,
+// // //             borderTop: "1px solid #e2e8f0",
+// // //             background: "#f8fafc",
+// // //             padding: "14px 20px",
+// // //           }}
+// // //         >
+// // //           <button
+// // //             type="button"
+// // //             onClick={onClose}
+// // //             style={{
+// // //               border: "none",
+// // //               borderRadius: 8,
+// // //               padding: "8px 20px",
+// // //               fontSize: 13,
+// // //               fontWeight: 500,
+// // //               color: "#fff",
+// // //               background: config.buttonBg,
+// // //               cursor: "pointer",
+// // //             }}
+// // //           >
+// // //             OK
+// // //           </button>
+// // //         </div>
+// // //       </div>
+// // //     </div>
+// // //   );
+// // // };
+
+// // // // ===================== TYPES =====================
+// // // type BlockType = "text" | "image" | "button" | "logo" | "divider";
+
+// // // interface Block {
+// // //   id: string;
+// // //   type: BlockType;
+// // //   content?: string;
+// // //   url?: string;
+// // //   buttonText?: string;
+// // //   buttonLink?: string;
+// // //   align?: "left" | "center" | "right";
+// // //   serverId?: string;
+// // //   // Text styling
+// // //   color?: string;
+// // //   backgroundColor?: string;
+// // //   fontSize?: number;
+// // //   fontWeight?: "normal" | "bold";
+// // //   fontStyle?: "normal" | "italic";
+// // //   textAlign?: "left" | "center" | "right";
+// // // }
+
+// // // // ===================== HELPERS =====================
+// // // const generateId = () => Math.random().toString(36).slice(2, 11);
+
+// // // function uiBlockToApi(block: Block, sortOrder: number) {
+// // //   const content: Record<string, unknown> = {};
+// // //   switch (block.type) {
+// // //     case "text":
+// // //       content.text = block.content ?? "";
+// // //       content.color = block.color ?? "#334155";
+// // //       content.backgroundColor = block.backgroundColor ?? "transparent";
+// // //       content.fontSize = block.fontSize ?? 14;
+// // //       content.fontWeight = block.fontWeight ?? "normal";
+// // //       content.fontStyle = block.fontStyle ?? "normal";
+// // //       content.textAlign = block.textAlign ?? "left";
+// // //       break;
+// // //     case "image":
+// // //     case "logo":
+// // //       content.url = block.url ?? "";
+// // //       break;
+// // //     case "button":
+// // //       content.buttonText = block.buttonText ?? "";
+// // //       content.buttonLink = block.buttonLink ?? "";
+// // //       content.align = block.align ?? "center";
+// // //       break;
+// // //     case "divider":
+// // //       break;
+// // //   }
+// // //   return {
+// // //     block_type: block.type,
+// // //     content,
+// // //     sort_order: sortOrder,
+// // //   };
+// // // }
+
+// // // function apiBlockToUi(row: {
+// // //   id: string;
+// // //   blockType: string;
+// // //   content: any;
+// // //   sortOrder: number;
+// // // }): Block {
+// // //   const c = row.content || {};
+// // //   return {
+// // //     id: row.id,
+// // //     serverId: row.id,
+// // //     type: row.blockType as BlockType,
+// // //     content: c.text ?? "",
+// // //     url: c.url ?? "",
+// // //     buttonText: c.buttonText ?? "",
+// // //     buttonLink: c.buttonLink ?? "",
+// // //     align: (c.align as "left" | "center" | "right") ?? "center",
+// // //     color: c.color ?? "#334155",
+// // //     backgroundColor: c.backgroundColor ?? "transparent",
+// // //     fontSize: c.fontSize ?? 14,
+// // //     fontWeight: (c.fontWeight as "normal" | "bold") ?? "normal",
+// // //     fontStyle: (c.fontStyle as "normal" | "italic") ?? "normal",
+// // //     textAlign: (c.textAlign as "left" | "center" | "right") ?? "left",
+// // //   };
+// // // }
+
+// // // // ===================== IMAGE UPLOAD =====================
+// // // async function uploadImageFile(file: File): Promise<string> {
+// // //   const formData = new FormData();
+// // //   formData.append("image", file);
+
+// // //   const res = await axios.post(`${API}/api/upload/image`, formData, {
+// // //     withCredentials: true,
+// // //     headers: { "Content-Type": "multipart/form-data" },
+// // //   });
+
+// // //   if (!res.data?.success || !res.data?.url) {
+// // //     throw new Error(res.data?.message || "Upload failed");
+// // //   }
+// // //   return res.data.url as string;
+// // // }
+
+// // // function isImageFile(file: File) {
+// // //   return file.type.startsWith("image/");
+// // // }
+
+// // // // ===================== IMAGE / LOGO BLOCK EDITOR =====================
+// // // const ImageBlockEditor = ({
+// // //   block,
+// // //   onUpdate,
+// // //   onError,
+// // //   isLogo = false,
+// // // }: {
+// // //   block: Block;
+// // //   onUpdate: (updates: Partial<Block>) => void;
+// // //   onError: (msg: string | null) => void;
+// // //   isLogo?: boolean;
+// // // }) => {
+// // //   const [uploading, setUploading] = useState(false);
+// // //   const [dragOver, setDragOver] = useState(false);
+// // //   const fileInputRef = useRef<HTMLInputElement>(null);
+// // //   const dropRef = useRef<HTMLDivElement>(null);
+
+// // //   const handleFiles = async (files: FileList | File[]) => {
+// // //     const file = Array.from(files).find(isImageFile);
+// // //     if (!file) {
+// // //       onError("Please select an image file (PNG, JPG, GIF, WebP)");
+// // //       return;
+// // //     }
+// // //     if (file.size > 8 * 1024 * 1024) {
+// // //       onError("Image must be under 8 MB");
+// // //       return;
+// // //     }
+
+// // //     try {
+// // //       setUploading(true);
+// // //       onError(null);
+// // //       const url = await uploadImageFile(file);
+// // //       onUpdate({ url });
+// // //     } catch (err: any) {
+// // //       console.error(err);
+// // //       onError(err?.message || "Failed to upload image");
+// // //     } finally {
+// // //       setUploading(false);
+// // //     }
+// // //   };
+
+// // //   // Paste support (Gmail-style)
+// // //   useEffect(() => {
+// // //     const el = dropRef.current;
+// // //     if (!el) return;
+
+// // //     const onPaste = (e: ClipboardEvent) => {
+// // //       const items = e.clipboardData?.items;
+// // //       if (!items) return;
+
+// // //       for (const item of Array.from(items)) {
+// // //         if (item.type.startsWith("image/")) {
+// // //           e.preventDefault();
+// // //           const file = item.getAsFile();
+// // //           if (file) handleFiles([file]);
+// // //           break;
+// // //         }
+// // //       }
+// // //     };
+
+// // //     el.addEventListener("paste", onPaste as any);
+// // //     el.tabIndex = 0; // make focusable so paste works
+
+// // //     return () => el.removeEventListener("paste", onPaste as any);
+// // //   }, []);
+
+// // //   const onDrop = (e: React.DragEvent) => {
+// // //     e.preventDefault();
+// // //     setDragOver(false);
+// // //     if (e.dataTransfer.files?.length) {
+// // //       handleFiles(e.dataTransfer.files);
+// // //     }
+// // //   };
+
+// // //   return (
+// // //     <div>
+// // //   {block.url ? (
+// // //   <div style={{ textAlign: isLogo ? "center" : "left" }}>
+// // //     <img
+// // //       src={block.url}
+// // //       alt={isLogo ? "Logo" : "Banner"}
+// // //       style={
+// // //         isLogo
+// // //           ? {
+// // //               maxHeight: 80,
+// // //               maxWidth: 200,
+// // //               objectFit: "contain",
+// // //               display: "block",
+// // //               margin: "0 auto",
+// // //             }
+// // //           : {
+// // //               width: "100%",
+// // //               borderRadius: 8,
+// // //               maxHeight: 220,
+// // //               objectFit: "cover",
+// // //             }
+// // //       }
+// // //     />
+// // //     <div
+// // //       style={{
+// // //         display: "flex",
+// // //         justifyContent: isLogo ? "center" : "flex-end",
+// // //         marginTop: 8,
+// // //       }}
+// // //     >
+// // //       <button
+// // //         type="button"
+// // //         onClick={() => onUpdate({ url: "" })}
+// // //         style={{
+// // //           background: "#fef2f2",
+// // //           color: "#dc2626",
+// // //           border: "1px solid #fecaca",
+// // //           borderRadius: 6,
+// // //           padding: "6px 12px",
+// // //           fontSize: 12,
+// // //           fontWeight: 500,
+// // //           cursor: "pointer",
+// // //           display: "inline-flex",
+// // //           alignItems: "center",
+// // //           gap: 4,
+// // //         }}
+// // //       >
+// // //         <Trash2 size={12} /> Remove image
+// // //       </button>
+// // //     </div>
+// // //   </div>
+// // //       ) : (
+// // //         <div
+// // //           ref={dropRef}
+// // //           onDragOver={(e) => {
+// // //             e.preventDefault();
+// // //             setDragOver(true);
+// // //           }}
+// // //           onDragLeave={() => setDragOver(false)}
+// // //           onDrop={onDrop}
+// // //           onClick={() => !uploading && fileInputRef.current?.click()}
+// // //           style={{
+// // //             ...(isLogo ? styles.logoPlaceholder : styles.imagePlaceholder),
+// // //             border: dragOver ? "2px dashed #7c3aed" : "2px dashed #cbd5e1",
+// // //             background: dragOver ? "#f5f3ff" : "#f8fafc",
+// // //             cursor: uploading ? "wait" : "pointer",
+// // //             outline: "none",
+// // //             transition: "all 0.15s",
+// // //           }}
+// // //         >
+// // //           {uploading ? (
+// // //             <>
+// // //               <Loader2 size={28} className="animate-spin" color="#7c3aed" />
+// // //               <p style={{ margin: "8px 0 0", fontSize: 13 }}>Uploading…</p>
+// // //             </>
+// // //           ) : (
+// // //             <>
+// // //               <ImageIcon size={isLogo ? 28 : 32} color="#94a3b8" />
+// // //               <p style={{ margin: "8px 0 4px", fontWeight: 500, color: "#334155" }}>
+// // //                 {isLogo ? "Add Logo" : "Add Banner / Image"}
+// // //               </p>
+// // //               <p style={{ fontSize: 12, color: "#94a3b8", margin: 0 }}>
+// // //                 Click • Drag & drop • or paste (Ctrl/Cmd+V)
+// // //               </p>
+// // //             </>
+// // //           )}
+// // //         </div>
+// // //       )}
+
+// // //       <input
+// // //         ref={fileInputRef}
+// // //         type="file"
+// // //         accept="image/png,image/jpeg,image/jpg,image/gif,image/webp"
+// // //         style={{ display: "none" }}
+// // //         onChange={(e) => {
+// // //           if (e.target.files?.length) handleFiles(e.target.files);
+// // //           e.target.value = "";
+// // //         }}
+// // //       />
+
+// // //       </div>
+// // //   );
+// // // };
+
+// // // // ===================== EMOJI PICKER =====================
+// // // const COMMON_EMOJIS = [
+// // //   "😀", "😃", "😄", "😁", "😆", "😅", "😂", "🤣", "😊", "😇",
+// // //   "🙂", "🙃", "😉", "😌", "😍", "🥰", "😘", "😗", "😙", "😚",
+// // //   "😋", "😛", "😝", "😜", "🤪", "🤨", "🧐", "🤓", "😎", "🤩",
+// // //   "🥳", "😏", "😒", "😞", "😔", "😟", "😕", "🙁", "☹️", "😣",
+// // //   "😖", "😫", "😩", "🥺", "😢", "😭", "😤", "😠", "😡", "🤬",
+// // //   "👍", "👎", "👏", "🙌", "👐", "🤝", "🙏", "✌️", "🤞", "🤟",
+// // //   "🤘", "👌", "🤏", "👈", "👉", "👆", "👇", "☝️", "✋", "🤚",
+// // //   "👋", "💪", "🦾", "❤️", "🧡", "💛", "💚", "💙", "💜", "🖤",
+// // //   "🤍", "🤎", "💔", "❣️", "💕", "💞", "💓", "💗", "💖", "💘",
+// // //   "💝", "💟", "☮️", "✝️", "☪️", "🕉", "☸️", "✡️", "🔯", "🕎",
+// // //   "🔥", "⭐", "🌟", "✨", "💫", "🎉", "🎊", "🎈", "🎁", "🏆",
+// // //   "🥇", "🥈", "🥉", "⚽", "🏀", "🏈", "⚾", "🎾", "🏐", "🏉",
+// // //   "📧", "📩", "📨", "💌", "📱", "💻", "🖥️", "⌨️", "🖨️", "🖱️",
+// // //   "✅", "❌", "❗", "❓", "💯", "🔔", "🔕", "📢", "📣", "💬",
+// // // ];
+
+// // // const EmojiPicker = ({
+// // //   onSelect,
+// // //   onClose,
+// // // }: {
+// // //   onSelect: (emoji: string) => void;
+// // //   onClose: () => void;
+// // // }) => {
+// // //   const ref = useRef<HTMLDivElement>(null);
+
+// // //   useEffect(() => {
+// // //     const handleClick = (e: MouseEvent) => {
+// // //       if (ref.current && !ref.current.contains(e.target as Node)) {
+// // //         onClose();
+// // //       }
+// // //     };
+// // //     document.addEventListener("mousedown", handleClick);
+// // //     return () => document.removeEventListener("mousedown", handleClick);
+// // //   }, [onClose]);
+
+// // //   return (
+// // //     <div
+// // //       ref={ref}
+// // //       style={{
+// // //         position: "absolute",
+// // //         top: "100%",
+// // //         left: 0,
+// // //         zIndex: 50,
+// // //         background: "#fff",
+// // //         border: "1px solid #e2e8f0",
+// // //         borderRadius: 10,
+// // //         padding: 10,
+// // //         boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+// // //         width: 280,
+// // //         maxHeight: 220,
+// // //         overflowY: "auto",
+// // //         display: "grid",
+// // //         gridTemplateColumns: "repeat(8, 1fr)",
+// // //         gap: 4,
+// // //       }}
+// // //     >
+// // //       {COMMON_EMOJIS.map((emoji) => (
+// // //         <button
+// // //           key={emoji}
+// // //           type="button"
+// // //           onClick={() => {
+// // //             onSelect(emoji);
+// // //             onClose();
+// // //           }}
+// // //           style={{
+// // //             border: "none",
+// // //             background: "transparent",
+// // //             fontSize: 20,
+// // //             cursor: "pointer",
+// // //             padding: 4,
+// // //             borderRadius: 6,
+// // //             lineHeight: 1.2,
+// // //           }}
+// // //           onMouseEnter={(e) => {
+// // //             e.currentTarget.style.background = "#f1f5f9";
+// // //           }}
+// // //           onMouseLeave={(e) => {
+// // //             e.currentTarget.style.background = "transparent";
+// // //           }}
+// // //         >
+// // //           {emoji}
+// // //         </button>
+// // //       ))}
+// // //     </div>
+// // //   );
+// // // };
+
+// // // // ===================== TEXT BLOCK EDITOR =====================
+// // // const TextBlockEditor = ({
+// // //   block,
+// // //   onUpdate,
+// // //   placeholder,
+// // // }: {
+// // //   block: Block;
+// // //   onUpdate: (updates: Partial<Block>) => void;
+// // //   placeholder?: string;
+// // // }) => {
+// // //   const [showEmoji, setShowEmoji] = useState(false);
+// // //   const textareaRef = useRef<HTMLTextAreaElement>(null);
+// // //   const toolbarRef = useRef<HTMLDivElement>(null);
+
+// // //   const insertEmoji = (emoji: string) => {
+// // //     const ta = textareaRef.current;
+// // //     if (!ta) {
+// // //       onUpdate({ content: (block.content || "") + emoji });
+// // //       return;
+// // //     }
+// // //     const start = ta.selectionStart;
+// // //     const end = ta.selectionEnd;
+// // //     const text = block.content || "";
+// // //     const newText = text.slice(0, start) + emoji + text.slice(end);
+// // //     onUpdate({ content: newText });
+// // //     // Restore cursor after React re-render
+// // //     requestAnimationFrame(() => {
+// // //       if (textareaRef.current) {
+// // //         const pos = start + emoji.length;
+// // //         textareaRef.current.focus();
+// // //         textareaRef.current.setSelectionRange(pos, pos);
+// // //       }
+// // //     });
+// // //   };
+
+// // //   const fontSizes = [12, 13, 14, 15, 16, 18, 20, 22, 24, 28, 32];
+
+// // //   return (
+// // //     <div>
+// // //       {/* Formatting toolbar */}
+// // //       <div
+// // //         ref={toolbarRef}
+// // //         style={{
+// // //           display: "flex",
+// // //           flexWrap: "wrap",
+// // //           alignItems: "center",
+// // //           gap: 8,
+// // //           marginBottom: 8,
+// // //           padding: "8px 10px",
+// // //           background: "#f8fafc",
+// // //           borderRadius: 8,
+// // //           border: "1px solid #e2e8f0",
+// // //         }}
+// // //       >
+// // //         {/* Text color */}
+// // //         <label style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: "#64748b" }}>
+// // //           <span>Color</span>
+// // //           <input
+// // //             type="color"
+// // //             value={block.color && block.color !== "transparent" ? block.color : "#334155"}
+// // //             onChange={(e) => onUpdate({ color: e.target.value })}
+// // //             style={{
+// // //               width: 28,
+// // //               height: 28,
+// // //               border: "1px solid #e2e8f0",
+// // //               borderRadius: 6,
+// // //               cursor: "pointer",
+// // //               padding: 0,
+// // //               background: "none",
+// // //             }}
+// // //             title="Text color"
+// // //           />
+// // //         </label>
+
+// // //         {/* Background color */}
+// // //         <label style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: "#64748b" }}>
+// // //           <span>Bg</span>
+// // //           <input
+// // //             type="color"
+// // //             value={
+// // //               block.backgroundColor && block.backgroundColor !== "transparent"
+// // //                 ? block.backgroundColor
+// // //                 : "#ffffff"
+// // //             }
+// // //             onChange={(e) => onUpdate({ backgroundColor: e.target.value })}
+// // //             style={{
+// // //               width: 28,
+// // //               height: 28,
+// // //               border: "1px solid #e2e8f0",
+// // //               borderRadius: 6,
+// // //               cursor: "pointer",
+// // //               padding: 0,
+// // //               background: "none",
+// // //             }}
+// // //             title="Background color"
+// // //           />
+// // //           <button
+// // //             type="button"
+// // //             onClick={() => onUpdate({ backgroundColor: "transparent" })}
+// // //             style={{
+// // //               fontSize: 11,
+// // //               padding: "2px 6px",
+// // //               border: "1px solid #e2e8f0",
+// // //               borderRadius: 4,
+// // //               background: "#fff",
+// // //               cursor: "pointer",
+// // //               color: "#64748b",
+// // //             }}
+// // //             title="Clear background"
+// // //           >
+// // //             Clear
+// // //           </button>
+// // //         </label>
+
+// // //         {/* Font size */}
+// // //         <label style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: "#64748b" }}>
+// // //           <span>Size</span>
+// // //           <select
+// // //             value={block.fontSize ?? 14}
+// // //             onChange={(e) => onUpdate({ fontSize: Number(e.target.value) })}
+// // //             style={{
+// // //               padding: "4px 6px",
+// // //               borderRadius: 6,
+// // //               border: "1px solid #e2e8f0",
+// // //               fontSize: 12,
+// // //               background: "#fff",
+// // //               cursor: "pointer",
+// // //             }}
+// // //           >
+// // //             {fontSizes.map((s) => (
+// // //               <option key={s} value={s}>
+// // //                 {s}px
+// // //               </option>
+// // //             ))}
+// // //           </select>
+// // //         </label>
+
+// // //         {/* Bold */}
+// // //         <button
+// // //           type="button"
+// // //           onClick={() =>
+// // //             onUpdate({
+// // //               fontWeight: block.fontWeight === "bold" ? "normal" : "bold",
+// // //             })
+// // //           }
+// // //           style={{
+// // //             width: 28,
+// // //             height: 28,
+// // //             border: block.fontWeight === "bold" ? "2px solid #7c3aed" : "1px solid #e2e8f0",
+// // //             borderRadius: 6,
+// // //             background: block.fontWeight === "bold" ? "#f5f3ff" : "#fff",
+// // //             fontWeight: 700,
+// // //             fontSize: 13,
+// // //             cursor: "pointer",
+// // //             color: "#334155",
+// // //           }}
+// // //           title="Bold"
+// // //         >
+// // //           B
+// // //         </button>
+
+// // //         {/* Italic */}
+// // //         <button
+// // //           type="button"
+// // //           onClick={() =>
+// // //             onUpdate({
+// // //               fontStyle: block.fontStyle === "italic" ? "normal" : "italic",
+// // //             })
+// // //           }
+// // //           style={{
+// // //             width: 28,
+// // //             height: 28,
+// // //             border: block.fontStyle === "italic" ? "2px solid #7c3aed" : "1px solid #e2e8f0",
+// // //             borderRadius: 6,
+// // //             background: block.fontStyle === "italic" ? "#f5f3ff" : "#fff",
+// // //             fontStyle: "italic",
+// // //             fontSize: 13,
+// // //             cursor: "pointer",
+// // //             color: "#334155",
+// // //           }}
+// // //           title="Italic"
+// // //         >
+// // //           I
+// // //         </button>
+
+// // //         {/* Align */}
+// // //         {(["left", "center", "right"] as const).map((align) => (
+// // //           <button
+// // //             key={align}
+// // //             type="button"
+// // //             onClick={() => onUpdate({ textAlign: align })}
+// // //             style={{
+// // //               width: 28,
+// // //               height: 28,
+// // //               border:
+// // //                 (block.textAlign || "left") === align
+// // //                   ? "2px solid #7c3aed"
+// // //                   : "1px solid #e2e8f0",
+// // //               borderRadius: 6,
+// // //               background:
+// // //                 (block.textAlign || "left") === align ? "#f5f3ff" : "#fff",
+// // //               fontSize: 11,
+// // //               cursor: "pointer",
+// // //               color: "#334155",
+// // //             }}
+// // //             title={`Align ${align}`}
+// // //           >
+// // //             {align === "left" ? "⬅" : align === "center" ? "↔" : "➡"}
+// // //           </button>
+// // //         ))}
+
+// // //         {/* Emoji */}
+// // //         <div style={{ position: "relative" }}>
+// // //           <button
+// // //             type="button"
+// // //             onClick={() => setShowEmoji((v) => !v)}
+// // //             style={{
+// // //               display: "inline-flex",
+// // //               alignItems: "center",
+// // //               gap: 4,
+// // //               padding: "4px 10px",
+// // //               border: "1px solid #e2e8f0",
+// // //               borderRadius: 6,
+// // //               background: showEmoji ? "#f5f3ff" : "#fff",
+// // //               fontSize: 12,
+// // //               cursor: "pointer",
+// // //               color: "#475569",
+// // //             }}
+// // //             title="Insert emoji"
+// // //           >
+// // //             <Smile size={14} /> Emoji
+// // //           </button>
+// // //           {showEmoji && (
+// // //             <EmojiPicker
+// // //               onSelect={insertEmoji}
+// // //               onClose={() => setShowEmoji(false)}
+// // //             />
+// // //           )}
+// // //         </div>
+// // //       </div>
+
+// // //       {/* Textarea with live styles */}
+// // //       <textarea
+// // //         ref={textareaRef}
+// // //         style={{
+// // //           ...styles.textBlock,
+// // //           color: block.color || "#334155",
+// // //           backgroundColor:
+// // //             block.backgroundColor && block.backgroundColor !== "transparent"
+// // //               ? block.backgroundColor
+// // //               : "#fff",
+// // //           fontSize: block.fontSize || 14,
+// // //           fontWeight: block.fontWeight || "normal",
+// // //           fontStyle: block.fontStyle || "normal",
+// // //           textAlign: block.textAlign || "left",
+// // //         }}
+// // //         value={block.content}
+// // //         onChange={(e) => onUpdate({ content: e.target.value })}
+// // //         rows={4}
+// // //         placeholder={placeholder || "Hi {{Name}},\n\nType your message here..."}
+// // //       />
+// // //     </div>
+// // //   );
+// // // };
+
+// // // // ===================== COMPONENT =====================
+// // // interface Props {
+// // //   onBack?: () => void;
+// // // }
+
+// // // const Campaign = ({ onBack }: Props) => {
+// // //   const { user } = useContext(AuthContext);
+
+// // //   // View
+// // //   const [showTemplates, setShowTemplates] = useState(true);
+
+// // //   // Templates
+// // //   const [templates, setTemplates] = useState<any[]>([]);
+// // //   const [templatesLoading, setTemplatesLoading] = useState(false);
+
+// // //   // Channel
+// // //   const [channel, setChannel] = useState("Email");
+// // //   const [activeTab, setActiveTab] = useState("Email");
+
+// // //   // Campaign meta
+// // //   const [campaignId, setCampaignId] = useState<string | null>(null);
+// // //   const [campaignName, setCampaignName] = useState("");
+// // //   const [category, setCategory] = useState("Event");
+// // //   const [subject, setSubject] = useState("");
+// // //   const [preheader, setPreheader] = useState(false);
+// // //   const [preheaderText, setPreheaderText] = useState("");
+
+// // //   // Recipients
+// // //   const [recipientsTab, setRecipientsTab] = useState<"enter" | "upload">("enter");
+// // //   const [recipients, setRecipients] = useState("");
+
+// // //   // Blocks
+// // //   const [blocks, setBlocks] = useState<Block[]>([
+// // //     {
+// // //       id: "1",
+// // //       type: "text",
+// // //       content: "",
+// // //       color: "#334155",
+// // //       backgroundColor: "transparent",
+// // //       fontSize: 14,
+// // //       fontWeight: "normal",
+// // //       fontStyle: "normal",
+// // //       textAlign: "left",
+// // //     },
+// // //   ]);
+
+// // //   // UI state
+// // //   const [loading, setLoading] = useState(false);
+// // //   const [saving, setSaving] = useState(false);
+// // //   const [sending, setSending] = useState(false);
+// // //   const [alert, setAlert] = useState<AlertState | null>(null);
+
+// // //   const showAlert = (type: AlertType, message: string) => {
+// // //     setAlert({ type, message });
+// // //   };
+
+// // //   // ---------- LOAD TEMPLATES ----------
+// // //   const loadTemplates = useCallback(async () => {
+// // //     try {
+// // //       setTemplatesLoading(true);
+// // //       const res = await axios.get(`${API}/api/campaigns`, {
+// // //         withCredentials: true,
+// // //       });
+// // //       setTemplates(res.data.data || []);
+// // //     } catch (err) {
+// // //       console.error("Failed to load templates", err);
+// // //     } finally {
+// // //       setTemplatesLoading(false);
+// // //     }
+// // //   }, []);
+
+// // //   useEffect(() => {
+// // //     loadTemplates();
+// // //   }, [loadTemplates]);
+
+// // //   // ---------- LOAD SINGLE CAMPAIGN ----------
+// // //   const loadCampaign = useCallback(async (id: string) => {
+// // //     try {
+// // //       setLoading(true);
+
+// // //       const [campRes, blocksRes] = await Promise.all([
+// // //         axios.get(`${API}/api/campaigns/${id}`, { withCredentials: true }),
+// // //         axios.get(`${API}/api/campaigns/${id}/blocks`, { withCredentials: true }),
+// // //       ]);
+
+// // //       const camp = campRes.data.data;
+// // //       setCampaignId(camp.id);
+// // //       setCampaignName(camp.campaignName || "Untitled Campaign");
+// // //       setCategory(camp.category || "Event");
+// // //       setSubject(camp.subject || "");
+// // //       setPreheaderText(camp.preheader || "");
+// // //       setPreheader(!!camp.preheader);
+
+// // //       const ch = camp.channel || "Email";
+// // //       setChannel(ch);
+// // //       if (ch === "WhatsApp") setActiveTab("WhatsApp Message");
+// // //       else if (ch === "Social") setActiveTab("Social Media Post");
+// // //       else setActiveTab("Email");
+
+// // //       const apiBlocks = blocksRes.data.data || [];
+// // //       setBlocks(apiBlocks.length ? apiBlocks.map(apiBlockToUi) : []);
+// // //     } catch (err: any) {
+// // //       console.error(err);
+// // //       showAlert("error", err?.response?.data?.message || "Failed to load campaign");
+// // //     } finally {
+// // //       setLoading(false);
+// // //     }
+// // //   }, []);
+
+// // //   const openTemplate = async (id: string) => {
+// // //     setShowTemplates(false);
+// // //     await loadCampaign(id);
+// // //   };
+
+// // //   const startNewCampaign = () => {
+// // //     setShowTemplates(false);
+// // //     setCampaignId(null);
+// // //     setCampaignName("");
+// // //     setCategory("Event");
+// // //     setSubject("");
+// // //     setPreheader(false);
+// // //     setPreheaderText("");
+// // //     setChannel("Email");
+// // //     setActiveTab("Email");
+// // //     setRecipients("");
+// // //     setBlocks([
+// // //       {
+// // //         id: generateId(),
+// // //         type: "text",
+// // //         content: "",
+// // //         color: "#334155",
+// // //         backgroundColor: "transparent",
+// // //         fontSize: 14,
+// // //         fontWeight: "normal",
+// // //         fontStyle: "normal",
+// // //         textAlign: "left",
+// // //       },
+// // //     ]);
+// // //     setAlert(null);
+// // //   };
+
+// // //   // ---------- FILE UPLOAD (CSV / Excel) ----------
+// // //   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+// // //     const file = e.target.files?.[0];
+// // //     if (!file) return;
+
+// // //     const reader = new FileReader();
+
+// // //     reader.onload = (event) => {
+// // //       try {
+// // //         const data = new Uint8Array(event.target?.result as ArrayBuffer);
+// // //         const workbook = XLSX.read(data, { type: "array" });
+// // //         const sheetName = workbook.SheetNames[0];
+// // //         const sheet = workbook.Sheets[sheetName];
+// // //         const rows: any[] = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+// // //         const emails: string[] = [];
+
+// // //         rows.forEach((row) => {
+// // //           if (!Array.isArray(row)) return;
+// // //           row.forEach((cell) => {
+// // //             if (typeof cell === "string" || typeof cell === "number") {
+// // //               const value = String(cell).trim();
+// // //               if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+// // //                 emails.push(value);
+// // //               }
+// // //             }
+// // //           });
+// // //         });
+
+// // //         const uniqueEmails = [...new Set(emails)];
+
+// // //         if (uniqueEmails.length === 0) {
+// // //           showAlert("warning", "No valid email addresses found in the file");
+// // //           return;
+// // //         }
+
+// // //         setRecipients(uniqueEmails.join("\n"));
+// // //         setRecipientsTab("enter");
+// // //         showAlert("success", `${uniqueEmails.length} emails loaded from file`);
+// // //       } catch (err) {
+// // //         console.error(err);
+// // //         showAlert("error", "Failed to read the file. Please upload a valid CSV or Excel file.");
+// // //       }
+// // //     };
+
+// // //     reader.readAsArrayBuffer(file);
+// // //     e.target.value = "";
+// // //   };
+
+// // //   // ---------- BLOCK ACTIONS ----------
+// // //   const addBlock = (type: BlockType) => {
+// // //     const newBlock: Block = {
+// // //       id: generateId(),
+// // //       type,
+// // //       content: type === "text" ? "" : "",
+// // //       url: type === "image" || type === "logo" ? "" : undefined,
+// // //       buttonText: type === "button" ? "" : undefined,
+// // //       buttonLink: type === "button" ? "" : undefined,
+// // //       align: "center",
+// // //       color: type === "text" ? "#334155" : undefined,
+// // //       backgroundColor: type === "text" ? "transparent" : undefined,
+// // //       fontSize: type === "text" ? 14 : undefined,
+// // //       fontWeight: type === "text" ? "normal" : undefined,
+// // //       fontStyle: type === "text" ? "normal" : undefined,
+// // //       textAlign: type === "text" ? "left" : undefined,
+// // //     };
+// // //     setBlocks((prev) => [...prev, newBlock]);
+// // //   };
+
+// // //   const updateBlock = (id: string, updates: Partial<Block>) => {
+// // //     setBlocks((prev) => prev.map((b) => (b.id === id ? { ...b, ...updates } : b)));
+// // //   };
+
+// // //   const removeBlock = (id: string) => {
+// // //     setBlocks((prev) => prev.filter((b) => b.id !== id));
+// // //   };
+
+// // //   const moveBlock = (index: number, direction: "up" | "down") => {
+// // //     setBlocks((prev) => {
+// // //       const next = [...prev];
+// // //       const target = direction === "up" ? index - 1 : index + 1;
+// // //       if (target < 0 || target >= next.length) return prev;
+// // //       [next[index], next[target]] = [next[target], next[index]];
+// // //       return next;
+// // //     });
+// // //   };
+
+// // //   // ---------- SAVE DRAFT ----------
+// // //   const handleSaveDraft = async () => {
+// // //     if (!campaignName.trim()) {
+// // //       showAlert("warning", "Please enter a campaign name");
+// // //       return;
+// // //     }
+
+// // //     try {
+// // //       setSaving(true);
+
+// // //       const payload = {
+// // //         campaign_name: campaignName.trim(),
+// // //         channel:
+// // //           channel === "WhatsApp"
+// // //             ? "WhatsApp"
+// // //             : channel === "Social"
+// // //               ? "Social"
+// // //               : "Email",
+// // //         category: category || "Others",
+// // //         subject: channel === "Email" ? subject || null : null,
+// // //         preheader: channel === "Email" && preheader ? preheaderText || null : null,
+// // //         status: "Draft",
+// // //         scheduled_at: null,
+// // //       };
+
+// // //       let id = campaignId;
+
+// // //       if (!id) {
+// // //         const res = await axios.post(`${API}/api/campaigns`, payload, {
+// // //           withCredentials: true,
+// // //         });
+// // //         id = res.data.data.id;
+// // //         setCampaignId(id);
+// // //       } else {
+// // //         await axios.put(`${API}/api/campaigns/${id}`, payload, {
+// // //           withCredentials: true,
+// // //         });
+// // //       }
+
+// // //       // Replace blocks
+// // //       const existingRes = await axios.get(`${API}/api/campaigns/${id}/blocks`, {
+// // //         withCredentials: true,
+// // //       });
+// // //       const existing = existingRes.data.data || [];
+
+// // //       await Promise.all(
+// // //         existing.map((b: any) =>
+// // //           axios.delete(`${API}/api/campaigns/${id}/blocks/${b.id}`, {
+// // //             withCredentials: true,
+// // //           })
+// // //         )
+// // //       );
+
+// // //       for (let i = 0; i < blocks.length; i++) {
+// // //         await axios.post(
+// // //           `${API}/api/campaigns/${id}/blocks`,
+// // //           uiBlockToApi(blocks[i], i),
+// // //           { withCredentials: true }
+// // //         );
+// // //       }
+
+// // //       const refreshed = await axios.get(`${API}/api/campaigns/${id}/blocks`, {
+// // //         withCredentials: true,
+// // //       });
+// // //       setBlocks((refreshed.data.data || []).map(apiBlockToUi));
+
+// // //       showAlert("success", "Campaign saved as draft");
+// // //       loadTemplates();
+// // //     } catch (err: any) {
+// // //       console.error(err);
+// // //       showAlert("error", err?.response?.data?.message || "Failed to save campaign");
+// // //     } finally {
+// // //       setSaving(false);
+// // //     }
+// // //   };
+
+// // //   // ---------- SEND ----------
+// // //   const handleSend = async () => {
+// // //     if (!campaignName.trim()) {
+// // //       showAlert("warning", "Please enter a campaign name");
+// // //       return;
+// // //     }
+
+// // //     if (channel !== "Email") {
+// // //       showAlert("warning", "Sending is currently only supported for Email campaigns");
+// // //       return;
+// // //     }
+
+// // //     const emails = recipients
+// // //       .split(/[,;\n]/)
+// // //       .map((e) => e.trim())
+// // //       .filter(Boolean);
+
+// // //     if (emails.length === 0) {
+// // //       showAlert("warning", "Please enter at least one recipient email or upload a file");
+// // //       return;
+// // //     }
+
+// // //     try {
+// // //       setSending(true);
+
+// // //       let id = campaignId;
+
+// // //       const payload = {
+// // //         campaign_name: campaignName.trim(),
+// // //         channel: "Email",
+// // //         category: category || "Others",
+// // //         subject: subject || null,
+// // //         preheader: preheader ? preheaderText || null : null,
+// // //         status: "Draft",
+// // //         scheduled_at: null,
+// // //       };
+
+// // //       if (!id) {
+// // //         const res = await axios.post(`${API}/api/campaigns`, payload, {
+// // //           withCredentials: true,
+// // //         });
+// // //         id = res.data.data.id;
+// // //         setCampaignId(id);
+// // //       } else {
+// // //         await axios.put(`${API}/api/campaigns/${id}`, payload, {
+// // //           withCredentials: true,
+// // //         });
+// // //       }
+
+// // //       // Replace blocks
+// // //       const existingRes = await axios.get(`${API}/api/campaigns/${id}/blocks`, {
+// // //         withCredentials: true,
+// // //       });
+// // //       const existing = existingRes.data.data || [];
+
+// // //       await Promise.all(
+// // //         existing.map((b: any) =>
+// // //           axios.delete(`${API}/api/campaigns/${id}/blocks/${b.id}`, {
+// // //             withCredentials: true,
+// // //           })
+// // //         )
+// // //       );
+
+// // //       for (let i = 0; i < blocks.length; i++) {
+// // //         await axios.post(
+// // //           `${API}/api/campaigns/${id}/blocks`,
+// // //           uiBlockToApi(blocks[i], i),
+// // //           { withCredentials: true }
+// // //         );
+// // //       }
+
+// // //       // Send to all emails
+// // //       await axios.post(
+// // //         `${API}/api/campaigns/${id}/send`,
+// // //         { emails },
+// // //         { withCredentials: true }
+// // //       );
+
+// // //       showAlert("success", `Campaign sent to ${emails.length} recipient(s)`);
+// // //       await loadTemplates();
+// // //       setShowTemplates(true);
+// // //     } catch (err: any) {
+// // //       console.error(err);
+// // //       showAlert("error", err?.response?.data?.message || "Failed to send campaign");
+// // //     } finally {
+// // //       setSending(false);
+// // //     }
+// // //   };
+
+// // //   // ---------- HELPERS ----------
+// // //   const editorPlaceholder =
+// // //     activeTab === "Email"
+// // //       ? "Hi {{Name}},\n\nType your message here..."
+// // //       : activeTab === "WhatsApp Message"
+// // //         ? "Hi {{Name}},\n\nType your WhatsApp message here..."
+// // //         : "Type your social post caption here...";
+
+// // //   const designTitle =
+// // //     activeTab === "Email"
+// // //       ? "Create Email"
+// // //       : activeTab === "WhatsApp Message"
+// // //         ? "Create WhatsApp Message"
+// // //         : "Create Social Media Post";
+
+// // //   // ---------- LOADING ----------
+// // //   if (loading) {
+// // //     return (
+// // //       <div
+// // //         style={{
+// // //           ...styles.page,
+// // //           display: "flex",
+// // //           alignItems: "center",
+// // //           justifyContent: "center",
+// // //         }}
+// // //       >
+// // //         <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#64748b" }}>
+// // //           <Loader2 size={20} className="animate-spin" />
+// // //           Loading campaign...
+// // //         </div>
+// // //       </div>
+// // //     );
+// // //   }
+
+// // //   // ---------- RENDER ----------
+// // //   return (
+// // //     <div style={styles.page}>
+// // //       {/* Alert Modal */}
+// // //       {alert && (
+// // //         <AlertModal
+// // //           type={alert.type}
+// // //           message={alert.message}
+// // //           onClose={() => setAlert(null)}
+// // //         />
+// // //       )}
+
+// // //       {/* ===================== TEMPLATES VIEW ===================== */}
+// // //       {showTemplates && (
+// // //         <div style={{ padding: "20px 24px", maxWidth: 1600, margin: "0 auto" }}>
+// // //           <div style={styles.card}>
+// // //             <div
+// // //               style={{
+// // //                 display: "flex",
+// // //                 justifyContent: "space-between",
+// // //                 alignItems: "center",
+// // //                 marginBottom: 20,
+// // //               }}
+// // //             >
+// // //               <div>
+// // //                 <h3 style={styles.sectionTitle}>Your Campaigns & Templates</h3>
+// // //                 <p style={styles.sectionHint}>
+// // //                   Open a previous campaign or start a new one
+// // //                 </p>
+// // //               </div>
+// // //               <div style={{ display: "flex", gap: 10 }}>
+// // //                 {onBack && (
+// // //                   <button style={styles.secondaryBtn} onClick={onBack}>
+// // //                     <ArrowLeft size={16} /> Back
+// // //                   </button>
+// // //                 )}
+// // //                 <button style={styles.primaryBtn} onClick={startNewCampaign}>
+// // //                   <Plus size={16} /> Create New Campaign
+// // //                 </button>
+// // //               </div>
+// // //             </div>
+
+// // //             {templatesLoading ? (
+// // //               <div
+// // //                 style={{
+// // //                   display: "flex",
+// // //                   alignItems: "center",
+// // //                   gap: 8,
+// // //                   color: "#64748b",
+// // //                   padding: "40px 0",
+// // //                   justifyContent: "center",
+// // //                 }}
+// // //               >
+// // //                 <Loader2 size={18} className="animate-spin" />
+// // //                 Loading campaigns...
+// // //               </div>
+// // //             ) : templates.length === 0 ? (
+// // //               <div style={{ textAlign: "center", padding: "50px 0", color: "#94a3b8" }}>
+// // //                 <FileText size={40} style={{ marginBottom: 12, opacity: 0.4 }} />
+// // //                 <p style={{ marginBottom: 16 }}>No campaigns yet</p>
+// // //                 <button style={styles.primaryBtn} onClick={startNewCampaign}>
+// // //                   <Plus size={16} /> Create your first campaign
+// // //                 </button>
+// // //               </div>
+// // //             ) : (
+// // //               <div
+// // //                 style={{
+// // //                   display: "grid",
+// // //                   gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+// // //                   gap: 14,
+// // //                 }}
+// // //               >
+// // //                 {templates.map((t) => (
+// // //                   <div
+// // //                     key={t.id}
+// // //                     onClick={() => openTemplate(t.id)}
+// // //                     style={styles.templateCard}
+// // //                     onMouseEnter={(e) => {
+// // //                       e.currentTarget.style.borderColor = "#7c3aed";
+// // //                       e.currentTarget.style.boxShadow =
+// // //                         "0 4px 12px rgba(124,58,237,0.12)";
+// // //                     }}
+// // //                     onMouseLeave={(e) => {
+// // //                       e.currentTarget.style.borderColor = "#e2e8f0";
+// // //                       e.currentTarget.style.boxShadow = "none";
+// // //                     }}
+// // //                   >
+// // //                     <div
+// // //                       style={{
+// // //                         display: "flex",
+// // //                         justifyContent: "space-between",
+// // //                         marginBottom: 10,
+// // //                       }}
+// // //                     >
+// // //                       <span
+// // //                         style={{
+// // //                           ...styles.channelBadge,
+// // //                           background:
+// // //                             t.channel === "Email"
+// // //                               ? "#ede9fe"
+// // //                               : t.channel === "WhatsApp"
+// // //                                 ? "#dcfce7"
+// // //                                 : t.channel === "Social"
+// // //                                   ? "#dbeafe"
+// // //                                   : "#fef3c7",
+// // //                           color:
+// // //                             t.channel === "Email"
+// // //                               ? "#7c3aed"
+// // //                               : t.channel === "WhatsApp"
+// // //                                 ? "#16a34a"
+// // //                                 : t.channel === "Social"
+// // //                                   ? "#2563eb"
+// // //                                   : "#d97706",
+// // //                         }}
+// // //                       >
+// // //                         {t.channel || "Email"}
+// // //                       </span>
+// // //                       <span
+// // //                         style={{
+// // //                           fontSize: 11,
+// // //                           fontWeight: 500,
+// // //                           color: t.status === "Sent" ? "#16a34a" : "#64748b",
+// // //                         }}
+// // //                       >
+// // //                         {t.status || "Draft"}
+// // //                       </span>
+// // //                     </div>
+
+// // //                     <h4 style={styles.templateTitle}>
+// // //                       {t.campaignName || "Untitled"}
+// // //                     </h4>
+
+// // //                     <p style={{ margin: 0, fontSize: 12, color: "#94a3b8" }}>
+// // //                       {t.category || "—"} ·{" "}
+// // //                       {new Date(t.updatedAt || t.createdAt).toLocaleDateString()}
+// // //                     </p>
+// // //                   </div>
+// // //                 ))}
+// // //               </div>
+// // //             )}
+// // //           </div>
+// // //         </div>
+// // //       )}
+
+// // //       {/* ===================== EDITOR VIEW ===================== */}
+// // //       {!showTemplates && (
+// // //         <>
+// // //           <div style={styles.mainGrid}>
+// // //             {/* LEFT COLUMN */}
+// // //             <div style={styles.leftCol}>
+// // //               <button
+// // //                 style={{ ...styles.secondaryBtn, marginBottom: 4, width: "100%" }}
+// // //                 onClick={() => {
+// // //                   setShowTemplates(true);
+// // //                   loadTemplates();
+// // //                 }}
+// // //               >
+// // //                 ← Back to Templates
+// // //               </button>
+
+// // //               {/* Channel */}
+// // //               <div style={styles.card}>
+// // //                 <h3 style={styles.sectionTitle}>1. Choose Channel</h3>
+// // //                 <p style={styles.sectionHint}>Select the channel</p>
+
+// // //                 <ChannelItem
+// // //                   icon={<Mail size={18} color="#7c3aed" />}
+// // //                   title="Email"
+// // //                   active={channel === "Email"}
+// // //                   onClick={() => {
+// // //                     setChannel("Email");
+// // //                     setActiveTab("Email");
+// // //                   }}
+// // //                 />
+// // //                 <ChannelItem
+// // //                   icon={<FaWhatsapp size={18} color="#25D366" />}
+// // //                   title="WhatsApp Message"
+// // //                   active={channel === "WhatsApp"}
+// // //                   onClick={() => {
+// // //                     setChannel("WhatsApp");
+// // //                     setActiveTab("WhatsApp Message");
+// // //                   }}
+// // //                 />
+// // //                 <ChannelItem
+// // //                   icon={<FaFacebook size={18} color="#1877F2" />}
+// // //                   title="Social Media Post"
+// // //                   active={channel === "Social"}
+// // //                   onClick={() => {
+// // //                     setChannel("Social");
+// // //                     setActiveTab("Social Media Post");
+// // //                   }}
+// // //                 />
+// // //               </div>
+
+// // //               {/* Audience */}
+// // //               <div style={styles.card}>
+// // //                 <h3 style={styles.sectionTitle}>2. Select Audience</h3>
+// // //                 <p style={styles.sectionHint}>Enter emails or upload a list</p>
+
+// // //                 {/* Manual Email Entry */}
+// // //                 <label style={styles.label}>Recipient Emails</label>
+// // //                 <textarea
+// // //                   style={{
+// // //                     ...styles.input,
+// // //                     minHeight: "100px",
+// // //                     resize: "vertical",
+// // //                     marginBottom: 6,
+// // //                   }}
+// // //                   value={recipients}
+// // //                   onChange={(e) => setRecipients(e.target.value)}
+// // //                   placeholder={`Enter emails separated by comma or new line
+
+// // // test1@example.com
+// // // test2@example.com
+// // // test3@example.com`}
+// // //                 />
+// // //                 <p style={{ fontSize: 12, color: "#64748b", margin: "0 0 14px" }}>
+// // //                   Enter one or multiple email addresses.
+// // //                 </p>
+
+// // //                 <p style={{ fontSize: 13, color: "#64748b", margin: "0 0 8px" }}>
+// // //                   Or upload file (CSV/Excel)
+// // //                 </p>
+
+// // //                 <div style={styles.uploadBox}>
+// // //                   <Upload size={28} color="#7c3aed" />
+// // //                   <p style={{ margin: "10px 0 4px", fontWeight: 500, color: "#334155" }}>
+// // //                     Drag & drop CSV / Excel
+// // //                   </p>
+// // //                   <p style={{ fontSize: 13, color: "#94a3b8", marginBottom: 12 }}>or</p>
+// // //                   <label style={styles.browseBtn}>
+// // //                     <FileText size={15} /> Browse File
+// // //                     <input
+// // //                       type="file"
+// // //                       accept=".csv,.xls,.xlsx"
+// // //                       onChange={handleFileUpload}
+// // //                       style={{ display: "none" }}
+// // //                     />
+// // //                   </label>
+// // //                   <p style={{ fontSize: 12, color: "#94a3b8", marginTop: 10 }}>
+// // //                     Supports .csv, .xls, .xlsx
+// // //                   </p>
+// // //                 </div>
+
+// // //                 <button
+// // //                   type="button"
+// // //                   style={{
+// // //                     ...styles.primaryBtn,
+// // //                     width: "100%",
+// // //                     marginTop: 16,
+// // //                     opacity: saving || sending ? 0.6 : 1,
+// // //                     cursor: saving || sending ? "not-allowed" : "pointer",
+// // //                   }}
+// // //                   onClick={handleSend}
+// // //                   disabled={saving || sending}
+// // //                 >
+// // //                   {sending ? (
+// // //                     <>
+// // //                       <Loader2 size={14} className="animate-spin" />
+// // //                       Sending...
+// // //                     </>
+// // //                   ) : (
+// // //                     "Send Campaign"
+// // //                   )}
+// // //                 </button>
+// // //               </div>
+
+// // //               {/* Details */}
+// // //               <div style={styles.card}>
+// // //                 <h3 style={styles.sectionTitle}>3. Campaign Details</h3>
+
+// // //                 <label style={styles.label}>Campaign Name</label>
+// // //                 <input
+// // //                   style={styles.input}
+// // //                   value={campaignName}
+// // //                   onChange={(e) => setCampaignName(e.target.value)}
+// // //                   placeholder="e.g. Education Expo 2024"
+// // //                 />
+
+// // //                 <button
+// // //                   type="button"
+// // //                   style={{
+// // //                     ...styles.secondaryBtn,
+// // //                     width: "100%",
+// // //                     marginTop: 4,
+// // //                     opacity: saving || sending ? 0.6 : 1,
+// // //                     cursor: saving || sending ? "not-allowed" : "pointer",
+// // //                   }}
+// // //                   onClick={handleSaveDraft}
+// // //                   disabled={saving || sending}
+// // //                 >
+// // //                   {saving ? (
+// // //                     <>
+// // //                       <Loader2 size={14} className="animate-spin" />
+// // //                       Saving...
+// // //                     </>
+// // //                   ) : (
+// // //                     "Save"
+// // //                   )}
+// // //                 </button>
+// // //               </div>
+
+// // //               {/* Actions */}
+// // //               {/* <div style={styles.leftActions}>
+// // //                 <button
+// // //                   style={styles.secondaryBtn}
+// // //                   onClick={handleSaveDraft}
+// // //                   disabled={saving || sending}
+// // //                 >
+// // //                   {saving ? (
+// // //                     <>
+// // //                       <Loader2
+// // //                         size={14}
+// // //                         className="animate-spin"
+// // //                         style={{ marginRight: 6 }}
+// // //                       />
+// // //                       Saving...
+// // //                     </>
+// // //                   ) : (
+// // //                     "Save as Draft"
+// // //                   )}
+// // //                 </button>
+
+// // //                 <button
+// // //                   style={styles.primaryBtn}
+// // //                   onClick={handleSend}
+// // //                   disabled={saving || sending}
+// // //                 >
+// // //                   {sending ? (
+// // //                     <>
+// // //                       <Loader2
+// // //                         size={14}
+// // //                         className="animate-spin"
+// // //                         style={{ marginRight: 6 }}
+// // //                       />
+// // //                       Sending...
+// // //                     </>
+// // //                   ) : (
+// // //                     "Send Campaign"
+// // //                   )}
+// // //                 </button>
+// // //               </div> */}
+// // //             </div>
+
+// // //             {/* CENTER COLUMN */}
+// // //             <div style={styles.centerCol}>
+// // //               <div style={styles.card}>
+// // //                 <h3 style={styles.sectionTitle}>4. {designTitle}</h3>
+
+// // //                 <div style={styles.tabs}>
+// // //                   {[
+// // //                     "Email",
+// // //                     "WhatsApp Message",
+// // //                     "Social Media Post",
+// // //                   ].map((tab) => (
+// // //                     <button
+// // //                       key={tab}
+// // //                       onClick={() => {
+// // //                         if (tab === "Email") {
+// // //                           setChannel("Email");
+// // //                           setActiveTab("Email");
+// // //                         } else if (tab === "WhatsApp Message") {
+// // //                           setChannel("WhatsApp");
+// // //                           setActiveTab("WhatsApp Message");
+// // //                         } else {
+// // //                           setChannel("Social");
+// // //                           setActiveTab("Social Media Post");
+// // //                         }
+// // //                       }}
+// // //                       style={activeTab === tab ? styles.activeTab : styles.tab}
+// // //                     >
+// // //                       {tab}
+// // //                     </button>
+// // //                   ))}
+// // //                 </div>
+
+// // //                 {/* Email recipients + subject */}
+// // //              {/* Email recipients + subject */}
+// // // {/* Email Details only */}
+// // // {activeTab === "Email" && (
+// // //   <div style={styles.emailComposer}>
+// // //     <div style={styles.emailSectionCard}>
+// // //       <h4 style={{ margin: "0 0 10px", fontSize: 14 }}>
+// // //         Email Details
+// // //       </h4>
+// // //       <label style={styles.label}>Subject</label>
+// // //       <input
+// // //         style={styles.input}
+// // //         value={subject}
+// // //         onChange={(e) => setSubject(e.target.value)}
+// // //         placeholder="Enter email subject"
+// // //       />
+// // //       <label
+// // //         style={{
+// // //           display: "flex",
+// // //           alignItems: "center",
+// // //           gap: 8,
+// // //           fontSize: 13,
+// // //           marginTop: 4,
+// // //         }}
+// // //       >
+// // //         <input
+// // //           type="checkbox"
+// // //           checked={preheader}
+// // //           onChange={(e) => setPreheader(e.target.checked)}
+// // //         />
+// // //         Add preview text (Preheader)
+// // //       </label>
+// // //       {preheader && (
+// // //         <input
+// // //           style={{ ...styles.input, marginTop: 8 }}
+// // //           value={preheaderText}
+// // //           onChange={(e) => setPreheaderText(e.target.value)}
+// // //           placeholder="Preheader text..."
+// // //         />
+// // //       )}
+// // //     </div>
+// // //   </div>
+// // // )}
+// // //                 {/* Toolbar */}
+// // //                 <div style={styles.addToolbar}>
+// // //                   {/* <span
+// // //                     style={{
+// // //                       fontSize: 13,
+// // //                       fontWeight: 500,
+// // //                       color: "#475569",
+// // //                       marginRight: 8,
+// // //                     }}
+// // //                   >
+// // //                     Add Element:
+// // //                   </span> */}
+// // //                   <button style={styles.addBtn} onClick={() => addBlock("text")}>
+// // //                     <TypeIcon size={14} /> Text
+// // //                   </button>
+// // //                   <button style={styles.addBtn} onClick={() => addBlock("image")}>
+// // //                     <ImageIcon size={14} /> Banner / Image
+// // //                   </button>
+// // //                   <button style={styles.addBtn} onClick={() => addBlock("logo")}>
+// // //                     <Square size={14} /> Logo
+// // //                   </button>
+// // //                   <button style={styles.addBtn} onClick={() => addBlock("button")}>
+// // //                     <Square size={14} /> Button
+// // //                   </button>
+// // //                   <button style={styles.addBtn} onClick={() => addBlock("divider")}>
+// // //                     <Minus size={14} /> Divider
+// // //                   </button>
+// // //                 </div>
+
+// // //                 {/* Canvas */}
+// // //                 <div style={styles.canvas}>
+// // //                   {blocks.length === 0 && (
+// // //                     <div style={styles.emptyCanvas}>
+// // //                       <p>No content yet. Click the buttons above to start designing.</p>
+// // //                     </div>
+// // //                   )}
+
+// // //                 {blocks.map((block, index) => (
+// // //   <div key={block.id} style={styles.blockWrapper}>
+// // //     <div style={styles.blockControls}>
+// // //       <span style={styles.blockTypeLabel}>
+// // //         {block.type === "text"
+// // //           ? "Text"
+// // //           : block.type === "image"
+// // //             ? "Banner / Image"
+// // //             : block.type === "logo"
+// // //               ? "Logo"
+// // //               : block.type === "button"
+// // //                 ? "Button"
+// // //                 : "Divider"}
+// // //       </span>
+// // //       <div style={styles.blockControlButtons}>
+// // //         <button
+// // //           type="button"
+// // //           style={styles.controlBtn}
+// // //           onClick={() => moveBlock(index, "up")}
+// // //           title="Move up"
+// // //         >
+// // //           ↑
+// // //         </button>
+// // //         <button
+// // //           type="button"
+// // //           style={styles.controlBtn}
+// // //           onClick={() => moveBlock(index, "down")}
+// // //           title="Move down"
+// // //         >
+// // //           ↓
+// // //         </button>
+// // //         <button
+// // //           type="button"
+// // //           style={{ ...styles.controlBtn, color: "#ef4444" }}
+// // //           onClick={() => removeBlock(block.id)}
+// // //           title="Delete block"
+// // //         >
+// // //           <Trash2 size={14} />
+// // //         </button>
+// // //       </div>
+// // //     </div>
+
+// // //                       {block.type === "text" && (
+// // //                         <TextBlockEditor
+// // //                           block={block}
+// // //                           onUpdate={(updates) => updateBlock(block.id, updates)}
+// // //                           placeholder={editorPlaceholder}
+// // //                         />
+// // //                       )}
+
+// // //                       {block.type === "image" && (
+// // //                         <ImageBlockEditor
+// // //                           block={block}
+// // //                           onUpdate={(updates) => updateBlock(block.id, updates)}
+// // //                           onError={(msg) => msg && showAlert("error", msg)}
+// // //                         />
+// // //                       )}
+
+// // //                       {block.type === "logo" && (
+// // //                         <ImageBlockEditor
+// // //                           block={block}
+// // //                           onUpdate={(updates) => updateBlock(block.id, updates)}
+// // //                           onError={(msg) => msg && showAlert("error", msg)}
+// // //                           isLogo
+// // //                         />
+// // //                       )}
+
+// // //                       {block.type === "button" && (
+// // //                         <div>
+// // //                           <div style={{ textAlign: block.align || "center" }}>
+// // //                             <button style={styles.previewButton}>
+// // //                               {block.buttonText || "Button"}
+// // //                             </button>
+// // //                           </div>
+// // //                           <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+// // //                             <input
+// // //                               style={{
+// // //                                 ...styles.input,
+// // //                                 marginBottom: 0,
+// // //                                 flex: 1,
+// // //                               }}
+// // //                               placeholder="Button Text"
+// // //                               value={block.buttonText || ""}
+// // //                               onChange={(e) =>
+// // //                                 updateBlock(block.id, {
+// // //                                   buttonText: e.target.value,
+// // //                                 })
+// // //                               }
+// // //                             />
+// // //                             <input
+// // //                               style={{
+// // //                                 ...styles.input,
+// // //                                 marginBottom: 0,
+// // //                                 flex: 1,
+// // //                               }}
+// // //                               placeholder="Button Link (URL)"
+// // //                               value={block.buttonLink || ""}
+// // //                               onChange={(e) =>
+// // //                                 updateBlock(block.id, {
+// // //                                   buttonLink: e.target.value,
+// // //                                 })
+// // //                               }
+// // //                             />
+// // //                           </div>
+// // //                         </div>
+// // //                       )}
+
+// // //                       {block.type === "divider" && (
+// // //                         <hr
+// // //                           style={{
+// // //                             border: "none",
+// // //                             borderTop: "1px solid #e2e8f0",
+// // //                             margin: "12px 0",
+// // //                           }}
+// // //                         />
+// // //                       )}
+// // //                     </div>
+// // //                   ))}
+// // //                 </div>
+
+// // //                 {/* <div style={styles.editorFooter}>
+// // //                   <div style={{ display: "flex", gap: 12 }}>
+// // //                     <button style={styles.iconOnlyBtn}>
+// // //                       <Smile size={16} />
+// // //                     </button>
+// // //                     <button style={styles.iconOnlyBtn}>
+// // //                       <Link2 size={16} />
+// // //                     </button>
+// // //                   </div>
+// // //                   <button style={styles.addVariable}>
+// // //                     + Add Variable (e.g. {"{{Name}}"})
+// // //                   </button>
+// // //                 </div> */}
+// // //               </div>
+// // //             </div>
+
+// // //             {/* RIGHT COLUMN - PREVIEW */}
+// // //             <div style={styles.rightCol}>
+// // //               <div style={styles.card}>
+// // //                 <h3 style={styles.sectionTitle}>5. Preview</h3>
+// // //                 <p style={styles.sectionHint}>Live preview of your design</p>
+
+// // //                 {/* EMAIL PREVIEW */}
+// // //                 {activeTab === "Email" && (
+// // //                   <div style={styles.previewCard}>
+// // //                     <div style={styles.previewHeader}>
+// // //                       <Mail size={16} color="#7c3aed" />
+// // //                       <span style={{ fontWeight: 600, fontSize: 13 }}>
+// // //                         Email Preview
+// // //                       </span>
+// // //                     </div>
+// // //                     <div style={styles.emailPreviewFrame}>
+// // //                       {subject && (
+// // //                         <div style={styles.previewSubject}>
+// // //                           <strong>Subject:</strong> {subject}
+// // //                         </div>
+// // //                       )}
+// // //                       <div style={styles.previewBody}>
+// // //                         {blocks.map((block) => {
+// // //                           if (block.type === "logo") {
+// // //                             return (
+// // //                               <div
+// // //                                 key={block.id}
+// // //                                 style={{ textAlign: "center", marginBottom: 12 }}
+// // //                               >
+// // //                                 {block.url ? (
+// // //                                   <img
+// // //                                     src={block.url}
+// // //                                     alt="Logo"
+// // //                                     style={{
+// // //                                       maxHeight: 40,
+// // //                                       objectFit: "contain",
+// // //                                     }}
+// // //                                   />
+// // //                                 ) : (
+// // //                                   <div style={styles.logoPlaceholder}>
+// // //                                     <ImageIcon size={16} color="#7c3aed" />
+// // //                                     <span>Your Logo</span>
+// // //                                   </div>
+// // //                                 )}
+// // //                               </div>
+// // //                             );
+// // //                           }
+// // //                           if (block.type === "image" && block.url) {
+// // //                             return (
+// // //                               <img
+// // //                                 key={block.id}
+// // //                                 src={block.url}
+// // //                                 alt=""
+// // //                                 style={{
+// // //                                   width: "100%",
+// // //                                   borderRadius: 8,
+// // //                                   marginBottom: 12,
+// // //                                   maxHeight: 140,
+// // //                                   objectFit: "cover",
+// // //                                 }}
+// // //                               />
+// // //                             );
+// // //                           }
+// // //                           if (block.type === "text") {
+// // //                             return (
+// // //                               <p
+// // //                                 key={block.id}
+// // //                                 style={{
+// // //                                   fontSize: block.fontSize || 14,
+// // //                                   lineHeight: 1.6,
+// // //                                   whiteSpace: "pre-wrap",
+// // //                                   margin: "0 0 12px",
+// // //                                   color: block.color || "#334155",
+// // //                                   backgroundColor:
+// // //                                     block.backgroundColor &&
+// // //                                     block.backgroundColor !== "transparent"
+// // //                                       ? block.backgroundColor
+// // //                                       : undefined,
+// // //                                   fontWeight: block.fontWeight || "normal",
+// // //                                   fontStyle: block.fontStyle || "normal",
+// // //                                   textAlign: block.textAlign || "left",
+// // //                                   padding:
+// // //                                     block.backgroundColor &&
+// // //                                     block.backgroundColor !== "transparent"
+// // //                                       ? "8px 10px"
+// // //                                       : undefined,
+// // //                                   borderRadius:
+// // //                                     block.backgroundColor &&
+// // //                                     block.backgroundColor !== "transparent"
+// // //                                       ? 6
+// // //                                       : undefined,
+// // //                                 }}
+// // //                               >
+// // //                                 {block.content}
+// // //                               </p>
+// // //                             );
+// // //                           }
+// // //                           if (block.type === "button") {
+// // //                             return (
+// // //                               <div
+// // //                                 key={block.id}
+// // //                                 style={{
+// // //                                   textAlign: block.align || "center",
+// // //                                   margin: "16px 0",
+// // //                                 }}
+// // //                               >
+// // //                                 <a
+// // //                                   href={block.buttonLink}
+// // //                                   style={{
+// // //                                     display: "inline-block",
+// // //                                     background: "#7c3aed",
+// // //                                     color: "#fff",
+// // //                                     padding: "10px 20px",
+// // //                                     borderRadius: 8,
+// // //                                     fontSize: 13,
+// // //                                     fontWeight: 600,
+// // //                                     textDecoration: "none",
+// // //                                   }}
+// // //                                 >
+// // //                                   {block.buttonText}
+// // //                                 </a>
+// // //                               </div>
+// // //                             );
+// // //                           }
+// // //                           if (block.type === "divider") {
+// // //                             return (
+// // //                               <hr
+// // //                                 key={block.id}
+// // //                                 style={{
+// // //                                   border: "none",
+// // //                                   borderTop: "1px solid #e2e8f0",
+// // //                                   margin: "16px 0",
+// // //                                 }}
+// // //                               />
+// // //                             );
+// // //                           }
+// // //                           return null;
+// // //                         })}
+// // //                         {/* <div style={styles.previewFooter}>
+// // //                           <p
+// // //                             style={{
+// // //                               margin: "0 0 10px",
+// // //                               fontSize: 12,
+// // //                               color: "#64748b",
+// // //                             }}
+// // //                           >
+// // //                             Stay connected with us
+// // //                           </p>
+// // //                           <div style={styles.socialIcons}>
+// // //                             <div style={styles.socialIcon}>
+// // //                               <FaFacebook size={12} />
+// // //                             </div>
+// // //                             <div style={styles.socialIcon}>
+// // //                               <FaInstagram size={12} />
+// // //                             </div>
+// // //                             <div style={styles.socialIcon}>
+// // //                               <FaLinkedin size={12} />
+// // //                             </div>
+// // //                             <div style={styles.socialIcon}>
+// // //                               <FaTwitter size={12} />
+// // //                             </div>
+// // //                           </div>
+// // //                         </div> */}
+// // //                       </div>
+// // //                     </div>
+// // //                   </div>
+// // //                 )}
+
+// // //                 {/* WHATSAPP */}
+// // //                 {activeTab === "WhatsApp Message" && (
+// // //                   <div style={styles.previewCard}>
+// // //                     <div style={styles.previewHeader}>
+// // //                       <FaWhatsapp size={16} color="#25D366" />
+// // //                       <span style={{ fontWeight: 600, fontSize: 13 }}>
+// // //                         WhatsApp Preview
+// // //                       </span>
+// // //                     </div>
+// // //                     <div style={styles.whatsappFrame}>
+// // //                       <div style={styles.waHeader}>
+// // //                         <ArrowLeft size={16} color="#fff" />
+// // //                         <div style={styles.waAvatar}></div>
+// // //                         <div>
+// // //                           <div
+// // //                             style={{
+// // //                               fontWeight: 600,
+// // //                               fontSize: 13,
+// // //                               color: "#fff",
+// // //                             }}
+// // //                           >
+// // //                             Your Company
+// // //                           </div>
+// // //                           <div style={{ fontSize: 11, color: "#d1fae5" }}>
+// // //                             online
+// // //                           </div>
+// // //                         </div>
+// // //                       </div>
+// // //                       <div style={styles.waBody}>
+// // //                         <div style={styles.waBubble}>
+// // //                           {blocks.map((block) => {
+// // //                             if (block.type === "image" && block.url) {
+// // //                               return (
+// // //                                 <img
+// // //                                   key={block.id}
+// // //                                   src={block.url}
+// // //                                   alt=""
+// // //                                   style={{
+// // //                                     width: "100%",
+// // //                                     borderRadius: 8,
+// // //                                     marginBottom: 8,
+// // //                                   }}
+// // //                                 />
+// // //                               );
+// // //                             }
+// // //                             if (block.type === "text") {
+// // //                               return (
+// // //                                 <p
+// // //                                   key={block.id}
+// // //                                   style={{
+// // //                                     fontSize: block.fontSize || 13,
+// // //                                     whiteSpace: "pre-wrap",
+// // //                                     margin: "0 0 8px",
+// // //                                     color: block.color || "#111",
+// // //                                     backgroundColor:
+// // //                                       block.backgroundColor &&
+// // //                                       block.backgroundColor !== "transparent"
+// // //                                         ? block.backgroundColor
+// // //                                         : undefined,
+// // //                                     fontWeight: block.fontWeight || "normal",
+// // //                                     fontStyle: block.fontStyle || "normal",
+// // //                                     textAlign: block.textAlign || "left",
+// // //                                     padding:
+// // //                                       block.backgroundColor &&
+// // //                                       block.backgroundColor !== "transparent"
+// // //                                         ? "6px 8px"
+// // //                                         : undefined,
+// // //                                     borderRadius: 6,
+// // //                                   }}
+// // //                                 >
+// // //                                   {block.content}
+// // //                                 </p>
+// // //                               );
+// // //                             }
+// // //                             if (block.type === "button") {
+// // //                               return (
+// // //                                 <div key={block.id} style={{ margin: "8px 0" }}>
+// // //                                   <a
+// // //                                     href={block.buttonLink}
+// // //                                     style={{
+// // //                                       display: "inline-block",
+// // //                                       background: "#7c3aed",
+// // //                                       color: "#fff",
+// // //                                       padding: "8px 16px",
+// // //                                       borderRadius: 6,
+// // //                                       fontSize: 13,
+// // //                                       textDecoration: "none",
+// // //                                     }}
+// // //                                   >
+// // //                                     {block.buttonText}
+// // //                                   </a>
+// // //                                 </div>
+// // //                               );
+// // //                             }
+// // //                             return null;
+// // //                           })}
+// // //                           <div
+// // //                             style={{
+// // //                               textAlign: "right",
+// // //                               fontSize: 11,
+// // //                               color: "#94a3b8",
+// // //                               marginTop: 6,
+// // //                             }}
+// // //                           >
+// // //                             11:30 AM ✓✓
+// // //                           </div>
+// // //                         </div>
+// // //                       </div>
+// // //                       <div style={styles.waInput}>
+// // //                         <Smile size={18} color="#94a3b8" />
+// // //                         <span
+// // //                           style={{ flex: 1, color: "#94a3b8", fontSize: 13 }}
+// // //                         >
+// // //                           Type a message
+// // //                         </span>
+// // //                       </div>
+// // //                     </div>
+// // //                   </div>
+// // //                 )}
+
+// // //                 {/* SOCIAL */}
+// // //                 {activeTab === "Social Media Post" && (
+// // //                   <div style={styles.previewCard}>
+// // //                     <div style={styles.previewHeader}>
+// // //                       <span style={{ fontWeight: 600, fontSize: 13 }}>
+// // //                         Social Media Preview
+// // //                       </span>
+// // //                     </div>
+// // //                     <div style={styles.socialCard}>
+// // //                       <div style={styles.socialHeader}>
+// // //                         <div style={styles.socialAvatar}></div>
+// // //                         <div>
+// // //                           <div style={{ fontWeight: 600, fontSize: 13 }}>
+// // //                             Your Company
+// // //                           </div>
+// // //                           <div style={{ fontSize: 11, color: "#94a3b8" }}>
+// // //                             Just now · 🌐
+// // //                           </div>
+// // //                         </div>
+// // //                       </div>
+// // //                       {blocks.map((block) => {
+// // //                         if (block.type === "text") {
+// // //                           return (
+// // //                             <p
+// // //                               key={block.id}
+// // //                               style={{
+// // //                                 fontSize: block.fontSize || 13,
+// // //                                 padding: "8px 12px",
+// // //                                 whiteSpace: "pre-wrap",
+// // //                                 color: block.color || "#111",
+// // //                                 backgroundColor:
+// // //                                   block.backgroundColor &&
+// // //                                   block.backgroundColor !== "transparent"
+// // //                                     ? block.backgroundColor
+// // //                                     : undefined,
+// // //                                 fontWeight: block.fontWeight || "normal",
+// // //                                 fontStyle: block.fontStyle || "normal",
+// // //                                 textAlign: block.textAlign || "left",
+// // //                                 margin: 0,
+// // //                               }}
+// // //                             >
+// // //                               {block.content}
+// // //                             </p>
+// // //                           );
+// // //                         }
+// // //                         if (block.type === "image" && block.url) {
+// // //                           return (
+// // //                             <img
+// // //                               key={block.id}
+// // //                               src={block.url}
+// // //                               alt=""
+// // //                               style={{
+// // //                                 width: "100%",
+// // //                                 display: "block",
+// // //                                 marginTop: 8,
+// // //                               }}
+// // //                             />
+// // //                           );
+// // //                         }
+// // //                         return null;
+// // //                       })}
+// // //                       <div style={styles.socialActions}>
+// // //                         <span>👍 Like</span>
+// // //                         <span>💬 Comment</span>
+// // //                         <span>↗ Share</span>
+// // //                       </div>
+// // //                     </div>
+// // //                   </div>
+// // //                 )}
+
+
+// // //               </div>
+// // //             </div>
+// // //           </div>
+// // //           {/* Bottom Bar */}
+// // //           <div style={styles.bottomBar}>
+// // //             <button
+// // //               type="button"
+// // //               style={styles.bottomSecondary}
+// // //               onClick={() => {
+// // //                 setShowTemplates(true);
+// // //                 loadTemplates();
+// // //               }}
+// // //             >
+// // //               <ArrowLeft size={16} /> Back to Templates
+// // //             </button>
+// // //           </div>
+// // //         </>
+// // //       )}
+// // //     </div>
+// // //   );
+// // // };
+
+// // // // ===================== CHANNEL ITEM =====================
+// // // const ChannelItem = ({
+// // //   icon,
+// // //   title,
+// // //   active,
+// // //   onClick,
+// // // }: {
+// // //   icon: React.ReactNode;
+// // //   title: string;
+// // //   active: boolean;
+// // //   onClick: () => void;
+// // // }) => (
+// // //   <div
+// // //     onClick={onClick}
+// // //     style={{
+// // //       ...styles.channelItem,
+// // //       border: active ? "2px solid #7c3aed" : "1px solid #e2e8f0",
+// // //       background: active ? "#f5f3ff" : "#fff",
+// // //     }}
+// // //   >
+// // //     <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+// // //       <div
+// // //         style={{
+// // //           width: 36,
+// // //           height: 36,
+// // //           borderRadius: 8,
+// // //           background: active ? "#ede9fe" : "#f8fafc",
+// // //           display: "flex",
+// // //           alignItems: "center",
+// // //           justifyContent: "center",
+// // //         }}
+// // //       >
+// // //         {icon}
+// // //       </div>
+// // //       <span style={{ fontWeight: 500, fontSize: 14 }}>{title}</span>
+// // //     </div>
+// // //     <div
+// // //       style={{
+// // //         width: 18,
+// // //         height: 18,
+// // //         borderRadius: "50%",
+// // //         border: active ? "6px solid #7c3aed" : "2px solid #cbd5e1",
+// // //         background: "#fff",
+// // //       }}
+// // //     />
+// // //   </div>
+// // // );
+
+// // // // ===================== STYLES =====================
+// // // const styles: any = {
+// // //   page: {
+// // //     minHeight: "100vh",
+// // //     background: "#f1f5f9",
+// // //     fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+// // //     color: "#1e293b",
+// // //     paddingBottom: 80,
+// // //   },
+// // //   successMsg: {
+// // //     margin: "12px 24px 0",
+// // //     display: "flex",
+// // //     alignItems: "center",
+// // //     gap: 8,
+// // //     padding: "10px 14px",
+// // //     background: "#ecfdf5",
+// // //     border: "1px solid #a7f3d0",
+// // //     color: "#065f46",
+// // //     borderRadius: 8,
+// // //     fontSize: 13,
+// // //     fontWeight: 500,
+// // //   },
+// // //   errorMsg: {
+// // //     margin: "12px 24px 0",
+// // //     display: "flex",
+// // //     alignItems: "center",
+// // //     gap: 8,
+// // //     padding: "10px 14px",
+// // //     background: "#fef2f2",
+// // //     border: "1px solid #fecaca",
+// // //     color: "#991b1b",
+// // //     borderRadius: 8,
+// // //     fontSize: 13,
+// // //     fontWeight: 500,
+// // //   },
+// // //   dismissBtn: {
+// // //     marginLeft: "auto",
+// // //     background: "none",
+// // //     border: "none",
+// // //     color: "#991b1b",
+// // //     cursor: "pointer",
+// // //     fontSize: 12,
+// // //     textDecoration: "underline",
+// // //   },
+// // //   templateCard: {
+// // //     border: "1px solid #e2e8f0",
+// // //     borderRadius: 10,
+// // //     padding: 16,
+// // //     cursor: "pointer",
+// // //     background: "#fff",
+// // //     transition: "all 0.15s",
+// // //   },
+// // //   channelBadge: {
+// // //     fontSize: 11,
+// // //     fontWeight: 600,
+// // //     padding: "2px 8px",
+// // //     borderRadius: 20,
+// // //   },
+// // //   templateTitle: {
+// // //     margin: "0 0 6px",
+// // //     fontSize: 14,
+// // //     fontWeight: 600,
+// // //     color: "#1e293b",
+// // //     overflow: "hidden",
+// // //     textOverflow: "ellipsis",
+// // //     whiteSpace: "nowrap",
+// // //   },
+// // //   mainGrid: {
+// // //     display: "grid",
+// // //     gridTemplateColumns: "300px 1fr 340px",
+// // //     gap: 20,
+// // //     padding: "20px 24px",
+// // //     maxWidth: 1600,
+// // //     margin: "0 auto",
+// // //   },
+// // //   leftCol: { display: "flex", flexDirection: "column", gap: 16 },
+// // //   centerCol: { display: "flex", flexDirection: "column" },
+// // //   rightCol: { display: "flex", flexDirection: "column" },
+// // //   card: {
+// // //     background: "#fff",
+// // //     borderRadius: 12,
+// // //     padding: 20,
+// // //     boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+// // //     border: "1px solid #e2e8f0",
+// // //   },
+// // //   sectionTitle: { margin: "0 0 4px", fontSize: 15, fontWeight: 600 },
+// // //   sectionHint: { margin: "0 0 14px", fontSize: 12, color: "#94a3b8" },
+// // //   channelItem: {
+// // //     display: "flex",
+// // //     alignItems: "center",
+// // //     justifyContent: "space-between",
+// // //     padding: "10px 12px",
+// // //     borderRadius: 10,
+// // //     marginBottom: 8,
+// // //     cursor: "pointer",
+// // //   },
+// // //   select: {
+// // //     width: "100%",
+// // //     padding: "10px 12px",
+// // //     borderRadius: 8,
+// // //     border: "1px solid #e2e8f0",
+// // //     fontSize: 13,
+// // //     background: "#fff",
+// // //     marginBottom: 4,
+// // //   },
+// // //   input: {
+// // //     width: "100%",
+// // //     padding: "10px 12px",
+// // //     borderRadius: 8,
+// // //     border: "1px solid #e2e8f0",
+// // //     fontSize: 13,
+// // //     marginBottom: 12,
+// // //     boxSizing: "border-box",
+// // //   },
+// // //   label: {
+// // //     display: "block",
+// // //     fontSize: 12,
+// // //     fontWeight: 500,
+// // //     color: "#475569",
+// // //     marginBottom: 6,
+// // //   },
+// // //   uploadBox: {
+// // //     border: "2px dashed #cbd5e1",
+// // //     borderRadius: 10,
+// // //     padding: "24px 16px",
+// // //     textAlign: "center",
+// // //     background: "#f8fafc",
+// // //   },
+// // //   browseBtn: {
+// // //     display: "inline-flex",
+// // //     alignItems: "center",
+// // //     gap: 6,
+// // //     background: "#7c3aed",
+// // //     color: "#fff",
+// // //     border: "none",
+// // //     padding: "8px 16px",
+// // //     borderRadius: 8,
+// // //     fontSize: 13,
+// // //     fontWeight: 500,
+// // //     cursor: "pointer",
+// // //   },
+// // //   dateBtn: {
+// // //     display: "flex",
+// // //     alignItems: "center",
+// // //     gap: 8,
+// // //     width: "100%",
+// // //     padding: "10px 12px",
+// // //     borderRadius: 8,
+// // //     border: "1px solid #e2e8f0",
+// // //     background: "#fff",
+// // //     fontSize: 13,
+// // //     cursor: "pointer",
+// // //     color: "#64748b",
+// // //   },
+// // //   leftActions: { display: "flex", flexDirection: "column", gap: 8 },
+// // //   secondaryBtn: {
+// // //     display: "inline-flex",
+// // //     alignItems: "center",
+// // //     justifyContent: "center",
+// // //     gap: 6,
+// // //     padding: "10px 16px",
+// // //     borderRadius: 8,
+// // //     border: "1px solid #e2e8f0",
+// // //     background: "#fff",
+// // //     fontSize: 13,
+// // //     fontWeight: 500,
+// // //     cursor: "pointer",
+// // //     color: "#475569",
+// // //   },
+// // //   primaryBtn: {
+// // //     display: "inline-flex",
+// // //     alignItems: "center",
+// // //     justifyContent: "center",
+// // //     gap: 6,
+// // //     padding: "10px 16px",
+// // //     borderRadius: 8,
+// // //     border: "none",
+// // //     background: "#7c3aed",
+// // //     color: "#fff",
+// // //     fontSize: 13,
+// // //     fontWeight: 500,
+// // //     cursor: "pointer",
+// // //   },
+// // //   tabs: {
+// // //     display: "flex",
+// // //     gap: 4,
+// // //     borderBottom: "1px solid #e2e8f0",
+// // //     marginBottom: 16,
+// // //   },
+// // //   tab: {
+// // //     padding: "8px 14px",
+// // //     border: "none",
+// // //     background: "transparent",
+// // //     fontSize: 13,
+// // //     color: "#64748b",
+// // //     cursor: "pointer",
+// // //     borderBottom: "2px solid transparent",
+// // //   },
+// // //   activeTab: {
+// // //     padding: "8px 14px",
+// // //     border: "none",
+// // //     background: "transparent",
+// // //     fontSize: 13,
+// // //     color: "#7c3aed",
+// // //     fontWeight: 600,
+// // //     cursor: "pointer",
+// // //     borderBottom: "2px solid #7c3aed",
+// // //   },
+// // //   addToolbar: {
+// // //     display: "flex",
+// // //     flexWrap: "wrap",
+// // //     alignItems: "center",
+// // //     gap: 8,
+// // //     padding: "12px 0",
+// // //     borderBottom: "1px solid #e2e8f0",
+// // //     marginBottom: 16,
+// // //   },
+// // //   addBtn: {
+// // //     display: "inline-flex",
+// // //     alignItems: "center",
+// // //     gap: 6,
+// // //     padding: "6px 12px",
+// // //     borderRadius: 6,
+// // //     border: "1px solid #e2e8f0",
+// // //     background: "#f8fafc",
+// // //     fontSize: 12,
+// // //     fontWeight: 500,
+// // //     cursor: "pointer",
+// // //     color: "#475569",
+// // //   },
+// // //   canvas: {
+// // //     minHeight: 320,
+// // //     background: "#fafafa",
+// // //     border: "1px solid #e2e8f0",
+// // //     borderRadius: 10,
+// // //     padding: 16,
+// // //   },
+// // //   emptyCanvas: {
+// // //     textAlign: "center",
+// // //     padding: "60px 20px",
+// // //     color: "#94a3b8",
+// // //   },
+// // //  blockWrapper: {
+// // //   marginBottom: 16,
+// // //   padding: 12,
+// // //   background: "#fff",
+// // //   borderRadius: 8,
+// // //   border: "1px solid #e2e8f0",
+// // // },
+// // // blockControls: {
+// // //   display: "flex",
+// // //   alignItems: "center",
+// // //   justifyContent: "space-between",
+// // //   marginBottom: 10,
+// // //   paddingBottom: 8,
+// // //   borderBottom: "1px solid #f1f5f9",
+// // // },
+// // // blockTypeLabel: {
+// // //   fontSize: 11,
+// // //   fontWeight: 600,
+// // //   color: "#64748b",
+// // //   textTransform: "uppercase",
+// // //   letterSpacing: "0.04em",
+// // // },
+// // // blockControlButtons: {
+// // //   display: "flex",
+// // //   gap: 4,
+// // // },
+// // // controlBtn: {
+// // //   width: 28,
+// // //   height: 28,
+// // //   border: "1px solid #e2e8f0",
+// // //   borderRadius: 6,
+// // //   background: "#fff",
+// // //   cursor: "pointer",
+// // //   display: "flex",
+// // //   alignItems: "center",
+// // //   justifyContent: "center",
+// // //   fontSize: 12,
+// // //   color: "#475569",
+// // // },
+// // //   textBlock: {
+// // //     width: "100%",
+// // //     minHeight: 80,
+// // //     padding: 12,
+// // //     border: "1px solid #e2e8f0",
+// // //     borderRadius: 6,
+// // //     fontSize: 14,
+// // //     lineHeight: 1.5,
+// // //     resize: "vertical",
+// // //     boxSizing: "border-box",
+// // //     fontFamily: "inherit",
+// // //   },
+// // //   imagePlaceholder: {
+// // //     height: 140,
+// // //     background: "#f1f5f9",
+// // //     borderRadius: 8,
+// // //     display: "flex",
+// // //     flexDirection: "column",
+// // //     alignItems: "center",
+// // //     justifyContent: "center",
+// // //     color: "#94a3b8",
+// // //     gap: 8,
+// // //   },
+// // //   logoPlaceholder: {
+// // //     height: 80,
+// // //     background: "#f1f5f9",
+// // //     borderRadius: 8,
+// // //     display: "flex",
+// // //     flexDirection: "column",
+// // //     alignItems: "center",
+// // //     justifyContent: "center",
+// // //     color: "#94a3b8",
+// // //     gap: 4,
+// // //   },
+// // //   previewButton: {
+// // //     background: "#7c3aed",
+// // //     color: "#fff",
+// // //     border: "none",
+// // //     padding: "10px 24px",
+// // //     borderRadius: 8,
+// // //     fontWeight: 600,
+// // //     fontSize: 14,
+// // //     cursor: "pointer",
+// // //   },
+// // //   editorFooter: {
+// // //     display: "flex",
+// // //     justifyContent: "space-between",
+// // //     alignItems: "center",
+// // //     marginTop: 16,
+// // //     paddingTop: 12,
+// // //     borderTop: "1px solid #e2e8f0",
+// // //   },
+// // //   iconOnlyBtn: {
+// // //     width: 32,
+// // //     height: 32,
+// // //     border: "1px solid #e2e8f0",
+// // //     borderRadius: 6,
+// // //     background: "#fff",
+// // //     cursor: "pointer",
+// // //     display: "flex",
+// // //     alignItems: "center",
+// // //     justifyContent: "center",
+// // //   },
+// // //   addVariable: {
+// // //     border: "none",
+// // //     background: "transparent",
+// // //     color: "#7c3aed",
+// // //     fontSize: 13,
+// // //     fontWeight: 500,
+// // //     cursor: "pointer",
+// // //   },
+// // //   previewCard: { marginBottom: 20 },
+// // //   emailComposer: { display: "flex", flexDirection: "column", gap: 12 },
+// // //   emailSectionCard: {
+// // //     border: "1px solid #e2e8f0",
+// // //     borderRadius: 10,
+// // //     padding: 12,
+// // //     background: "#f8fafc",
+// // //   },
+// // //   previewHeader: {
+// // //     display: "flex",
+// // //     alignItems: "center",
+// // //     gap: 8,
+// // //     marginBottom: 10,
+// // //   },
+// // //   whatsappFrame: {
+// // //     border: "1px solid #e2e8f0",
+// // //     borderRadius: 12,
+// // //     overflow: "hidden",
+// // //     background: "#efeae2",
+// // //   },
+// // //   waHeader: {
+// // //     background: "#075e54",
+// // //     padding: "10px 12px",
+// // //     display: "flex",
+// // //     alignItems: "center",
+// // //     gap: 10,
+// // //   },
+// // //   waAvatar: {
+// // //     width: 32,
+// // //     height: 32,
+// // //     borderRadius: "50%",
+// // //     background: "#25D366",
+// // //   },
+// // //   waBody: { padding: 12, minHeight: 200 },
+// // //   waBubble: {
+// // //     background: "#fff",
+// // //     borderRadius: "8px 8px 8px 0",
+// // //     padding: 10,
+// // //     maxWidth: "95%",
+// // //     boxShadow: "0 1px 2px rgba(0,0,0,0.08)",
+// // //   },
+// // //   waInput: {
+// // //     background: "#f0f2f5",
+// // //     padding: "8px 12px",
+// // //     display: "flex",
+// // //     alignItems: "center",
+// // //     gap: 10,
+// // //   },
+// // //   emailPreviewFrame: {
+// // //     border: "1px solid #e2e8f0",
+// // //     borderRadius: 10,
+// // //     overflow: "hidden",
+// // //     background: "#fff",
+// // //   },
+// // //   previewSubject: {
+// // //     padding: "10px 14px",
+// // //     background: "#f8fafc",
+// // //     borderBottom: "1px solid #e2e8f0",
+// // //     fontSize: 13,
+// // //     color: "#475569",
+// // //   },
+// // //   previewBody: { padding: 16 },
+// // //   previewFooter: {
+// // //     borderTop: "1px solid #f1f5f9",
+// // //     paddingTop: 16,
+// // //     marginTop: 20,
+// // //     textAlign: "center",
+// // //   },
+// // //   socialIcons: {
+// // //     display: "flex",
+// // //     justifyContent: "center",
+// // //     gap: 10,
+// // //   },
+// // //   socialIcon: {
+// // //     width: 28,
+// // //     height: 28,
+// // //     borderRadius: "50%",
+// // //     background: "#f1f5f9",
+// // //     display: "flex",
+// // //     alignItems: "center",
+// // //     justifyContent: "center",
+// // //     color: "#64748b",
+// // //   },
+// // //   socialCard: {
+// // //     border: "1px solid #e2e8f0",
+// // //     borderRadius: 10,
+// // //     overflow: "hidden",
+// // //     background: "#fff",
+// // //   },
+// // //   socialHeader: {
+// // //     display: "flex",
+// // //     alignItems: "center",
+// // //     gap: 10,
+// // //     padding: "10px 12px",
+// // //   },
+// // //   socialAvatar: {
+// // //     width: 36,
+// // //     height: 36,
+// // //     borderRadius: "50%",
+// // //     background: "linear-gradient(135deg, #7c3aed, #a78bfa)",
+// // //   },
+// // //   socialActions: {
+// // //     display: "flex",
+// // //     justifyContent: "space-around",
+// // //     padding: "8px 0",
+// // //     borderTop: "1px solid #f1f5f9",
+// // //     fontSize: 12,
+// // //     color: "#64748b",
+// // //   },
+// // //   bottomBar: {
+// // //     margin: "0 auto",
+// // //     marginTop: 8,
+// // //     maxWidth: 1600,
+// // //     width: "calc(100% - 48px)",
+// // //     background: "#fff",
+// // //     border: "1px solid #e2e8f0",
+// // //     borderRadius: 12,
+// // //     padding: "14px 24px",
+// // //     display: "flex",
+// // //     justifyContent: "space-between",
+// // //     alignItems: "center",
+// // //     boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+// // //   },
+// // //   bottomSecondary: {
+// // //     display: "flex",
+// // //     alignItems: "center",
+// // //     gap: 6,
+// // //     padding: "9px 18px",
+// // //     borderRadius: 8,
+// // //     border: "1px solid #e2e8f0",
+// // //     background: "#fff",
+// // //     fontSize: 13,
+// // //     fontWeight: 500,
+// // //     cursor: "pointer",
+// // //     color: "#475569",
+// // //   },
+// // //   bottomPrimary: {
+// // //     display: "flex",
+// // //     alignItems: "center",
+// // //     gap: 6,
+// // //     padding: "9px 20px",
+// // //     borderRadius: 8,
+// // //     border: "none",
+// // //     background: "#7c3aed",
+// // //     color: "#fff",
+// // //     fontSize: 13,
+// // //     fontWeight: 600,
+// // //     cursor: "pointer",
+// // //   },
+// // // };
+
+// // // export default Campaign;
+
+// // // "use client";
+
+// // // import React, { useState, useEffect, useContext, useCallback, useRef } from "react";
+// // // import axios from "axios";
+// // // import * as XLSX from "xlsx";
+// // // import { AuthContext } from "../../../../../../context/AuthContext";
+// // // import {
+// // //   Mail,
+// // //   Upload,
+// // //   Smile,
+// // //   ArrowLeft,
+// // //   FileText,
+// // //   Image as ImageIcon,
+// // //   Type as TypeIcon,
+// // //   Square,
+// // //   Minus,
+// // //   Trash2,
+// // //   Loader2,
+// // //   Plus,
+// // //   CheckCircle,
+// // //   XCircle,
+// // //   AlertTriangle,
+// // //   X,
+// // // } from "lucide-react";
+// // // import {
+// // //   FaFacebook,
+// // //   FaWhatsapp,
+// // // } from "react-icons/fa";
+
+// // // const API = String(import.meta.env.VITE_BACKEND_URL);
+
+// // // // ===================== ALERT MODAL =====================
+// // // type AlertType = "success" | "warning" | "error";
+
+// // // interface AlertState {
+// // //   type: AlertType;
+// // //   message: string;
+// // // }
+
+// // // const AlertModal = ({
+// // //   type,
+// // //   message,
+// // //   onClose,
+// // // }: {
+// // //   type: AlertType;
+// // //   message: string;
+// // //   onClose: () => void;
+// // // }) => {
+// // //   useEffect(() => {
+// // //     if (type === "warning") {
+// // //       const timer = setTimeout(onClose, 3000);
+// // //       return () => clearTimeout(timer);
+// // //     }
+// // //   }, [type, onClose]);
+
+// // //   useEffect(() => {
+// // //     const handleKeyDown = (event: KeyboardEvent) => {
+// // //       if (event.key === "Enter" || event.key === "Escape") {
+// // //         event.preventDefault();
+// // //         onClose();
+// // //       }
+// // //     };
+// // //     window.addEventListener("keydown", handleKeyDown);
+// // //     return () => window.removeEventListener("keydown", handleKeyDown);
+// // //   }, [onClose]);
+
+// // //   const config =
+// // //     type === "success"
+// // //       ? {
+// // //           borderColor: "#10b981",
+// // //           iconColor: "#10b981",
+// // //           buttonBg: "#10b981",
+// // //           title: "Success",
+// // //           Icon: CheckCircle,
+// // //         }
+// // //       : type === "warning"
+// // //         ? {
+// // //             borderColor: "#eab308",
+// // //             iconColor: "#eab308",
+// // //             buttonBg: "#eab308",
+// // //             title: "Warning",
+// // //             Icon: AlertTriangle,
+// // //           }
+// // //         : {
+// // //             borderColor: "#f43f5e",
+// // //             iconColor: "#f43f5e",
+// // //             buttonBg: "#f43f5e",
+// // //             title: "Error",
+// // //             Icon: XCircle,
+// // //           };
+
+// // //   const Icon = config.Icon;
+
+// // //   return (
+// // //     <div
+// // //       style={{
+// // //         position: "fixed",
+// // //         inset: 0,
+// // //         zIndex: 9999,
+// // //         display: "flex",
+// // //         alignItems: "center",
+// // //         justifyContent: "center",
+// // //         background: "rgba(15, 23, 42, 0.45)",
+// // //       }}
+// // //     >
+// // //       <div
+// // //         style={{
+// // //           width: 380,
+// // //           overflow: "hidden",
+// // //           borderRadius: 12,
+// // //           background: "#fff",
+// // //           boxShadow: "0 25px 50px rgba(0,0,0,0.25)",
+// // //           borderLeft: `4px solid ${config.borderColor}`,
+// // //         }}
+// // //       >
+// // //         <div
+// // //           style={{
+// // //             display: "flex",
+// // //             alignItems: "center",
+// // //             justifyContent: "space-between",
+// // //             background: "#1e40af",
+// // //             padding: "14px 20px",
+// // //             color: "#fff",
+// // //           }}
+// // //         >
+// // //           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+// // //             <Icon size={24} color={config.iconColor} />
+// // //             <h2 style={{ margin: 0, fontSize: 17, fontWeight: 600 }}>
+// // //               {config.title}
+// // //             </h2>
+// // //           </div>
+// // //           <button
+// // //             type="button"
+// // //             onClick={onClose}
+// // //             style={{
+// // //               background: "transparent",
+// // //               border: "none",
+// // //               color: "#fff",
+// // //               cursor: "pointer",
+// // //               padding: 4,
+// // //               borderRadius: 4,
+// // //               display: "flex",
+// // //               alignItems: "center",
+// // //             }}
+// // //           >
+// // //             <X size={18} />
+// // //           </button>
+// // //         </div>
+
+// // //         <div style={{ padding: "22px 20px" }}>
+// // //           <p
+// // //             style={{
+// // //               margin: 0,
+// // //               fontSize: 14,
+// // //               lineHeight: 1.6,
+// // //               color: "#475569",
+// // //             }}
+// // //           >
+// // //             {message}
+// // //           </p>
+// // //         </div>
+
+// // //         <div
+// // //           style={{
+// // //             display: "flex",
+// // //             justifyContent: "flex-end",
+// // //             gap: 10,
+// // //             borderTop: "1px solid #e2e8f0",
+// // //             background: "#f8fafc",
+// // //             padding: "14px 20px",
+// // //           }}
+// // //         >
+// // //           <button
+// // //             type="button"
+// // //             onClick={onClose}
+// // //             style={{
+// // //               border: "none",
+// // //               borderRadius: 8,
+// // //               padding: "8px 20px",
+// // //               fontSize: 13,
+// // //               fontWeight: 500,
+// // //               color: "#fff",
+// // //               background: config.buttonBg,
+// // //               cursor: "pointer",
+// // //             }}
+// // //           >
+// // //             OK
+// // //           </button>
+// // //         </div>
+// // //       </div>
+// // //     </div>
+// // //   );
+// // // };
+
+// // // // ===================== TYPES =====================
+// // // type BlockType = "text" | "image" | "button" | "logo" | "divider";
+
+// // // interface Block {
+// // //   id: string;
+// // //   type: BlockType;
+// // //   content?: string;
+// // //   url?: string;
+// // //   buttonText?: string;
+// // //   buttonLink?: string;
+// // //   align?: "left" | "center" | "right";
+// // //   serverId?: string;
+// // //   color?: string;
+// // //   backgroundColor?: string;
+// // //   fontSize?: number;
+// // //   fontWeight?: "normal" | "bold";
+// // //   fontStyle?: "normal" | "italic";
+// // //   textAlign?: "left" | "center" | "right";
+// // // }
+
+// // // // ===================== HELPERS =====================
+// // // const generateId = () => Math.random().toString(36).slice(2, 11);
+
+// // // function uiBlockToApi(block: Block, sortOrder: number) {
+// // //   const content: Record<string, unknown> = {};
+// // //   switch (block.type) {
+// // //     case "text":
+// // //       content.text = block.content ?? "";
+// // //       content.color = block.color ?? "#334155";
+// // //       content.backgroundColor = block.backgroundColor ?? "transparent";
+// // //       content.fontSize = block.fontSize ?? 14;
+// // //       content.fontWeight = block.fontWeight ?? "normal";
+// // //       content.fontStyle = block.fontStyle ?? "normal";
+// // //       content.textAlign = block.textAlign ?? "left";
+// // //       break;
+// // //     case "image":
+// // //     case "logo":
+// // //       content.url = block.url ?? "";
+// // //       break;
+// // //     case "button":
+// // //       content.buttonText = block.buttonText ?? "";
+// // //       content.buttonLink = block.buttonLink ?? "";
+// // //       content.align = block.align ?? "center";
+// // //       break;
+// // //     case "divider":
+// // //       break;
+// // //   }
+// // //   return {
+// // //     block_type: block.type,
+// // //     content,
+// // //     sort_order: sortOrder,
+// // //   };
+// // // }
+
+// // // function apiBlockToUi(row: {
+// // //   id: string;
+// // //   blockType: string;
+// // //   content: any;
+// // //   sortOrder: number;
+// // // }): Block {
+// // //   const c = row.content || {};
+// // //   return {
+// // //     id: row.id,
+// // //     serverId: row.id,
+// // //     type: row.blockType as BlockType,
+// // //     content: c.text ?? "",
+// // //     url: c.url ?? "",
+// // //     buttonText: c.buttonText ?? "",
+// // //     buttonLink: c.buttonLink ?? "",
+// // //     align: (c.align as "left" | "center" | "right") ?? "center",
+// // //     color: c.color ?? "#334155",
+// // //     backgroundColor: c.backgroundColor ?? "transparent",
+// // //     fontSize: c.fontSize ?? 14,
+// // //     fontWeight: (c.fontWeight as "normal" | "bold") ?? "normal",
+// // //     fontStyle: (c.fontStyle as "normal" | "italic") ?? "normal",
+// // //     textAlign: (c.textAlign as "left" | "center" | "right") ?? "left",
+// // //   };
+// // // }
+
+// // // // ===================== IMAGE UPLOAD =====================
+// // // async function uploadImageFile(file: File): Promise<string> {
+// // //   const formData = new FormData();
+// // //   formData.append("image", file);
+
+// // //   const res = await axios.post(`${API}/api/upload/image`, formData, {
+// // //     withCredentials: true,
+// // //     headers: { "Content-Type": "multipart/form-data" },
+// // //   });
+
+// // //   if (!res.data?.success || !res.data?.url) {
+// // //     throw new Error(res.data?.message || "Upload failed");
+// // //   }
+// // //   return res.data.url as string;
+// // // }
+
+// // // function isImageFile(file: File) {
+// // //   return file.type.startsWith("image/");
+// // // }
+
+// // // // ===================== IMAGE / LOGO BLOCK EDITOR =====================
+// // // const ImageBlockEditor = ({
+// // //   block,
+// // //   onUpdate,
+// // //   onError,
+// // //   isLogo = false,
+// // // }: {
+// // //   block: Block;
+// // //   onUpdate: (updates: Partial<Block>) => void;
+// // //   onError: (msg: string | null) => void;
+// // //   isLogo?: boolean;
+// // // }) => {
+// // //   const [uploading, setUploading] = useState(false);
+// // //   const [dragOver, setDragOver] = useState(false);
+// // //   const fileInputRef = useRef<HTMLInputElement>(null);
+// // //   const dropRef = useRef<HTMLDivElement>(null);
+
+// // //   const handleFiles = async (files: FileList | File[]) => {
+// // //     const file = Array.from(files).find(isImageFile);
+// // //     if (!file) {
+// // //       onError("Please select an image file (PNG, JPG, GIF, WebP)");
+// // //       return;
+// // //     }
+// // //     if (file.size > 8 * 1024 * 1024) {
+// // //       onError("Image must be under 8 MB");
+// // //       return;
+// // //     }
+
+// // //     try {
+// // //       setUploading(true);
+// // //       onError(null);
+// // //       const url = await uploadImageFile(file);
+// // //       onUpdate({ url });
+// // //     } catch (err: any) {
+// // //       console.error(err);
+// // //       onError(err?.message || "Failed to upload image");
+// // //     } finally {
+// // //       setUploading(false);
+// // //     }
+// // //   };
+
+// // //   useEffect(() => {
+// // //     const el = dropRef.current;
+// // //     if (!el) return;
+
+// // //     const onPaste = (e: ClipboardEvent) => {
+// // //       const items = e.clipboardData?.items;
+// // //       if (!items) return;
+
+// // //       for (const item of Array.from(items)) {
+// // //         if (item.type.startsWith("image/")) {
+// // //           e.preventDefault();
+// // //           const file = item.getAsFile();
+// // //           if (file) handleFiles([file]);
+// // //           break;
+// // //         }
+// // //       }
+// // //     };
+
+// // //     el.addEventListener("paste", onPaste as any);
+// // //     el.tabIndex = 0;
+
+// // //     return () => el.removeEventListener("paste", onPaste as any);
+// // //   }, []);
+
+// // //   const onDrop = (e: React.DragEvent) => {
+// // //     e.preventDefault();
+// // //     setDragOver(false);
+// // //     if (e.dataTransfer.files?.length) {
+// // //       handleFiles(e.dataTransfer.files);
+// // //     }
+// // //   };
+
+// // //   return (
+// // //     <div>
+// // //       {block.url ? (
+// // //         <div style={{ textAlign: isLogo ? "center" : "left" }}>
+// // //           <img
+// // //             src={block.url}
+// // //             alt={isLogo ? "Logo" : "Banner"}
+// // //             style={
+// // //               isLogo
+// // //                 ? {
+// // //                     maxHeight: 80,
+// // //                     maxWidth: 200,
+// // //                     objectFit: "contain",
+// // //                     display: "block",
+// // //                     margin: "0 auto",
+// // //                   }
+// // //                 : {
+// // //                     width: "100%",
+// // //                     borderRadius: 8,
+// // //                     maxHeight: 220,
+// // //                     objectFit: "cover",
+// // //                   }
+// // //             }
+// // //           />
+// // //           <div
+// // //             style={{
+// // //               display: "flex",
+// // //               justifyContent: isLogo ? "center" : "flex-end",
+// // //               marginTop: 8,
+// // //             }}
+// // //           >
+// // //             <button
+// // //               type="button"
+// // //               onClick={() => onUpdate({ url: "" })}
+// // //               style={{
+// // //                 background: "#fef2f2",
+// // //                 color: "#dc2626",
+// // //                 border: "1px solid #fecaca",
+// // //                 borderRadius: 6,
+// // //                 padding: "6px 12px",
+// // //                 fontSize: 12,
+// // //                 fontWeight: 500,
+// // //                 cursor: "pointer",
+// // //                 display: "inline-flex",
+// // //                 alignItems: "center",
+// // //                 gap: 4,
+// // //               }}
+// // //             >
+// // //               <Trash2 size={12} /> Remove image
+// // //             </button>
+// // //           </div>
+// // //         </div>
+// // //       ) : (
+// // //         <div
+// // //           ref={dropRef}
+// // //           onDragOver={(e) => {
+// // //             e.preventDefault();
+// // //             setDragOver(true);
+// // //           }}
+// // //           onDragLeave={() => setDragOver(false)}
+// // //           onDrop={onDrop}
+// // //           onClick={() => !uploading && fileInputRef.current?.click()}
+// // //           style={{
+// // //             ...(isLogo ? styles.logoPlaceholder : styles.imagePlaceholder),
+// // //             border: dragOver ? "2px dashed #2563eb" : "2px dashed #cbd5e1",
+// // //             background: dragOver ? "#eff6ff" : "#f8fafc",
+// // //             cursor: uploading ? "wait" : "pointer",
+// // //             outline: "none",
+// // //             transition: "all 0.15s",
+// // //           }}
+// // //         >
+// // //           {uploading ? (
+// // //             <>
+// // //               <Loader2 size={28} className="animate-spin" color="#2563eb" />
+// // //               <p style={{ margin: "8px 0 0", fontSize: 13 }}>Uploading…</p>
+// // //             </>
+// // //           ) : (
+// // //             <>
+// // //               <ImageIcon size={isLogo ? 28 : 32} color="#94a3b8" />
+// // //               <p style={{ margin: "8px 0 4px", fontWeight: 500, color: "#334155" }}>
+// // //                 {isLogo ? "Add Logo" : "Add Banner / Image"}
+// // //               </p>
+// // //               <p style={{ fontSize: 12, color: "#94a3b8", margin: 0 }}>
+// // //                 Click • Drag & drop • or paste (Ctrl/Cmd+V)
+// // //               </p>
+// // //             </>
+// // //           )}
+// // //         </div>
+// // //       )}
+
+// // //       <input
+// // //         ref={fileInputRef}
+// // //         type="file"
+// // //         accept="image/png,image/jpeg,image/jpg,image/gif,image/webp"
+// // //         style={{ display: "none" }}
+// // //         onChange={(e) => {
+// // //           if (e.target.files?.length) handleFiles(e.target.files);
+// // //           e.target.value = "";
+// // //         }}
+// // //       />
+// // //     </div>
+// // //   );
+// // // };
+
+// // // // ===================== EMOJI PICKER =====================
+// // // const COMMON_EMOJIS = [
+// // //   "😀", "😃", "😄", "😁", "😆", "😅", "😂", "🤣", "😊", "😇",
+// // //   "🙂", "🙃", "😉", "😌", "😍", "🥰", "😘", "😗", "😙", "😚",
+// // //   "😋", "😛", "😝", "😜", "🤪", "🤨", "🧐", "🤓", "😎", "🤩",
+// // //   "🥳", "😏", "😒", "😞", "😔", "😟", "😕", "🙁", "☹️", "😣",
+// // //   "😖", "😫", "😩", "🥺", "😢", "😭", "😤", "😠", "😡", "🤬",
+// // //   "👍", "👎", "👏", "🙌", "👐", "🤝", "🙏", "✌️", "🤞", "🤟",
+// // //   "🤘", "👌", "🤏", "👈", "👉", "👆", "👇", "☝️", "✋", "🤚",
+// // //   "👋", "💪", "🦾", "❤️", "🧡", "💛", "💚", "💙", "💜", "🖤",
+// // //   "🤍", "🤎", "💔", "❣️", "💕", "💞", "💓", "💗", "💖", "💘",
+// // //   "💝", "💟", "☮️", "✝️", "☪️", "🕉", "☸️", "✡️", "🔯", "🕎",
+// // //   "🔥", "⭐", "🌟", "✨", "💫", "🎉", "🎊", "🎈", "🎁", "🏆",
+// // //   "🥇", "🥈", "🥉", "⚽", "🏀", "🏈", "⚾", "🎾", "🏐", "🏉",
+// // //   "📧", "📩", "📨", "💌", "📱", "💻", "🖥️", "⌨️", "🖨️", "🖱️",
+// // //   "✅", "❌", "❗", "❓", "💯", "🔔", "🔕", "📢", "📣", "💬",
+// // // ];
+
+// // // const EmojiPicker = ({
+// // //   onSelect,
+// // //   onClose,
+// // // }: {
+// // //   onSelect: (emoji: string) => void;
+// // //   onClose: () => void;
+// // // }) => {
+// // //   const ref = useRef<HTMLDivElement>(null);
+
+// // //   useEffect(() => {
+// // //     const handleClick = (e: MouseEvent) => {
+// // //       if (ref.current && !ref.current.contains(e.target as Node)) {
+// // //         onClose();
+// // //       }
+// // //     };
+// // //     document.addEventListener("mousedown", handleClick);
+// // //     return () => document.removeEventListener("mousedown", handleClick);
+// // //   }, [onClose]);
+
+// // //   return (
+// // //     <div
+// // //       ref={ref}
+// // //       style={{
+// // //         position: "absolute",
+// // //         top: "100%",
+// // //         left: 0,
+// // //         zIndex: 50,
+// // //         background: "#fff",
+// // //         border: "1px solid #e2e8f0",
+// // //         borderRadius: 10,
+// // //         padding: 10,
+// // //         boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+// // //         width: 280,
+// // //         maxHeight: 220,
+// // //         overflowY: "auto",
+// // //         display: "grid",
+// // //         gridTemplateColumns: "repeat(8, 1fr)",
+// // //         gap: 4,
+// // //       }}
+// // //     >
+// // //       {COMMON_EMOJIS.map((emoji) => (
+// // //         <button
+// // //           key={emoji}
+// // //           type="button"
+// // //           onClick={() => {
+// // //             onSelect(emoji);
+// // //             onClose();
+// // //           }}
+// // //           style={{
+// // //             border: "none",
+// // //             background: "transparent",
+// // //             fontSize: 20,
+// // //             cursor: "pointer",
+// // //             padding: 4,
+// // //             borderRadius: 6,
+// // //             lineHeight: 1.2,
+// // //           }}
+// // //           onMouseEnter={(e) => {
+// // //             e.currentTarget.style.background = "#f1f5f9";
+// // //           }}
+// // //           onMouseLeave={(e) => {
+// // //             e.currentTarget.style.background = "transparent";
+// // //           }}
+// // //         >
+// // //           {emoji}
+// // //         </button>
+// // //       ))}
+// // //     </div>
+// // //   );
+// // // };
+
+// // // // ===================== TEXT BLOCK EDITOR =====================
+// // // const TextBlockEditor = ({
+// // //   block,
+// // //   onUpdate,
+// // //   placeholder,
+// // // }: {
+// // //   block: Block;
+// // //   onUpdate: (updates: Partial<Block>) => void;
+// // //   placeholder?: string;
+// // // }) => {
+// // //   const [showEmoji, setShowEmoji] = useState(false);
+// // //   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+// // //   const insertEmoji = (emoji: string) => {
+// // //     const ta = textareaRef.current;
+// // //     if (!ta) {
+// // //       onUpdate({ content: (block.content || "") + emoji });
+// // //       return;
+// // //     }
+// // //     const start = ta.selectionStart;
+// // //     const end = ta.selectionEnd;
+// // //     const text = block.content || "";
+// // //     const newText = text.slice(0, start) + emoji + text.slice(end);
+// // //     onUpdate({ content: newText });
+// // //     requestAnimationFrame(() => {
+// // //       if (textareaRef.current) {
+// // //         const pos = start + emoji.length;
+// // //         textareaRef.current.focus();
+// // //         textareaRef.current.setSelectionRange(pos, pos);
+// // //       }
+// // //     });
+// // //   };
+
+// // //   const fontSizes = [12, 13, 14, 15, 16, 18, 20, 22, 24, 28, 32];
+
+// // //   return (
+// // //     <div>
+// // //       <div
+// // //         style={{
+// // //           display: "flex",
+// // //           flexWrap: "wrap",
+// // //           alignItems: "center",
+// // //           gap: 8,
+// // //           marginBottom: 8,
+// // //           padding: "8px 10px",
+// // //           background: "#f8fafc",
+// // //           borderRadius: 8,
+// // //           border: "1px solid #e2e8f0",
+// // //         }}
+// // //       >
+// // //         <label style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: "#64748b" }}>
+// // //           <span>Color</span>
+// // //           <input
+// // //             type="color"
+// // //             value={block.color && block.color !== "transparent" ? block.color : "#334155"}
+// // //             onChange={(e) => onUpdate({ color: e.target.value })}
+// // //             style={{
+// // //               width: 28,
+// // //               height: 28,
+// // //               border: "1px solid #e2e8f0",
+// // //               borderRadius: 6,
+// // //               cursor: "pointer",
+// // //               padding: 0,
+// // //               background: "none",
+// // //             }}
+// // //           />
+// // //         </label>
+
+// // //         <label style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: "#64748b" }}>
+// // //           <span>Bg</span>
+// // //           <input
+// // //             type="color"
+// // //             value={
+// // //               block.backgroundColor && block.backgroundColor !== "transparent"
+// // //                 ? block.backgroundColor
+// // //                 : "#ffffff"
+// // //             }
+// // //             onChange={(e) => onUpdate({ backgroundColor: e.target.value })}
+// // //             style={{
+// // //               width: 28,
+// // //               height: 28,
+// // //               border: "1px solid #e2e8f0",
+// // //               borderRadius: 6,
+// // //               cursor: "pointer",
+// // //               padding: 0,
+// // //               background: "none",
+// // //             }}
+// // //           />
+// // //           <button
+// // //             type="button"
+// // //             onClick={() => onUpdate({ backgroundColor: "transparent" })}
+// // //             style={{
+// // //               fontSize: 11,
+// // //               padding: "2px 6px",
+// // //               border: "1px solid #e2e8f0",
+// // //               borderRadius: 4,
+// // //               background: "#fff",
+// // //               cursor: "pointer",
+// // //               color: "#64748b",
+// // //             }}
+// // //           >
+// // //             Clear
+// // //           </button>
+// // //         </label>
+
+// // //         <label style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: "#64748b" }}>
+// // //           <span>Size</span>
+// // //           <select
+// // //             value={block.fontSize ?? 14}
+// // //             onChange={(e) => onUpdate({ fontSize: Number(e.target.value) })}
+// // //             style={{
+// // //               padding: "4px 6px",
+// // //               borderRadius: 6,
+// // //               border: "1px solid #e2e8f0",
+// // //               fontSize: 12,
+// // //               background: "#fff",
+// // //               cursor: "pointer",
+// // //             }}
+// // //           >
+// // //             {fontSizes.map((s) => (
+// // //               <option key={s} value={s}>
+// // //                 {s}px
+// // //               </option>
+// // //             ))}
+// // //           </select>
+// // //         </label>
+
+// // //         <button
+// // //           type="button"
+// // //           onClick={() =>
+// // //             onUpdate({
+// // //               fontWeight: block.fontWeight === "bold" ? "normal" : "bold",
+// // //             })
+// // //           }
+// // //           style={{
+// // //             width: 28,
+// // //             height: 28,
+// // //             border: block.fontWeight === "bold" ? "2px solid #2563eb" : "1px solid #e2e8f0",
+// // //             borderRadius: 6,
+// // //             background: block.fontWeight === "bold" ? "#eff6ff" : "#fff",
+// // //             fontWeight: 700,
+// // //             fontSize: 13,
+// // //             cursor: "pointer",
+// // //             color: "#334155",
+// // //           }}
+// // //         >
+// // //           B
+// // //         </button>
+
+// // //         <button
+// // //           type="button"
+// // //           onClick={() =>
+// // //             onUpdate({
+// // //               fontStyle: block.fontStyle === "italic" ? "normal" : "italic",
+// // //             })
+// // //           }
+// // //           style={{
+// // //             width: 28,
+// // //             height: 28,
+// // //             border: block.fontStyle === "italic" ? "2px solid #2563eb" : "1px solid #e2e8f0",
+// // //             borderRadius: 6,
+// // //             background: block.fontStyle === "italic" ? "#eff6ff" : "#fff",
+// // //             fontStyle: "italic",
+// // //             fontSize: 13,
+// // //             cursor: "pointer",
+// // //             color: "#334155",
+// // //           }}
+// // //         >
+// // //           I
+// // //         </button>
+
+// // //         {(["left", "center", "right"] as const).map((align) => (
+// // //           <button
+// // //             key={align}
+// // //             type="button"
+// // //             onClick={() => onUpdate({ textAlign: align })}
+// // //             style={{
+// // //               width: 28,
+// // //               height: 28,
+// // //               border:
+// // //                 (block.textAlign || "left") === align
+// // //                   ? "2px solid #2563eb"
+// // //                   : "1px solid #e2e8f0",
+// // //               borderRadius: 6,
+// // //               background:
+// // //                 (block.textAlign || "left") === align ? "#eff6ff" : "#fff",
+// // //               fontSize: 11,
+// // //               cursor: "pointer",
+// // //               color: "#334155",
+// // //             }}
+// // //           >
+// // //             {align === "left" ? "⬅" : align === "center" ? "↔" : "➡"}
+// // //           </button>
+// // //         ))}
+
+// // //         <div style={{ position: "relative" }}>
+// // //           <button
+// // //             type="button"
+// // //             onClick={() => setShowEmoji((v) => !v)}
+// // //             style={{
+// // //               display: "inline-flex",
+// // //               alignItems: "center",
+// // //               gap: 4,
+// // //               padding: "4px 10px",
+// // //               border: "1px solid #e2e8f0",
+// // //               borderRadius: 6,
+// // //               background: showEmoji ? "#eff6ff" : "#fff",
+// // //               fontSize: 12,
+// // //               cursor: "pointer",
+// // //               color: "#475569",
+// // //             }}
+// // //           >
+// // //             <Smile size={14} /> Emoji
+// // //           </button>
+// // //           {showEmoji && (
+// // //             <EmojiPicker
+// // //               onSelect={insertEmoji}
+// // //               onClose={() => setShowEmoji(false)}
+// // //             />
+// // //           )}
+// // //         </div>
+// // //       </div>
+
+// // //       <textarea
+// // //         ref={textareaRef}
+// // //         className="w-full rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500"
+// // //         style={{
+// // //           ...styles.textBlock,
+// // //           color: block.color || "#334155",
+// // //           backgroundColor:
+// // //             block.backgroundColor && block.backgroundColor !== "transparent"
+// // //               ? block.backgroundColor
+// // //               : "#fff",
+// // //           fontSize: block.fontSize || 14,
+// // //           fontWeight: block.fontWeight || "normal",
+// // //           fontStyle: block.fontStyle || "normal",
+// // //           textAlign: block.textAlign || "left",
+// // //         }}
+// // //         value={block.content}
+// // //         onChange={(e) => onUpdate({ content: e.target.value })}
+// // //         rows={4}
+// // //         placeholder={placeholder || "Hi {{Name}},\n\nType your message here..."}
+// // //       />
+// // //     </div>
+// // //   );
+// // // };
+
+// // // // ===================== COMPONENT =====================
+// // // interface Props {
+// // //   onBack?: () => void;
+// // // }
+
+// // // const Campaign = ({ onBack }: Props) => {
+// // //   const { user } = useContext(AuthContext);
+
+// // //   const [showTemplates, setShowTemplates] = useState(true);
+// // //   const [templates, setTemplates] = useState<any[]>([]);
+// // //   const [templatesLoading, setTemplatesLoading] = useState(false);
+
+// // //   const [channel, setChannel] = useState("Email");
+// // //   const [activeTab, setActiveTab] = useState("Email");
+
+// // //   const [campaignId, setCampaignId] = useState<string | null>(null);
+// // //   const [campaignName, setCampaignName] = useState("");
+// // //   const [category, setCategory] = useState("Event");
+// // //   const [subject, setSubject] = useState("");
+// // //   const [preheader, setPreheader] = useState(false);
+// // //   const [preheaderText, setPreheaderText] = useState("");
+
+// // //   const [recipients, setRecipients] = useState("");
+
+// // //   const [blocks, setBlocks] = useState<Block[]>([
+// // //     {
+// // //       id: "1",
+// // //       type: "text",
+// // //       content: "",
+// // //       color: "#334155",
+// // //       backgroundColor: "transparent",
+// // //       fontSize: 14,
+// // //       fontWeight: "normal",
+// // //       fontStyle: "normal",
+// // //       textAlign: "left",
+// // //     },
+// // //   ]);
+
+// // //   const [loading, setLoading] = useState(false);
+// // //   const [saving, setSaving] = useState(false);
+// // //   const [sending, setSending] = useState(false);
+// // //   const [alert, setAlert] = useState<AlertState | null>(null);
+
+// // //   const showAlert = (type: AlertType, message: string) => {
+// // //     setAlert({ type, message });
+// // //   };
+
+// // //   const loadTemplates = useCallback(async () => {
+// // //     try {
+// // //       setTemplatesLoading(true);
+// // //       const res = await axios.get(`${API}/api/campaigns`, {
+// // //         withCredentials: true,
+// // //       });
+// // //       setTemplates(res.data.data || []);
+// // //     } catch (err) {
+// // //       console.error("Failed to load templates", err);
+// // //     } finally {
+// // //       setTemplatesLoading(false);
+// // //     }
+// // //   }, []);
+
+// // //   useEffect(() => {
+// // //     loadTemplates();
+// // //   }, [loadTemplates]);
+
+// // //   const loadCampaign = useCallback(async (id: string) => {
+// // //     try {
+// // //       setLoading(true);
+
+// // //       const [campRes, blocksRes] = await Promise.all([
+// // //         axios.get(`${API}/api/campaigns/${id}`, { withCredentials: true }),
+// // //         axios.get(`${API}/api/campaigns/${id}/blocks`, { withCredentials: true }),
+// // //       ]);
+
+// // //       const camp = campRes.data.data;
+// // //       setCampaignId(camp.id);
+// // //       setCampaignName(camp.campaignName || "Untitled Campaign");
+// // //       setCategory(camp.category || "Event");
+// // //       setSubject(camp.subject || "");
+// // //       setPreheaderText(camp.preheader || "");
+// // //       setPreheader(!!camp.preheader);
+
+// // //       const ch = camp.channel || "Email";
+// // //       setChannel(ch);
+// // //       if (ch === "WhatsApp") setActiveTab("WhatsApp Message");
+// // //       else if (ch === "Social") setActiveTab("Social Media Post");
+// // //       else setActiveTab("Email");
+
+// // //       const apiBlocks = blocksRes.data.data || [];
+// // //       setBlocks(apiBlocks.length ? apiBlocks.map(apiBlockToUi) : []);
+// // //     } catch (err: any) {
+// // //       console.error(err);
+// // //       showAlert("error", err?.response?.data?.message || "Failed to load campaign");
+// // //     } finally {
+// // //       setLoading(false);
+// // //     }
+// // //   }, []);
+
+// // //   const openTemplate = async (id: string) => {
+// // //     setShowTemplates(false);
+// // //     await loadCampaign(id);
+// // //   };
+
+// // //   const startNewCampaign = () => {
+// // //     setShowTemplates(false);
+// // //     setCampaignId(null);
+// // //     setCampaignName("");
+// // //     setCategory("Event");
+// // //     setSubject("");
+// // //     setPreheader(false);
+// // //     setPreheaderText("");
+// // //     setChannel("Email");
+// // //     setActiveTab("Email");
+// // //     setRecipients("");
+// // //     setBlocks([
+// // //       {
+// // //         id: generateId(),
+// // //         type: "text",
+// // //         content: "",
+// // //         color: "#334155",
+// // //         backgroundColor: "transparent",
+// // //         fontSize: 14,
+// // //         fontWeight: "normal",
+// // //         fontStyle: "normal",
+// // //         textAlign: "left",
+// // //       },
+// // //     ]);
+// // //     setAlert(null);
+// // //   };
+
+// // //   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+// // //     const file = e.target.files?.[0];
+// // //     if (!file) return;
+
+// // //     const reader = new FileReader();
+
+// // //     reader.onload = (event) => {
+// // //       try {
+// // //         const data = new Uint8Array(event.target?.result as ArrayBuffer);
+// // //         const workbook = XLSX.read(data, { type: "array" });
+// // //         const sheetName = workbook.SheetNames[0];
+// // //         const sheet = workbook.Sheets[sheetName];
+// // //         const rows: any[] = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+// // //         const emails: string[] = [];
+
+// // //         rows.forEach((row) => {
+// // //           if (!Array.isArray(row)) return;
+// // //           row.forEach((cell) => {
+// // //             if (typeof cell === "string" || typeof cell === "number") {
+// // //               const value = String(cell).trim();
+// // //               if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+// // //                 emails.push(value);
+// // //               }
+// // //             }
+// // //           });
+// // //         });
+
+// // //         const uniqueEmails = [...new Set(emails)];
+
+// // //         if (uniqueEmails.length === 0) {
+// // //           showAlert("warning", "No valid email addresses found in the file");
+// // //           return;
+// // //         }
+
+// // //         setRecipients(uniqueEmails.join("\n"));
+// // //         showAlert("success", `${uniqueEmails.length} emails loaded from file`);
+// // //       } catch (err) {
+// // //         console.error(err);
+// // //         showAlert("error", "Failed to read the file. Please upload a valid CSV or Excel file.");
+// // //       }
+// // //     };
+
+// // //     reader.readAsArrayBuffer(file);
+// // //     e.target.value = "";
+// // //   };
+
+// // //   const addBlock = (type: BlockType) => {
+// // //     const newBlock: Block = {
+// // //       id: generateId(),
+// // //       type,
+// // //       content: type === "text" ? "" : "",
+// // //       url: type === "image" || type === "logo" ? "" : undefined,
+// // //       buttonText: type === "button" ? "" : undefined,
+// // //       buttonLink: type === "button" ? "" : undefined,
+// // //       align: "center",
+// // //       color: type === "text" ? "#334155" : undefined,
+// // //       backgroundColor: type === "text" ? "transparent" : undefined,
+// // //       fontSize: type === "text" ? 14 : undefined,
+// // //       fontWeight: type === "text" ? "normal" : undefined,
+// // //       fontStyle: type === "text" ? "normal" : undefined,
+// // //       textAlign: type === "text" ? "left" : undefined,
+// // //     };
+// // //     setBlocks((prev) => [...prev, newBlock]);
+// // //   };
+
+// // //   const updateBlock = (id: string, updates: Partial<Block>) => {
+// // //     setBlocks((prev) => prev.map((b) => (b.id === id ? { ...b, ...updates } : b)));
+// // //   };
+
+// // //   const removeBlock = (id: string) => {
+// // //     setBlocks((prev) => prev.filter((b) => b.id !== id));
+// // //   };
+
+// // //   const moveBlock = (index: number, direction: "up" | "down") => {
+// // //     setBlocks((prev) => {
+// // //       const next = [...prev];
+// // //       const target = direction === "up" ? index - 1 : index + 1;
+// // //       if (target < 0 || target >= next.length) return prev;
+// // //       [next[index], next[target]] = [next[target], next[index]];
+// // //       return next;
+// // //     });
+// // //   };
+
+// // //   // ---------- SAVE DRAFT ----------
+// // //   const handleSaveDraft = async () => {
+// // //     if (!campaignName.trim()) {
+// // //       showAlert("warning", "Please enter a campaign name");
+// // //       return;
+// // //     }
+
+// // //     try {
+// // //       setSaving(true);
+
+// // //       const payload = {
+// // //         campaign_name: campaignName.trim(),
+// // //         channel:
+// // //           channel === "WhatsApp"
+// // //             ? "WhatsApp"
+// // //             : channel === "Social"
+// // //               ? "Social"
+// // //               : "Email",
+// // //         category: category || "Others",
+// // //         subject: channel === "Email" ? subject || null : null,
+// // //         preheader: channel === "Email" && preheader ? preheaderText || null : null,
+// // //         status: "Draft",
+// // //         scheduled_at: null,
+// // //       };
+
+// // //       let id = campaignId;
+
+// // //       if (!id) {
+// // //         const res = await axios.post(`${API}/api/campaigns`, payload, {
+// // //           withCredentials: true,
+// // //         });
+// // //         id = res.data.data.id;
+// // //         setCampaignId(id);
+// // //       } else {
+// // //         await axios.put(`${API}/api/campaigns/${id}`, payload, {
+// // //           withCredentials: true,
+// // //         });
+// // //       }
+
+// // //       // Replace blocks
+// // //       const existingRes = await axios.get(`${API}/api/campaigns/${id}/blocks`, {
+// // //         withCredentials: true,
+// // //       });
+// // //       const existing = existingRes.data.data || [];
+
+// // //       await Promise.all(
+// // //         existing.map((b: any) =>
+// // //           axios.delete(`${API}/api/campaigns/${id}/blocks/${b.id}`, {
+// // //             withCredentials: true,
+// // //           })
+// // //         )
+// // //       );
+
+// // //       for (let i = 0; i < blocks.length; i++) {
+// // //         await axios.post(
+// // //           `${API}/api/campaigns/${id}/blocks`,
+// // //           uiBlockToApi(blocks[i], i),
+// // //           { withCredentials: true }
+// // //         );
+// // //       }
+
+// // //       const refreshed = await axios.get(`${API}/api/campaigns/${id}/blocks`, {
+// // //         withCredentials: true,
+// // //       });
+// // //       setBlocks((refreshed.data.data || []).map(apiBlockToUi));
+
+// // //       showAlert("success", "Campaign saved as draft");
+// // //       loadTemplates();
+// // //     } catch (err: any) {
+// // //       console.error(err);
+// // //       showAlert("error", err?.response?.data?.message || "Failed to save campaign");
+// // //     } finally {
+// // //       setSaving(false);
+// // //     }
+// // //   };
+
+// // //   // ---------- SEND ----------
+// // //   const handleSend = async () => {
+// // //     if (!campaignName.trim()) {
+// // //       showAlert("warning", "Please enter a campaign name");
+// // //       return;
+// // //     }
+
+// // //     if (channel !== "Email") {
+// // //       showAlert("warning", "Sending is currently only supported for Email campaigns");
+// // //       return;
+// // //     }
+
+// // //     const emails = recipients
+// // //       .split(/[,;\n]/)
+// // //       .map((e) => e.trim())
+// // //       .filter(Boolean);
+
+// // //     if (emails.length === 0) {
+// // //       showAlert("warning", "Please enter at least one recipient email or upload a file");
+// // //       return;
+// // //     }
+
+// // //     try {
+// // //       setSending(true);
+
+// // //       let id = campaignId;
+
+// // //       const payload = {
+// // //         campaign_name: campaignName.trim(),
+// // //         channel: "Email",
+// // //         category: category || "Others",
+// // //         subject: subject || null,
+// // //         preheader: preheader ? preheaderText || null : null,
+// // //         status: "Draft",
+// // //         scheduled_at: null,
+// // //       };
+
+// // //       if (!id) {
+// // //         const res = await axios.post(`${API}/api/campaigns`, payload, {
+// // //           withCredentials: true,
+// // //         });
+// // //         id = res.data.data.id;
+// // //         setCampaignId(id);
+// // //       } else {
+// // //         await axios.put(`${API}/api/campaigns/${id}`, payload, {
+// // //           withCredentials: true,
+// // //         });
+// // //       }
+
+// // //       // Replace blocks
+// // //       const existingRes = await axios.get(`${API}/api/campaigns/${id}/blocks`, {
+// // //         withCredentials: true,
+// // //       });
+// // //       const existing = existingRes.data.data || [];
+
+// // //       await Promise.all(
+// // //         existing.map((b: any) =>
+// // //           axios.delete(`${API}/api/campaigns/${id}/blocks/${b.id}`, {
+// // //             withCredentials: true,
+// // //           })
+// // //         )
+// // //       );
+
+// // //       for (let i = 0; i < blocks.length; i++) {
+// // //         await axios.post(
+// // //           `${API}/api/campaigns/${id}/blocks`,
+// // //           uiBlockToApi(blocks[i], i),
+// // //           { withCredentials: true }
+// // //         );
+// // //       }
+
+// // //       // Send to all emails
+// // //       await axios.post(
+// // //         `${API}/api/campaigns/${id}/send`,
+// // //         { emails },
+// // //         { withCredentials: true }
+// // //       );
+
+// // //       showAlert("success", `Campaign sent to ${emails.length} recipient(s)`);
+// // //       await loadTemplates();
+// // //       setShowTemplates(true);
+// // //     } catch (err: any) {
+// // //       console.error(err);
+// // //       showAlert("error", err?.response?.data?.message || "Failed to send campaign");
+// // //     } finally {
+// // //       setSending(false);
+// // //     }
+// // //   };
+
+// // //   const editorPlaceholder =
+// // //     activeTab === "Email"
+// // //       ? "Hi {{Name}},\n\nType your message here..."
+// // //       : activeTab === "WhatsApp Message"
+// // //         ? "Hi {{Name}},\n\nType your WhatsApp message here..."
+// // //         : "Type your social post caption here...";
+
+// // //   const designTitle =
+// // //     activeTab === "Email"
+// // //       ? "Create Email"
+// // //       : activeTab === "WhatsApp Message"
+// // //         ? "Create WhatsApp Message"
+// // //         : "Create Social Media Post";
+
+// // //   if (loading) {
+// // //     return (
+// // //       <div
+// // //         style={{
+// // //           ...styles.page,
+// // //           display: "flex",
+// // //           alignItems: "center",
+// // //           justifyContent: "center",
+// // //         }}
+// // //       >
+// // //         <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#64748b" }}>
+// // //           <Loader2 size={20} className="animate-spin" />
+// // //           Loading campaign...
+// // //         </div>
+// // //       </div>
+// // //     );
+// // //   }
+
+// // //   return (
+// // //     <div style={styles.page}>
+// // //       {alert && (
+// // //         <AlertModal
+// // //           type={alert.type}
+// // //           message={alert.message}
+// // //           onClose={() => setAlert(null)}
+// // //         />
+// // //       )}
+
+// // //       {/* ===================== TEMPLATES VIEW ===================== */}
+// // //       {showTemplates && (
+// // //         <div style={{ padding: "20px 24px", maxWidth: 1600, margin: "0 auto" }}>
+// // //           <div style={styles.card}>
+// // //             <div
+// // //               style={{
+// // //                 display: "flex",
+// // //                 justifyContent: "space-between",
+// // //                 alignItems: "center",
+// // //                 marginBottom: 20,
+// // //               }}
+// // //             >
+// // //               <div>
+// // //                 <h3 style={styles.sectionTitle}>Your Campaigns & Templates</h3>
+// // //                 <p style={styles.sectionHint}>
+// // //                   Open a previous campaign or start a new one
+// // //                 </p>
+// // //               </div>
+// // //               <div style={{ display: "flex", gap: 10 }}>
+// // //                 {onBack && (
+// // //                   <button style={styles.secondaryBtn} onClick={onBack}>
+// // //                     <ArrowLeft size={16} /> Back
+// // //                   </button>
+// // //                 )}
+// // //                 <button
+// // //                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm font-semibold shadow-lg hover:opacity-90 transition"
+// // //                   onClick={startNewCampaign}
+// // //                 >
+// // //                   <Plus size={16} /> Create New Campaign
+// // //                 </button>
+// // //               </div>
+// // //             </div>
+
+// // //             {templatesLoading ? (
+// // //               <div
+// // //                 style={{
+// // //                   display: "flex",
+// // //                   alignItems: "center",
+// // //                   gap: 8,
+// // //                   color: "#64748b",
+// // //                   padding: "40px 0",
+// // //                   justifyContent: "center",
+// // //                 }}
+// // //               >
+// // //                 <Loader2 size={18} className="animate-spin" />
+// // //                 Loading campaigns...
+// // //               </div>
+// // //             ) : templates.length === 0 ? (
+// // //               <div style={{ textAlign: "center", padding: "50px 0", color: "#94a3b8" }}>
+// // //                 <FileText size={40} style={{ marginBottom: 12, opacity: 0.4 }} />
+// // //                 <p style={{ marginBottom: 16 }}>No campaigns yet</p>
+// // //                 <button
+// // //                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm font-semibold shadow-lg hover:opacity-90 transition"
+// // //                   onClick={startNewCampaign}
+// // //                 >
+// // //                   <Plus size={16} /> Create your first campaign
+// // //                 </button>
+// // //               </div>
+// // //             ) : (
+// // //               <div
+// // //                 style={{
+// // //                   display: "grid",
+// // //                   gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+// // //                   gap: 14,
+// // //                 }}
+// // //               >
+// // //                 {templates.map((t) => (
+// // //                   <div
+// // //                     key={t.id}
+// // //                     onClick={() => openTemplate(t.id)}
+// // //                     style={styles.templateCard}
+// // //                     onMouseEnter={(e) => {
+// // //                       e.currentTarget.style.borderColor = "#2563eb";
+// // //                       e.currentTarget.style.boxShadow =
+// // //                         "0 4px 12px rgba(37,99,235,0.12)";
+// // //                     }}
+// // //                     onMouseLeave={(e) => {
+// // //                       e.currentTarget.style.borderColor = "#e2e8f0";
+// // //                       e.currentTarget.style.boxShadow = "none";
+// // //                     }}
+// // //                   >
+// // //                     <div
+// // //                       style={{
+// // //                         display: "flex",
+// // //                         justifyContent: "space-between",
+// // //                         marginBottom: 10,
+// // //                       }}
+// // //                     >
+// // //                       <span
+// // //                         style={{
+// // //                           ...styles.channelBadge,
+// // //                           background:
+// // //                             t.channel === "Email"
+// // //                               ? "#dbeafe"
+// // //                               : t.channel === "WhatsApp"
+// // //                                 ? "#dcfce7"
+// // //                                 : t.channel === "Social"
+// // //                                   ? "#dbeafe"
+// // //                                   : "#fef3c7",
+// // //                           color:
+// // //                             t.channel === "Email"
+// // //                               ? "#2563eb"
+// // //                               : t.channel === "WhatsApp"
+// // //                                 ? "#16a34a"
+// // //                                 : t.channel === "Social"
+// // //                                   ? "#2563eb"
+// // //                                   : "#d97706",
+// // //                         }}
+// // //                       >
+// // //                         {t.channel || "Email"}
+// // //                       </span>
+// // //                       <span
+// // //                         style={{
+// // //                           fontSize: 11,
+// // //                           fontWeight: 500,
+// // //                           color: t.status === "Sent" ? "#16a34a" : "#64748b",
+// // //                         }}
+// // //                       >
+// // //                         {t.status || "Draft"}
+// // //                       </span>
+// // //                     </div>
+
+// // //                     <h4 style={styles.templateTitle}>
+// // //                       {t.campaignName || "Untitled"}
+// // //                     </h4>
+
+// // //                     <p style={{ margin: 0, fontSize: 12, color: "#94a3b8" }}>
+// // //                       {t.category || "—"} ·{" "}
+// // //                       {new Date(t.updatedAt || t.createdAt).toLocaleDateString()}
+// // //                     </p>
+// // //                   </div>
+// // //                 ))}
+// // //               </div>
+// // //             )}
+// // //           </div>
+// // //         </div>
+// // //       )}
+
+// // //       {/* ===================== EDITOR VIEW ===================== */}
+// // //       {!showTemplates && (
+// // //         <>
+// // //           <div style={styles.mainGrid}>
+// // //             {/* LEFT COLUMN */}
+// // //             <div style={styles.leftCol}>
+// // //               <button
+// // //                 style={{ ...styles.secondaryBtn, marginBottom: 4, width: "100%" }}
+// // //                 onClick={() => {
+// // //                   setShowTemplates(true);
+// // //                   loadTemplates();
+// // //                 }}
+// // //               >
+// // //                 ← Back to Templates
+// // //               </button>
+
+// // //               {/* Channel */}
+// // //               <div style={styles.card}>
+// // //                 <h3 style={styles.sectionTitle}>1. Choose Channel</h3>
+// // //                 <p style={styles.sectionHint}>Select the channel</p>
+
+// // //                 <ChannelItem
+// // //                   icon={<Mail size={18} color="#2563eb" />}
+// // //                   title="Email"
+// // //                   active={channel === "Email"}
+// // //                   onClick={() => {
+// // //                     setChannel("Email");
+// // //                     setActiveTab("Email");
+// // //                   }}
+// // //                 />
+// // //                 <ChannelItem
+// // //                   icon={<FaWhatsapp size={18} color="#25D366" />}
+// // //                   title="WhatsApp Message"
+// // //                   active={channel === "WhatsApp"}
+// // //                   onClick={() => {
+// // //                     setChannel("WhatsApp");
+// // //                     setActiveTab("WhatsApp Message");
+// // //                   }}
+// // //                 />
+// // //                 <ChannelItem
+// // //                   icon={<FaFacebook size={18} color="#1877F2" />}
+// // //                   title="Social Media Post"
+// // //                   active={channel === "Social"}
+// // //                   onClick={() => {
+// // //                     setChannel("Social");
+// // //                     setActiveTab("Social Media Post");
+// // //                   }}
+// // //                 />
+// // //               </div>
+
+// // //               {/* Audience */}
+// // //               <div style={styles.card}>
+// // //                 <h3 style={styles.sectionTitle}>2. Select Audience</h3>
+// // //                 <p style={styles.sectionHint}>Enter emails or upload a list</p>
+
+// // //                 <label className="block mb-2 text-sm font-medium">
+// // //                   Recipient Emails
+// // //                 </label>
+// // //                 <textarea
+// // //                   className="w-full rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500 text-sm"
+// // //                   style={{
+// // //                     minHeight: "100px",
+// // //                     resize: "vertical",
+// // //                     marginBottom: 6,
+// // //                     paddingTop: 10,
+// // //                     paddingBottom: 10,
+// // //                   }}
+// // //                   value={recipients}
+// // //                   onChange={(e) => setRecipients(e.target.value)}
+// // //                   placeholder={`Enter emails separated by comma or new line
+
+// // // test1@example.com
+// // // test2@example.com
+// // // test3@example.com`}
+// // //                 />
+// // //                 <p style={{ fontSize: 12, color: "#64748b", margin: "0 0 14px" }}>
+// // //                   Enter one or multiple email addresses.
+// // //                 </p>
+
+// // //                 <p style={{ fontSize: 13, color: "#64748b", margin: "0 0 8px" }}>
+// // //                   Or upload file (CSV/Excel)
+// // //                 </p>
+
+// // //                 <div style={styles.uploadBox}>
+// // //                   <Upload size={28} color="#2563eb" />
+// // //                   <p style={{ margin: "10px 0 4px", fontWeight: 500, color: "#334155" }}>
+// // //                     Drag & drop CSV / Excel
+// // //                   </p>
+// // //                   <p style={{ fontSize: 13, color: "#94a3b8", marginBottom: 12 }}>or</p>
+// // //                   <label className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm font-medium shadow-lg hover:opacity-90 transition cursor-pointer">
+// // //                     <FileText size={15} /> Browse File
+// // //                     <input
+// // //                       type="file"
+// // //                       accept=".csv,.xls,.xlsx"
+// // //                       onChange={handleFileUpload}
+// // //                       style={{ display: "none" }}
+// // //                     />
+// // //                   </label>
+// // //                   <p style={{ fontSize: 12, color: "#94a3b8", marginTop: 10 }}>
+// // //                     Supports .csv, .xls, .xlsx
+// // //                   </p>
+// // //                 </div>
+
+// // //                 <button
+// // //                   type="button"
+// // //                   className="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm font-semibold shadow-lg hover:opacity-90 transition mt-4 disabled:opacity-60"
+// // //                   onClick={handleSend}
+// // //                   disabled={saving || sending}
+// // //                 >
+// // //                   {sending ? (
+// // //                     <>
+// // //                       <Loader2 size={14} className="animate-spin" />
+// // //                       Sending...
+// // //                     </>
+// // //                   ) : (
+// // //                     "Send Campaign"
+// // //                   )}
+// // //                 </button>
+// // //               </div>
+
+// // //               {/* Details */}
+// // //               <div style={styles.card}>
+// // //                 <h3 style={styles.sectionTitle}>3. Campaign Details</h3>
+
+// // //                 <label className="block mb-2 text-sm font-medium">
+// // //                   Campaign Name<span className="text-red-500">*</span>
+// // //                 </label>
+// // //                 <input
+// // //                   className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500 text-sm"
+// // //                   value={campaignName}
+// // //                   onChange={(e) => setCampaignName(e.target.value)}
+// // //                   placeholder="e.g. Education Expo 2024"
+// // //                 />
+
+// // //                 <button
+// // //                   type="button"
+// // //                   className="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition mt-3 disabled:opacity-60"
+// // //                   onClick={handleSaveDraft}
+// // //                   disabled={saving || sending}
+// // //                 >
+// // //                   {saving ? (
+// // //                     <>
+// // //                       <Loader2 size={14} className="animate-spin" />
+// // //                       Saving...
+// // //                     </>
+// // //                   ) : (
+// // //                     "Save"
+// // //                   )}
+// // //                 </button>
+// // //               </div>
+// // //             </div>
+
+// // //             {/* CENTER COLUMN */}
+// // //             <div style={styles.centerCol}>
+// // //               <div style={styles.card}>
+// // //                 <h3 style={styles.sectionTitle}>4. {designTitle}</h3>
+
+// // //                 <div style={styles.tabs}>
+// // //                   {["Email", "WhatsApp Message", "Social Media Post"].map((tab) => (
+// // //                     <button
+// // //                       key={tab}
+// // //                       onClick={() => {
+// // //                         if (tab === "Email") {
+// // //                           setChannel("Email");
+// // //                           setActiveTab("Email");
+// // //                         } else if (tab === "WhatsApp Message") {
+// // //                           setChannel("WhatsApp");
+// // //                           setActiveTab("WhatsApp Message");
+// // //                         } else {
+// // //                           setChannel("Social");
+// // //                           setActiveTab("Social Media Post");
+// // //                         }
+// // //                       }}
+// // //                       style={activeTab === tab ? styles.activeTab : styles.tab}
+// // //                     >
+// // //                       {tab}
+// // //                     </button>
+// // //                   ))}
+// // //                 </div>
+
+// // //                 {activeTab === "Email" && (
+// // //                   <div style={styles.emailComposer}>
+// // //                     <div style={styles.emailSectionCard}>
+// // //                       <h4 style={{ margin: "0 0 10px", fontSize: 14 }}>
+// // //                         Email Details
+// // //                       </h4>
+// // //                       <label className="block mb-2 text-sm font-medium">
+// // //                         Subject
+// // //                       </label>
+// // //                       <input
+// // //                         className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500 text-sm"
+// // //                         value={subject}
+// // //                         onChange={(e) => setSubject(e.target.value)}
+// // //                         placeholder="Enter email subject"
+// // //                       />
+// // //                       <label
+// // //                         style={{
+// // //                           display: "flex",
+// // //                           alignItems: "center",
+// // //                           gap: 8,
+// // //                           fontSize: 13,
+// // //                           marginTop: 12,
+// // //                         }}
+// // //                       >
+// // //                         <input
+// // //                           type="checkbox"
+// // //                           checked={preheader}
+// // //                           onChange={(e) => setPreheader(e.target.checked)}
+// // //                         />
+// // //                         Add preview text (Preheader)
+// // //                       </label>
+// // //                       {preheader && (
+// // //                         <input
+// // //                           className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500 text-sm mt-2"
+// // //                           value={preheaderText}
+// // //                           onChange={(e) => setPreheaderText(e.target.value)}
+// // //                           placeholder="Preheader text..."
+// // //                         />
+// // //                       )}
+// // //                     </div>
+// // //                   </div>
+// // //                 )}
+
+// // //                 <div style={styles.addToolbar}>
+// // //                   <button style={styles.addBtn} onClick={() => addBlock("text")}>
+// // //                     <TypeIcon size={14} /> Text
+// // //                   </button>
+// // //                   <button style={styles.addBtn} onClick={() => addBlock("image")}>
+// // //                     <ImageIcon size={14} /> Banner / Image
+// // //                   </button>
+// // //                   <button style={styles.addBtn} onClick={() => addBlock("logo")}>
+// // //                     <Square size={14} /> Logo
+// // //                   </button>
+// // //                   <button style={styles.addBtn} onClick={() => addBlock("button")}>
+// // //                     <Square size={14} /> Button
+// // //                   </button>
+// // //                   <button style={styles.addBtn} onClick={() => addBlock("divider")}>
+// // //                     <Minus size={14} /> Divider
+// // //                   </button>
+// // //                 </div>
+
+// // //                 <div style={styles.canvas}>
+// // //                   {blocks.length === 0 && (
+// // //                     <div style={styles.emptyCanvas}>
+// // //                       <p>No content yet. Click the buttons above to start designing.</p>
+// // //                     </div>
+// // //                   )}
+
+// // //                   {blocks.map((block, index) => (
+// // //                     <div key={block.id} style={styles.blockWrapper}>
+// // //                       <div style={styles.blockControls}>
+// // //                         <span style={styles.blockTypeLabel}>
+// // //                           {block.type === "text"
+// // //                             ? "Text"
+// // //                             : block.type === "image"
+// // //                               ? "Banner / Image"
+// // //                               : block.type === "logo"
+// // //                                 ? "Logo"
+// // //                                 : block.type === "button"
+// // //                                   ? "Button"
+// // //                                   : "Divider"}
+// // //                         </span>
+// // //                         <div style={styles.blockControlButtons}>
+// // //                           <button
+// // //                             type="button"
+// // //                             style={styles.controlBtn}
+// // //                             onClick={() => moveBlock(index, "up")}
+// // //                             title="Move up"
+// // //                           >
+// // //                             ↑
+// // //                           </button>
+// // //                           <button
+// // //                             type="button"
+// // //                             style={styles.controlBtn}
+// // //                             onClick={() => moveBlock(index, "down")}
+// // //                             title="Move down"
+// // //                           >
+// // //                             ↓
+// // //                           </button>
+// // //                           <button
+// // //                             type="button"
+// // //                             style={{ ...styles.controlBtn, color: "#ef4444" }}
+// // //                             onClick={() => removeBlock(block.id)}
+// // //                             title="Delete block"
+// // //                           >
+// // //                             <Trash2 size={14} />
+// // //                           </button>
+// // //                         </div>
+// // //                       </div>
+
+// // //                       {block.type === "text" && (
+// // //                         <TextBlockEditor
+// // //                           block={block}
+// // //                           onUpdate={(updates) => updateBlock(block.id, updates)}
+// // //                           placeholder={editorPlaceholder}
+// // //                         />
+// // //                       )}
+
+// // //                       {block.type === "image" && (
+// // //                         <ImageBlockEditor
+// // //                           block={block}
+// // //                           onUpdate={(updates) => updateBlock(block.id, updates)}
+// // //                           onError={(msg) => msg && showAlert("error", msg)}
+// // //                         />
+// // //                       )}
+
+// // //                       {block.type === "logo" && (
+// // //                         <ImageBlockEditor
+// // //                           block={block}
+// // //                           onUpdate={(updates) => updateBlock(block.id, updates)}
+// // //                           onError={(msg) => msg && showAlert("error", msg)}
+// // //                           isLogo
+// // //                         />
+// // //                       )}
+
+// // //                       {block.type === "button" && (
+// // //                         <div>
+// // //                           <div style={{ textAlign: block.align || "center" }}>
+// // //                             <button className="inline-flex items-center gap-1.5 px-6 py-2.5 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm font-semibold shadow-lg">
+// // //                               {block.buttonText || "Button"}
+// // //                             </button>
+// // //                           </div>
+// // //                           <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+// // //                             <input
+// // //                               className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500 text-sm"
+// // //                               placeholder="Button Text"
+// // //                               value={block.buttonText || ""}
+// // //                               onChange={(e) =>
+// // //                                 updateBlock(block.id, {
+// // //                                   buttonText: e.target.value,
+// // //                                 })
+// // //                               }
+// // //                             />
+// // //                             <input
+// // //                               className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500 text-sm"
+// // //                               placeholder="Button Link (URL)"
+// // //                               value={block.buttonLink || ""}
+// // //                               onChange={(e) =>
+// // //                                 updateBlock(block.id, {
+// // //                                   buttonLink: e.target.value,
+// // //                                 })
+// // //                               }
+// // //                             />
+// // //                           </div>
+// // //                         </div>
+// // //                       )}
+
+// // //                       {block.type === "divider" && (
+// // //                         <hr
+// // //                           style={{
+// // //                             border: "none",
+// // //                             borderTop: "1px solid #e2e8f0",
+// // //                             margin: "12px 0",
+// // //                           }}
+// // //                         />
+// // //                       )}
+// // //                     </div>
+// // //                   ))}
+// // //                 </div>
+// // //               </div>
+// // //             </div>
+
+// // //             {/* RIGHT COLUMN - PREVIEW */}
+// // //             <div style={styles.rightCol}>
+// // //               <div style={styles.card}>
+// // //                 <h3 style={styles.sectionTitle}>5. Preview</h3>
+// // //                 <p style={styles.sectionHint}>Live preview of your design</p>
+
+// // //                 {activeTab === "Email" && (
+// // //                   <div style={styles.previewCard}>
+// // //                     <div style={styles.previewHeader}>
+// // //                       <Mail size={16} color="#2563eb" />
+// // //                       <span style={{ fontWeight: 600, fontSize: 13 }}>
+// // //                         Email Preview
+// // //                       </span>
+// // //                     </div>
+// // //                     <div style={styles.emailPreviewFrame}>
+// // //                       {subject && (
+// // //                         <div style={styles.previewSubject}>
+// // //                           <strong>Subject:</strong> {subject}
+// // //                         </div>
+// // //                       )}
+// // //                       <div style={styles.previewBody}>
+// // //                         {blocks.map((block) => {
+// // //                           if (block.type === "logo") {
+// // //                             return (
+// // //                               <div
+// // //                                 key={block.id}
+// // //                                 style={{ textAlign: "center", marginBottom: 12 }}
+// // //                               >
+// // //                                 {block.url ? (
+// // //                                   <img
+// // //                                     src={block.url}
+// // //                                     alt="Logo"
+// // //                                     style={{
+// // //                                       maxHeight: 40,
+// // //                                       objectFit: "contain",
+// // //                                     }}
+// // //                                   />
+// // //                                 ) : (
+// // //                                   <div style={styles.logoPlaceholder}>
+// // //                                     <ImageIcon size={16} color="#2563eb" />
+// // //                                     <span>Your Logo</span>
+// // //                                   </div>
+// // //                                 )}
+// // //                               </div>
+// // //                             );
+// // //                           }
+// // //                           if (block.type === "image" && block.url) {
+// // //                             return (
+// // //                               <img
+// // //                                 key={block.id}
+// // //                                 src={block.url}
+// // //                                 alt=""
+// // //                                 style={{
+// // //                                   width: "100%",
+// // //                                   borderRadius: 8,
+// // //                                   marginBottom: 12,
+// // //                                   maxHeight: 140,
+// // //                                   objectFit: "cover",
+// // //                                 }}
+// // //                               />
+// // //                             );
+// // //                           }
+// // //                           if (block.type === "text") {
+// // //                             return (
+// // //                               <p
+// // //                                 key={block.id}
+// // //                                 style={{
+// // //                                   fontSize: block.fontSize || 14,
+// // //                                   lineHeight: 1.6,
+// // //                                   whiteSpace: "pre-wrap",
+// // //                                   margin: "0 0 12px",
+// // //                                   color: block.color || "#334155",
+// // //                                   backgroundColor:
+// // //                                     block.backgroundColor &&
+// // //                                     block.backgroundColor !== "transparent"
+// // //                                       ? block.backgroundColor
+// // //                                       : undefined,
+// // //                                   fontWeight: block.fontWeight || "normal",
+// // //                                   fontStyle: block.fontStyle || "normal",
+// // //                                   textAlign: block.textAlign || "left",
+// // //                                   padding:
+// // //                                     block.backgroundColor &&
+// // //                                     block.backgroundColor !== "transparent"
+// // //                                       ? "8px 10px"
+// // //                                       : undefined,
+// // //                                   borderRadius:
+// // //                                     block.backgroundColor &&
+// // //                                     block.backgroundColor !== "transparent"
+// // //                                       ? 6
+// // //                                       : undefined,
+// // //                                 }}
+// // //                               >
+// // //                                 {block.content}
+// // //                               </p>
+// // //                             );
+// // //                           }
+// // //                           if (block.type === "button") {
+// // //                             return (
+// // //                               <div
+// // //                                 key={block.id}
+// // //                                 style={{
+// // //                                   textAlign: block.align || "center",
+// // //                                   margin: "16px 0",
+// // //                                 }}
+// // //                               >
+// // //                                 <a
+// // //                                   href={block.buttonLink}
+// // //                                   className="inline-block px-5 py-2.5 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm font-semibold shadow-lg no-underline"
+// // //                                 >
+// // //                                   {block.buttonText}
+// // //                                 </a>
+// // //                               </div>
+// // //                             );
+// // //                           }
+// // //                           if (block.type === "divider") {
+// // //                             return (
+// // //                               <hr
+// // //                                 key={block.id}
+// // //                                 style={{
+// // //                                   border: "none",
+// // //                                   borderTop: "1px solid #e2e8f0",
+// // //                                   margin: "16px 0",
+// // //                                 }}
+// // //                               />
+// // //                             );
+// // //                           }
+// // //                           return null;
+// // //                         })}
+// // //                       </div>
+// // //                     </div>
+// // //                   </div>
+// // //                 )}
+
+// // //                 {activeTab === "WhatsApp Message" && (
+// // //                   <div style={styles.previewCard}>
+// // //                     <div style={styles.previewHeader}>
+// // //                       <FaWhatsapp size={16} color="#25D366" />
+// // //                       <span style={{ fontWeight: 600, fontSize: 13 }}>
+// // //                         WhatsApp Preview
+// // //                       </span>
+// // //                     </div>
+// // //                     <div style={styles.whatsappFrame}>
+// // //                       <div style={styles.waHeader}>
+// // //                         <ArrowLeft size={16} color="#fff" />
+// // //                         <div style={styles.waAvatar}></div>
+// // //                         <div>
+// // //                           <div style={{ fontWeight: 600, fontSize: 13, color: "#fff" }}>
+// // //                             Your Company
+// // //                           </div>
+// // //                           <div style={{ fontSize: 11, color: "#d1fae5" }}>online</div>
+// // //                         </div>
+// // //                       </div>
+// // //                       <div style={styles.waBody}>
+// // //                         <div style={styles.waBubble}>
+// // //                           {blocks.map((block) => {
+// // //                             if (block.type === "image" && block.url) {
+// // //                               return (
+// // //                                 <img
+// // //                                   key={block.id}
+// // //                                   src={block.url}
+// // //                                   alt=""
+// // //                                   style={{
+// // //                                     width: "100%",
+// // //                                     borderRadius: 8,
+// // //                                     marginBottom: 8,
+// // //                                   }}
+// // //                                 />
+// // //                               );
+// // //                             }
+// // //                             if (block.type === "text") {
+// // //                               return (
+// // //                                 <p
+// // //                                   key={block.id}
+// // //                                   style={{
+// // //                                     fontSize: block.fontSize || 13,
+// // //                                     whiteSpace: "pre-wrap",
+// // //                                     margin: "0 0 8px",
+// // //                                     color: block.color || "#111",
+// // //                                     backgroundColor:
+// // //                                       block.backgroundColor &&
+// // //                                       block.backgroundColor !== "transparent"
+// // //                                         ? block.backgroundColor
+// // //                                         : undefined,
+// // //                                     fontWeight: block.fontWeight || "normal",
+// // //                                     fontStyle: block.fontStyle || "normal",
+// // //                                     textAlign: block.textAlign || "left",
+// // //                                     padding:
+// // //                                       block.backgroundColor &&
+// // //                                       block.backgroundColor !== "transparent"
+// // //                                         ? "6px 8px"
+// // //                                         : undefined,
+// // //                                     borderRadius: 6,
+// // //                                   }}
+// // //                                 >
+// // //                                   {block.content}
+// // //                                 </p>
+// // //                               );
+// // //                             }
+// // //                             if (block.type === "button") {
+// // //                               return (
+// // //                                 <div key={block.id} style={{ margin: "8px 0" }}>
+// // //                                   <a
+// // //                                     href={block.buttonLink}
+// // //                                     className="inline-block px-4 py-2 rounded-md bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm no-underline"
+// // //                                   >
+// // //                                     {block.buttonText}
+// // //                                   </a>
+// // //                                 </div>
+// // //                               );
+// // //                             }
+// // //                             return null;
+// // //                           })}
+// // //                           <div
+// // //                             style={{
+// // //                               textAlign: "right",
+// // //                               fontSize: 11,
+// // //                               color: "#94a3b8",
+// // //                               marginTop: 6,
+// // //                             }}
+// // //                           >
+// // //                             11:30 AM ✓✓
+// // //                           </div>
+// // //                         </div>
+// // //                       </div>
+// // //                       <div style={styles.waInput}>
+// // //                         <Smile size={18} color="#94a3b8" />
+// // //                         <span style={{ flex: 1, color: "#94a3b8", fontSize: 13 }}>
+// // //                           Type a message
+// // //                         </span>
+// // //                       </div>
+// // //                     </div>
+// // //                   </div>
+// // //                 )}
+
+// // //                 {activeTab === "Social Media Post" && (
+// // //                   <div style={styles.previewCard}>
+// // //                     <div style={styles.previewHeader}>
+// // //                       <span style={{ fontWeight: 600, fontSize: 13 }}>
+// // //                         Social Media Preview
+// // //                       </span>
+// // //                     </div>
+// // //                     <div style={styles.socialCard}>
+// // //                       <div style={styles.socialHeader}>
+// // //                         <div style={styles.socialAvatar}></div>
+// // //                         <div>
+// // //                           <div style={{ fontWeight: 600, fontSize: 13 }}>
+// // //                             Your Company
+// // //                           </div>
+// // //                           <div style={{ fontSize: 11, color: "#94a3b8" }}>
+// // //                             Just now · 🌐
+// // //                           </div>
+// // //                         </div>
+// // //                       </div>
+// // //                       {blocks.map((block) => {
+// // //                         if (block.type === "text") {
+// // //                           return (
+// // //                             <p
+// // //                               key={block.id}
+// // //                               style={{
+// // //                                 fontSize: block.fontSize || 13,
+// // //                                 padding: "8px 12px",
+// // //                                 whiteSpace: "pre-wrap",
+// // //                                 color: block.color || "#111",
+// // //                                 backgroundColor:
+// // //                                   block.backgroundColor &&
+// // //                                   block.backgroundColor !== "transparent"
+// // //                                     ? block.backgroundColor
+// // //                                     : undefined,
+// // //                                 fontWeight: block.fontWeight || "normal",
+// // //                                 fontStyle: block.fontStyle || "normal",
+// // //                                 textAlign: block.textAlign || "left",
+// // //                                 margin: 0,
+// // //                               }}
+// // //                             >
+// // //                               {block.content}
+// // //                             </p>
+// // //                           );
+// // //                         }
+// // //                         if (block.type === "image" && block.url) {
+// // //                           return (
+// // //                             <img
+// // //                               key={block.id}
+// // //                               src={block.url}
+// // //                               alt=""
+// // //                               style={{
+// // //                                 width: "100%",
+// // //                                 display: "block",
+// // //                                 marginTop: 8,
+// // //                               }}
+// // //                             />
+// // //                           );
+// // //                         }
+// // //                         return null;
+// // //                       })}
+// // //                       <div style={styles.socialActions}>
+// // //                         <span>👍 Like</span>
+// // //                         <span>💬 Comment</span>
+// // //                         <span>↗ Share</span>
+// // //                       </div>
+// // //                     </div>
+// // //                   </div>
+// // //                 )}
+// // //               </div>
+// // //             </div>
+// // //           </div>
+
+// // //           <div style={styles.bottomBar}>
+// // //             <button
+// // //               type="button"
+// // //               style={styles.bottomSecondary}
+// // //               onClick={() => {
+// // //                 setShowTemplates(true);
+// // //                 loadTemplates();
+// // //               }}
+// // //             >
+// // //               <ArrowLeft size={16} /> Back to Templates
+// // //             </button>
+// // //           </div>
+// // //         </>
+// // //       )}
+// // //     </div>
+// // //   );
+// // // };
+
+// // // // ===================== CHANNEL ITEM =====================
+// // // const ChannelItem = ({
+// // //   icon,
+// // //   title,
+// // //   active,
+// // //   onClick,
+// // // }: {
+// // //   icon: React.ReactNode;
+// // //   title: string;
+// // //   active: boolean;
+// // //   onClick: () => void;
+// // // }) => (
+// // //   <div
+// // //     onClick={onClick}
+// // //     style={{
+// // //       ...styles.channelItem,
+// // //       border: active ? "2px solid #2563eb" : "1px solid #e2e8f0",
+// // //       background: active ? "#eff6ff" : "#fff",
+// // //     }}
+// // //   >
+// // //     <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+// // //       <div
+// // //         style={{
+// // //           width: 36,
+// // //           height: 36,
+// // //           borderRadius: 8,
+// // //           background: active ? "#dbeafe" : "#f8fafc",
+// // //           display: "flex",
+// // //           alignItems: "center",
+// // //           justifyContent: "center",
+// // //         }}
+// // //       >
+// // //         {icon}
+// // //       </div>
+// // //       <span style={{ fontWeight: 500, fontSize: 14 }}>{title}</span>
+// // //     </div>
+// // //     <div
+// // //       style={{
+// // //         width: 18,
+// // //         height: 18,
+// // //         borderRadius: "50%",
+// // //         border: active ? "6px solid #2563eb" : "2px solid #cbd5e1",
+// // //         background: "#fff",
+// // //       }}
+// // //     />
+// // //   </div>
+// // // );
+
+// // // // ===================== STYLES =====================
+// // // const styles: any = {
+// // //   page: {
+// // //     minHeight: "100vh",
+// // //     background: "#f1f5f9",
+// // //     fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+// // //     color: "#1e293b",
+// // //     paddingBottom: 80,
+// // //   },
+// // //   templateCard: {
+// // //     border: "1px solid #e2e8f0",
+// // //     borderRadius: 10,
+// // //     padding: 16,
+// // //     cursor: "pointer",
+// // //     background: "#fff",
+// // //     transition: "all 0.15s",
+// // //   },
+// // //   channelBadge: {
+// // //     fontSize: 11,
+// // //     fontWeight: 600,
+// // //     padding: "2px 8px",
+// // //     borderRadius: 20,
+// // //   },
+// // //   templateTitle: {
+// // //     margin: "0 0 6px",
+// // //     fontSize: 14,
+// // //     fontWeight: 600,
+// // //     color: "#1e293b",
+// // //     overflow: "hidden",
+// // //     textOverflow: "ellipsis",
+// // //     whiteSpace: "nowrap",
+// // //   },
+// // //   mainGrid: {
+// // //     display: "grid",
+// // //     gridTemplateColumns: "300px 1fr 340px",
+// // //     gap: 20,
+// // //     padding: "20px 24px",
+// // //     maxWidth: 1600,
+// // //     margin: "0 auto",
+// // //   },
+// // //   leftCol: { display: "flex", flexDirection: "column", gap: 16 },
+// // //   centerCol: { display: "flex", flexDirection: "column" },
+// // //   rightCol: { display: "flex", flexDirection: "column" },
+// // //   card: {
+// // //     background: "#fff",
+// // //     borderRadius: 12,
+// // //     padding: 20,
+// // //     boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+// // //     border: "1px solid #e2e8f0",
+// // //   },
+// // //   sectionTitle: { margin: "0 0 4px", fontSize: 15, fontWeight: 600 },
+// // //   sectionHint: { margin: "0 0 14px", fontSize: 12, color: "#94a3b8" },
+// // //   channelItem: {
+// // //     display: "flex",
+// // //     alignItems: "center",
+// // //     justifyContent: "space-between",
+// // //     padding: "10px 12px",
+// // //     borderRadius: 10,
+// // //     marginBottom: 8,
+// // //     cursor: "pointer",
+// // //   },
+// // //   secondaryBtn: {
+// // //     display: "inline-flex",
+// // //     alignItems: "center",
+// // //     justifyContent: "center",
+// // //     gap: 6,
+// // //     padding: "10px 16px",
+// // //     borderRadius: 8,
+// // //     border: "1px solid #d1d5db",
+// // //     background: "#fff",
+// // //     fontSize: 13,
+// // //     fontWeight: 500,
+// // //     cursor: "pointer",
+// // //     color: "#475569",
+// // //   },
+// // //   tabs: {
+// // //     display: "flex",
+// // //     gap: 4,
+// // //     borderBottom: "1px solid #e2e8f0",
+// // //     marginBottom: 16,
+// // //   },
+// // //   tab: {
+// // //     padding: "8px 14px",
+// // //     border: "none",
+// // //     background: "transparent",
+// // //     fontSize: 13,
+// // //     color: "#64748b",
+// // //     cursor: "pointer",
+// // //     borderBottom: "2px solid transparent",
+// // //   },
+// // //   activeTab: {
+// // //     padding: "8px 14px",
+// // //     border: "none",
+// // //     background: "transparent",
+// // //     fontSize: 13,
+// // //     color: "#2563eb",
+// // //     fontWeight: 600,
+// // //     cursor: "pointer",
+// // //     borderBottom: "2px solid #2563eb",
+// // //   },
+// // //   addToolbar: {
+// // //     display: "flex",
+// // //     flexWrap: "wrap",
+// // //     alignItems: "center",
+// // //     gap: 8,
+// // //     padding: "12px 0",
+// // //     borderBottom: "1px solid #e2e8f0",
+// // //     marginBottom: 16,
+// // //   },
+// // //   addBtn: {
+// // //     display: "inline-flex",
+// // //     alignItems: "center",
+// // //     gap: 6,
+// // //     padding: "6px 12px",
+// // //     borderRadius: 6,
+// // //     border: "1px solid #e2e8f0",
+// // //     background: "#f8fafc",
+// // //     fontSize: 12,
+// // //     fontWeight: 500,
+// // //     cursor: "pointer",
+// // //     color: "#475569",
+// // //   },
+// // //   canvas: {
+// // //     minHeight: 320,
+// // //     background: "#fafafa",
+// // //     border: "1px solid #e2e8f0",
+// // //     borderRadius: 10,
+// // //     padding: 16,
+// // //   },
+// // //   emptyCanvas: {
+// // //     textAlign: "center",
+// // //     padding: "60px 20px",
+// // //     color: "#94a3b8",
+// // //   },
+// // //   blockWrapper: {
+// // //     marginBottom: 16,
+// // //     padding: 12,
+// // //     background: "#fff",
+// // //     borderRadius: 8,
+// // //     border: "1px solid #e2e8f0",
+// // //   },
+// // //   blockControls: {
+// // //     display: "flex",
+// // //     alignItems: "center",
+// // //     justifyContent: "space-between",
+// // //     marginBottom: 10,
+// // //     paddingBottom: 8,
+// // //     borderBottom: "1px solid #f1f5f9",
+// // //   },
+// // //   blockTypeLabel: {
+// // //     fontSize: 11,
+// // //     fontWeight: 600,
+// // //     color: "#64748b",
+// // //     textTransform: "uppercase",
+// // //     letterSpacing: "0.04em",
+// // //   },
+// // //   blockControlButtons: {
+// // //     display: "flex",
+// // //     gap: 4,
+// // //   },
+// // //   controlBtn: {
+// // //     width: 28,
+// // //     height: 28,
+// // //     border: "1px solid #e2e8f0",
+// // //     borderRadius: 6,
+// // //     background: "#fff",
+// // //     cursor: "pointer",
+// // //     display: "flex",
+// // //     alignItems: "center",
+// // //     justifyContent: "center",
+// // //     fontSize: 12,
+// // //     color: "#475569",
+// // //   },
+// // //   textBlock: {
+// // //     width: "100%",
+// // //     minHeight: 80,
+// // //     padding: 12,
+// // //     border: "1px solid #d1d5db",
+// // //     borderRadius: 8,
+// // //     fontSize: 14,
+// // //     lineHeight: 1.5,
+// // //     resize: "vertical",
+// // //     boxSizing: "border-box",
+// // //     fontFamily: "inherit",
+// // //   },
+// // //   imagePlaceholder: {
+// // //     height: 140,
+// // //     background: "#f1f5f9",
+// // //     borderRadius: 8,
+// // //     display: "flex",
+// // //     flexDirection: "column",
+// // //     alignItems: "center",
+// // //     justifyContent: "center",
+// // //     color: "#94a3b8",
+// // //     gap: 8,
+// // //   },
+// // //   logoPlaceholder: {
+// // //     height: 80,
+// // //     background: "#f1f5f9",
+// // //     borderRadius: 8,
+// // //     display: "flex",
+// // //     flexDirection: "column",
+// // //     alignItems: "center",
+// // //     justifyContent: "center",
+// // //     color: "#94a3b8",
+// // //     gap: 4,
+// // //   },
+// // //   uploadBox: {
+// // //     border: "2px dashed #cbd5e1",
+// // //     borderRadius: 10,
+// // //     padding: "24px 16px",
+// // //     textAlign: "center",
+// // //     background: "#f8fafc",
+// // //   },
+// // //   emailComposer: { display: "flex", flexDirection: "column", gap: 12 },
+// // //   emailSectionCard: {
+// // //     border: "1px solid #e2e8f0",
+// // //     borderRadius: 10,
+// // //     padding: 12,
+// // //     background: "#f8fafc",
+// // //   },
+// // //   previewCard: { marginBottom: 20 },
+// // //   previewHeader: {
+// // //     display: "flex",
+// // //     alignItems: "center",
+// // //     gap: 8,
+// // //     marginBottom: 10,
+// // //   },
+// // //   emailPreviewFrame: {
+// // //     border: "1px solid #e2e8f0",
+// // //     borderRadius: 10,
+// // //     overflow: "hidden",
+// // //     background: "#fff",
+// // //   },
+// // //   previewSubject: {
+// // //     padding: "10px 14px",
+// // //     background: "#f8fafc",
+// // //     borderBottom: "1px solid #e2e8f0",
+// // //     fontSize: 13,
+// // //     color: "#475569",
+// // //   },
+// // //   previewBody: { padding: 16 },
+// // //   whatsappFrame: {
+// // //     border: "1px solid #e2e8f0",
+// // //     borderRadius: 12,
+// // //     overflow: "hidden",
+// // //     background: "#efeae2",
+// // //   },
+// // //   waHeader: {
+// // //     background: "#075e54",
+// // //     padding: "10px 12px",
+// // //     display: "flex",
+// // //     alignItems: "center",
+// // //     gap: 10,
+// // //   },
+// // //   waAvatar: {
+// // //     width: 32,
+// // //     height: 32,
+// // //     borderRadius: "50%",
+// // //     background: "#25D366",
+// // //   },
+// // //   waBody: { padding: 12, minHeight: 200 },
+// // //   waBubble: {
+// // //     background: "#fff",
+// // //     borderRadius: "8px 8px 8px 0",
+// // //     padding: 10,
+// // //     maxWidth: "95%",
+// // //     boxShadow: "0 1px 2px rgba(0,0,0,0.08)",
+// // //   },
+// // //   waInput: {
+// // //     background: "#f0f2f5",
+// // //     padding: "8px 12px",
+// // //     display: "flex",
+// // //     alignItems: "center",
+// // //     gap: 10,
+// // //   },
+// // //   socialCard: {
+// // //     border: "1px solid #e2e8f0",
+// // //     borderRadius: 10,
+// // //     overflow: "hidden",
+// // //     background: "#fff",
+// // //   },
+// // //   socialHeader: {
+// // //     display: "flex",
+// // //     alignItems: "center",
+// // //     gap: 10,
+// // //     padding: "10px 12px",
+// // //   },
+// // //   socialAvatar: {
+// // //     width: 36,
+// // //     height: 36,
+// // //     borderRadius: "50%",
+// // //     background: "linear-gradient(135deg, #2563eb, #60a5fa)",
+// // //   },
+// // //   socialActions: {
+// // //     display: "flex",
+// // //     justifyContent: "space-around",
+// // //     padding: "8px 0",
+// // //     borderTop: "1px solid #f1f5f9",
+// // //     fontSize: 12,
+// // //     color: "#64748b",
+// // //   },
+// // //   bottomBar: {
+// // //     margin: "0 auto",
+// // //     marginTop: 8,
+// // //     maxWidth: 1600,
+// // //     width: "calc(100% - 48px)",
+// // //     background: "#fff",
+// // //     border: "1px solid #e2e8f0",
+// // //     borderRadius: 12,
+// // //     padding: "14px 24px",
+// // //     display: "flex",
+// // //     justifyContent: "space-between",
+// // //     alignItems: "center",
+// // //     boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+// // //   },
+// // //   bottomSecondary: {
+// // //     display: "flex",
+// // //     alignItems: "center",
+// // //     gap: 6,
+// // //     padding: "9px 18px",
+// // //     borderRadius: 8,
+// // //     border: "1px solid #d1d5db",
+// // //     background: "#fff",
+// // //     fontSize: 13,
+// // //     fontWeight: 500,
+// // //     cursor: "pointer",
+// // //     color: "#475569",
+// // //   },
+// // // };
+
+// // // export default Campaign;
+
+// // "use client";
+
+// // import React, { useState, useEffect, useContext, useCallback, useRef } from "react";
+// // import axios from "axios";
+// // import * as XLSX from "xlsx";
+// // import { AuthContext } from "../../../../../../context/AuthContext";
+// // import {
+// //   Mail,
+// //   Upload,
+// //   Smile,
+// //   ArrowLeft,
+// //   FileText,
+// //   Image as ImageIcon,
+// //   Type as TypeIcon,
+// //   Square,
+// //   Minus,
+// //   Trash2,
+// //   Loader2,
+// //   Plus,
+// //   CheckCircle,
+// //   XCircle,
+// //   AlertTriangle,
+// //   X,
+// // } from "lucide-react";
+// // import {
+// //   FaWhatsapp,
+// // } from "react-icons/fa";
+
+// // const API = String(import.meta.env.VITE_BACKEND_URL);
+
+// // // ===================== ALERT MODAL =====================
+// // type AlertType = "success" | "warning" | "error";
+
+// // interface AlertState {
+// //   type: AlertType;
+// //   message: string;
+// // }
+
+// // const AlertModal = ({
+// //   type,
+// //   message,
+// //   onClose,
+// // }: {
+// //   type: AlertType;
+// //   message: string;
+// //   onClose: () => void;
+// // }) => {
+// //   useEffect(() => {
+// //     if (type === "warning") {
+// //       const timer = setTimeout(onClose, 3000);
+// //       return () => clearTimeout(timer);
+// //     }
+// //   }, [type, onClose]);
+
+// //   useEffect(() => {
+// //     const handleKeyDown = (event: KeyboardEvent) => {
+// //       if (event.key === "Enter" || event.key === "Escape") {
+// //         event.preventDefault();
+// //         onClose();
+// //       }
+// //     };
+// //     window.addEventListener("keydown", handleKeyDown);
+// //     return () => window.removeEventListener("keydown", handleKeyDown);
+// //   }, [onClose]);
+
+// //   const config =
+// //     type === "success"
+// //       ? {
+// //           borderColor: "#10b981",
+// //           iconColor: "#10b981",
+// //           buttonBg: "#10b981",
+// //           title: "Success",
+// //           Icon: CheckCircle,
+// //         }
+// //       : type === "warning"
+// //         ? {
+// //             borderColor: "#eab308",
+// //             iconColor: "#eab308",
+// //             buttonBg: "#eab308",
+// //             title: "Warning",
+// //             Icon: AlertTriangle,
+// //           }
+// //         : {
+// //             borderColor: "#f43f5e",
+// //             iconColor: "#f43f5e",
+// //             buttonBg: "#f43f5e",
+// //             title: "Error",
+// //             Icon: XCircle,
+// //           };
+
+// //   const Icon = config.Icon;
+
+// //   return (
+// //     <div
+// //       style={{
+// //         position: "fixed",
+// //         inset: 0,
+// //         zIndex: 9999,
+// //         display: "flex",
+// //         alignItems: "center",
+// //         justifyContent: "center",
+// //         background: "rgba(15, 23, 42, 0.45)",
+// //       }}
+// //     >
+// //       <div
+// //         style={{
+// //           width: 380,
+// //           overflow: "hidden",
+// //           borderRadius: 12,
+// //           background: "#fff",
+// //           boxShadow: "0 25px 50px rgba(0,0,0,0.25)",
+// //           borderLeft: `4px solid ${config.borderColor}`,
+// //         }}
+// //       >
+// //         <div
+// //           style={{
+// //             display: "flex",
+// //             alignItems: "center",
+// //             justifyContent: "space-between",
+// //             background: "#1e40af",
+// //             padding: "14px 20px",
+// //             color: "#fff",
+// //           }}
+// //         >
+// //           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+// //             <Icon size={24} color={config.iconColor} />
+// //             <h2 style={{ margin: 0, fontSize: 17, fontWeight: 600 }}>
+// //               {config.title}
+// //             </h2>
+// //           </div>
+// //           <button
+// //             type="button"
+// //             onClick={onClose}
+// //             style={{
+// //               background: "transparent",
+// //               border: "none",
+// //               color: "#fff",
+// //               cursor: "pointer",
+// //               padding: 4,
+// //               borderRadius: 4,
+// //               display: "flex",
+// //               alignItems: "center",
+// //             }}
+// //           >
+// //             <X size={18} />
+// //           </button>
+// //         </div>
+
+// //         <div style={{ padding: "22px 20px" }}>
+// //           <p
+// //             style={{
+// //               margin: 0,
+// //               fontSize: 14,
+// //               lineHeight: 1.6,
+// //               color: "#475569",
+// //             }}
+// //           >
+// //             {message}
+// //           </p>
+// //         </div>
+
+// //         <div
+// //           style={{
+// //             display: "flex",
+// //             justifyContent: "flex-end",
+// //             gap: 10,
+// //             borderTop: "1px solid #e2e8f0",
+// //             background: "#f8fafc",
+// //             padding: "14px 20px",
+// //           }}
+// //         >
+// //           <button
+// //             type="button"
+// //             onClick={onClose}
+// //             style={{
+// //               border: "none",
+// //               borderRadius: 8,
+// //               padding: "8px 20px",
+// //               fontSize: 13,
+// //               fontWeight: 500,
+// //               color: "#fff",
+// //               background: config.buttonBg,
+// //               cursor: "pointer",
+// //             }}
+// //           >
+// //             OK
+// //           </button>
+// //         </div>
+// //       </div>
+// //     </div>
+// //   );
+// // };
+
+// // // ===================== TYPES =====================
+// // type BlockType = "text" | "image" | "button" | "logo" | "divider";
+
+// // interface Block {
+// //   id: string;
+// //   type: BlockType;
+// //   content?: string;
+// //   url?: string;
+// //   buttonText?: string;
+// //   buttonLink?: string;
+// //   align?: "left" | "center" | "right";
+// //   serverId?: string;
+// //   color?: string;
+// //   backgroundColor?: string;
+// //   fontSize?: number;
+// //   fontWeight?: "normal" | "bold";
+// //   fontStyle?: "normal" | "italic";
+// //   textAlign?: "left" | "center" | "right";
+// // }
+
+// // // ===================== HELPERS =====================
+// // const generateId = () => Math.random().toString(36).slice(2, 11);
+
+// // function uiBlockToApi(block: Block, sortOrder: number) {
+// //   const content: Record<string, unknown> = {};
+// //   switch (block.type) {
+// //     case "text":
+// //       content.text = block.content ?? "";
+// //       content.color = block.color ?? "#334155";
+// //       content.backgroundColor = block.backgroundColor ?? "transparent";
+// //       content.fontSize = block.fontSize ?? 14;
+// //       content.fontWeight = block.fontWeight ?? "normal";
+// //       content.fontStyle = block.fontStyle ?? "normal";
+// //       content.textAlign = block.textAlign ?? "left";
+// //       break;
+// //     case "image":
+// //     case "logo":
+// //       content.url = block.url ?? "";
+// //       break;
+// //     case "button":
+// //       content.buttonText = block.buttonText ?? "";
+// //       content.buttonLink = block.buttonLink ?? "";
+// //       content.align = block.align ?? "center";
+// //       break;
+// //     case "divider":
+// //       break;
+// //   }
+// //   return {
+// //     block_type: block.type,
+// //     content,
+// //     sort_order: sortOrder,
+// //   };
+// // }
+
+// // function apiBlockToUi(row: {
+// //   id: string;
+// //   blockType: string;
+// //   content: any;
+// //   sortOrder: number;
+// // }): Block {
+// //   const c = row.content || {};
+// //   return {
+// //     id: row.id,
+// //     serverId: row.id,
+// //     type: row.blockType as BlockType,
+// //     content: c.text ?? "",
+// //     url: c.url ?? "",
+// //     buttonText: c.buttonText ?? "",
+// //     buttonLink: c.buttonLink ?? "",
+// //     align: (c.align as "left" | "center" | "right") ?? "center",
+// //     color: c.color ?? "#334155",
+// //     backgroundColor: c.backgroundColor ?? "transparent",
+// //     fontSize: c.fontSize ?? 14,
+// //     fontWeight: (c.fontWeight as "normal" | "bold") ?? "normal",
+// //     fontStyle: (c.fontStyle as "normal" | "italic") ?? "normal",
+// //     textAlign: (c.textAlign as "left" | "center" | "right") ?? "left",
+// //   };
+// // }
+
+// // // ===================== IMAGE UPLOAD =====================
+// // async function uploadImageFile(file: File): Promise<string> {
+// //   const formData = new FormData();
+// //   formData.append("image", file);
+
+// //   const res = await axios.post(`${API}/api/upload/image`, formData, {
+// //     withCredentials: true,
+// //     headers: { "Content-Type": "multipart/form-data" },
+// //   });
+
+// //   if (!res.data?.success || !res.data?.url) {
+// //     throw new Error(res.data?.message || "Upload failed");
+// //   }
+// //   return res.data.url as string;
+// // }
+
+// // function isImageFile(file: File) {
+// //   return file.type.startsWith("image/");
+// // }
+
+// // // ===================== IMAGE / LOGO BLOCK EDITOR =====================
+// // const ImageBlockEditor = ({
+// //   block,
+// //   onUpdate,
+// //   onError,
+// //   isLogo = false,
+// // }: {
+// //   block: Block;
+// //   onUpdate: (updates: Partial<Block>) => void;
+// //   onError: (msg: string | null) => void;
+// //   isLogo?: boolean;
+// // }) => {
+// //   const [uploading, setUploading] = useState(false);
+// //   const [dragOver, setDragOver] = useState(false);
+// //   const fileInputRef = useRef<HTMLInputElement>(null);
+// //   const dropRef = useRef<HTMLDivElement>(null);
+
+// //   const handleFiles = async (files: FileList | File[]) => {
+// //     const file = Array.from(files).find(isImageFile);
+// //     if (!file) {
+// //       onError("Please select an image file (PNG, JPG, GIF, WebP)");
+// //       return;
+// //     }
+// //     if (file.size > 8 * 1024 * 1024) {
+// //       onError("Image must be under 8 MB");
+// //       return;
+// //     }
+
+// //     try {
+// //       setUploading(true);
+// //       onError(null);
+// //       const url = await uploadImageFile(file);
+// //       onUpdate({ url });
+// //     } catch (err: any) {
+// //       console.error(err);
+// //       onError(err?.message || "Failed to upload image");
+// //     } finally {
+// //       setUploading(false);
+// //     }
+// //   };
+
+// //   useEffect(() => {
+// //     const el = dropRef.current;
+// //     if (!el) return;
+
+// //     const onPaste = (e: ClipboardEvent) => {
+// //       const items = e.clipboardData?.items;
+// //       if (!items) return;
+
+// //       for (const item of Array.from(items)) {
+// //         if (item.type.startsWith("image/")) {
+// //           e.preventDefault();
+// //           const file = item.getAsFile();
+// //           if (file) handleFiles([file]);
+// //           break;
+// //         }
+// //       }
+// //     };
+
+// //     el.addEventListener("paste", onPaste as any);
+// //     el.tabIndex = 0;
+
+// //     return () => el.removeEventListener("paste", onPaste as any);
+// //   }, []);
+
+// //   const onDrop = (e: React.DragEvent) => {
+// //     e.preventDefault();
+// //     setDragOver(false);
+// //     if (e.dataTransfer.files?.length) {
+// //       handleFiles(e.dataTransfer.files);
+// //     }
+// //   };
+
+// //   return (
+// //     <div>
+// //       {block.url ? (
+// //         <div style={{ textAlign: isLogo ? "center" : "left" }}>
+// //           <img
+// //             src={block.url}
+// //             alt={isLogo ? "Logo" : "Banner"}
+// //             style={
+// //               isLogo
+// //                 ? {
+// //                     maxHeight: 80,
+// //                     maxWidth: 200,
+// //                     objectFit: "contain",
+// //                     display: "block",
+// //                     margin: "0 auto",
+// //                   }
+// //                 : {
+// //                     width: "100%",
+// //                     borderRadius: 8,
+// //                     maxHeight: 220,
+// //                     objectFit: "cover",
+// //                   }
+// //             }
+// //           />
+// //           <div
+// //             style={{
+// //               display: "flex",
+// //               justifyContent: isLogo ? "center" : "flex-end",
+// //               marginTop: 8,
+// //             }}
+// //           >
+// //             <button
+// //               type="button"
+// //               onClick={() => onUpdate({ url: "" })}
+// //               style={{
+// //                 background: "#fef2f2",
+// //                 color: "#dc2626",
+// //                 border: "1px solid #fecaca",
+// //                 borderRadius: 6,
+// //                 padding: "6px 12px",
+// //                 fontSize: 12,
+// //                 fontWeight: 500,
+// //                 cursor: "pointer",
+// //                 display: "inline-flex",
+// //                 alignItems: "center",
+// //                 gap: 4,
+// //               }}
+// //             >
+// //               <Trash2 size={12} /> Remove image
+// //             </button>
+// //           </div>
+// //         </div>
+// //       ) : (
+// //         <div
+// //           ref={dropRef}
+// //           onDragOver={(e) => {
+// //             e.preventDefault();
+// //             setDragOver(true);
+// //           }}
+// //           onDragLeave={() => setDragOver(false)}
+// //           onDrop={onDrop}
+// //           onClick={() => !uploading && fileInputRef.current?.click()}
+// //           style={{
+// //             ...(isLogo ? styles.logoPlaceholder : styles.imagePlaceholder),
+// //             border: dragOver ? "2px dashed #2563eb" : "2px dashed #cbd5e1",
+// //             background: dragOver ? "#eff6ff" : "#f8fafc",
+// //             cursor: uploading ? "wait" : "pointer",
+// //             outline: "none",
+// //             transition: "all 0.15s",
+// //           }}
+// //         >
+// //           {uploading ? (
+// //             <>
+// //               <Loader2 size={28} className="animate-spin" color="#2563eb" />
+// //               <p style={{ margin: "8px 0 0", fontSize: 13 }}>Uploading…</p>
+// //             </>
+// //           ) : (
+// //             <>
+// //               <ImageIcon size={isLogo ? 28 : 32} color="#94a3b8" />
+// //               <p style={{ margin: "8px 0 4px", fontWeight: 500, color: "#334155" }}>
+// //                 {isLogo ? "Add Logo" : "Add Banner / Image"}
+// //               </p>
+// //               <p style={{ fontSize: 12, color: "#94a3b8", margin: 0 }}>
+// //                 Click • Drag & drop • or paste (Ctrl/Cmd+V)
+// //               </p>
+// //             </>
+// //           )}
+// //         </div>
+// //       )}
+
+// //       <input
+// //         ref={fileInputRef}
+// //         type="file"
+// //         accept="image/png,image/jpeg,image/jpg,image/gif,image/webp"
+// //         style={{ display: "none" }}
+// //         onChange={(e) => {
+// //           if (e.target.files?.length) handleFiles(e.target.files);
+// //           e.target.value = "";
+// //         }}
+// //       />
+// //     </div>
+// //   );
+// // };
+
+// // // ===================== EMOJI PICKER =====================
+// // const COMMON_EMOJIS = [
+// //   "😀", "😃", "😄", "😁", "😆", "😅", "😂", "🤣", "😊", "😇",
+// //   "🙂", "🙃", "😉", "😌", "😍", "🥰", "😘", "😗", "😙", "😚",
+// //   "😋", "😛", "😝", "😜", "🤪", "🤨", "🧐", "🤓", "😎", "🤩",
+// //   "🥳", "😏", "😒", "😞", "😔", "😟", "😕", "🙁", "☹️", "😣",
+// //   "😖", "😫", "😩", "🥺", "😢", "😭", "😤", "😠", "😡", "🤬",
+// //   "👍", "👎", "👏", "🙌", "👐", "🤝", "🙏", "✌️", "🤞", "🤟",
+// //   "🤘", "👌", "🤏", "👈", "👉", "👆", "👇", "☝️", "✋", "🤚",
+// //   "👋", "💪", "🦾", "❤️", "🧡", "💛", "💚", "💙", "💜", "🖤",
+// //   "🤍", "🤎", "💔", "❣️", "💕", "💞", "💓", "💗", "💖", "💘",
+// //   "💝", "💟", "☮️", "✝️", "☪️", "🕉", "☸️", "✡️", "🔯", "🕎",
+// //   "🔥", "⭐", "🌟", "✨", "💫", "🎉", "🎊", "🎈", "🎁", "🏆",
+// //   "🥇", "🥈", "🥉", "⚽", "🏀", "🏈", "⚾", "🎾", "🏐", "🏉",
+// //   "📧", "📩", "📨", "💌", "📱", "💻", "🖥️", "⌨️", "🖨️", "🖱️",
+// //   "✅", "❌", "❗", "❓", "💯", "🔔", "🔕", "📢", "📣", "💬",
+// // ];
+
+// // const EmojiPicker = ({
+// //   onSelect,
+// //   onClose,
+// // }: {
+// //   onSelect: (emoji: string) => void;
+// //   onClose: () => void;
+// // }) => {
+// //   const ref = useRef<HTMLDivElement>(null);
+
+// //   useEffect(() => {
+// //     const handleClick = (e: MouseEvent) => {
+// //       if (ref.current && !ref.current.contains(e.target as Node)) {
+// //         onClose();
+// //       }
+// //     };
+// //     document.addEventListener("mousedown", handleClick);
+// //     return () => document.removeEventListener("mousedown", handleClick);
+// //   }, [onClose]);
+
+// //   return (
+// //     <div
+// //       ref={ref}
+// //       style={{
+// //         position: "absolute",
+// //         top: "100%",
+// //         left: 0,
+// //         zIndex: 50,
+// //         background: "#fff",
+// //         border: "1px solid #e2e8f0",
+// //         borderRadius: 10,
+// //         padding: 10,
+// //         boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+// //         width: 280,
+// //         maxHeight: 220,
+// //         overflowY: "auto",
+// //         display: "grid",
+// //         gridTemplateColumns: "repeat(8, 1fr)",
+// //         gap: 4,
+// //       }}
+// //     >
+// //       {COMMON_EMOJIS.map((emoji) => (
+// //         <button
+// //           key={emoji}
+// //           type="button"
+// //           onClick={() => {
+// //             onSelect(emoji);
+// //             onClose();
+// //           }}
+// //           style={{
+// //             border: "none",
+// //             background: "transparent",
+// //             fontSize: 20,
+// //             cursor: "pointer",
+// //             padding: 4,
+// //             borderRadius: 6,
+// //             lineHeight: 1.2,
+// //           }}
+// //           onMouseEnter={(e) => {
+// //             e.currentTarget.style.background = "#f1f5f9";
+// //           }}
+// //           onMouseLeave={(e) => {
+// //             e.currentTarget.style.background = "transparent";
+// //           }}
+// //         >
+// //           {emoji}
+// //         </button>
+// //       ))}
+// //     </div>
+// //   );
+// // };
+
+// // // ===================== TEXT BLOCK EDITOR =====================
+// // const TextBlockEditor = ({
+// //   block,
+// //   onUpdate,
+// //   placeholder,
+// // }: {
+// //   block: Block;
+// //   onUpdate: (updates: Partial<Block>) => void;
+// //   placeholder?: string;
+// // }) => {
+// //   const [showEmoji, setShowEmoji] = useState(false);
+// //   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+// //   const insertEmoji = (emoji: string) => {
+// //     const ta = textareaRef.current;
+// //     if (!ta) {
+// //       onUpdate({ content: (block.content || "") + emoji });
+// //       return;
+// //     }
+// //     const start = ta.selectionStart;
+// //     const end = ta.selectionEnd;
+// //     const text = block.content || "";
+// //     const newText = text.slice(0, start) + emoji + text.slice(end);
+// //     onUpdate({ content: newText });
+// //     requestAnimationFrame(() => {
+// //       if (textareaRef.current) {
+// //         const pos = start + emoji.length;
+// //         textareaRef.current.focus();
+// //         textareaRef.current.setSelectionRange(pos, pos);
+// //       }
+// //     });
+// //   };
+
+// //   const fontSizes = [12, 13, 14, 15, 16, 18, 20, 22, 24, 28, 32];
+
+// //   return (
+// //     <div>
+// //       <div
+// //         style={{
+// //           display: "flex",
+// //           flexWrap: "wrap",
+// //           alignItems: "center",
+// //           gap: 8,
+// //           marginBottom: 8,
+// //           padding: "8px 10px",
+// //           background: "#f8fafc",
+// //           borderRadius: 8,
+// //           border: "1px solid #e2e8f0",
+// //         }}
+// //       >
+// //         <label style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: "#64748b" }}>
+// //           <span>Color</span>
+// //           <input
+// //             type="color"
+// //             value={block.color && block.color !== "transparent" ? block.color : "#334155"}
+// //             onChange={(e) => onUpdate({ color: e.target.value })}
+// //             style={{
+// //               width: 28,
+// //               height: 28,
+// //               border: "1px solid #e2e8f0",
+// //               borderRadius: 6,
+// //               cursor: "pointer",
+// //               padding: 0,
+// //               background: "none",
+// //             }}
+// //           />
+// //         </label>
+
+// //         <label style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: "#64748b" }}>
+// //           <span>Bg</span>
+// //           <input
+// //             type="color"
+// //             value={
+// //               block.backgroundColor && block.backgroundColor !== "transparent"
+// //                 ? block.backgroundColor
+// //                 : "#ffffff"
+// //             }
+// //             onChange={(e) => onUpdate({ backgroundColor: e.target.value })}
+// //             style={{
+// //               width: 28,
+// //               height: 28,
+// //               border: "1px solid #e2e8f0",
+// //               borderRadius: 6,
+// //               cursor: "pointer",
+// //               padding: 0,
+// //               background: "none",
+// //             }}
+// //           />
+// //           <button
+// //             type="button"
+// //             onClick={() => onUpdate({ backgroundColor: "transparent" })}
+// //             style={{
+// //               fontSize: 11,
+// //               padding: "2px 6px",
+// //               border: "1px solid #e2e8f0",
+// //               borderRadius: 4,
+// //               background: "#fff",
+// //               cursor: "pointer",
+// //               color: "#64748b",
+// //             }}
+// //           >
+// //             Clear
+// //           </button>
+// //         </label>
+
+// //         <label style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: "#64748b" }}>
+// //           <span>Size</span>
+// //           <select
+// //             value={block.fontSize ?? 14}
+// //             onChange={(e) => onUpdate({ fontSize: Number(e.target.value) })}
+// //             style={{
+// //               padding: "4px 6px",
+// //               borderRadius: 6,
+// //               border: "1px solid #e2e8f0",
+// //               fontSize: 12,
+// //               background: "#fff",
+// //               cursor: "pointer",
+// //             }}
+// //           >
+// //             {fontSizes.map((s) => (
+// //               <option key={s} value={s}>
+// //                 {s}px
+// //               </option>
+// //             ))}
+// //           </select>
+// //         </label>
+
+// //         <button
+// //           type="button"
+// //           onClick={() =>
+// //             onUpdate({
+// //               fontWeight: block.fontWeight === "bold" ? "normal" : "bold",
+// //             })
+// //           }
+// //           style={{
+// //             width: 28,
+// //             height: 28,
+// //             border: block.fontWeight === "bold" ? "2px solid #2563eb" : "1px solid #e2e8f0",
+// //             borderRadius: 6,
+// //             background: block.fontWeight === "bold" ? "#eff6ff" : "#fff",
+// //             fontWeight: 700,
+// //             fontSize: 13,
+// //             cursor: "pointer",
+// //             color: "#334155",
+// //           }}
+// //         >
+// //           B
+// //         </button>
+
+// //         <button
+// //           type="button"
+// //           onClick={() =>
+// //             onUpdate({
+// //               fontStyle: block.fontStyle === "italic" ? "normal" : "italic",
+// //             })
+// //           }
+// //           style={{
+// //             width: 28,
+// //             height: 28,
+// //             border: block.fontStyle === "italic" ? "2px solid #2563eb" : "1px solid #e2e8f0",
+// //             borderRadius: 6,
+// //             background: block.fontStyle === "italic" ? "#eff6ff" : "#fff",
+// //             fontStyle: "italic",
+// //             fontSize: 13,
+// //             cursor: "pointer",
+// //             color: "#334155",
+// //           }}
+// //         >
+// //           I
+// //         </button>
+
+// //         {(["left", "center", "right"] as const).map((align) => (
+// //           <button
+// //             key={align}
+// //             type="button"
+// //             onClick={() => onUpdate({ textAlign: align })}
+// //             style={{
+// //               width: 28,
+// //               height: 28,
+// //               border:
+// //                 (block.textAlign || "left") === align
+// //                   ? "2px solid #2563eb"
+// //                   : "1px solid #e2e8f0",
+// //               borderRadius: 6,
+// //               background:
+// //                 (block.textAlign || "left") === align ? "#eff6ff" : "#fff",
+// //               fontSize: 11,
+// //               cursor: "pointer",
+// //               color: "#334155",
+// //             }}
+// //           >
+// //             {align === "left" ? "⬅" : align === "center" ? "↔" : "➡"}
+// //           </button>
+// //         ))}
+
+// //         <div style={{ position: "relative" }}>
+// //           <button
+// //             type="button"
+// //             onClick={() => setShowEmoji((v) => !v)}
+// //             style={{
+// //               display: "inline-flex",
+// //               alignItems: "center",
+// //               gap: 4,
+// //               padding: "4px 10px",
+// //               border: "1px solid #e2e8f0",
+// //               borderRadius: 6,
+// //               background: showEmoji ? "#eff6ff" : "#fff",
+// //               fontSize: 12,
+// //               cursor: "pointer",
+// //               color: "#475569",
+// //             }}
+// //           >
+// //             <Smile size={14} /> Emoji
+// //           </button>
+// //           {showEmoji && (
+// //             <EmojiPicker
+// //               onSelect={insertEmoji}
+// //               onClose={() => setShowEmoji(false)}
+// //             />
+// //           )}
+// //         </div>
+// //       </div>
+
+// //       <textarea
+// //         ref={textareaRef}
+// //         className="w-full rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500"
+// //         style={{
+// //           ...styles.textBlock,
+// //           color: block.color || "#334155",
+// //           backgroundColor:
+// //             block.backgroundColor && block.backgroundColor !== "transparent"
+// //               ? block.backgroundColor
+// //               : "#fff",
+// //           fontSize: block.fontSize || 14,
+// //           fontWeight: block.fontWeight || "normal",
+// //           fontStyle: block.fontStyle || "normal",
+// //           textAlign: block.textAlign || "left",
+// //         }}
+// //         value={block.content}
+// //         onChange={(e) => onUpdate({ content: e.target.value })}
+// //         rows={4}
+// //         placeholder={placeholder || "Hi {{Name}},\n\nType your message here..."}
+// //       />
+// //     </div>
+// //   );
+// // };
+
+// // // ===================== COMPONENT =====================
+// // interface Props {
+// //   onBack?: () => void;
+// // }
+
+// // const Campaign = ({ onBack }: Props) => {
+// //   const { user } = useContext(AuthContext);
+
+// //   const [showTemplates, setShowTemplates] = useState(true);
+// //   const [templates, setTemplates] = useState<any[]>([]);
+// //   const [templatesLoading, setTemplatesLoading] = useState(false);
+
+// //   const [channel, setChannel] = useState("Email");
+// //   const [activeTab, setActiveTab] = useState("Email");
+
+// //   const [campaignId, setCampaignId] = useState<string | null>(null);
+// //   const [campaignName, setCampaignName] = useState("");
+// //   const [category, setCategory] = useState("Event");
+// //   const [subject, setSubject] = useState("");
+// //   const [preheader, setPreheader] = useState(false);
+// //   const [preheaderText, setPreheaderText] = useState("");
+
+// //   const [recipients, setRecipients] = useState("");
+
+// //   const [blocks, setBlocks] = useState<Block[]>([
+// //     {
+// //       id: "1",
+// //       type: "text",
+// //       content: "",
+// //       color: "#334155",
+// //       backgroundColor: "transparent",
+// //       fontSize: 14,
+// //       fontWeight: "normal",
+// //       fontStyle: "normal",
+// //       textAlign: "left",
+// //     },
+// //   ]);
+
+// //   const [loading, setLoading] = useState(false);
+// //   const [saving, setSaving] = useState(false);
+// //   const [sending, setSending] = useState(false);
+// //   const [alert, setAlert] = useState<AlertState | null>(null);
+
+// //   const showAlert = (type: AlertType, message: string) => {
+// //     setAlert({ type, message });
+// //   };
+
+// //   const loadTemplates = useCallback(async () => {
+// //     try {
+// //       setTemplatesLoading(true);
+// //       const res = await axios.get(`${API}/api/campaigns`, {
+// //         withCredentials: true,
+// //       });
+// //       setTemplates(res.data.data || []);
+// //     } catch (err) {
+// //       console.error("Failed to load templates", err);
+// //     } finally {
+// //       setTemplatesLoading(false);
+// //     }
+// //   }, []);
+
+// //   useEffect(() => {
+// //     loadTemplates();
+// //   }, [loadTemplates]);
+
+// //   const loadCampaign = useCallback(async (id: string) => {
+// //     try {
+// //       setLoading(true);
+
+// //       const [campRes, blocksRes] = await Promise.all([
+// //         axios.get(`${API}/api/campaigns/${id}`, { withCredentials: true }),
+// //         axios.get(`${API}/api/campaigns/${id}/blocks`, { withCredentials: true }),
+// //       ]);
+
+// //       const camp = campRes.data.data;
+// //       setCampaignId(camp.id);
+// //       setCampaignName(camp.campaignName || "Untitled Campaign");
+// //       setCategory(camp.category || "Event");
+// //       setSubject(camp.subject || "");
+// //       setPreheaderText(camp.preheader || "");
+// //       setPreheader(!!camp.preheader);
+
+// //       const ch = camp.channel || "Email";
+// //       setChannel(ch);
+// //       if (ch === "WhatsApp") setActiveTab("WhatsApp Message");
+// //       else if (ch === "Social") setActiveTab("Social Media Post");
+// //       else setActiveTab("Email");
+
+// //       const apiBlocks = blocksRes.data.data || [];
+// //       setBlocks(apiBlocks.length ? apiBlocks.map(apiBlockToUi) : []);
+// //     } catch (err: any) {
+// //       console.error(err);
+// //       showAlert("error", err?.response?.data?.message || "Failed to load campaign");
+// //     } finally {
+// //       setLoading(false);
+// //     }
+// //   }, []);
+
+// //   const openTemplate = async (id: string) => {
+// //     setShowTemplates(false);
+// //     await loadCampaign(id);
+// //   };
+
+// //   const startNewCampaign = () => {
+// //     setShowTemplates(false);
+// //     setCampaignId(null);
+// //     setCampaignName("");
+// //     setCategory("Event");
+// //     setSubject("");
+// //     setPreheader(false);
+// //     setPreheaderText("");
+// //     setChannel("Email");
+// //     setActiveTab("Email");
+// //     setRecipients("");
+// //     setBlocks([
+// //       {
+// //         id: generateId(),
+// //         type: "text",
+// //         content: "",
+// //         color: "#334155",
+// //         backgroundColor: "transparent",
+// //         fontSize: 14,
+// //         fontWeight: "normal",
+// //         fontStyle: "normal",
+// //         textAlign: "left",
+// //       },
+// //     ]);
+// //     setAlert(null);
+// //   };
+
+// //   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+// //     const file = e.target.files?.[0];
+// //     if (!file) return;
+
+// //     const reader = new FileReader();
+
+// //     reader.onload = (event) => {
+// //       try {
+// //         const data = new Uint8Array(event.target?.result as ArrayBuffer);
+// //         const workbook = XLSX.read(data, { type: "array" });
+// //         const sheetName = workbook.SheetNames[0];
+// //         const sheet = workbook.Sheets[sheetName];
+// //         const rows: any[] = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+// //         const emails: string[] = [];
+
+// //         rows.forEach((row) => {
+// //           if (!Array.isArray(row)) return;
+// //           row.forEach((cell) => {
+// //             if (typeof cell === "string" || typeof cell === "number") {
+// //               const value = String(cell).trim();
+// //               if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+// //                 emails.push(value);
+// //               }
+// //             }
+// //           });
+// //         });
+
+// //         const uniqueEmails = [...new Set(emails)];
+
+// //         if (uniqueEmails.length === 0) {
+// //           showAlert("warning", "No valid email addresses found in the file");
+// //           return;
+// //         }
+
+// //         setRecipients(uniqueEmails.join("\n"));
+// //         showAlert("success", `${uniqueEmails.length} emails loaded from file`);
+// //       } catch (err) {
+// //         console.error(err);
+// //         showAlert("error", "Failed to read the file. Please upload a valid CSV or Excel file.");
+// //       }
+// //     };
+
+// //     reader.readAsArrayBuffer(file);
+// //     e.target.value = "";
+// //   };
+
+// //   const addBlock = (type: BlockType) => {
+// //     const newBlock: Block = {
+// //       id: generateId(),
+// //       type,
+// //       content: type === "text" ? "" : "",
+// //       url: type === "image" || type === "logo" ? "" : undefined,
+// //       buttonText: type === "button" ? "" : undefined,
+// //       buttonLink: type === "button" ? "" : undefined,
+// //       align: "center",
+// //       color: type === "text" ? "#334155" : undefined,
+// //       backgroundColor: type === "text" ? "transparent" : undefined,
+// //       fontSize: type === "text" ? 14 : undefined,
+// //       fontWeight: type === "text" ? "normal" : undefined,
+// //       fontStyle: type === "text" ? "normal" : undefined,
+// //       textAlign: type === "text" ? "left" : undefined,
+// //     };
+// //     setBlocks((prev) => [...prev, newBlock]);
+// //   };
+
+// //   const updateBlock = (id: string, updates: Partial<Block>) => {
+// //     setBlocks((prev) => prev.map((b) => (b.id === id ? { ...b, ...updates } : b)));
+// //   };
+
+// //   const removeBlock = (id: string) => {
+// //     setBlocks((prev) => prev.filter((b) => b.id !== id));
+// //   };
+
+// //   const moveBlock = (index: number, direction: "up" | "down") => {
+// //     setBlocks((prev) => {
+// //       const next = [...prev];
+// //       const target = direction === "up" ? index - 1 : index + 1;
+// //       if (target < 0 || target >= next.length) return prev;
+// //       [next[index], next[target]] = [next[target], next[index]];
+// //       return next;
+// //     });
+// //   };
+
+// //   // ---------- SAVE DRAFT ----------
+// //   const handleSaveDraft = async () => {
+// //     if (!campaignName.trim()) {
+// //       showAlert("warning", "Please enter a campaign name");
+// //       return;
+// //     }
+
+// //     try {
+// //       setSaving(true);
+
+// //       const payload = {
+// //         campaign_name: campaignName.trim(),
+// //         channel:
+// //           channel === "WhatsApp"
+// //             ? "WhatsApp"
+// //             : channel === "Social"
+// //               ? "Social"
+// //               : "Email",
+// //         category: category || "Others",
+// //         subject: channel === "Email" ? subject || null : null,
+// //         preheader: channel === "Email" && preheader ? preheaderText || null : null,
+// //         status: "Draft",
+// //         scheduled_at: null,
+// //       };
+
+// //       let id = campaignId;
+
+// //       if (!id) {
+// //         const res = await axios.post(`${API}/api/campaigns`, payload, {
+// //           withCredentials: true,
+// //         });
+// //         id = res.data.data.id;
+// //         setCampaignId(id);
+// //       } else {
+// //         await axios.put(`${API}/api/campaigns/${id}`, payload, {
+// //           withCredentials: true,
+// //         });
+// //       }
+
+// //       // Replace blocks
+// //       const existingRes = await axios.get(`${API}/api/campaigns/${id}/blocks`, {
+// //         withCredentials: true,
+// //       });
+// //       const existing = existingRes.data.data || [];
+
+// //       await Promise.all(
+// //         existing.map((b: any) =>
+// //           axios.delete(`${API}/api/campaigns/${id}/blocks/${b.id}`, {
+// //             withCredentials: true,
+// //           })
+// //         )
+// //       );
+
+// //       for (let i = 0; i < blocks.length; i++) {
+// //         await axios.post(
+// //           `${API}/api/campaigns/${id}/blocks`,
+// //           uiBlockToApi(blocks[i], i),
+// //           { withCredentials: true }
+// //         );
+// //       }
+
+// //       const refreshed = await axios.get(`${API}/api/campaigns/${id}/blocks`, {
+// //         withCredentials: true,
+// //       });
+// //       setBlocks((refreshed.data.data || []).map(apiBlockToUi));
+
+// //       showAlert("success", "Campaign saved as draft");
+// //       loadTemplates();
+// //     } catch (err: any) {
+// //       console.error(err);
+// //       showAlert("error", err?.response?.data?.message || "Failed to save campaign");
+// //     } finally {
+// //       setSaving(false);
+// //     }
+// //   };
+
+// //   // ---------- SEND ----------
+// //   const handleSend = async () => {
+// //     if (!campaignName.trim()) {
+// //       showAlert("warning", "Please enter a campaign name");
+// //       return;
+// //     }
+
+// //     if (channel !== "Email") {
+// //       showAlert("warning", "Sending is currently only supported for Email campaigns");
+// //       return;
+// //     }
+
+// //     const emails = recipients
+// //       .split(/[,;\n]/)
+// //       .map((e) => e.trim())
+// //       .filter(Boolean);
+
+// //     if (emails.length === 0) {
+// //       showAlert("warning", "Please enter at least one recipient email or upload a file");
+// //       return;
+// //     }
+
+// //     try {
+// //       setSending(true);
+
+// //       let id = campaignId;
+
+// //       const payload = {
+// //         campaign_name: campaignName.trim(),
+// //         channel: "Email",
+// //         category: category || "Others",
+// //         subject: subject || null,
+// //         preheader: preheader ? preheaderText || null : null,
+// //         status: "Draft",
+// //         scheduled_at: null,
+// //       };
+
+// //       if (!id) {
+// //         const res = await axios.post(`${API}/api/campaigns`, payload, {
+// //           withCredentials: true,
+// //         });
+// //         id = res.data.data.id;
+// //         setCampaignId(id);
+// //       } else {
+// //         await axios.put(`${API}/api/campaigns/${id}`, payload, {
+// //           withCredentials: true,
+// //         });
+// //       }
+
+// //       // Replace blocks
+// //       const existingRes = await axios.get(`${API}/api/campaigns/${id}/blocks`, {
+// //         withCredentials: true,
+// //       });
+// //       const existing = existingRes.data.data || [];
+
+// //       await Promise.all(
+// //         existing.map((b: any) =>
+// //           axios.delete(`${API}/api/campaigns/${id}/blocks/${b.id}`, {
+// //             withCredentials: true,
+// //           })
+// //         )
+// //       );
+
+// //       for (let i = 0; i < blocks.length; i++) {
+// //         await axios.post(
+// //           `${API}/api/campaigns/${id}/blocks`,
+// //           uiBlockToApi(blocks[i], i),
+// //           { withCredentials: true }
+// //         );
+// //       }
+
+// //       // Send to all emails
+// //       await axios.post(
+// //         `${API}/api/campaigns/${id}/send`,
+// //         { emails },
+// //         { withCredentials: true }
+// //       );
+
+// //       showAlert("success", `Campaign sent to ${emails.length} recipient(s)`);
+// //       await loadTemplates();
+// //       setShowTemplates(true);
+// //     } catch (err: any) {
+// //       console.error(err);
+// //       showAlert("error", err?.response?.data?.message || "Failed to send campaign");
+// //     } finally {
+// //       setSending(false);
+// //     }
+// //   };
+
+// //   const editorPlaceholder =
+// //     activeTab === "Email"
+// //       ? "Hi {{Name}},\n\nType your message here..."
+// //       : activeTab === "WhatsApp Message"
+// //         ? "Hi {{Name}},\n\nType your WhatsApp message here..."
+// //         : "Type your social post caption here...";
+
+// //   const designTitle =
+// //     activeTab === "Email"
+// //       ? "Create Email"
+// //       : activeTab === "WhatsApp Message"
+// //         ? "Create WhatsApp Message"
+// //         : "Create Social Media Post";
+
+// //   if (loading) {
+// //     return (
+// //       <div
+// //         style={{
+// //           ...styles.page,
+// //           display: "flex",
+// //           alignItems: "center",
+// //           justifyContent: "center",
+// //         }}
+// //       >
+// //         <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#64748b" }}>
+// //           <Loader2 size={20} className="animate-spin" />
+// //           Loading campaign...
+// //         </div>
+// //       </div>
+// //     );
+// //   }
+
+// //   return (
+// //     <div style={styles.page}>
+// //       {alert && (
+// //         <AlertModal
+// //           type={alert.type}
+// //           message={alert.message}
+// //           onClose={() => setAlert(null)}
+// //         />
+// //       )}
+
+// //       {/* ===================== TEMPLATES VIEW ===================== */}
+// //       {showTemplates && (
+// //         <div style={{ padding: "20px 24px", maxWidth: 1600, margin: "0 auto" }}>
+// //           <div style={styles.card}>
+// //             <div
+// //               style={{
+// //                 display: "flex",
+// //                 justifyContent: "space-between",
+// //                 alignItems: "center",
+// //                 marginBottom: 20,
+// //               }}
+// //             >
+// //               <div>
+// //                 <h3 style={styles.sectionTitle}>Your Campaigns & Templates</h3>
+// //                 <p style={styles.sectionHint}>
+// //                   Open a previous campaign or start a new one
+// //                 </p>
+// //               </div>
+// //               <div style={{ display: "flex", gap: 10 }}>
+// //                 {onBack && (
+// //                   <button style={styles.secondaryBtn} onClick={onBack}>
+// //                     <ArrowLeft size={16} /> Back
+// //                   </button>
+// //                 )}
+// //                 <button
+// //                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm font-semibold shadow-lg hover:opacity-90 transition"
+// //                   onClick={startNewCampaign}
+// //                 >
+// //                   <Plus size={16} /> Create New Campaign
+// //                 </button>
+// //               </div>
+// //             </div>
+
+// //             {templatesLoading ? (
+// //               <div
+// //                 style={{
+// //                   display: "flex",
+// //                   alignItems: "center",
+// //                   gap: 8,
+// //                   color: "#64748b",
+// //                   padding: "40px 0",
+// //                   justifyContent: "center",
+// //                 }}
+// //               >
+// //                 <Loader2 size={18} className="animate-spin" />
+// //                 Loading campaigns...
+// //               </div>
+// //             ) : templates.length === 0 ? (
+// //               <div style={{ textAlign: "center", padding: "50px 0", color: "#94a3b8" }}>
+// //                 <FileText size={40} style={{ marginBottom: 12, opacity: 0.4 }} />
+// //                 <p style={{ marginBottom: 16 }}>No campaigns yet</p>
+// //                 <button
+// //                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm font-semibold shadow-lg hover:opacity-90 transition"
+// //                   onClick={startNewCampaign}
+// //                 >
+// //                   <Plus size={16} /> Create your first campaign
+// //                 </button>
+// //               </div>
+// //             ) : (
+// //               <div
+// //                 style={{
+// //                   display: "grid",
+// //                   gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+// //                   gap: 14,
+// //                 }}
+// //               >
+// //                 {templates.map((t) => (
+// //                   <div
+// //                     key={t.id}
+// //                     onClick={() => openTemplate(t.id)}
+// //                     style={styles.templateCard}
+// //                     onMouseEnter={(e) => {
+// //                       e.currentTarget.style.borderColor = "#2563eb";
+// //                       e.currentTarget.style.boxShadow =
+// //                         "0 4px 12px rgba(37,99,235,0.12)";
+// //                     }}
+// //                     onMouseLeave={(e) => {
+// //                       e.currentTarget.style.borderColor = "#e2e8f0";
+// //                       e.currentTarget.style.boxShadow = "none";
+// //                     }}
+// //                   >
+// //                     <div
+// //                       style={{
+// //                         display: "flex",
+// //                         justifyContent: "space-between",
+// //                         marginBottom: 10,
+// //                       }}
+// //                     >
+// //                       <span
+// //                         style={{
+// //                           ...styles.channelBadge,
+// //                           background:
+// //                             t.channel === "Email"
+// //                               ? "#dbeafe"
+// //                               : t.channel === "WhatsApp"
+// //                                 ? "#dcfce7"
+// //                                 : t.channel === "Social"
+// //                                   ? "#dbeafe"
+// //                                   : "#fef3c7",
+// //                           color:
+// //                             t.channel === "Email"
+// //                               ? "#2563eb"
+// //                               : t.channel === "WhatsApp"
+// //                                 ? "#16a34a"
+// //                                 : t.channel === "Social"
+// //                                   ? "#2563eb"
+// //                                   : "#d97706",
+// //                         }}
+// //                       >
+// //                         {t.channel || "Email"}
+// //                       </span>
+// //                       <span
+// //                         style={{
+// //                           fontSize: 11,
+// //                           fontWeight: 500,
+// //                           color: t.status === "Sent" ? "#16a34a" : "#64748b",
+// //                         }}
+// //                       >
+// //                         {t.status || "Draft"}
+// //                       </span>
+// //                     </div>
+
+// //                     <h4 style={styles.templateTitle}>
+// //                       {t.campaignName || "Untitled"}
+// //                     </h4>
+
+// //                     <p style={{ margin: 0, fontSize: 12, color: "#94a3b8" }}>
+// //                       {t.category || "—"} ·{" "}
+// //                       {new Date(t.updatedAt || t.createdAt).toLocaleDateString()}
+// //                     </p>
+// //                   </div>
+// //                 ))}
+// //               </div>
+// //             )}
+// //           </div>
+// //         </div>
+// //       )}
+
+// //       {/* ===================== EDITOR VIEW ===================== */}
+// //       {!showTemplates && (
+// //         <>
+// //           <div style={{ padding: "20px 24px", maxWidth: 1600, margin: "0 auto" }}>
+// //             <button
+// //               style={{ ...styles.secondaryBtn, marginBottom: 16 }}
+// //               onClick={() => {
+// //                 setShowTemplates(true);
+// //                 loadTemplates();
+// //               }}
+// //             >
+// //               ← Back to Templates
+// //             </button>
+
+// //             {/* TOP: Audience + Campaign Details (horizontal) */}
+// //             <div
+// //               style={{
+// //                 display: "grid",
+// //                 gridTemplateColumns: "1fr 1fr",
+// //                 gap: 20,
+// //                 marginBottom: 20,
+// //               }}
+// //             >
+// //               {/* Audience */}
+// //               <div style={styles.card}>
+// //                 <h3 style={styles.sectionTitle}>Select Audience</h3>
+// //                 <p style={styles.sectionHint}>Enter emails or upload a list</p>
+
+// //                 <label className="block mb-2 text-sm font-medium">
+// //                   Recipient Emails
+// //                 </label>
+// //                 <textarea
+// //                   className="w-full rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500 text-sm"
+// //                   style={{
+// //                     minHeight: "100px",
+// //                     resize: "vertical",
+// //                     marginBottom: 6,
+// //                     paddingTop: 10,
+// //                     paddingBottom: 10,
+// //                   }}
+// //                   value={recipients}
+// //                   onChange={(e) => setRecipients(e.target.value)}
+// //                   placeholder={`Enter emails separated by comma or new line
+
+// // test1@example.com
+// // test2@example.com
+// // test3@example.com`}
+// //                 />
+// //                 <p style={{ fontSize: 12, color: "#64748b", margin: "0 0 14px" }}>
+// //                   Enter one or multiple email addresses.
+// //                 </p>
+
+// //                 <p style={{ fontSize: 13, color: "#64748b", margin: "0 0 8px" }}>
+// //                   Or upload file (CSV/Excel)
+// //                 </p>
+
+// //                 <div style={styles.uploadBox}>
+// //                   <Upload size={28} color="#2563eb" />
+// //                   <p style={{ margin: "10px 0 4px", fontWeight: 500, color: "#334155" }}>
+// //                     Drag & drop CSV / Excel
+// //                   </p>
+// //                   <p style={{ fontSize: 13, color: "#94a3b8", marginBottom: 12 }}>or</p>
+// //                   <label className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm font-medium shadow-lg hover:opacity-90 transition cursor-pointer">
+// //                     <FileText size={15} /> Browse File
+// //                     <input
+// //                       type="file"
+// //                       accept=".csv,.xls,.xlsx"
+// //                       onChange={handleFileUpload}
+// //                       style={{ display: "none" }}
+// //                     />
+// //                   </label>
+// //                   <p style={{ fontSize: 12, color: "#94a3b8", marginTop: 10 }}>
+// //                     Supports .csv, .xls, .xlsx
+// //                   </p>
+// //                 </div>
+
+// //                 <button
+// //                   type="button"
+// //                   className="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm font-semibold shadow-lg hover:opacity-90 transition mt-4 disabled:opacity-60"
+// //                   onClick={handleSend}
+// //                   disabled={saving || sending}
+// //                 >
+// //                   {sending ? (
+// //                     <>
+// //                       <Loader2 size={14} className="animate-spin" />
+// //                       Sending...
+// //                     </>
+// //                   ) : (
+// //                     "Send Campaign"
+// //                   )}
+// //                 </button>
+// //               </div>
+
+// //               {/* Details */}
+// //               <div style={styles.card}>
+// //                 <h3 style={styles.sectionTitle}>Campaign Details</h3>
+// //                 <p style={styles.sectionHint}>Name and save your campaign</p>
+
+// //                 <label className="block mb-2 text-sm font-medium">
+// //                   Campaign Name<span className="text-red-500">*</span>
+// //                 </label>
+// //                 <input
+// //                   className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500 text-sm"
+// //                   value={campaignName}
+// //                   onChange={(e) => setCampaignName(e.target.value)}
+// //                   placeholder="e.g. Education Expo 2024"
+// //                 />
+
+// //                 <button
+// //                   type="button"
+// //                   className="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition mt-3 disabled:opacity-60"
+// //                   onClick={handleSaveDraft}
+// //                   disabled={saving || sending}
+// //                 >
+// //                   {saving ? (
+// //                     <>
+// //                       <Loader2 size={14} className="animate-spin" />
+// //                       Saving...
+// //                     </>
+// //                   ) : (
+// //                     "Save"
+// //                   )}
+// //                 </button>
+// //               </div>
+// //             </div>
+
+// //             {/* BOTTOM: Editor + Preview */}
+// //             <div
+// //               style={{
+// //                 display: "grid",
+// //                 gridTemplateColumns: "1fr 340px",
+// //                 gap: 20,
+// //               }}
+// //             >
+// //               {/* CENTER COLUMN */}
+// //               <div style={styles.centerCol}>
+// //                 <div style={styles.card}>
+// //                   <h3 style={styles.sectionTitle}>{designTitle}</h3>
+
+// //                   <div style={styles.tabs}>
+// //                     {["Email", "WhatsApp Message", "Social Media Post"].map((tab) => (
+// //                       <button
+// //                         key={tab}
+// //                         onClick={() => {
+// //                           if (tab === "Email") {
+// //                             setChannel("Email");
+// //                             setActiveTab("Email");
+// //                           } else if (tab === "WhatsApp Message") {
+// //                             setChannel("WhatsApp");
+// //                             setActiveTab("WhatsApp Message");
+// //                           } else {
+// //                             setChannel("Social");
+// //                             setActiveTab("Social Media Post");
+// //                           }
+// //                         }}
+// //                         style={activeTab === tab ? styles.activeTab : styles.tab}
+// //                       >
+// //                         {tab}
+// //                       </button>
+// //                     ))}
+// //                   </div>
+
+// //                   {activeTab === "Email" && (
+// //                     <div style={styles.emailComposer}>
+// //                       <div style={styles.emailSectionCard}>
+// //                         <h4 style={{ margin: "0 0 10px", fontSize: 14 }}>
+// //                           Email Details
+// //                         </h4>
+// //                         <label className="block mb-2 text-sm font-medium">
+// //                           Subject
+// //                         </label>
+// //                         <input
+// //                           className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500 text-sm"
+// //                           value={subject}
+// //                           onChange={(e) => setSubject(e.target.value)}
+// //                           placeholder="Enter email subject"
+// //                         />
+// //                         <label
+// //                           style={{
+// //                             display: "flex",
+// //                             alignItems: "center",
+// //                             gap: 8,
+// //                             fontSize: 13,
+// //                             marginTop: 12,
+// //                           }}
+// //                         >
+// //                           <input
+// //                             type="checkbox"
+// //                             checked={preheader}
+// //                             onChange={(e) => setPreheader(e.target.checked)}
+// //                           />
+// //                           Add preview text (Preheader)
+// //                         </label>
+// //                         {preheader && (
+// //                           <input
+// //                             className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500 text-sm mt-2"
+// //                             value={preheaderText}
+// //                             onChange={(e) => setPreheaderText(e.target.value)}
+// //                             placeholder="Preheader text..."
+// //                           />
+// //                         )}
+// //                       </div>
+// //                     </div>
+// //                   )}
+
+// //                   <div style={styles.addToolbar}>
+// //                     <button style={styles.addBtn} onClick={() => addBlock("text")}>
+// //                       <TypeIcon size={14} /> Text
+// //                     </button>
+// //                     <button style={styles.addBtn} onClick={() => addBlock("image")}>
+// //                       <ImageIcon size={14} /> Banner / Image
+// //                     </button>
+// //                     <button style={styles.addBtn} onClick={() => addBlock("logo")}>
+// //                       <Square size={14} /> Logo
+// //                     </button>
+// //                     <button style={styles.addBtn} onClick={() => addBlock("button")}>
+// //                       <Square size={14} /> Button
+// //                     </button>
+// //                     <button style={styles.addBtn} onClick={() => addBlock("divider")}>
+// //                       <Minus size={14} /> Divider
+// //                     </button>
+// //                   </div>
+
+// //                   <div style={styles.canvas}>
+// //                     {blocks.length === 0 && (
+// //                       <div style={styles.emptyCanvas}>
+// //                         <p>No content yet. Click the buttons above to start designing.</p>
+// //                       </div>
+// //                     )}
+
+// //                     {blocks.map((block, index) => (
+// //                       <div key={block.id} style={styles.blockWrapper}>
+// //                         <div style={styles.blockControls}>
+// //                           <span style={styles.blockTypeLabel}>
+// //                             {block.type === "text"
+// //                               ? "Text"
+// //                               : block.type === "image"
+// //                                 ? "Banner / Image"
+// //                                 : block.type === "logo"
+// //                                   ? "Logo"
+// //                                   : block.type === "button"
+// //                                     ? "Button"
+// //                                     : "Divider"}
+// //                           </span>
+// //                           <div style={styles.blockControlButtons}>
+// //                             <button
+// //                               type="button"
+// //                               style={styles.controlBtn}
+// //                               onClick={() => moveBlock(index, "up")}
+// //                               title="Move up"
+// //                             >
+// //                               ↑
+// //                             </button>
+// //                             <button
+// //                               type="button"
+// //                               style={styles.controlBtn}
+// //                               onClick={() => moveBlock(index, "down")}
+// //                               title="Move down"
+// //                             >
+// //                               ↓
+// //                             </button>
+// //                             <button
+// //                               type="button"
+// //                               style={{ ...styles.controlBtn, color: "#ef4444" }}
+// //                               onClick={() => removeBlock(block.id)}
+// //                               title="Delete block"
+// //                             >
+// //                               <Trash2 size={14} />
+// //                             </button>
+// //                           </div>
+// //                         </div>
+
+// //                         {block.type === "text" && (
+// //                           <TextBlockEditor
+// //                             block={block}
+// //                             onUpdate={(updates) => updateBlock(block.id, updates)}
+// //                             placeholder={editorPlaceholder}
+// //                           />
+// //                         )}
+
+// //                         {block.type === "image" && (
+// //                           <ImageBlockEditor
+// //                             block={block}
+// //                             onUpdate={(updates) => updateBlock(block.id, updates)}
+// //                             onError={(msg) => msg && showAlert("error", msg)}
+// //                           />
+// //                         )}
+
+// //                         {block.type === "logo" && (
+// //                           <ImageBlockEditor
+// //                             block={block}
+// //                             onUpdate={(updates) => updateBlock(block.id, updates)}
+// //                             onError={(msg) => msg && showAlert("error", msg)}
+// //                             isLogo
+// //                           />
+// //                         )}
+
+// //                         {block.type === "button" && (
+// //                           <div>
+// //                             <div style={{ textAlign: block.align || "center" }}>
+// //                               <button className="inline-flex items-center gap-1.5 px-6 py-2.5 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm font-semibold shadow-lg">
+// //                                 {block.buttonText || "Button"}
+// //                               </button>
+// //                             </div>
+// //                             <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+// //                               <input
+// //                                 className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500 text-sm"
+// //                                 placeholder="Button Text"
+// //                                 value={block.buttonText || ""}
+// //                                 onChange={(e) =>
+// //                                   updateBlock(block.id, {
+// //                                     buttonText: e.target.value,
+// //                                   })
+// //                                 }
+// //                               />
+// //                               <input
+// //                                 className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500 text-sm"
+// //                                 placeholder="Button Link (URL)"
+// //                                 value={block.buttonLink || ""}
+// //                                 onChange={(e) =>
+// //                                   updateBlock(block.id, {
+// //                                     buttonLink: e.target.value,
+// //                                   })
+// //                                 }
+// //                               />
+// //                             </div>
+// //                           </div>
+// //                         )}
+
+// //                         {block.type === "divider" && (
+// //                           <hr
+// //                             style={{
+// //                               border: "none",
+// //                               borderTop: "1px solid #e2e8f0",
+// //                               margin: "12px 0",
+// //                             }}
+// //                           />
+// //                         )}
+// //                       </div>
+// //                     ))}
+// //                   </div>
+// //                 </div>
+// //               </div>
+
+// //               {/* RIGHT COLUMN - PREVIEW */}
+// //               <div style={styles.rightCol}>
+// //                 <div style={styles.card}>
+// //                   <h3 style={styles.sectionTitle}>Preview</h3>
+// //                   <p style={styles.sectionHint}>Live preview of your design</p>
+
+// //                   {activeTab === "Email" && (
+// //                     <div style={styles.previewCard}>
+// //                       <div style={styles.previewHeader}>
+// //                         <Mail size={16} color="#2563eb" />
+// //                         <span style={{ fontWeight: 600, fontSize: 13 }}>
+// //                           Email Preview
+// //                         </span>
+// //                       </div>
+// //                       <div style={styles.emailPreviewFrame}>
+// //                         {subject && (
+// //                           <div style={styles.previewSubject}>
+// //                             <strong>Subject:</strong> {subject}
+// //                           </div>
+// //                         )}
+// //                         <div style={styles.previewBody}>
+// //                           {blocks.map((block) => {
+// //                             if (block.type === "logo") {
+// //                               return (
+// //                                 <div
+// //                                   key={block.id}
+// //                                   style={{ textAlign: "center", marginBottom: 12 }}
+// //                                 >
+// //                                   {block.url ? (
+// //                                     <img
+// //                                       src={block.url}
+// //                                       alt="Logo"
+// //                                       style={{
+// //                                         maxHeight: 40,
+// //                                         objectFit: "contain",
+// //                                       }}
+// //                                     />
+// //                                   ) : (
+// //                                     <div style={styles.logoPlaceholder}>
+// //                                       <ImageIcon size={16} color="#2563eb" />
+// //                                       <span>Your Logo</span>
+// //                                     </div>
+// //                                   )}
+// //                                 </div>
+// //                               );
+// //                             }
+// //                             if (block.type === "image" && block.url) {
+// //                               return (
+// //                                 <img
+// //                                   key={block.id}
+// //                                   src={block.url}
+// //                                   alt=""
+// //                                   style={{
+// //                                     width: "100%",
+// //                                     borderRadius: 8,
+// //                                     marginBottom: 12,
+// //                                     maxHeight: 140,
+// //                                     objectFit: "cover",
+// //                                   }}
+// //                                 />
+// //                               );
+// //                             }
+// //                             if (block.type === "text") {
+// //                               return (
+// //                                 <p
+// //                                   key={block.id}
+// //                                   style={{
+// //                                     fontSize: block.fontSize || 14,
+// //                                     lineHeight: 1.6,
+// //                                     whiteSpace: "pre-wrap",
+// //                                     margin: "0 0 12px",
+// //                                     color: block.color || "#334155",
+// //                                     backgroundColor:
+// //                                       block.backgroundColor &&
+// //                                       block.backgroundColor !== "transparent"
+// //                                         ? block.backgroundColor
+// //                                         : undefined,
+// //                                     fontWeight: block.fontWeight || "normal",
+// //                                     fontStyle: block.fontStyle || "normal",
+// //                                     textAlign: block.textAlign || "left",
+// //                                     padding:
+// //                                       block.backgroundColor &&
+// //                                       block.backgroundColor !== "transparent"
+// //                                         ? "8px 10px"
+// //                                         : undefined,
+// //                                     borderRadius:
+// //                                       block.backgroundColor &&
+// //                                       block.backgroundColor !== "transparent"
+// //                                         ? 6
+// //                                         : undefined,
+// //                                   }}
+// //                                 >
+// //                                   {block.content}
+// //                                 </p>
+// //                               );
+// //                             }
+// //                             if (block.type === "button") {
+// //                               return (
+// //                                 <div
+// //                                   key={block.id}
+// //                                   style={{
+// //                                     textAlign: block.align || "center",
+// //                                     margin: "16px 0",
+// //                                   }}
+// //                                 >
+// //                                   <a
+// //                                     href={block.buttonLink}
+// //                                     className="inline-block px-5 py-2.5 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm font-semibold shadow-lg no-underline"
+// //                                   >
+// //                                     {block.buttonText}
+// //                                   </a>
+// //                                 </div>
+// //                               );
+// //                             }
+// //                             if (block.type === "divider") {
+// //                               return (
+// //                                 <hr
+// //                                   key={block.id}
+// //                                   style={{
+// //                                     border: "none",
+// //                                     borderTop: "1px solid #e2e8f0",
+// //                                     margin: "16px 0",
+// //                                   }}
+// //                                 />
+// //                               );
+// //                             }
+// //                             return null;
+// //                           })}
+// //                         </div>
+// //                       </div>
+// //                     </div>
+// //                   )}
+
+// //                   {activeTab === "WhatsApp Message" && (
+// //                     <div style={styles.previewCard}>
+// //                       <div style={styles.previewHeader}>
+// //                         <FaWhatsapp size={16} color="#25D366" />
+// //                         <span style={{ fontWeight: 600, fontSize: 13 }}>
+// //                           WhatsApp Preview
+// //                         </span>
+// //                       </div>
+// //                       <div style={styles.whatsappFrame}>
+// //                         <div style={styles.waHeader}>
+// //                           <ArrowLeft size={16} color="#fff" />
+// //                           <div style={styles.waAvatar}></div>
+// //                           <div>
+// //                             <div style={{ fontWeight: 600, fontSize: 13, color: "#fff" }}>
+// //                               Your Company
+// //                             </div>
+// //                             <div style={{ fontSize: 11, color: "#d1fae5" }}>online</div>
+// //                           </div>
+// //                         </div>
+// //                         <div style={styles.waBody}>
+// //                           <div style={styles.waBubble}>
+// //                             {blocks.map((block) => {
+// //                               if (block.type === "image" && block.url) {
+// //                                 return (
+// //                                   <img
+// //                                     key={block.id}
+// //                                     src={block.url}
+// //                                     alt=""
+// //                                     style={{
+// //                                       width: "100%",
+// //                                       borderRadius: 8,
+// //                                       marginBottom: 8,
+// //                                     }}
+// //                                   />
+// //                                 );
+// //                               }
+// //                               if (block.type === "text") {
+// //                                 return (
+// //                                   <p
+// //                                     key={block.id}
+// //                                     style={{
+// //                                       fontSize: block.fontSize || 13,
+// //                                       whiteSpace: "pre-wrap",
+// //                                       margin: "0 0 8px",
+// //                                       color: block.color || "#111",
+// //                                       backgroundColor:
+// //                                         block.backgroundColor &&
+// //                                         block.backgroundColor !== "transparent"
+// //                                           ? block.backgroundColor
+// //                                           : undefined,
+// //                                       fontWeight: block.fontWeight || "normal",
+// //                                       fontStyle: block.fontStyle || "normal",
+// //                                       textAlign: block.textAlign || "left",
+// //                                       padding:
+// //                                         block.backgroundColor &&
+// //                                         block.backgroundColor !== "transparent"
+// //                                           ? "6px 8px"
+// //                                           : undefined,
+// //                                       borderRadius: 6,
+// //                                     }}
+// //                                   >
+// //                                     {block.content}
+// //                                   </p>
+// //                                 );
+// //                               }
+// //                               if (block.type === "button") {
+// //                                 return (
+// //                                   <div key={block.id} style={{ margin: "8px 0" }}>
+// //                                     <a
+// //                                       href={block.buttonLink}
+// //                                       className="inline-block px-4 py-2 rounded-md bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm no-underline"
+// //                                     >
+// //                                       {block.buttonText}
+// //                                     </a>
+// //                                   </div>
+// //                                 );
+// //                               }
+// //                               return null;
+// //                             })}
+// //                             <div
+// //                               style={{
+// //                                 textAlign: "right",
+// //                                 fontSize: 11,
+// //                                 color: "#94a3b8",
+// //                                 marginTop: 6,
+// //                               }}
+// //                             >
+// //                               11:30 AM ✓✓
+// //                             </div>
+// //                           </div>
+// //                         </div>
+// //                         <div style={styles.waInput}>
+// //                           <Smile size={18} color="#94a3b8" />
+// //                           <span style={{ flex: 1, color: "#94a3b8", fontSize: 13 }}>
+// //                             Type a message
+// //                           </span>
+// //                         </div>
+// //                       </div>
+// //                     </div>
+// //                   )}
+
+// //                   {activeTab === "Social Media Post" && (
+// //                     <div style={styles.previewCard}>
+// //                       <div style={styles.previewHeader}>
+// //                         <span style={{ fontWeight: 600, fontSize: 13 }}>
+// //                           Social Media Preview
+// //                         </span>
+// //                       </div>
+// //                       <div style={styles.socialCard}>
+// //                         <div style={styles.socialHeader}>
+// //                           <div style={styles.socialAvatar}></div>
+// //                           <div>
+// //                             <div style={{ fontWeight: 600, fontSize: 13 }}>
+// //                               Your Company
+// //                             </div>
+// //                             <div style={{ fontSize: 11, color: "#94a3b8" }}>
+// //                               Just now · 🌐
+// //                             </div>
+// //                           </div>
+// //                         </div>
+// //                         {blocks.map((block) => {
+// //                           if (block.type === "text") {
+// //                             return (
+// //                               <p
+// //                                 key={block.id}
+// //                                 style={{
+// //                                   fontSize: block.fontSize || 13,
+// //                                   padding: "8px 12px",
+// //                                   whiteSpace: "pre-wrap",
+// //                                   color: block.color || "#111",
+// //                                   backgroundColor:
+// //                                     block.backgroundColor &&
+// //                                     block.backgroundColor !== "transparent"
+// //                                       ? block.backgroundColor
+// //                                       : undefined,
+// //                                   fontWeight: block.fontWeight || "normal",
+// //                                   fontStyle: block.fontStyle || "normal",
+// //                                   textAlign: block.textAlign || "left",
+// //                                   margin: 0,
+// //                                 }}
+// //                               >
+// //                                 {block.content}
+// //                               </p>
+// //                             );
+// //                           }
+// //                           if (block.type === "image" && block.url) {
+// //                             return (
+// //                               <img
+// //                                 key={block.id}
+// //                                 src={block.url}
+// //                                 alt=""
+// //                                 style={{
+// //                                   width: "100%",
+// //                                   display: "block",
+// //                                   marginTop: 8,
+// //                                 }}
+// //                               />
+// //                             );
+// //                           }
+// //                           return null;
+// //                         })}
+// //                         <div style={styles.socialActions}>
+// //                           <span>👍 Like</span>
+// //                           <span>💬 Comment</span>
+// //                           <span>↗ Share</span>
+// //                         </div>
+// //                       </div>
+// //                     </div>
+// //                   )}
+// //                 </div>
+// //               </div>
+// //             </div>
+// //           </div>
+
+// //           <div style={styles.bottomBar}>
+// //             <button
+// //               type="button"
+// //               style={styles.bottomSecondary}
+// //               onClick={() => {
+// //                 setShowTemplates(true);
+// //                 loadTemplates();
+// //               }}
+// //             >
+// //               <ArrowLeft size={16} /> Back to Templates
+// //             </button>
+// //           </div>
+// //         </>
+// //       )}
+// //     </div>
+// //   );
+// // };
+
+// // // ===================== STYLES =====================
+// // const styles: any = {
+// //   page: {
+// //     minHeight: "100vh",
+// //     background: "#f1f5f9",
+// //     fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+// //     color: "#1e293b",
+// //     paddingBottom: 80,
+// //   },
+// //   templateCard: {
+// //     border: "1px solid #e2e8f0",
+// //     borderRadius: 10,
+// //     padding: 16,
+// //     cursor: "pointer",
+// //     background: "#fff",
+// //     transition: "all 0.15s",
+// //   },
+// //   channelBadge: {
+// //     fontSize: 11,
+// //     fontWeight: 600,
+// //     padding: "2px 8px",
+// //     borderRadius: 20,
+// //   },
+// //   templateTitle: {
+// //     margin: "0 0 6px",
+// //     fontSize: 14,
+// //     fontWeight: 600,
+// //     color: "#1e293b",
+// //     overflow: "hidden",
+// //     textOverflow: "ellipsis",
+// //     whiteSpace: "nowrap",
+// //   },
+// //   centerCol: { display: "flex", flexDirection: "column" },
+// //   rightCol: { display: "flex", flexDirection: "column" },
+// //   card: {
+// //     background: "#fff",
+// //     borderRadius: 12,
+// //     padding: 20,
+// //     boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+// //     border: "1px solid #e2e8f0",
+// //   },
+// //   sectionTitle: { margin: "0 0 4px", fontSize: 15, fontWeight: 600 },
+// //   sectionHint: { margin: "0 0 14px", fontSize: 12, color: "#94a3b8" },
+// //   secondaryBtn: {
+// //     display: "inline-flex",
+// //     alignItems: "center",
+// //     justifyContent: "center",
+// //     gap: 6,
+// //     padding: "10px 16px",
+// //     borderRadius: 8,
+// //     border: "1px solid #d1d5db",
+// //     background: "#fff",
+// //     fontSize: 13,
+// //     fontWeight: 500,
+// //     cursor: "pointer",
+// //     color: "#475569",
+// //   },
+// //   tabs: {
+// //     display: "flex",
+// //     gap: 4,
+// //     borderBottom: "1px solid #e2e8f0",
+// //     marginBottom: 16,
+// //   },
+// //   tab: {
+// //     padding: "8px 14px",
+// //     border: "none",
+// //     background: "transparent",
+// //     fontSize: 13,
+// //     color: "#64748b",
+// //     cursor: "pointer",
+// //     borderBottom: "2px solid transparent",
+// //   },
+// //   activeTab: {
+// //     padding: "8px 14px",
+// //     border: "none",
+// //     background: "transparent",
+// //     fontSize: 13,
+// //     color: "#2563eb",
+// //     fontWeight: 600,
+// //     cursor: "pointer",
+// //     borderBottom: "2px solid #2563eb",
+// //   },
+// //   addToolbar: {
+// //     display: "flex",
+// //     flexWrap: "wrap",
+// //     alignItems: "center",
+// //     gap: 8,
+// //     padding: "12px 0",
+// //     borderBottom: "1px solid #e2e8f0",
+// //     marginBottom: 16,
+// //   },
+// //   addBtn: {
+// //     display: "inline-flex",
+// //     alignItems: "center",
+// //     gap: 6,
+// //     padding: "6px 12px",
+// //     borderRadius: 6,
+// //     border: "1px solid #e2e8f0",
+// //     background: "#f8fafc",
+// //     fontSize: 12,
+// //     fontWeight: 500,
+// //     cursor: "pointer",
+// //     color: "#475569",
+// //   },
+// //   canvas: {
+// //     minHeight: 320,
+// //     background: "#fafafa",
+// //     border: "1px solid #e2e8f0",
+// //     borderRadius: 10,
+// //     padding: 16,
+// //   },
+// //   emptyCanvas: {
+// //     textAlign: "center",
+// //     padding: "60px 20px",
+// //     color: "#94a3b8",
+// //   },
+// //   blockWrapper: {
+// //     marginBottom: 16,
+// //     padding: 12,
+// //     background: "#fff",
+// //     borderRadius: 8,
+// //     border: "1px solid #e2e8f0",
+// //   },
+// //   blockControls: {
+// //     display: "flex",
+// //     alignItems: "center",
+// //     justifyContent: "space-between",
+// //     marginBottom: 10,
+// //     paddingBottom: 8,
+// //     borderBottom: "1px solid #f1f5f9",
+// //   },
+// //   blockTypeLabel: {
+// //     fontSize: 11,
+// //     fontWeight: 600,
+// //     color: "#64748b",
+// //     textTransform: "uppercase",
+// //     letterSpacing: "0.04em",
+// //   },
+// //   blockControlButtons: {
+// //     display: "flex",
+// //     gap: 4,
+// //   },
+// //   controlBtn: {
+// //     width: 28,
+// //     height: 28,
+// //     border: "1px solid #e2e8f0",
+// //     borderRadius: 6,
+// //     background: "#fff",
+// //     cursor: "pointer",
+// //     display: "flex",
+// //     alignItems: "center",
+// //     justifyContent: "center",
+// //     fontSize: 12,
+// //     color: "#475569",
+// //   },
+// //   textBlock: {
+// //     width: "100%",
+// //     minHeight: 80,
+// //     padding: 12,
+// //     border: "1px solid #d1d5db",
+// //     borderRadius: 8,
+// //     fontSize: 14,
+// //     lineHeight: 1.5,
+// //     resize: "vertical",
+// //     boxSizing: "border-box",
+// //     fontFamily: "inherit",
+// //   },
+// //   imagePlaceholder: {
+// //     height: 140,
+// //     background: "#f1f5f9",
+// //     borderRadius: 8,
+// //     display: "flex",
+// //     flexDirection: "column",
+// //     alignItems: "center",
+// //     justifyContent: "center",
+// //     color: "#94a3b8",
+// //     gap: 8,
+// //   },
+// //   logoPlaceholder: {
+// //     height: 80,
+// //     background: "#f1f5f9",
+// //     borderRadius: 8,
+// //     display: "flex",
+// //     flexDirection: "column",
+// //     alignItems: "center",
+// //     justifyContent: "center",
+// //     color: "#94a3b8",
+// //     gap: 4,
+// //   },
+// //   uploadBox: {
+// //     border: "2px dashed #cbd5e1",
+// //     borderRadius: 10,
+// //     padding: "24px 16px",
+// //     textAlign: "center",
+// //     background: "#f8fafc",
+// //   },
+// //   emailComposer: { display: "flex", flexDirection: "column", gap: 12 },
+// //   emailSectionCard: {
+// //     border: "1px solid #e2e8f0",
+// //     borderRadius: 10,
+// //     padding: 12,
+// //     background: "#f8fafc",
+// //   },
+// //   previewCard: { marginBottom: 20 },
+// //   previewHeader: {
+// //     display: "flex",
+// //     alignItems: "center",
+// //     gap: 8,
+// //     marginBottom: 10,
+// //   },
+// //   emailPreviewFrame: {
+// //     border: "1px solid #e2e8f0",
+// //     borderRadius: 10,
+// //     overflow: "hidden",
+// //     background: "#fff",
+// //   },
+// //   previewSubject: {
+// //     padding: "10px 14px",
+// //     background: "#f8fafc",
+// //     borderBottom: "1px solid #e2e8f0",
+// //     fontSize: 13,
+// //     color: "#475569",
+// //   },
+// //   previewBody: { padding: 16 },
+// //   whatsappFrame: {
+// //     border: "1px solid #e2e8f0",
+// //     borderRadius: 12,
+// //     overflow: "hidden",
+// //     background: "#efeae2",
+// //   },
+// //   waHeader: {
+// //     background: "#075e54",
+// //     padding: "10px 12px",
+// //     display: "flex",
+// //     alignItems: "center",
+// //     gap: 10,
+// //   },
+// //   waAvatar: {
+// //     width: 32,
+// //     height: 32,
+// //     borderRadius: "50%",
+// //     background: "#25D366",
+// //   },
+// //   waBody: { padding: 12, minHeight: 200 },
+// //   waBubble: {
+// //     background: "#fff",
+// //     borderRadius: "8px 8px 8px 0",
+// //     padding: 10,
+// //     maxWidth: "95%",
+// //     boxShadow: "0 1px 2px rgba(0,0,0,0.08)",
+// //   },
+// //   waInput: {
+// //     background: "#f0f2f5",
+// //     padding: "8px 12px",
+// //     display: "flex",
+// //     alignItems: "center",
+// //     gap: 10,
+// //   },
+// //   socialCard: {
+// //     border: "1px solid #e2e8f0",
+// //     borderRadius: 10,
+// //     overflow: "hidden",
+// //     background: "#fff",
+// //   },
+// //   socialHeader: {
+// //     display: "flex",
+// //     alignItems: "center",
+// //     gap: 10,
+// //     padding: "10px 12px",
+// //   },
+// //   socialAvatar: {
+// //     width: 36,
+// //     height: 36,
+// //     borderRadius: "50%",
+// //     background: "linear-gradient(135deg, #2563eb, #60a5fa)",
+// //   },
+// //   socialActions: {
+// //     display: "flex",
+// //     justifyContent: "space-around",
+// //     padding: "8px 0",
+// //     borderTop: "1px solid #f1f5f9",
+// //     fontSize: 12,
+// //     color: "#64748b",
+// //   },
+// //   bottomBar: {
+// //     margin: "0 auto",
+// //     marginTop: 8,
+// //     maxWidth: 1600,
+// //     width: "calc(100% - 48px)",
+// //     background: "#fff",
+// //     border: "1px solid #e2e8f0",
+// //     borderRadius: 12,
+// //     padding: "14px 24px",
+// //     display: "flex",
+// //     justifyContent: "space-between",
+// //     alignItems: "center",
+// //     boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+// //   },
+// //   bottomSecondary: {
+// //     display: "flex",
+// //     alignItems: "center",
+// //     gap: 6,
+// //     padding: "9px 18px",
+// //     borderRadius: 8,
+// //     border: "1px solid #d1d5db",
+// //     background: "#fff",
+// //     fontSize: 13,
+// //     fontWeight: 500,
+// //     cursor: "pointer",
+// //     color: "#475569",
+// //   },
+// // };
+
+// // export default Campaign;
+
+// // "use client";
+
+// // import React, { useState, useEffect, useContext, useCallback, useRef } from "react";
+// // import axios from "axios";
+// // import * as XLSX from "xlsx";
+// // import { AuthContext } from "../../../../../../context/AuthContext";
+// // import {
+// //   Mail,
+// //   Upload,
+// //   Smile,
+// //   ArrowLeft,
+// //   FileText,
+// //   Image as ImageIcon,
+// //   Type as TypeIcon,
+// //   Square,
+// //   Minus,
+// //   Trash2,
+// //   Loader2,
+// //   Plus,
+// //   CheckCircle,
+// //   XCircle,
+// //   AlertTriangle,
+// //   X,
+// // } from "lucide-react";
+// // import {
+// //   FaWhatsapp,
+// // } from "react-icons/fa";
+
+// // const API = String(import.meta.env.VITE_BACKEND_URL);
+
+// // // ===================== ALERT MODAL =====================
+// // type AlertType = "success" | "warning" | "error";
+
+// // interface AlertState {
+// //   type: AlertType;
+// //   message: string;
+// // }
+
+// // const AlertModal = ({
+// //   type,
+// //   message,
+// //   onClose,
+// // }: {
+// //   type: AlertType;
+// //   message: string;
+// //   onClose: () => void;
+// // }) => {
+// //   useEffect(() => {
+// //     if (type === "warning") {
+// //       const timer = setTimeout(onClose, 3000);
+// //       return () => clearTimeout(timer);
+// //     }
+// //   }, [type, onClose]);
+
+// //   useEffect(() => {
+// //     const handleKeyDown = (event: KeyboardEvent) => {
+// //       if (event.key === "Enter" || event.key === "Escape") {
+// //         event.preventDefault();
+// //         onClose();
+// //       }
+// //     };
+// //     window.addEventListener("keydown", handleKeyDown);
+// //     return () => window.removeEventListener("keydown", handleKeyDown);
+// //   }, [onClose]);
+
+// //   const config =
+// //     type === "success"
+// //       ? {
+// //           borderColor: "#10b981",
+// //           iconColor: "#10b981",
+// //           buttonBg: "#10b981",
+// //           title: "Success",
+// //           Icon: CheckCircle,
+// //         }
+// //       : type === "warning"
+// //         ? {
+// //             borderColor: "#eab308",
+// //             iconColor: "#eab308",
+// //             buttonBg: "#eab308",
+// //             title: "Warning",
+// //             Icon: AlertTriangle,
+// //           }
+// //         : {
+// //             borderColor: "#f43f5e",
+// //             iconColor: "#f43f5e",
+// //             buttonBg: "#f43f5e",
+// //             title: "Error",
+// //             Icon: XCircle,
+// //           };
+
+// //   const Icon = config.Icon;
+
+// //   return (
+// //     <div
+// //       style={{
+// //         position: "fixed",
+// //         inset: 0,
+// //         zIndex: 9999,
+// //         display: "flex",
+// //         alignItems: "center",
+// //         justifyContent: "center",
+// //         background: "rgba(15, 23, 42, 0.45)",
+// //       }}
+// //     >
+// //       <div
+// //         style={{
+// //           width: 380,
+// //           overflow: "hidden",
+// //           borderRadius: 12,
+// //           background: "#fff",
+// //           boxShadow: "0 25px 50px rgba(0,0,0,0.25)",
+// //           borderLeft: `4px solid ${config.borderColor}`,
+// //         }}
+// //       >
+// //         <div
+// //           style={{
+// //             display: "flex",
+// //             alignItems: "center",
+// //             justifyContent: "space-between",
+// //             background: "#1e40af",
+// //             padding: "14px 20px",
+// //             color: "#fff",
+// //           }}
+// //         >
+// //           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+// //             <Icon size={24} color={config.iconColor} />
+// //             <h2 style={{ margin: 0, fontSize: 17, fontWeight: 600 }}>
+// //               {config.title}
+// //             </h2>
+// //           </div>
+// //           <button
+// //             type="button"
+// //             onClick={onClose}
+// //             style={{
+// //               background: "transparent",
+// //               border: "none",
+// //               color: "#fff",
+// //               cursor: "pointer",
+// //               padding: 4,
+// //               borderRadius: 4,
+// //               display: "flex",
+// //               alignItems: "center",
+// //             }}
+// //           >
+// //             <X size={18} />
+// //           </button>
+// //         </div>
+
+// //         <div style={{ padding: "22px 20px" }}>
+// //           <p
+// //             style={{
+// //               margin: 0,
+// //               fontSize: 14,
+// //               lineHeight: 1.6,
+// //               color: "#475569",
+// //             }}
+// //           >
+// //             {message}
+// //           </p>
+// //         </div>
+
+// //         <div
+// //           style={{
+// //             display: "flex",
+// //             justifyContent: "flex-end",
+// //             gap: 10,
+// //             borderTop: "1px solid #e2e8f0",
+// //             background: "#f8fafc",
+// //             padding: "14px 20px",
+// //           }}
+// //         >
+// //           <button
+// //             type="button"
+// //             onClick={onClose}
+// //             style={{
+// //               border: "none",
+// //               borderRadius: 8,
+// //               padding: "8px 20px",
+// //               fontSize: 13,
+// //               fontWeight: 500,
+// //               color: "#fff",
+// //               background: config.buttonBg,
+// //               cursor: "pointer",
+// //             }}
+// //           >
+// //             OK
+// //           </button>
+// //         </div>
+// //       </div>
+// //     </div>
+// //   );
+// // };
+
+// // // ===================== TYPES =====================
+// // type BlockType = "text" | "image" | "button" | "logo" | "document" | "divider";
+
+// // interface Block {
+// //   id: string;
+// //   type: BlockType;
+// //   content?: string;
+// //   url?: string;
+// //   documentName?: string;
+// //   buttonText?: string;
+// //   buttonLink?: string;
+// //   align?: "left" | "center" | "right";
+// //   serverId?: string;
+// //   color?: string;
+// //   backgroundColor?: string;
+// //   fontSize?: number;
+// //   fontWeight?: "normal" | "bold";
+// //   fontStyle?: "normal" | "italic";
+// //   textAlign?: "left" | "center" | "right";
+// // }
+
+// // // ===================== HELPERS =====================
+// // const generateId = () => Math.random().toString(36).slice(2, 11);
+
+// // function uiBlockToApi(block: Block, sortOrder: number) {
+// //   const content: Record<string, unknown> = {};
+// //   switch (block.type) {
+// //     case "text":
+// //       content.text = block.content ?? "";
+// //       content.color = block.color ?? "#334155";
+// //       content.backgroundColor = block.backgroundColor ?? "transparent";
+// //       content.fontSize = block.fontSize ?? 14;
+// //       content.fontWeight = block.fontWeight ?? "normal";
+// //       content.fontStyle = block.fontStyle ?? "normal";
+// //       content.textAlign = block.textAlign ?? "left";
+// //       break;
+// //     case "image":
+// //     case "logo":
+// //       content.url = block.url ?? "";
+// //       break;
+// //     case "document":
+// //       content.url = block.url ?? "";
+// //       content.documentName = block.documentName ?? "";
+// //       break;
+// //     case "button":
+// //       content.buttonText = block.buttonText ?? "";
+// //       content.buttonLink = block.buttonLink ?? "";
+// //       content.align = block.align ?? "center";
+// //       break;
+// //     case "divider":
+// //       break;
+// //   }
+// //   return {
+// //     block_type: block.type,
+// //     content,
+// //     sort_order: sortOrder,
+// //   };
+// // }
+
+// // function apiBlockToUi(row: {
+// //   id: string;
+// //   blockType: string;
+// //   content: any;
+// //   sortOrder: number;
+// // }): Block {
+// //   const c = row.content || {};
+// //   return {
+// //     id: row.id,
+// //     serverId: row.id,
+// //     type: row.blockType as BlockType,
+// //     content: c.text ?? "",
+// //     url: c.url ?? "",
+// //     documentName: c.documentName ?? "",
+// //     buttonText: c.buttonText ?? "",
+// //     buttonLink: c.buttonLink ?? "",
+// //     align: (c.align as "left" | "center" | "right") ?? "center",
+// //     color: c.color ?? "#334155",
+// //     backgroundColor: c.backgroundColor ?? "transparent",
+// //     fontSize: c.fontSize ?? 14,
+// //     fontWeight: (c.fontWeight as "normal" | "bold") ?? "normal",
+// //     fontStyle: (c.fontStyle as "normal" | "italic") ?? "normal",
+// //     textAlign: (c.textAlign as "left" | "center" | "right") ?? "left",
+// //   };
+// // }
+
+// // // ===================== IMAGE UPLOAD =====================
+// // async function uploadImageFile(file: File): Promise<string> {
+// //   const formData = new FormData();
+// //   formData.append("image", file);
+
+// //   const res = await axios.post(`${API}/api/upload/image`, formData, {
+// //     withCredentials: true,
+// //     headers: { "Content-Type": "multipart/form-data" },
+// //   });
+
+// //   if (!res.data?.success || !res.data?.url) {
+// //     throw new Error(res.data?.message || "Upload failed");
+// //   }
+// //   return res.data.url as string;
+// // }
+
+// // async function uploadDocumentFile(file: File): Promise<string> {
+// //   const formData = new FormData();
+// //   formData.append("file", file);
+
+// //   const res = await axios.post(`${API}/api/upload/document`, formData, {
+// //     withCredentials: true,
+// //     headers: { "Content-Type": "multipart/form-data" },
+// //   });
+
+// //   if (!res.data?.success || !res.data?.url) {
+// //     throw new Error(res.data?.message || "Document upload failed");
+// //   }
+// //   return res.data.url as string;
+// // }
+
+// // function isImageFile(file: File) {
+// //   return file.type.startsWith("image/");
+// // }
+
+// // function isCampaignDocument(file: File) {
+// //   return /\.(pdf|docx?|xlsx?|pptx?|txt|csv|zip)$/i.test(file.name);
+// // }
+
+// // // ===================== IMAGE / LOGO BLOCK EDITOR =====================
+// // const ImageBlockEditor = ({
+// //   block,
+// //   onUpdate,
+// //   onError,
+// //   isLogo = false,
+// // }: {
+// //   block: Block;
+// //   onUpdate: (updates: Partial<Block>) => void;
+// //   onError: (msg: string | null) => void;
+// //   isLogo?: boolean;
+// // }) => {
+// //   const [uploading, setUploading] = useState(false);
+// //   const [dragOver, setDragOver] = useState(false);
+// //   const fileInputRef = useRef<HTMLInputElement>(null);
+// //   const dropRef = useRef<HTMLDivElement>(null);
+
+// //   const handleFiles = async (files: FileList | File[]) => {
+// //     const file = Array.from(files).find(isImageFile);
+// //     if (!file) {
+// //       onError("Please select an image file (PNG, JPG, GIF, WebP)");
+// //       return;
+// //     }
+// //     if (file.size > 8 * 1024 * 1024) {
+// //       onError("Image must be under 8 MB");
+// //       return;
+// //     }
+
+// //     try {
+// //       setUploading(true);
+// //       onError(null);
+// //       const url = await uploadImageFile(file);
+// //       onUpdate({ url });
+// //     } catch (err: any) {
+// //       console.error(err);
+// //       onError(err?.message || "Failed to upload image");
+// //     } finally {
+// //       setUploading(false);
+// //     }
+// //   };
+
+// //   useEffect(() => {
+// //     const el = dropRef.current;
+// //     if (!el) return;
+
+// //     const onPaste = (e: ClipboardEvent) => {
+// //       const items = e.clipboardData?.items;
+// //       if (!items) return;
+
+// //       for (const item of Array.from(items)) {
+// //         if (item.type.startsWith("image/")) {
+// //           e.preventDefault();
+// //           const file = item.getAsFile();
+// //           if (file) handleFiles([file]);
+// //           break;
+// //         }
+// //       }
+// //     };
+
+// //     el.addEventListener("paste", onPaste as any);
+// //     el.tabIndex = 0;
+
+// //     return () => el.removeEventListener("paste", onPaste as any);
+// //   }, []);
+
+// //   const onDrop = (e: React.DragEvent) => {
+// //     e.preventDefault();
+// //     setDragOver(false);
+// //     if (e.dataTransfer.files?.length) {
+// //       handleFiles(e.dataTransfer.files);
+// //     }
+// //   };
+
+// //   return (
+// //     <div>
+// //       {block.url ? (
+// //         <div style={{ textAlign: isLogo ? "center" : "left" }}>
+// //           <img
+// //             src={block.url}
+// //             alt={isLogo ? "Logo" : "Banner"}
+// //             style={
+// //               isLogo
+// //                 ? {
+// //                     maxHeight: 80,
+// //                     maxWidth: 200,
+// //                     objectFit: "contain",
+// //                     display: "block",
+// //                     margin: "0 auto",
+// //                   }
+// //                 : {
+// //                     width: "100%",
+// //                     borderRadius: 8,
+// //                     maxHeight: 220,
+// //                     objectFit: "cover",
+// //                   }
+// //             }
+// //           />
+// //           <div
+// //             style={{
+// //               display: "flex",
+// //               justifyContent: isLogo ? "center" : "flex-end",
+// //               marginTop: 8,
+// //             }}
+// //           >
+// //             <button
+// //               type="button"
+// //               onClick={() => onUpdate({ url: "" })}
+// //               style={{
+// //                 background: "#fef2f2",
+// //                 color: "#dc2626",
+// //                 border: "1px solid #fecaca",
+// //                 borderRadius: 6,
+// //                 padding: "6px 12px",
+// //                 fontSize: 12,
+// //                 fontWeight: 500,
+// //                 cursor: "pointer",
+// //                 display: "inline-flex",
+// //                 alignItems: "center",
+// //                 gap: 4,
+// //               }}
+// //             >
+// //               <Trash2 size={12} /> Remove image
+// //             </button>
+// //           </div>
+// //         </div>
+// //       ) : (
+// //         <div
+// //           ref={dropRef}
+// //           onDragOver={(e) => {
+// //             e.preventDefault();
+// //             setDragOver(true);
+// //           }}
+// //           onDragLeave={() => setDragOver(false)}
+// //           onDrop={onDrop}
+// //           onClick={() => !uploading && fileInputRef.current?.click()}
+// //           style={{
+// //             ...(isLogo ? styles.logoPlaceholder : styles.imagePlaceholder),
+// //             border: dragOver ? "2px dashed #2563eb" : "2px dashed #cbd5e1",
+// //             background: dragOver ? "#eff6ff" : "#f8fafc",
+// //             cursor: uploading ? "wait" : "pointer",
+// //             outline: "none",
+// //             transition: "all 0.15s",
+// //           }}
+// //         >
+// //           {uploading ? (
+// //             <>
+// //               <Loader2 size={28} className="animate-spin" color="#2563eb" />
+// //               <p style={{ margin: "8px 0 0", fontSize: 13 }}>Uploading…</p>
+// //             </>
+// //           ) : (
+// //             <>
+// //               <ImageIcon size={isLogo ? 28 : 32} color="#94a3b8" />
+// //               <p style={{ margin: "8px 0 4px", fontWeight: 500, color: "#334155" }}>
+// //                 {isLogo ? "Add Logo" : "Add Banner / Image"}
+// //               </p>
+// //               <p style={{ fontSize: 12, color: "#94a3b8", margin: 0 }}>
+// //                 Click • Drag & drop • or paste (Ctrl/Cmd+V)
+// //               </p>
+// //             </>
+// //           )}
+// //         </div>
+// //       )}
+
+// //       <input
+// //         ref={fileInputRef}
+// //         type="file"
+// //         accept="image/png,image/jpeg,image/jpg,image/gif,image/webp"
+// //         style={{ display: "none" }}
+// //         onChange={(e) => {
+// //           if (e.target.files?.length) handleFiles(e.target.files);
+// //           e.target.value = "";
+// //         }}
+// //       />
+// //     </div>
+// //   );
+// // };
+
+// // const DocumentBlockEditor = ({
+// //   block,
+// //   onUpdate,
+// //   onError,
+// // }: {
+// //   block: Block;
+// //   onUpdate: (updates: Partial<Block>) => void;
+// //   onError: (msg: string | null) => void;
+// // }) => {
+// //   const [uploading, setUploading] = useState(false);
+// //   const fileInputRef = useRef<HTMLInputElement>(null);
+
+// //   const handleFile = async (file?: File) => {
+// //     if (!file) return;
+// //     if (!isCampaignDocument(file)) {
+// //       onError("Select a PDF, Word, Excel, PowerPoint, text, CSV, or ZIP file");
+// //       return;
+// //     }
+// //     if (file.size > 15 * 1024 * 1024) {
+// //       onError("Document must be under 15 MB");
+// //       return;
+// //     }
+
+// //     try {
+// //       setUploading(true);
+// //       onError(null);
+// //       const url = await uploadDocumentFile(file);
+// //       onUpdate({ url, documentName: file.name });
+// //     } catch (err: any) {
+// //       console.error(err);
+// //       onError(err?.message || "Failed to upload document");
+// //     } finally {
+// //       setUploading(false);
+// //     }
+// //   };
+
+// //   return (
+// //     <div>
+// //       {block.url ? (
+// //         <div
+// //           style={{
+// //             display: "flex",
+// //             alignItems: "center",
+// //             justifyContent: "space-between",
+// //             gap: 12,
+// //             padding: 12,
+// //             border: "1px solid #e2e8f0",
+// //             borderRadius: 8,
+// //           }}
+// //         >
+// //           <a
+// //             href={block.url}
+// //             target="_blank"
+// //             rel="noopener noreferrer"
+// //             style={{
+// //               display: "inline-flex",
+// //               alignItems: "center",
+// //               gap: 8,
+// //               minWidth: 0,
+// //               color: "#2563eb",
+// //               textDecoration: "none",
+// //             }}
+// //           >
+// //             <FileText size={20} />
+// //             <span style={{ overflowWrap: "anywhere" }}>
+// //               {block.documentName || "Uploaded document"}
+// //             </span>
+// //           </a>
+// //           <button
+// //             type="button"
+// //             onClick={() => onUpdate({ url: "", documentName: "" })}
+// //             aria-label="Remove document"
+// //             style={{
+// //               border: "none",
+// //               background: "transparent",
+// //               color: "#dc2626",
+// //               cursor: "pointer",
+// //             }}
+// //           >
+// //             <Trash2 size={16} />
+// //           </button>
+// //         </div>
+// //       ) : (
+// //         <>
+// //           <button
+// //             type="button"
+// //             disabled={uploading}
+// //             onClick={() => fileInputRef.current?.click()}
+// //             style={{
+// //               display: "inline-flex",
+// //               alignItems: "center",
+// //               gap: 8,
+// //               padding: "10px 14px",
+// //               border: "1px dashed #94a3b8",
+// //               borderRadius: 8,
+// //               background: "#f8fafc",
+// //               color: "#334155",
+// //               cursor: uploading ? "wait" : "pointer",
+// //             }}
+// //           >
+// //             {uploading ? (
+// //               <Loader2 size={16} className="animate-spin" />
+// //             ) : (
+// //               <Upload size={16} />
+// //             )}
+// //             {uploading ? "Uploading document..." : "Choose document"}
+// //           </button>
+// //           <p style={{ margin: "6px 0 0", color: "#64748b", fontSize: 12 }}>
+// //             PDF, Office documents, text, CSV, or ZIP (up to 15 MB)
+// //           </p>
+// //         </>
+// //       )}
+// //       <input
+// //         ref={fileInputRef}
+// //         type="file"
+// //         accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip"
+// //         hidden
+// //         onChange={(event) => {
+// //           void handleFile(event.target.files?.[0]);
+// //           event.target.value = "";
+// //         }}
+// //       />
+// //     </div>
+// //   );
+// // };
+
+// // // ===================== EMOJI PICKER =====================
+// // const COMMON_EMOJIS = [
+// //   "😀", "😃", "😄", "😁", "😆", "😅", "😂", "🤣", "😊", "😇",
+// //   "🙂", "🙃", "😉", "😌", "😍", "🥰", "😘", "😗", "😙", "😚",
+// //   "😋", "😛", "😝", "😜", "🤪", "🤨", "🧐", "🤓", "😎", "🤩",
+// //   "🥳", "😏", "😒", "😞", "😔", "😟", "😕", "🙁", "☹️", "😣",
+// //   "😖", "😫", "😩", "🥺", "😢", "😭", "😤", "😠", "😡", "🤬",
+// //   "👍", "👎", "👏", "🙌", "👐", "🤝", "🙏", "✌️", "🤞", "🤟",
+// //   "🤘", "👌", "🤏", "👈", "👉", "👆", "👇", "☝️", "✋", "🤚",
+// //   "👋", "💪", "🦾", "❤️", "🧡", "💛", "💚", "💙", "💜", "🖤",
+// //   "🤍", "🤎", "💔", "❣️", "💕", "💞", "💓", "💗", "💖", "💘",
+// //   "💝", "💟", "☮️", "✝️", "☪️", "🕉", "☸️", "✡️", "🔯", "🕎",
+// //   "🔥", "⭐", "🌟", "✨", "💫", "🎉", "🎊", "🎈", "🎁", "🏆",
+// //   "🥇", "🥈", "🥉", "⚽", "🏀", "🏈", "⚾", "🎾", "🏐", "🏉",
+// //   "📧", "📩", "📨", "💌", "📱", "💻", "🖥️", "⌨️", "🖨️", "🖱️",
+// //   "✅", "❌", "❗", "❓", "💯", "🔔", "🔕", "📢", "📣", "💬",
+// // ];
+
+// // const EmojiPicker = ({
+// //   onSelect,
+// //   onClose,
+// // }: {
+// //   onSelect: (emoji: string) => void;
+// //   onClose: () => void;
+// // }) => {
+// //   const ref = useRef<HTMLDivElement>(null);
+
+// //   useEffect(() => {
+// //     const handleClick = (e: MouseEvent) => {
+// //       if (ref.current && !ref.current.contains(e.target as Node)) {
+// //         onClose();
+// //       }
+// //     };
+// //     document.addEventListener("mousedown", handleClick);
+// //     return () => document.removeEventListener("mousedown", handleClick);
+// //   }, [onClose]);
+
+// //   return (
+// //     <div
+// //       ref={ref}
+// //       style={{
+// //         position: "absolute",
+// //         top: "100%",
+// //         left: 0,
+// //         zIndex: 50,
+// //         background: "#fff",
+// //         border: "1px solid #e2e8f0",
+// //         borderRadius: 10,
+// //         padding: 10,
+// //         boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+// //         width: 280,
+// //         maxHeight: 220,
+// //         overflowY: "auto",
+// //         display: "grid",
+// //         gridTemplateColumns: "repeat(8, 1fr)",
+// //         gap: 4,
+// //       }}
+// //     >
+// //       {COMMON_EMOJIS.map((emoji) => (
+// //         <button
+// //           key={emoji}
+// //           type="button"
+// //           onClick={() => {
+// //             onSelect(emoji);
+// //             onClose();
+// //           }}
+// //           style={{
+// //             border: "none",
+// //             background: "transparent",
+// //             fontSize: 20,
+// //             cursor: "pointer",
+// //             padding: 4,
+// //             borderRadius: 6,
+// //             lineHeight: 1.2,
+// //           }}
+// //           onMouseEnter={(e) => {
+// //             e.currentTarget.style.background = "#f1f5f9";
+// //           }}
+// //           onMouseLeave={(e) => {
+// //             e.currentTarget.style.background = "transparent";
+// //           }}
+// //         >
+// //           {emoji}
+// //         </button>
+// //       ))}
+// //     </div>
+// //   );
+// // };
+
+// // // ===================== TEXT BLOCK EDITOR =====================
+// // const TextBlockEditor = ({
+// //   block,
+// //   onUpdate,
+// //   placeholder,
+// // }: {
+// //   block: Block;
+// //   onUpdate: (updates: Partial<Block>) => void;
+// //   placeholder?: string;
+// // }) => {
+// //   const [showEmoji, setShowEmoji] = useState(false);
+// //   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+// //   const insertEmoji = (emoji: string) => {
+// //     const ta = textareaRef.current;
+// //     if (!ta) {
+// //       onUpdate({ content: (block.content || "") + emoji });
+// //       return;
+// //     }
+// //     const start = ta.selectionStart;
+// //     const end = ta.selectionEnd;
+// //     const text = block.content || "";
+// //     const newText = text.slice(0, start) + emoji + text.slice(end);
+// //     onUpdate({ content: newText });
+// //     requestAnimationFrame(() => {
+// //       if (textareaRef.current) {
+// //         const pos = start + emoji.length;
+// //         textareaRef.current.focus();
+// //         textareaRef.current.setSelectionRange(pos, pos);
+// //       }
+// //     });
+// //   };
+
+// //   const fontSizes = [12, 13, 14, 15, 16, 18, 20, 22, 24, 28, 32];
+
+// //   return (
+// //     <div>
+// //       <div
+// //         style={{
+// //           display: "flex",
+// //           flexWrap: "wrap",
+// //           alignItems: "center",
+// //           gap: 8,
+// //           marginBottom: 8,
+// //           padding: "8px 10px",
+// //           background: "#f8fafc",
+// //           borderRadius: 8,
+// //           border: "1px solid #e2e8f0",
+// //         }}
+// //       >
+// //         <label style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: "#64748b" }}>
+// //           <span>Color</span>
+// //           <input
+// //             type="color"
+// //             value={block.color && block.color !== "transparent" ? block.color : "#334155"}
+// //             onChange={(e) => onUpdate({ color: e.target.value })}
+// //             style={{
+// //               width: 28,
+// //               height: 28,
+// //               border: "1px solid #e2e8f0",
+// //               borderRadius: 6,
+// //               cursor: "pointer",
+// //               padding: 0,
+// //               background: "none",
+// //             }}
+// //           />
+// //         </label>
+
+// //         <label style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: "#64748b" }}>
+// //           <span>Bg</span>
+// //           <input
+// //             type="color"
+// //             value={
+// //               block.backgroundColor && block.backgroundColor !== "transparent"
+// //                 ? block.backgroundColor
+// //                 : "#ffffff"
+// //             }
+// //             onChange={(e) => onUpdate({ backgroundColor: e.target.value })}
+// //             style={{
+// //               width: 28,
+// //               height: 28,
+// //               border: "1px solid #e2e8f0",
+// //               borderRadius: 6,
+// //               cursor: "pointer",
+// //               padding: 0,
+// //               background: "none",
+// //             }}
+// //           />
+// //           <button
+// //             type="button"
+// //             onClick={() => onUpdate({ backgroundColor: "transparent" })}
+// //             style={{
+// //               fontSize: 11,
+// //               padding: "2px 6px",
+// //               border: "1px solid #e2e8f0",
+// //               borderRadius: 4,
+// //               background: "#fff",
+// //               cursor: "pointer",
+// //               color: "#64748b",
+// //             }}
+// //           >
+// //             Clear
+// //           </button>
+// //         </label>
+
+// //         <label style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: "#64748b" }}>
+// //           <span>Size</span>
+// //           <select
+// //             value={block.fontSize ?? 14}
+// //             onChange={(e) => onUpdate({ fontSize: Number(e.target.value) })}
+// //             style={{
+// //               padding: "4px 6px",
+// //               borderRadius: 6,
+// //               border: "1px solid #e2e8f0",
+// //               fontSize: 12,
+// //               background: "#fff",
+// //               cursor: "pointer",
+// //             }}
+// //           >
+// //             {fontSizes.map((s) => (
+// //               <option key={s} value={s}>
+// //                 {s}px
+// //               </option>
+// //             ))}
+// //           </select>
+// //         </label>
+
+// //         <button
+// //           type="button"
+// //           onClick={() =>
+// //             onUpdate({
+// //               fontWeight: block.fontWeight === "bold" ? "normal" : "bold",
+// //             })
+// //           }
+// //           style={{
+// //             width: 28,
+// //             height: 28,
+// //             border: block.fontWeight === "bold" ? "2px solid #2563eb" : "1px solid #e2e8f0",
+// //             borderRadius: 6,
+// //             background: block.fontWeight === "bold" ? "#eff6ff" : "#fff",
+// //             fontWeight: 700,
+// //             fontSize: 13,
+// //             cursor: "pointer",
+// //             color: "#334155",
+// //           }}
+// //         >
+// //           B
+// //         </button>
+
+// //         <button
+// //           type="button"
+// //           onClick={() =>
+// //             onUpdate({
+// //               fontStyle: block.fontStyle === "italic" ? "normal" : "italic",
+// //             })
+// //           }
+// //           style={{
+// //             width: 28,
+// //             height: 28,
+// //             border: block.fontStyle === "italic" ? "2px solid #2563eb" : "1px solid #e2e8f0",
+// //             borderRadius: 6,
+// //             background: block.fontStyle === "italic" ? "#eff6ff" : "#fff",
+// //             fontStyle: "italic",
+// //             fontSize: 13,
+// //             cursor: "pointer",
+// //             color: "#334155",
+// //           }}
+// //         >
+// //           I
+// //         </button>
+
+// //         {(["left", "center", "right"] as const).map((align) => (
+// //           <button
+// //             key={align}
+// //             type="button"
+// //             onClick={() => onUpdate({ textAlign: align })}
+// //             style={{
+// //               width: 28,
+// //               height: 28,
+// //               border:
+// //                 (block.textAlign || "left") === align
+// //                   ? "2px solid #2563eb"
+// //                   : "1px solid #e2e8f0",
+// //               borderRadius: 6,
+// //               background:
+// //                 (block.textAlign || "left") === align ? "#eff6ff" : "#fff",
+// //               fontSize: 11,
+// //               cursor: "pointer",
+// //               color: "#334155",
+// //             }}
+// //           >
+// //             {align === "left" ? "⬅" : align === "center" ? "↔" : "➡"}
+// //           </button>
+// //         ))}
+
+// //         <div style={{ position: "relative" }}>
+// //           <button
+// //             type="button"
+// //             onClick={() => setShowEmoji((v) => !v)}
+// //             style={{
+// //               display: "inline-flex",
+// //               alignItems: "center",
+// //               gap: 4,
+// //               padding: "4px 10px",
+// //               border: "1px solid #e2e8f0",
+// //               borderRadius: 6,
+// //               background: showEmoji ? "#eff6ff" : "#fff",
+// //               fontSize: 12,
+// //               cursor: "pointer",
+// //               color: "#475569",
+// //             }}
+// //           >
+// //             <Smile size={14} /> Emoji
+// //           </button>
+// //           {showEmoji && (
+// //             <EmojiPicker
+// //               onSelect={insertEmoji}
+// //               onClose={() => setShowEmoji(false)}
+// //             />
+// //           )}
+// //         </div>
+// //       </div>
+
+// //       <textarea
+// //         ref={textareaRef}
+// //         className="w-full rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500"
+// //         style={{
+// //           ...styles.textBlock,
+// //           color: block.color || "#334155",
+// //           backgroundColor:
+// //             block.backgroundColor && block.backgroundColor !== "transparent"
+// //               ? block.backgroundColor
+// //               : "#fff",
+// //           fontSize: block.fontSize || 14,
+// //           fontWeight: block.fontWeight || "normal",
+// //           fontStyle: block.fontStyle || "normal",
+// //           textAlign: block.textAlign || "left",
+// //         }}
+// //         value={block.content}
+// //         onChange={(e) => onUpdate({ content: e.target.value })}
+// //         rows={4}
+// //         placeholder={placeholder || "Hi {{Name}},\n\nType your message here..."}
+// //       />
+// //     </div>
+// //   );
+// // };
+
+// // // ===================== COMPONENT =====================
+// // interface Props {
+// //   onBack?: () => void;
+// // }
+
+// // const Campaign = ({ onBack }: Props) => {
+// //   const { user } = useContext(AuthContext);
+
+// //   const [showTemplates, setShowTemplates] = useState(true);
+// //   const [templates, setTemplates] = useState<any[]>([]);
+// //   const [templatesLoading, setTemplatesLoading] = useState(false);
+
+// //   const [channel, setChannel] = useState("Email");
+// //   const [activeTab, setActiveTab] = useState("Email");
+
+// //   const [campaignId, setCampaignId] = useState<string | null>(null);
+// //   const [campaignName, setCampaignName] = useState("");
+// //   const [category, setCategory] = useState("Event");
+// //   const [subject, setSubject] = useState("");
+
+// //   const [recipients, setRecipients] = useState("");
+
+// //   const [blocks, setBlocks] = useState<Block[]>([
+// //     {
+// //       id: "1",
+// //       type: "text",
+// //       content: "",
+// //       color: "#334155",
+// //       backgroundColor: "transparent",
+// //       fontSize: 14,
+// //       fontWeight: "normal",
+// //       fontStyle: "normal",
+// //       textAlign: "left",
+// //     },
+// //   ]);
+
+// //   const [loading, setLoading] = useState(false);
+// //   const [saving, setSaving] = useState(false);
+// //   const [sending, setSending] = useState(false);
+// //   const [alert, setAlert] = useState<AlertState | null>(null);
+
+// //   const showAlert = (type: AlertType, message: string) => {
+// //     setAlert({ type, message });
+// //   };
+
+// //   const loadTemplates = useCallback(async () => {
+// //     try {
+// //       setTemplatesLoading(true);
+// //       const res = await axios.get(`${API}/api/campaigns`, {
+// //         withCredentials: true,
+// //       });
+// //       setTemplates(res.data.data || []);
+// //     } catch (err) {
+// //       console.error("Failed to load templates", err);
+// //     } finally {
+// //       setTemplatesLoading(false);
+// //     }
+// //   }, []);
+
+// //   useEffect(() => {
+// //     loadTemplates();
+// //   }, [loadTemplates]);
+
+// //   const loadCampaign = useCallback(async (id: string) => {
+// //     try {
+// //       setLoading(true);
+
+// //       const [campRes, blocksRes] = await Promise.all([
+// //         axios.get(`${API}/api/campaigns/${id}`, { withCredentials: true }),
+// //         axios.get(`${API}/api/campaigns/${id}/blocks`, { withCredentials: true }),
+// //       ]);
+
+// //       const camp = campRes.data.data;
+// //       setCampaignId(camp.id);
+// //       setCampaignName(camp.campaignName || "Untitled Campaign");
+// //       setCategory(camp.category || "Event");
+// //       setSubject(camp.subject || "");
+
+// //       const ch = camp.channel || "Email";
+// //       setChannel(ch);
+// //       if (ch === "WhatsApp") setActiveTab("WhatsApp Message");
+// //       else if (ch === "Social") setActiveTab("Social Media Post");
+// //       else setActiveTab("Email");
+
+// //       const apiBlocks = blocksRes.data.data || [];
+// //       setBlocks(apiBlocks.length ? apiBlocks.map(apiBlockToUi) : []);
+// //     } catch (err: any) {
+// //       console.error(err);
+// //       showAlert("error", err?.response?.data?.message || "Failed to load campaign");
+// //     } finally {
+// //       setLoading(false);
+// //     }
+// //   }, []);
+
+// //   const openTemplate = async (id: string) => {
+// //     setShowTemplates(false);
+// //     await loadCampaign(id);
+// //   };
+
+// //   const startNewCampaign = () => {
+// //     setShowTemplates(false);
+// //     setCampaignId(null);
+// //     setCampaignName("");
+// //     setCategory("Event");
+// //     setSubject("");
+// //     setChannel("Email");
+// //     setActiveTab("Email");
+// //     setRecipients("");
+// //     setBlocks([
+// //       {
+// //         id: generateId(),
+// //         type: "text",
+// //         content: "",
+// //         color: "#334155",
+// //         backgroundColor: "transparent",
+// //         fontSize: 14,
+// //         fontWeight: "normal",
+// //         fontStyle: "normal",
+// //         textAlign: "left",
+// //       },
+// //     ]);
+// //     setAlert(null);
+// //   };
+
+// //   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+// //     const file = e.target.files?.[0];
+// //     if (!file) return;
+
+// //     const reader = new FileReader();
+
+// //     reader.onload = (event) => {
+// //       try {
+// //         const data = new Uint8Array(event.target?.result as ArrayBuffer);
+// //         const workbook = XLSX.read(data, { type: "array" });
+// //         const sheetName = workbook.SheetNames[0];
+// //         const sheet = workbook.Sheets[sheetName];
+// //         const rows: any[] = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+// //         const emails: string[] = [];
+
+// //         rows.forEach((row) => {
+// //           if (!Array.isArray(row)) return;
+// //           row.forEach((cell) => {
+// //             if (typeof cell === "string" || typeof cell === "number") {
+// //               const value = String(cell).trim();
+// //               if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+// //                 emails.push(value);
+// //               }
+// //             }
+// //           });
+// //         });
+
+// //         const uniqueEmails = [...new Set(emails)];
+
+// //         if (uniqueEmails.length === 0) {
+// //           showAlert("warning", "No valid email addresses found in the file");
+// //           return;
+// //         }
+
+// //         setRecipients(uniqueEmails.join("\n"));
+// //         showAlert("success", `${uniqueEmails.length} emails loaded from file`);
+// //       } catch (err) {
+// //         console.error(err);
+// //         showAlert("error", "Failed to read the file. Please upload a valid CSV or Excel file.");
+// //       }
+// //     };
+
+// //     reader.readAsArrayBuffer(file);
+// //     e.target.value = "";
+// //   };
+
+// //   const addBlock = (type: BlockType) => {
+// //     const newBlock: Block = {
+// //       id: generateId(),
+// //       type,
+// //       content: type === "text" ? "" : "",
+// //       url: type === "image" || type === "logo" || type === "document" ? "" : undefined,
+// //       documentName: type === "document" ? "" : undefined,
+// //       buttonText: type === "button" ? "" : undefined,
+// //       buttonLink: type === "button" ? "" : undefined,
+// //       align: "center",
+// //       color: type === "text" ? "#334155" : undefined,
+// //       backgroundColor: type === "text" ? "transparent" : undefined,
+// //       fontSize: type === "text" ? 14 : undefined,
+// //       fontWeight: type === "text" ? "normal" : undefined,
+// //       fontStyle: type === "text" ? "normal" : undefined,
+// //       textAlign: type === "text" ? "left" : undefined,
+// //     };
+// //     setBlocks((prev) => [...prev, newBlock]);
+// //   };
+
+// //   const updateBlock = (id: string, updates: Partial<Block>) => {
+// //     setBlocks((prev) => prev.map((b) => (b.id === id ? { ...b, ...updates } : b)));
+// //   };
+
+// //   const removeBlock = (id: string) => {
+// //     setBlocks((prev) => prev.filter((b) => b.id !== id));
+// //   };
+
+// //   const moveBlock = (index: number, direction: "up" | "down") => {
+// //     setBlocks((prev) => {
+// //       const next = [...prev];
+// //       const target = direction === "up" ? index - 1 : index + 1;
+// //       if (target < 0 || target >= next.length) return prev;
+// //       [next[index], next[target]] = [next[target], next[index]];
+// //       return next;
+// //     });
+// //   };
+
+// //   // ---------- SAVE DRAFT ----------
+// //   const handleSaveDraft = async () => {
+// //     if (!campaignName.trim()) {
+// //       showAlert("warning", "Please enter a campaign name");
+// //       return;
+// //     }
+
+// //     try {
+// //       setSaving(true);
+
+// //       const payload = {
+// //         campaign_name: campaignName.trim(),
+// //         channel:
+// //           channel === "WhatsApp"
+// //             ? "WhatsApp"
+// //             : channel === "Social"
+// //               ? "Social"
+// //               : "Email",
+// //         category: category || "Others",
+// //         subject: channel === "Email" ? subject || null : null,
+// //         preheader: null,
+// //         status: "Draft",
+// //         scheduled_at: null,
+// //       };
+
+// //       let id = campaignId;
+
+// //       if (!id) {
+// //         const res = await axios.post(`${API}/api/campaigns`, payload, {
+// //           withCredentials: true,
+// //         });
+// //         id = res.data.data.id;
+// //         setCampaignId(id);
+// //       } else {
+// //         await axios.put(`${API}/api/campaigns/${id}`, payload, {
+// //           withCredentials: true,
+// //         });
+// //       }
+
+// //       const existingRes = await axios.get(`${API}/api/campaigns/${id}/blocks`, {
+// //         withCredentials: true,
+// //       });
+// //       const existing = existingRes.data.data || [];
+
+// //       await Promise.all(
+// //         existing.map((b: any) =>
+// //           axios.delete(`${API}/api/campaigns/${id}/blocks/${b.id}`, {
+// //             withCredentials: true,
+// //           })
+// //         )
+// //       );
+
+// //       for (let i = 0; i < blocks.length; i++) {
+// //         await axios.post(
+// //           `${API}/api/campaigns/${id}/blocks`,
+// //           uiBlockToApi(blocks[i], i),
+// //           { withCredentials: true }
+// //         );
+// //       }
+
+// //       const refreshed = await axios.get(`${API}/api/campaigns/${id}/blocks`, {
+// //         withCredentials: true,
+// //       });
+// //       setBlocks((refreshed.data.data || []).map(apiBlockToUi));
+
+// //       showAlert("success", "Campaign saved as draft");
+// //       loadTemplates();
+// //     } catch (err: any) {
+// //       console.error(err);
+// //       showAlert("error", err?.response?.data?.message || "Failed to save campaign");
+// //     } finally {
+// //       setSaving(false);
+// //     }
+// //   };
+
+// //   // ---------- SEND ----------
+// //   const handleSend = async () => {
+// //     if (!campaignName.trim()) {
+// //       showAlert("warning", "Please enter a campaign name");
+// //       return;
+// //     }
+
+// //     if (channel !== "Email") {
+// //       showAlert("warning", "Sending is currently only supported for Email campaigns");
+// //       return;
+// //     }
+
+// //     const emails = recipients
+// //       .split(/[,;\n]/)
+// //       .map((e) => e.trim())
+// //       .filter(Boolean);
+
+// //     if (emails.length === 0) {
+// //       showAlert("warning", "Please enter at least one recipient email or upload a file");
+// //       return;
+// //     }
+
+// //     try {
+// //       setSending(true);
+
+// //       let id = campaignId;
+
+// //       const payload = {
+// //         campaign_name: campaignName.trim(),
+// //         channel: "Email",
+// //         category: category || "Others",
+// //         subject: subject || null,
+// //         preheader: null,
+// //         status: "Draft",
+// //         scheduled_at: null,
+// //       };
+
+// //       if (!id) {
+// //         const res = await axios.post(`${API}/api/campaigns`, payload, {
+// //           withCredentials: true,
+// //         });
+// //         id = res.data.data.id;
+// //         setCampaignId(id);
+// //       } else {
+// //         await axios.put(`${API}/api/campaigns/${id}`, payload, {
+// //           withCredentials: true,
+// //         });
+// //       }
+
+// //       const existingRes = await axios.get(`${API}/api/campaigns/${id}/blocks`, {
+// //         withCredentials: true,
+// //       });
+// //       const existing = existingRes.data.data || [];
+
+// //       await Promise.all(
+// //         existing.map((b: any) =>
+// //           axios.delete(`${API}/api/campaigns/${id}/blocks/${b.id}`, {
+// //             withCredentials: true,
+// //           })
+// //         )
+// //       );
+
+// //       for (let i = 0; i < blocks.length; i++) {
+// //         await axios.post(
+// //           `${API}/api/campaigns/${id}/blocks`,
+// //           uiBlockToApi(blocks[i], i),
+// //           { withCredentials: true }
+// //         );
+// //       }
+
+// //       await axios.post(
+// //         `${API}/api/campaigns/${id}/send`,
+// //         { emails },
+// //         { withCredentials: true }
+// //       );
+
+// //       showAlert("success", `Campaign sent to ${emails.length} recipient(s)`);
+// //       await loadTemplates();
+// //       setShowTemplates(true);
+// //     } catch (err: any) {
+// //       console.error(err);
+// //       showAlert("error", err?.response?.data?.message || "Failed to send campaign");
+// //     } finally {
+// //       setSending(false);
+// //     }
+// //   };
+
+// //   const editorPlaceholder =
+// //     activeTab === "Email"
+// //       ? "Hi {{Name}},\n\nType your message here..."
+// //       : activeTab === "WhatsApp Message"
+// //         ? "Hi {{Name}},\n\nType your WhatsApp message here..."
+// //         : "Type your social post caption here...";
+
+// //   const designTitle =
+// //     activeTab === "Email"
+// //       ? "Create Email"
+// //       : activeTab === "WhatsApp Message"
+// //         ? "Create WhatsApp Message"
+// //         : "Create Social Media Post";
+
+// //   if (loading) {
+// //     return (
+// //       <div
+// //         style={{
+// //           ...styles.page,
+// //           display: "flex",
+// //           alignItems: "center",
+// //           justifyContent: "center",
+// //         }}
+// //       >
+// //         <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#64748b" }}>
+// //           <Loader2 size={20} className="animate-spin" />
+// //           Loading campaign...
+// //         </div>
+// //       </div>
+// //     );
+// //   }
+
+// //   return (
+// //     <div style={styles.page}>
+// //       {alert && (
+// //         <AlertModal
+// //           type={alert.type}
+// //           message={alert.message}
+// //           onClose={() => setAlert(null)}
+// //         />
+// //       )}
+
+// //       {/* ===================== TEMPLATES VIEW ===================== */}
+// //       {showTemplates && (
+// //         <div style={{ padding: "20px 24px", maxWidth: 1600, margin: "0 auto" }}>
+// //           <div style={styles.card}>
+// //             <div
+// //               style={{
+// //                 display: "flex",
+// //                 justifyContent: "space-between",
+// //                 alignItems: "center",
+// //                 marginBottom: 20,
+// //               }}
+// //             >
+// //               <div>
+// //                 <h3 style={styles.sectionTitle}>Your Campaigns & Templates</h3>
+// //                 <p style={styles.sectionHint}>
+// //                   Open a previous campaign or start a new one
+// //                 </p>
+// //               </div>
+// //               <div style={{ display: "flex", gap: 10 }}>
+// //                 {onBack && (
+// //                   <button style={styles.secondaryBtn} onClick={onBack}>
+// //                     <ArrowLeft size={16} /> Back
+// //                   </button>
+// //                 )}
+// //                 <button
+// //                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm font-semibold shadow-lg hover:opacity-90 transition"
+// //                   onClick={startNewCampaign}
+// //                 >
+// //                   <Plus size={16} /> Create New Campaign
+// //                 </button>
+// //               </div>
+// //             </div>
+
+// //             {templatesLoading ? (
+// //               <div
+// //                 style={{
+// //                   display: "flex",
+// //                   alignItems: "center",
+// //                   gap: 8,
+// //                   color: "#64748b",
+// //                   padding: "40px 0",
+// //                   justifyContent: "center",
+// //                 }}
+// //               >
+// //                 <Loader2 size={18} className="animate-spin" />
+// //                 Loading campaigns...
+// //               </div>
+// //             ) : templates.length === 0 ? (
+// //               <div style={{ textAlign: "center", padding: "50px 0", color: "#94a3b8" }}>
+// //                 <FileText size={40} style={{ marginBottom: 12, opacity: 0.4 }} />
+// //                 <p style={{ marginBottom: 16 }}>No campaigns yet</p>
+// //                 <button
+// //                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm font-semibold shadow-lg hover:opacity-90 transition"
+// //                   onClick={startNewCampaign}
+// //                 >
+// //                   <Plus size={16} /> Create your first campaign
+// //                 </button>
+// //               </div>
+// //             ) : (
+// //               <div
+// //                 style={{
+// //                   display: "grid",
+// //                   gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+// //                   gap: 14,
+// //                 }}
+// //               >
+// //                 {templates.map((t) => (
+// //                   <div
+// //                     key={t.id}
+// //                     onClick={() => openTemplate(t.id)}
+// //                     style={styles.templateCard}
+// //                     onMouseEnter={(e) => {
+// //                       e.currentTarget.style.borderColor = "#2563eb";
+// //                       e.currentTarget.style.boxShadow =
+// //                         "0 4px 12px rgba(37,99,235,0.12)";
+// //                     }}
+// //                     onMouseLeave={(e) => {
+// //                       e.currentTarget.style.borderColor = "#e2e8f0";
+// //                       e.currentTarget.style.boxShadow = "none";
+// //                     }}
+// //                   >
+// //                     <div
+// //                       style={{
+// //                         display: "flex",
+// //                         justifyContent: "space-between",
+// //                         marginBottom: 10,
+// //                       }}
+// //                     >
+// //                       <span
+// //                         style={{
+// //                           ...styles.channelBadge,
+// //                           background:
+// //                             t.channel === "Email"
+// //                               ? "#dbeafe"
+// //                               : t.channel === "WhatsApp"
+// //                                 ? "#dcfce7"
+// //                                 : t.channel === "Social"
+// //                                   ? "#dbeafe"
+// //                                   : "#fef3c7",
+// //                           color:
+// //                             t.channel === "Email"
+// //                               ? "#2563eb"
+// //                               : t.channel === "WhatsApp"
+// //                                 ? "#16a34a"
+// //                                 : t.channel === "Social"
+// //                                   ? "#2563eb"
+// //                                   : "#d97706",
+// //                         }}
+// //                       >
+// //                         {t.channel || "Email"}
+// //                       </span>
+// //                       <span
+// //                         style={{
+// //                           fontSize: 11,
+// //                           fontWeight: 500,
+// //                           color: t.status === "Sent" ? "#16a34a" : "#64748b",
+// //                         }}
+// //                       >
+// //                         {t.status || "Draft"}
+// //                       </span>
+// //                     </div>
+
+// //                     <h4 style={styles.templateTitle}>
+// //                       {t.campaignName || "Untitled"}
+// //                     </h4>
+
+// //                     <p style={{ margin: 0, fontSize: 12, color: "#94a3b8" }}>
+// //                       {t.category || "—"} ·{" "}
+// //                       {new Date(t.updatedAt || t.createdAt).toLocaleDateString()}
+// //                     </p>
+// //                   </div>
+// //                 ))}
+// //               </div>
+// //             )}
+// //           </div>
+// //         </div>
+// //       )}
+
+// //       {/* ===================== EDITOR VIEW ===================== */}
+// //       {!showTemplates && (
+// //         <>
+// //           <div style={{ padding: "16px 24px", maxWidth: 1600, margin: "0 auto" }}>
+// //             {/* TOP BAR: Back + Audience + Details (compact same row) */}
+// //           {/* TOP BAR – compact, one line */}
+// // <div
+// //   style={{
+// //     display: "flex",
+// //     alignItems: "center",
+// //     gap: 16,
+// //     marginBottom: 16,
+// //     flexWrap: "wrap",
+// //   }}
+// // >
+// //   {/* Back – icon only */}
+// //   <button
+// //     type="button"
+// //     onClick={() => {
+// //       setShowTemplates(true);
+// //       loadTemplates();
+// //     }}
+// //     title="Back to Templates"
+// //     style={{
+// //       ...styles.secondaryBtn,
+// //       padding: "8px 10px",
+// //       flexShrink: 0,
+// //     }}
+// //   >
+// //     <ArrowLeft size={16} />
+// //   </button>
+
+// //   {/* Audience */}
+// //   <div
+// //     style={{
+// //       display: "flex",
+// //       alignItems: "center",
+// //       gap: 8,
+// //       flex: "1 1 280px",
+// //       minWidth: 220,
+// //       maxWidth: 420,
+// //     }}
+// //   >
+// //     <input
+// //       type="text"
+// //       value={recipients}
+// //       onChange={(e) => setRecipients(e.target.value)}
+// //       placeholder="emails@example.com (comma or new line)"
+// //       className="w-full h-10 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500 text-sm"
+// //     />
+// //     <label
+// //       className="inline-flex items-center gap-1 px-3 h-10 rounded-lg border border-gray-300 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 cursor-pointer shrink-0"
+// //       title="Upload CSV / Excel"
+// //     >
+// //       <Upload size={14} />
+// //       <input
+// //         type="file"
+// //         accept=".csv,.xls,.xlsx"
+// //         onChange={handleFileUpload}
+// //         style={{ display: "none" }}
+// //       />
+// //     </label>
+// //     <button
+// //       type="button"
+// //       onClick={handleSend}
+// //       disabled={saving || sending}
+// //       className="inline-flex items-center gap-1.5 px-3 h-10 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white text-xs font-semibold shadow hover:opacity-90 transition disabled:opacity-60 shrink-0"
+// //     >
+// //       {sending ? (
+// //         <Loader2 size={13} className="animate-spin" />
+// //       ) : (
+// //         "Send"
+// //       )}
+// //     </button>
+// //   </div>
+
+// //   {/* Spacer gap between groups */}
+// //   <div style={{ width: 12, flexShrink: 0 }} />
+
+// //   {/* Campaign name + Save */}
+// //   <div
+// //     style={{
+// //       display: "flex",
+// //       alignItems: "center",
+// //       gap: 8,
+// //       flex: "1 1 200px",
+// //       minWidth: 180,
+// //       maxWidth: 320,
+// //     }}
+// //   >
+// //     <input
+// //       type="text"
+// //       value={campaignName}
+// //       onChange={(e) => setCampaignName(e.target.value)}
+// //       placeholder="Campaign name *"
+// //       className="w-full h-10 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500 text-sm"
+// //     />
+// //     <button
+// //       type="button"
+// //       onClick={handleSaveDraft}
+// //       disabled={saving || sending}
+// //       className="inline-flex items-center gap-1.5 px-3 h-10 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white text-xs font-semibold shadow hover:opacity-90 transition disabled:opacity-60 shrink-0"
+// //     >
+// //       {saving ? (
+// //         <Loader2 size={13} className="animate-spin" />
+// //       ) : (
+// //         "Save"
+// //       )}
+// //     </button>
+// //   </div>
+// // </div>
+
+// //             {/* BOTTOM: Editor + Preview */}
+// //             <div
+// //               style={{
+// //                 display: "grid",
+// //                 gridTemplateColumns: "220px minmax(0, 1fr) 340px",
+// //                 gap: 16,
+// //               }}
+// //             >
+// //               {/* LEFT SIDEBAR: Channel + content blocks */}
+// //               <div style={styles.sidebar}>
+// //                 <div style={styles.card}>
+// //                   <h3 style={styles.sectionTitle}>Campaign type</h3>
+// //                   <div style={styles.tabs}>
+// //                     {["Email", "WhatsApp Message", "Social Media Post"].map((tab) => (
+// //                       <button
+// //                         key={tab}
+// //                         type="button"
+// //                         onClick={() => {
+// //                           if (tab === "Email") {
+// //                             setChannel("Email");
+// //                             setActiveTab("Email");
+// //                           } else if (tab === "WhatsApp Message") {
+// //                             setChannel("WhatsApp");
+// //                             setActiveTab("WhatsApp Message");
+// //                           } else {
+// //                             setChannel("Social");
+// //                             setActiveTab("Social Media Post");
+// //                           }
+// //                         }}
+// //                         style={activeTab === tab ? styles.activeTab : styles.tab}
+// //                       >
+// //                         {tab}
+// //                       </button>
+// //                     ))}
+// //                   </div>
+
+// //                   <h3 style={{ ...styles.sectionTitle, marginTop: 20 }}>
+// //                     Add to campaign
+// //                   </h3>
+// //                   <div style={styles.addToolbar}>
+// //                     <button type="button" style={styles.addBtn} onClick={() => addBlock("text")}>
+// //                       <TypeIcon size={14} /> Text
+// //                     </button>
+// //                     <button type="button" style={styles.addBtn} onClick={() => addBlock("image")}>
+// //                       <ImageIcon size={14} /> Banner / Image
+// //                     </button>
+// //                     <button type="button" style={styles.addBtn} onClick={() => addBlock("logo")}>
+// //                       <Square size={14} /> Logo
+// //                     </button>
+// //                     <button type="button" style={styles.addBtn} onClick={() => addBlock("document")}>
+// //                       <FileText size={14} /> Document
+// //                     </button>
+// //                     <button type="button" style={styles.addBtn} onClick={() => addBlock("button")}>
+// //                       <Square size={14} /> Button
+// //                     </button>
+// //                     <button type="button" style={styles.addBtn} onClick={() => addBlock("divider")}>
+// //                       <Minus size={14} /> Divider
+// //                     </button>
+// //                   </div>
+// //                 </div>
+// //               </div>
+
+// //               {/* CENTER COLUMN */}
+// //               <div style={styles.centerCol}>
+// //                 <div style={styles.card}>
+// //                   <h3 style={styles.sectionTitle}>{designTitle}</h3>
+
+// //                   {activeTab === "Email" && (
+// //                     <div style={styles.emailComposer}>
+// //                       <div style={styles.emailSectionCard}>
+// //                         <h4 style={{ margin: "0 0 10px", fontSize: 14 }}>
+// //                           Email Details
+// //                         </h4>
+// //                         <label className="block mb-2 text-sm font-medium">
+// //                           Subject
+// //                         </label>
+// //                         <input
+// //                           className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500 text-sm"
+// //                           value={subject}
+// //                           onChange={(e) => setSubject(e.target.value)}
+// //                           placeholder="Enter email subject"
+// //                         />
+// //                       </div>
+// //                     </div>
+// //                   )}
+
+// //                   <div style={styles.canvas}>
+// //                     {blocks.length === 0 && (
+// //                       <div style={styles.emptyCanvas}>
+// //                         <p>No content yet. Click the buttons above to start designing.</p>
+// //                       </div>
+// //                     )}
+
+// //                     {blocks.map((block, index) => (
+// //                       <div key={block.id} style={styles.blockWrapper}>
+// //                         <div style={styles.blockControls}>
+// //                           <span style={styles.blockTypeLabel}>
+// //                             {block.type === "text"
+// //                               ? "Text"
+// //                               : block.type === "image"
+// //                                 ? "Banner / Image"
+// //                                 : block.type === "logo"
+// //                                   ? "Logo"
+// //                                     : block.type === "document"
+// //                                       ? "Document"
+// //                                     : block.type === "button"
+// //                                     ? "Button"
+// //                                     : "Divider"}
+// //                           </span>
+// //                           <div style={styles.blockControlButtons}>
+// //                             <button
+// //                               type="button"
+// //                               style={styles.controlBtn}
+// //                               onClick={() => moveBlock(index, "up")}
+// //                               title="Move up"
+// //                             >
+// //                               ↑
+// //                             </button>
+// //                             <button
+// //                               type="button"
+// //                               style={styles.controlBtn}
+// //                               onClick={() => moveBlock(index, "down")}
+// //                               title="Move down"
+// //                             >
+// //                               ↓
+// //                             </button>
+// //                             <button
+// //                               type="button"
+// //                               style={{ ...styles.controlBtn, color: "#ef4444" }}
+// //                               onClick={() => removeBlock(block.id)}
+// //                               title="Delete block"
+// //                             >
+// //                               <Trash2 size={14} />
+// //                             </button>
+// //                           </div>
+// //                         </div>
+
+// //                         {block.type === "text" && (
+// //                           <TextBlockEditor
+// //                             block={block}
+// //                             onUpdate={(updates) => updateBlock(block.id, updates)}
+// //                             placeholder={editorPlaceholder}
+// //                           />
+// //                         )}
+
+// //                         {block.type === "image" && (
+// //                           <ImageBlockEditor
+// //                             block={block}
+// //                             onUpdate={(updates) => updateBlock(block.id, updates)}
+// //                             onError={(msg) => msg && showAlert("error", msg)}
+// //                           />
+// //                         )}
+
+// //                         {block.type === "logo" && (
+// //                           <ImageBlockEditor
+// //                             block={block}
+// //                             onUpdate={(updates) => updateBlock(block.id, updates)}
+// //                             onError={(msg) => msg && showAlert("error", msg)}
+// //                             isLogo
+// //                           />
+// //                         )}
+
+// //                         {block.type === "document" && (
+// //                           <DocumentBlockEditor
+// //                             block={block}
+// //                             onUpdate={(updates) => updateBlock(block.id, updates)}
+// //                             onError={(msg) => msg && showAlert("error", msg)}
+// //                           />
+// //                         )}
+
+// //                         {block.type === "button" && (
+// //                           <div>
+// //                             <div style={{ textAlign: block.align || "center" }}>
+// //                               <button className="inline-flex items-center gap-1.5 px-6 py-2.5 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm font-semibold shadow-lg">
+// //                                 {block.buttonText || "Button"}
+// //                               </button>
+// //                             </div>
+// //                             <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+// //                               <input
+// //                                 className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500 text-sm"
+// //                                 placeholder="Button Text"
+// //                                 value={block.buttonText || ""}
+// //                                 onChange={(e) =>
+// //                                   updateBlock(block.id, {
+// //                                     buttonText: e.target.value,
+// //                                   })
+// //                                 }
+// //                               />
+// //                               <input
+// //                                 className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500 text-sm"
+// //                                 placeholder="Button Link (URL)"
+// //                                 value={block.buttonLink || ""}
+// //                                 onChange={(e) =>
+// //                                   updateBlock(block.id, {
+// //                                     buttonLink: e.target.value,
+// //                                   })
+// //                                 }
+// //                               />
+// //                             </div>
+// //                           </div>
+// //                         )}
+
+// //                         {block.type === "divider" && (
+// //                           <hr
+// //                             style={{
+// //                               border: "none",
+// //                               borderTop: "1px solid #e2e8f0",
+// //                               margin: "12px 0",
+// //                             }}
+// //                           />
+// //                         )}
+// //                       </div>
+// //                     ))}
+// //                   </div>
+// //                 </div>
+// //               </div>
+
+// //               {/* RIGHT COLUMN - PREVIEW */}
+// //               <div style={styles.rightCol}>
+// //                 <div style={styles.card}>
+// //                   <h3 style={styles.sectionTitle}>Preview</h3>
+// //                   <p style={styles.sectionHint}>Live preview of your design</p>
+
+// //                   {activeTab === "Email" && (
+// //                     <div style={styles.previewCard}>
+// //                       <div style={styles.previewHeader}>
+// //                         <Mail size={16} color="#2563eb" />
+// //                         <span style={{ fontWeight: 600, fontSize: 13 }}>
+// //                           Email Preview
+// //                         </span>
+// //                       </div>
+// //                       <div style={styles.emailPreviewFrame}>
+// //                         {subject && (
+// //                           <div style={styles.previewSubject}>
+// //                             <strong>Subject:</strong> {subject}
+// //                           </div>
+// //                         )}
+// //                         <div style={styles.previewBody}>
+// //                           {blocks.map((block) => {
+// //                             if (block.type === "logo") {
+// //                               return (
+// //                                 <div
+// //                                   key={block.id}
+// //                                   style={{ textAlign: "center", marginBottom: 12 }}
+// //                                 >
+// //                                   {block.url ? (
+// //                                     <img
+// //                                       src={block.url}
+// //                                       alt="Logo"
+// //                                       style={{
+// //                                         maxHeight: 40,
+// //                                         objectFit: "contain",
+// //                                       }}
+// //                                     />
+// //                                   ) : (
+// //                                     <div style={styles.logoPlaceholder}>
+// //                                       <ImageIcon size={16} color="#2563eb" />
+// //                                       <span>Your Logo</span>
+// //                                     </div>
+// //                                   )}
+// //                                 </div>
+// //                               );
+// //                             }
+// //                             if (block.type === "image" && block.url) {
+// //                               return (
+// //                                 <img
+// //                                   key={block.id}
+// //                                   src={block.url}
+// //                                   alt=""
+// //                                   style={{
+// //                                     width: "100%",
+// //                                     borderRadius: 8,
+// //                                     marginBottom: 12,
+// //                                     maxHeight: 140,
+// //                                     objectFit: "cover",
+// //                                   }}
+// //                                 />
+// //                               );
+// //                             }
+// //                             if (block.type === "document" && block.url) {
+// //                               return (
+// //                                 <div key={block.id} style={{ marginBottom: 12 }}>
+// //                                   <a
+// //                                     href={block.url}
+// //                                     target="_blank"
+// //                                     rel="noopener noreferrer"
+// //                                     style={{
+// //                                       display: "inline-flex",
+// //                                       alignItems: "center",
+// //                                       gap: 8,
+// //                                       color: "#2563eb",
+// //                                       textDecoration: "underline",
+// //                                       overflowWrap: "anywhere",
+// //                                     }}
+// //                                   >
+// //                                     <FileText size={16} />
+// //                                     {block.documentName || "Download document"}
+// //                                   </a>
+// //                                 </div>
+// //                               );
+// //                             }
+// //                             if (block.type === "text") {
+// //                               return (
+// //                                 <p
+// //                                   key={block.id}
+// //                                   style={{
+// //                                     fontSize: block.fontSize || 14,
+// //                                     lineHeight: 1.6,
+// //                                     whiteSpace: "pre-wrap",
+// //                                     margin: "0 0 12px",
+// //                                     color: block.color || "#334155",
+// //                                     backgroundColor:
+// //                                       block.backgroundColor &&
+// //                                       block.backgroundColor !== "transparent"
+// //                                         ? block.backgroundColor
+// //                                         : undefined,
+// //                                     fontWeight: block.fontWeight || "normal",
+// //                                     fontStyle: block.fontStyle || "normal",
+// //                                     textAlign: block.textAlign || "left",
+// //                                     padding:
+// //                                       block.backgroundColor &&
+// //                                       block.backgroundColor !== "transparent"
+// //                                         ? "8px 10px"
+// //                                         : undefined,
+// //                                     borderRadius:
+// //                                       block.backgroundColor &&
+// //                                       block.backgroundColor !== "transparent"
+// //                                         ? 6
+// //                                         : undefined,
+// //                                   }}
+// //                                 >
+// //                                   {block.content}
+// //                                 </p>
+// //                               );
+// //                             }
+// //                             if (block.type === "button") {
+// //                               return (
+// //                                 <div
+// //                                   key={block.id}
+// //                                   style={{
+// //                                     textAlign: block.align || "center",
+// //                                     margin: "16px 0",
+// //                                   }}
+// //                                 >
+// //                                   <a
+// //                                     href={block.buttonLink}
+// //                                     className="inline-block px-5 py-2.5 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm font-semibold shadow-lg no-underline"
+// //                                   >
+// //                                     {block.buttonText}
+// //                                   </a>
+// //                                 </div>
+// //                               );
+// //                             }
+// //                             if (block.type === "divider") {
+// //                               return (
+// //                                 <hr
+// //                                   key={block.id}
+// //                                   style={{
+// //                                     border: "none",
+// //                                     borderTop: "1px solid #e2e8f0",
+// //                                     margin: "16px 0",
+// //                                   }}
+// //                                 />
+// //                               );
+// //                             }
+// //                             return null;
+// //                           })}
+// //                         </div>
+// //                       </div>
+// //                     </div>
+// //                   )}
+
+// //                   {activeTab === "WhatsApp Message" && (
+// //                     <div style={styles.previewCard}>
+// //                       <div style={styles.previewHeader}>
+// //                         <FaWhatsapp size={16} color="#25D366" />
+// //                         <span style={{ fontWeight: 600, fontSize: 13 }}>
+// //                           WhatsApp Preview
+// //                         </span>
+// //                       </div>
+// //                       <div style={styles.whatsappFrame}>
+// //                         <div style={styles.waHeader}>
+// //                           <ArrowLeft size={16} color="#fff" />
+// //                           <div style={styles.waAvatar}></div>
+// //                           <div>
+// //                             <div style={{ fontWeight: 600, fontSize: 13, color: "#fff" }}>
+// //                               Your Company
+// //                             </div>
+// //                             <div style={{ fontSize: 11, color: "#d1fae5" }}>online</div>
+// //                           </div>
+// //                         </div>
+// //                         <div style={styles.waBody}>
+// //                           <div style={styles.waBubble}>
+// //                             {blocks.map((block) => {
+// //                               if (block.type === "image" && block.url) {
+// //                                 return (
+// //                                   <img
+// //                                     key={block.id}
+// //                                     src={block.url}
+// //                                     alt=""
+// //                                     style={{
+// //                                       width: "100%",
+// //                                       borderRadius: 8,
+// //                                       marginBottom: 8,
+// //                                     }}
+// //                                   />
+// //                                 );
+// //                               }
+// //                               if (block.type === "text") {
+// //                                 return (
+// //                                   <p
+// //                                     key={block.id}
+// //                                     style={{
+// //                                       fontSize: block.fontSize || 13,
+// //                                       whiteSpace: "pre-wrap",
+// //                                       margin: "0 0 8px",
+// //                                       color: block.color || "#111",
+// //                                       backgroundColor:
+// //                                         block.backgroundColor &&
+// //                                         block.backgroundColor !== "transparent"
+// //                                           ? block.backgroundColor
+// //                                           : undefined,
+// //                                       fontWeight: block.fontWeight || "normal",
+// //                                       fontStyle: block.fontStyle || "normal",
+// //                                       textAlign: block.textAlign || "left",
+// //                                       padding:
+// //                                         block.backgroundColor &&
+// //                                         block.backgroundColor !== "transparent"
+// //                                           ? "6px 8px"
+// //                                           : undefined,
+// //                                       borderRadius: 6,
+// //                                     }}
+// //                                   >
+// //                                     {block.content}
+// //                                   </p>
+// //                                 );
+// //                               }
+// //                               if (block.type === "button") {
+// //                                 return (
+// //                                   <div key={block.id} style={{ margin: "8px 0" }}>
+// //                                     <a
+// //                                       href={block.buttonLink}
+// //                                       className="inline-block px-4 py-2 rounded-md bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm no-underline"
+// //                                     >
+// //                                       {block.buttonText}
+// //                                     </a>
+// //                                   </div>
+// //                                 );
+// //                               }
+// //                               return null;
+// //                             })}
+// //                             <div
+// //                               style={{
+// //                                 textAlign: "right",
+// //                                 fontSize: 11,
+// //                                 color: "#94a3b8",
+// //                                 marginTop: 6,
+// //                               }}
+// //                             >
+// //                               11:30 AM ✓✓
+// //                             </div>
+// //                           </div>
+// //                         </div>
+// //                         <div style={styles.waInput}>
+// //                           <Smile size={18} color="#94a3b8" />
+// //                           <span style={{ flex: 1, color: "#94a3b8", fontSize: 13 }}>
+// //                             Type a message
+// //                           </span>
+// //                         </div>
+// //                       </div>
+// //                     </div>
+// //                   )}
+
+// //                   {activeTab === "Social Media Post" && (
+// //                     <div style={styles.previewCard}>
+// //                       <div style={styles.previewHeader}>
+// //                         <span style={{ fontWeight: 600, fontSize: 13 }}>
+// //                           Social Media Preview
+// //                         </span>
+// //                       </div>
+// //                       <div style={styles.socialCard}>
+// //                         <div style={styles.socialHeader}>
+// //                           <div style={styles.socialAvatar}></div>
+// //                           <div>
+// //                             <div style={{ fontWeight: 600, fontSize: 13 }}>
+// //                               Your Company
+// //                             </div>
+// //                             <div style={{ fontSize: 11, color: "#94a3b8" }}>
+// //                               Just now · 🌐
+// //                             </div>
+// //                           </div>
+// //                         </div>
+// //                         {blocks.map((block) => {
+// //                           if (block.type === "text") {
+// //                             return (
+// //                               <p
+// //                                 key={block.id}
+// //                                 style={{
+// //                                   fontSize: block.fontSize || 13,
+// //                                   padding: "8px 12px",
+// //                                   whiteSpace: "pre-wrap",
+// //                                   color: block.color || "#111",
+// //                                   backgroundColor:
+// //                                     block.backgroundColor &&
+// //                                     block.backgroundColor !== "transparent"
+// //                                       ? block.backgroundColor
+// //                                       : undefined,
+// //                                   fontWeight: block.fontWeight || "normal",
+// //                                   fontStyle: block.fontStyle || "normal",
+// //                                   textAlign: block.textAlign || "left",
+// //                                   margin: 0,
+// //                                 }}
+// //                               >
+// //                                 {block.content}
+// //                               </p>
+// //                             );
+// //                           }
+// //                           if (block.type === "image" && block.url) {
+// //                             return (
+// //                               <img
+// //                                 key={block.id}
+// //                                 src={block.url}
+// //                                 alt=""
+// //                                 style={{
+// //                                   width: "100%",
+// //                                   display: "block",
+// //                                   marginTop: 8,
+// //                                 }}
+// //                               />
+// //                             );
+// //                           }
+// //                           return null;
+// //                         })}
+// //                         <div style={styles.socialActions}>
+// //                           <span>👍 Like</span>
+// //                           <span>💬 Comment</span>
+// //                           <span>↗ Share</span>
+// //                         </div>
+// //                       </div>
+// //                     </div>
+// //                   )}
+// //                 </div>
+// //               </div>
+// //             </div>
+// //           </div>
+
+// //           <div style={styles.bottomBar}>
+// //             <button
+// //               type="button"
+// //               style={styles.bottomSecondary}
+// //               onClick={() => {
+// //                 setShowTemplates(true);
+// //                 loadTemplates();
+// //               }}
+// //             >
+// //               <ArrowLeft size={16} /> Back to Templates
+// //             </button>
+// //           </div>
+// //         </>
+// //       )}
+// //     </div>
+// //   );
+// // };
+
+// // // ===================== STYLES =====================
+// // const styles: any = {
+// //   page: {
+// //     minHeight: "100vh",
+// //     background: "#f1f5f9",
+// //     fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+// //     color: "#1e293b",
+// //     paddingBottom: 80,
+// //   },
+// //   templateCard: {
+// //     border: "1px solid #e2e8f0",
+// //     borderRadius: 10,
+// //     padding: 16,
+// //     cursor: "pointer",
+// //     background: "#fff",
+// //     transition: "all 0.15s",
+// //   },
+// //   channelBadge: {
+// //     fontSize: 11,
+// //     fontWeight: 600,
+// //     padding: "2px 8px",
+// //     borderRadius: 20,
+// //   },
+// //   templateTitle: {
+// //     margin: "0 0 6px",
+// //     fontSize: 14,
+// //     fontWeight: 600,
+// //     color: "#1e293b",
+// //     overflow: "hidden",
+// //     textOverflow: "ellipsis",
+// //     whiteSpace: "nowrap",
+// //   },
+// //   centerCol: { display: "flex", flexDirection: "column" },
+// //   sidebar: { display: "flex", flexDirection: "column", minWidth: 0 },
+// //   rightCol: { display: "flex", flexDirection: "column" },
+// //   card: {
+// //     background: "#fff",
+// //     borderRadius: 12,
+// //     padding: 20,
+// //     boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+// //     border: "1px solid #e2e8f0",
+// //   },
+// //   sectionTitle: { margin: "0 0 4px", fontSize: 15, fontWeight: 600 },
+// //   sectionHint: { margin: "0 0 14px", fontSize: 12, color: "#94a3b8" },
+// //   secondaryBtn: {
+// //     display: "inline-flex",
+// //     alignItems: "center",
+// //     justifyContent: "center",
+// //     gap: 6,
+// //     padding: "10px 16px",
+// //     borderRadius: 8,
+// //     border: "1px solid #d1d5db",
+// //     background: "#fff",
+// //     fontSize: 13,
+// //     fontWeight: 500,
+// //     cursor: "pointer",
+// //     color: "#475569",
+// //   },
+// //   tabs: {
+// //     display: "flex",
+// //     flexDirection: "column",
+// //     gap: 6,
+// //     marginTop: 12,
+// //   },
+// //   tab: {
+// //     padding: "10px 12px",
+// //     border: "none",
+// //     background: "transparent",
+// //     fontSize: 13,
+// //     color: "#64748b",
+// //     cursor: "pointer",
+// //     borderLeft: "3px solid transparent",
+// //     borderRadius: "0 6px 6px 0",
+// //     textAlign: "left",
+// //     width: "100%",
+// //   },
+// //   activeTab: {
+// //     padding: "10px 12px",
+// //     border: "none",
+// //     background: "#eff6ff",
+// //     fontSize: 13,
+// //     color: "#2563eb",
+// //     fontWeight: 600,
+// //     cursor: "pointer",
+// //     borderLeft: "3px solid #2563eb",
+// //     borderRadius: "0 6px 6px 0",
+// //     textAlign: "left",
+// //     width: "100%",
+// //   },
+// //   addToolbar: {
+// //     display: "flex",
+// //     flexDirection: "column",
+// //     alignItems: "stretch",
+// //     gap: 8,
+// //     marginTop: 12,
+// //   },
+// //   addBtn: {
+// //     display: "flex",
+// //     alignItems: "center",
+// //     gap: 6,
+// //     padding: "9px 10px",
+// //     borderRadius: 6,
+// //     border: "1px solid #e2e8f0",
+// //     background: "#f8fafc",
+// //     fontSize: 12,
+// //     fontWeight: 500,
+// //     cursor: "pointer",
+// //     color: "#475569",
+// //     textAlign: "left",
+// //   },
+// //   canvas: {
+// //     minHeight: 320,
+// //     background: "#fafafa",
+// //     border: "1px solid #e2e8f0",
+// //     borderRadius: 10,
+// //     padding: 16,
+// //   },
+// //   emptyCanvas: {
+// //     textAlign: "center",
+// //     padding: "60px 20px",
+// //     color: "#94a3b8",
+// //   },
+// //   blockWrapper: {
+// //     marginBottom: 16,
+// //     padding: 12,
+// //     background: "#fff",
+// //     borderRadius: 8,
+// //     border: "1px solid #e2e8f0",
+// //   },
+// //   blockControls: {
+// //     display: "flex",
+// //     alignItems: "center",
+// //     justifyContent: "space-between",
+// //     marginBottom: 10,
+// //     paddingBottom: 8,
+// //     borderBottom: "1px solid #f1f5f9",
+// //   },
+// //   blockTypeLabel: {
+// //     fontSize: 11,
+// //     fontWeight: 600,
+// //     color: "#64748b",
+// //     textTransform: "uppercase",
+// //     letterSpacing: "0.04em",
+// //   },
+// //   blockControlButtons: {
+// //     display: "flex",
+// //     gap: 4,
+// //   },
+// //   controlBtn: {
+// //     width: 28,
+// //     height: 28,
+// //     border: "1px solid #e2e8f0",
+// //     borderRadius: 6,
+// //     background: "#fff",
+// //     cursor: "pointer",
+// //     display: "flex",
+// //     alignItems: "center",
+// //     justifyContent: "center",
+// //     fontSize: 12,
+// //     color: "#475569",
+// //   },
+// //   textBlock: {
+// //     width: "100%",
+// //     minHeight: 80,
+// //     padding: 12,
+// //     border: "1px solid #d1d5db",
+// //     borderRadius: 8,
+// //     fontSize: 14,
+// //     lineHeight: 1.5,
+// //     resize: "vertical",
+// //     boxSizing: "border-box",
+// //     fontFamily: "inherit",
+// //   },
+// //   imagePlaceholder: {
+// //     height: 140,
+// //     background: "#f1f5f9",
+// //     borderRadius: 8,
+// //     display: "flex",
+// //     flexDirection: "column",
+// //     alignItems: "center",
+// //     justifyContent: "center",
+// //     color: "#94a3b8",
+// //     gap: 8,
+// //   },
+// //   logoPlaceholder: {
+// //     height: 80,
+// //     background: "#f1f5f9",
+// //     borderRadius: 8,
+// //     display: "flex",
+// //     flexDirection: "column",
+// //     alignItems: "center",
+// //     justifyContent: "center",
+// //     color: "#94a3b8",
+// //     gap: 4,
+// //   },
+// //   uploadBox: {
+// //     border: "2px dashed #cbd5e1",
+// //     borderRadius: 10,
+// //     padding: "24px 16px",
+// //     textAlign: "center",
+// //     background: "#f8fafc",
+// //   },
+// //   emailComposer: { display: "flex", flexDirection: "column", gap: 12 },
+// //   emailSectionCard: {
+// //     border: "1px solid #e2e8f0",
+// //     borderRadius: 10,
+// //     padding: 12,
+// //     background: "#f8fafc",
+// //   },
+// //   previewCard: { marginBottom: 20 },
+// //   previewHeader: {
+// //     display: "flex",
+// //     alignItems: "center",
+// //     gap: 8,
+// //     marginBottom: 10,
+// //   },
+// //   emailPreviewFrame: {
+// //     border: "1px solid #e2e8f0",
+// //     borderRadius: 10,
+// //     overflow: "hidden",
+// //     background: "#fff",
+// //   },
+// //   previewSubject: {
+// //     padding: "10px 14px",
+// //     background: "#f8fafc",
+// //     borderBottom: "1px solid #e2e8f0",
+// //     fontSize: 13,
+// //     color: "#475569",
+// //   },
+// //   previewBody: { padding: 16 },
+// //   whatsappFrame: {
+// //     border: "1px solid #e2e8f0",
+// //     borderRadius: 12,
+// //     overflow: "hidden",
+// //     background: "#efeae2",
+// //   },
+// //   waHeader: {
+// //     background: "#075e54",
+// //     padding: "10px 12px",
+// //     display: "flex",
+// //     alignItems: "center",
+// //     gap: 10,
+// //   },
+// //   waAvatar: {
+// //     width: 32,
+// //     height: 32,
+// //     borderRadius: "50%",
+// //     background: "#25D366",
+// //   },
+// //   waBody: { padding: 12, minHeight: 200 },
+// //   waBubble: {
+// //     background: "#fff",
+// //     borderRadius: "8px 8px 8px 0",
+// //     padding: 10,
+// //     maxWidth: "95%",
+// //     boxShadow: "0 1px 2px rgba(0,0,0,0.08)",
+// //   },
+// //   waInput: {
+// //     background: "#f0f2f5",
+// //     padding: "8px 12px",
+// //     display: "flex",
+// //     alignItems: "center",
+// //     gap: 10,
+// //   },
+// //   socialCard: {
+// //     border: "1px solid #e2e8f0",
+// //     borderRadius: 10,
+// //     overflow: "hidden",
+// //     background: "#fff",
+// //   },
+// //   socialHeader: {
+// //     display: "flex",
+// //     alignItems: "center",
+// //     gap: 10,
+// //     padding: "10px 12px",
+// //   },
+// //   socialAvatar: {
+// //     width: 36,
+// //     height: 36,
+// //     borderRadius: "50%",
+// //     background: "linear-gradient(135deg, #2563eb, #60a5fa)",
+// //   },
+// //   socialActions: {
+// //     display: "flex",
+// //     justifyContent: "space-around",
+// //     padding: "8px 0",
+// //     borderTop: "1px solid #f1f5f9",
+// //     fontSize: 12,
+// //     color: "#64748b",
+// //   },
+// //   bottomBar: {
+// //     margin: "0 auto",
+// //     marginTop: 8,
+// //     maxWidth: 1600,
+// //     width: "calc(100% - 48px)",
+// //     background: "#fff",
+// //     border: "1px solid #e2e8f0",
+// //     borderRadius: 12,
+// //     padding: "14px 24px",
+// //     display: "flex",
+// //     justifyContent: "space-between",
+// //     alignItems: "center",
+// //     boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+// //   },
+// //   bottomSecondary: {
+// //     display: "flex",
+// //     alignItems: "center",
+// //     gap: 6,
+// //     padding: "9px 18px",
+// //     borderRadius: 8,
+// //     border: "1px solid #d1d5db",
+// //     background: "#fff",
+// //     fontSize: 13,
+// //     fontWeight: 500,
+// //     cursor: "pointer",
+// //     color: "#475569",
+// //   },
+// // };
+
+// // export default Campaign;
+
+// "use client";
+
+// import React, { useState, useEffect, useContext, useCallback, useRef } from "react";
+// import axios from "axios";
+// import * as XLSX from "xlsx";
+// import { AuthContext } from "../../../../../../context/AuthContext";
+// import {
+//   Mail,
+//   Upload,
+//   Smile,
+//   ArrowLeft,
+//   FileText,
+//   Image as ImageIcon,
+//   Type as TypeIcon,
+//   Square,
+//   Minus,
+//   Trash2,
+//   Loader2,
+//   Plus,
+//   CheckCircle,
+//   XCircle,
+//   AlertTriangle,
+//   X,
+// } from "lucide-react";
+// import {
+//   FaWhatsapp,
+// } from "react-icons/fa";
+
+// const API = String(import.meta.env.VITE_BACKEND_URL);
+
+// // ===================== ALERT MODAL =====================
+// type AlertType = "success" | "warning" | "error";
+
+// interface AlertState {
+//   type: AlertType;
+//   message: string;
+// }
+
+// const AlertModal = ({
+//   type,
+//   message,
+//   onClose,
+// }: {
+//   type: AlertType;
+//   message: string;
+//   onClose: () => void;
+// }) => {
+//   useEffect(() => {
+//     if (type === "warning") {
+//       const timer = setTimeout(onClose, 3000);
+//       return () => clearTimeout(timer);
+//     }
+//   }, [type, onClose]);
+
+//   useEffect(() => {
+//     const handleKeyDown = (event: KeyboardEvent) => {
+//       if (event.key === "Enter" || event.key === "Escape") {
+//         event.preventDefault();
+//         onClose();
+//       }
+//     };
+//     window.addEventListener("keydown", handleKeyDown);
+//     return () => window.removeEventListener("keydown", handleKeyDown);
+//   }, [onClose]);
+
+//   const config =
+//     type === "success"
+//       ? {
+//           borderColor: "#10b981",
+//           iconColor: "#10b981",
+//           buttonBg: "#10b981",
+//           title: "Success",
+//           Icon: CheckCircle,
+//         }
+//       : type === "warning"
+//         ? {
+//             borderColor: "#eab308",
+//             iconColor: "#eab308",
+//             buttonBg: "#eab308",
+//             title: "Warning",
+//             Icon: AlertTriangle,
+//           }
+//         : {
+//             borderColor: "#f43f5e",
+//             iconColor: "#f43f5e",
+//             buttonBg: "#f43f5e",
+//             title: "Error",
+//             Icon: XCircle,
+//           };
+
+//   const Icon = config.Icon;
+
+//   return (
+//     <div
+//       style={{
+//         position: "fixed",
+//         inset: 0,
+//         zIndex: 9999,
+//         display: "flex",
+//         alignItems: "center",
+//         justifyContent: "center",
+//         background: "rgba(15, 23, 42, 0.45)",
+//       }}
+//     >
+//       <div
+//         style={{
+//           width: 380,
+//           overflow: "hidden",
+//           borderRadius: 12,
+//           background: "#fff",
+//           boxShadow: "0 25px 50px rgba(0,0,0,0.25)",
+//           borderLeft: `4px solid ${config.borderColor}`,
+//         }}
+//       >
+//         <div
+//           style={{
+//             display: "flex",
+//             alignItems: "center",
+//             justifyContent: "space-between",
+//             background: "#1e40af",
+//             padding: "14px 20px",
+//             color: "#fff",
+//           }}
+//         >
+//           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+//             <Icon size={24} color={config.iconColor} />
+//             <h2 style={{ margin: 0, fontSize: 17, fontWeight: 600 }}>
+//               {config.title}
+//             </h2>
+//           </div>
+//           <button
+//             type="button"
+//             onClick={onClose}
+//             style={{
+//               background: "transparent",
+//               border: "none",
+//               color: "#fff",
+//               cursor: "pointer",
+//               padding: 4,
+//               borderRadius: 4,
+//               display: "flex",
+//               alignItems: "center",
+//             }}
+//           >
+//             <X size={18} />
+//           </button>
+//         </div>
+
+//         <div style={{ padding: "22px 20px" }}>
+//           <p
+//             style={{
+//               margin: 0,
+//               fontSize: 14,
+//               lineHeight: 1.6,
+//               color: "#475569",
+//             }}
+//           >
+//             {message}
+//           </p>
+//         </div>
+
+//         <div
+//           style={{
+//             display: "flex",
+//             justifyContent: "flex-end",
+//             gap: 10,
+//             borderTop: "1px solid #e2e8f0",
+//             background: "#f8fafc",
+//             padding: "14px 20px",
+//           }}
+//         >
+//           <button
+//             type="button"
+//             onClick={onClose}
+//             style={{
+//               border: "none",
+//               borderRadius: 8,
+//               padding: "8px 20px",
+//               fontSize: 13,
+//               fontWeight: 500,
+//               color: "#fff",
+//               background: config.buttonBg,
+//               cursor: "pointer",
+//             }}
+//           >
+//             OK
+//           </button>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// // ===================== TYPES =====================
+// type BlockType = "text" | "image" | "button" | "logo" | "document" | "divider";
+
+// interface Block {
+//   id: string;
+//   type: BlockType;
+//   content?: string;
+//   url?: string;
+//   documentName?: string;
+//   buttonText?: string;
+//   buttonLink?: string;
+//   align?: "left" | "center" | "right";
+//   serverId?: string;
+//   color?: string;
+//   backgroundColor?: string;
+//   fontSize?: number;
+//   fontWeight?: "normal" | "bold";
+//   fontStyle?: "normal" | "italic";
+//   textAlign?: "left" | "center" | "right";
+// }
+
+// // ===================== HELPERS =====================
+// const generateId = () => Math.random().toString(36).slice(2, 11);
+
+// function uiBlockToApi(block: Block, sortOrder: number) {
+//   const content: Record<string, unknown> = {};
+//   switch (block.type) {
+//     case "text":
+//       content.text = block.content ?? "";
+//       content.color = block.color ?? "#334155";
+//       content.backgroundColor = block.backgroundColor ?? "transparent";
+//       content.fontSize = block.fontSize ?? 14;
+//       content.fontWeight = block.fontWeight ?? "normal";
+//       content.fontStyle = block.fontStyle ?? "normal";
+//       content.textAlign = block.textAlign ?? "left";
+//       break;
+//     case "image":
+//       content.url = block.url ?? "";
+//       break;
+//     case "logo":
+//       content.url = block.url ?? "";
+//       content.align = block.align ?? "center";
+//       break;
+//     case "document":
+//       content.url = block.url ?? "";
+//       content.documentName = block.documentName ?? "";
+//       break;
+//     case "button":
+//       content.buttonText = block.buttonText ?? "";
+//       content.buttonLink = block.buttonLink ?? "";
+//       content.align = block.align ?? "center";
+//       break;
+//     case "divider":
+//       break;
+//   }
+//   return {
+//     block_type: block.type,
+//     content,
+//     sort_order: sortOrder,
+//   };
+// }
+
+// function apiBlockToUi(row: {
+//   id: string;
+//   blockType: string;
+//   content: any;
+//   sortOrder: number;
+// }): Block {
+//   const c = row.content || {};
+//   return {
+//     id: row.id,
+//     serverId: row.id,
+//     type: row.blockType as BlockType,
+//     content: c.text ?? "",
+//     url: c.url ?? "",
+//     documentName: c.documentName ?? "",
+//     buttonText: c.buttonText ?? "",
+//     buttonLink: c.buttonLink ?? "",
+//     align: (c.align as "left" | "center" | "right") ?? "center",
+//     color: c.color ?? "#334155",
+//     backgroundColor: c.backgroundColor ?? "transparent",
+//     fontSize: c.fontSize ?? 14,
+//     fontWeight: (c.fontWeight as "normal" | "bold") ?? "normal",
+//     fontStyle: (c.fontStyle as "normal" | "italic") ?? "normal",
+//     textAlign: (c.textAlign as "left" | "center" | "right") ?? "left",
+//   };
+// }
+
+// // ===================== IMAGE UPLOAD =====================
+// async function uploadImageFile(file: File): Promise<string> {
+//   const formData = new FormData();
+//   formData.append("image", file);
+
+//   const res = await axios.post(`${API}/api/upload/image`, formData, {
+//     withCredentials: true,
+//     headers: { "Content-Type": "multipart/form-data" },
+//   });
+
+//   if (!res.data?.success || !res.data?.url) {
+//     throw new Error(res.data?.message || "Upload failed");
+//   }
+//   return res.data.url as string;
+// }
+
+// async function uploadDocumentFile(file: File): Promise<string> {
+//   const formData = new FormData();
+//   formData.append("file", file);
+
+//   const res = await axios.post(`${API}/api/upload/document`, formData, {
+//     withCredentials: true,
+//     headers: { "Content-Type": "multipart/form-data" },
+//   });
+
+//   if (!res.data?.success || !res.data?.url) {
+//     throw new Error(res.data?.message || "Document upload failed");
+//   }
+//   return res.data.url as string;
+// }
+
+// function isImageFile(file: File) {
+//   return file.type.startsWith("image/");
+// }
+
+// function isCampaignDocument(file: File) {
+//   return /\.(pdf|docx?|xlsx?|pptx?|txt|csv|zip)$/i.test(file.name);
+// }
+
+// // ===================== IMAGE / LOGO BLOCK EDITOR =====================
+// const ImageBlockEditor = ({
+//   block,
+//   onUpdate,
+//   onError,
+//   isLogo = false,
+// }: {
+//   block: Block;
+//   onUpdate: (updates: Partial<Block>) => void;
+//   onError: (msg: string | null) => void;
+//   isLogo?: boolean;
+// }) => {
+//   const [uploading, setUploading] = useState(false);
+//   const [dragOver, setDragOver] = useState(false);
+//   const fileInputRef = useRef<HTMLInputElement>(null);
+//   const dropRef = useRef<HTMLDivElement>(null);
+
+//   const handleFiles = async (files: FileList | File[]) => {
+//     const file = Array.from(files).find(isImageFile);
+//     if (!file) {
+//       onError("Please select an image file (PNG, JPG, GIF, WebP)");
+//       return;
+//     }
+//     if (file.size > 8 * 1024 * 1024) {
+//       onError("Image must be under 8 MB");
+//       return;
+//     }
+
+//     try {
+//       setUploading(true);
+//       onError(null);
+//       const url = await uploadImageFile(file);
+//       onUpdate({ url });
+//     } catch (err: any) {
+//       console.error(err);
+//       onError(err?.message || "Failed to upload image");
+//     } finally {
+//       setUploading(false);
+//     }
+//   };
+
+//   useEffect(() => {
+//     const el = dropRef.current;
+//     if (!el) return;
+
+//     const onPaste = (e: ClipboardEvent) => {
+//       const items = e.clipboardData?.items;
+//       if (!items) return;
+
+//       for (const item of Array.from(items)) {
+//         if (item.type.startsWith("image/")) {
+//           e.preventDefault();
+//           const file = item.getAsFile();
+//           if (file) handleFiles([file]);
+//           break;
+//         }
+//       }
+//     };
+
+//     el.addEventListener("paste", onPaste as any);
+//     el.tabIndex = 0;
+
+//     return () => el.removeEventListener("paste", onPaste as any);
+//   }, []);
+
+//   const onDrop = (e: React.DragEvent) => {
+//     e.preventDefault();
+//     setDragOver(false);
+//     if (e.dataTransfer.files?.length) {
+//       handleFiles(e.dataTransfer.files);
+//     }
+//   };
+
+//   const logoAlign = block.align || "center";
+
+//   return (
+//     <div>
+//       {isLogo && (
+//         <div
+//           style={{
+//             display: "flex",
+//             flexWrap: "wrap",
+//             alignItems: "center",
+//             gap: 8,
+//             marginBottom: 8,
+//             padding: "8px 10px",
+//             background: "#f8fafc",
+//             borderRadius: 8,
+//             border: "1px solid #e2e8f0",
+//           }}
+//         >
+//           <span style={{ fontSize: 12, color: "#64748b", marginRight: 4 }}>
+//             Align
+//           </span>
+//           {(["left", "center", "right"] as const).map((align) => (
+//             <button
+//               key={align}
+//               type="button"
+//               onClick={() => onUpdate({ align })}
+//               style={{
+//                 width: 28,
+//                 height: 28,
+//                 border:
+//                   logoAlign === align
+//                     ? "2px solid #2563eb"
+//                     : "1px solid #e2e8f0",
+//                 borderRadius: 6,
+//                 background: logoAlign === align ? "#eff6ff" : "#fff",
+//                 fontSize: 11,
+//                 cursor: "pointer",
+//                 color: "#334155",
+//               }}
+//               title={align}
+//             >
+//               {align === "left" ? "⬅" : align === "center" ? "↔" : "➡"}
+//             </button>
+//           ))}
+//         </div>
+//       )}
+
+//       {block.url ? (
+//         <div style={{ textAlign: isLogo ? logoAlign : "left" }}>
+//           <img
+//             src={block.url}
+//             alt={isLogo ? "Logo" : "Banner"}
+//             style={
+//               isLogo
+//                 ? {
+//                     maxHeight: 80,
+//                     maxWidth: 200,
+//                     objectFit: "contain",
+//                     display: "block",
+//                     margin:
+//                       logoAlign === "left"
+//                         ? "0 auto 0 0"
+//                         : logoAlign === "right"
+//                           ? "0 0 0 auto"
+//                           : "0 auto",
+//                   }
+//                 : {
+//                     width: "100%",
+//                     borderRadius: 8,
+//                     maxHeight: 220,
+//                     objectFit: "cover",
+//                   }
+//             }
+//           />
+//           <div
+//             style={{
+//               display: "flex",
+//               justifyContent: isLogo
+//                 ? logoAlign === "left"
+//                   ? "flex-start"
+//                   : logoAlign === "right"
+//                     ? "flex-end"
+//                     : "center"
+//                 : "flex-end",
+//               marginTop: 8,
+//             }}
+//           >
+//             <button
+//               type="button"
+//               onClick={() => onUpdate({ url: "" })}
+//               style={{
+//                 background: "#fef2f2",
+//                 color: "#dc2626",
+//                 border: "1px solid #fecaca",
+//                 borderRadius: 6,
+//                 padding: "6px 12px",
+//                 fontSize: 12,
+//                 fontWeight: 500,
+//                 cursor: "pointer",
+//                 display: "inline-flex",
+//                 alignItems: "center",
+//                 gap: 4,
+//               }}
+//             >
+//               <Trash2 size={12} /> Remove image
+//             </button>
+//           </div>
+//         </div>
+//       ) : (
+//         <div
+//           ref={dropRef}
+//           onDragOver={(e) => {
+//             e.preventDefault();
+//             setDragOver(true);
+//           }}
+//           onDragLeave={() => setDragOver(false)}
+//           onDrop={onDrop}
+//           onClick={() => !uploading && fileInputRef.current?.click()}
+//           style={{
+//             ...(isLogo ? styles.logoPlaceholder : styles.imagePlaceholder),
+//             border: dragOver ? "2px dashed #2563eb" : "2px dashed #cbd5e1",
+//             background: dragOver ? "#eff6ff" : "#f8fafc",
+//             cursor: uploading ? "wait" : "pointer",
+//             outline: "none",
+//             transition: "all 0.15s",
+//           }}
+//         >
+//           {uploading ? (
+//             <>
+//               <Loader2 size={28} className="animate-spin" color="#2563eb" />
+//               <p style={{ margin: "8px 0 0", fontSize: 13 }}>Uploading…</p>
+//             </>
+//           ) : (
+//             <>
+//               <ImageIcon size={isLogo ? 28 : 32} color="#94a3b8" />
+//               <p style={{ margin: "8px 0 4px", fontWeight: 500, color: "#334155" }}>
+//                 {isLogo ? "Add Logo" : "Add Banner / Image"}
+//               </p>
+//               <p style={{ fontSize: 12, color: "#94a3b8", margin: 0 }}>
+//                 Click • Drag & drop • or paste (Ctrl/Cmd+V)
+//               </p>
+//             </>
+//           )}
+//         </div>
+//       )}
+
+//       <input
+//         ref={fileInputRef}
+//         type="file"
+//         accept="image/png,image/jpeg,image/jpg,image/gif,image/webp"
+//         style={{ display: "none" }}
+//         onChange={(e) => {
+//           if (e.target.files?.length) handleFiles(e.target.files);
+//           e.target.value = "";
+//         }}
+//       />
+//     </div>
+//   );
+// };
+
+// const DocumentBlockEditor = ({
+//   block,
+//   onUpdate,
+//   onError,
+// }: {
+//   block: Block;
+//   onUpdate: (updates: Partial<Block>) => void;
+//   onError: (msg: string | null) => void;
+// }) => {
+//   const [uploading, setUploading] = useState(false);
+//   const fileInputRef = useRef<HTMLInputElement>(null);
+
+//   const handleFile = async (file?: File) => {
+//     if (!file) return;
+//     if (!isCampaignDocument(file)) {
+//       onError("Select a PDF, Word, Excel, PowerPoint, text, CSV, or ZIP file");
+//       return;
+//     }
+//     if (file.size > 15 * 1024 * 1024) {
+//       onError("Document must be under 15 MB");
+//       return;
+//     }
+
+//     try {
+//       setUploading(true);
+//       onError(null);
+//       const url = await uploadDocumentFile(file);
+//       onUpdate({ url, documentName: file.name });
+//     } catch (err: any) {
+//       console.error(err);
+//       onError(err?.message || "Failed to upload document");
+//     } finally {
+//       setUploading(false);
+//     }
+//   };
+
+//   return (
+//     <div>
+//       {block.url ? (
+//         <div
+//           style={{
+//             display: "flex",
+//             alignItems: "center",
+//             justifyContent: "space-between",
+//             gap: 12,
+//             padding: 12,
+//             border: "1px solid #e2e8f0",
+//             borderRadius: 8,
+//           }}
+//         >
+//           <a
+//             href={block.url}
+//             target="_blank"
+//             rel="noopener noreferrer"
+//             style={{
+//               display: "inline-flex",
+//               alignItems: "center",
+//               gap: 8,
+//               minWidth: 0,
+//               color: "#2563eb",
+//               textDecoration: "none",
+//             }}
+//           >
+//             <FileText size={20} />
+//             <span style={{ overflowWrap: "anywhere" }}>
+//               {block.documentName || "Uploaded document"}
+//             </span>
+//           </a>
+//           <button
+//             type="button"
+//             onClick={() => onUpdate({ url: "", documentName: "" })}
+//             aria-label="Remove document"
+//             style={{
+//               border: "none",
+//               background: "transparent",
+//               color: "#dc2626",
+//               cursor: "pointer",
+//             }}
+//           >
+//             <Trash2 size={16} />
+//           </button>
+//         </div>
+//       ) : (
+//         <>
+//           <button
+//             type="button"
+//             disabled={uploading}
+//             onClick={() => fileInputRef.current?.click()}
+//             style={{
+//               display: "inline-flex",
+//               alignItems: "center",
+//               gap: 8,
+//               padding: "10px 14px",
+//               border: "1px dashed #94a3b8",
+//               borderRadius: 8,
+//               background: "#f8fafc",
+//               color: "#334155",
+//               cursor: uploading ? "wait" : "pointer",
+//             }}
+//           >
+//             {uploading ? (
+//               <Loader2 size={16} className="animate-spin" />
+//             ) : (
+//               <Upload size={16} />
+//             )}
+//             {uploading ? "Uploading document..." : "Choose document"}
+//           </button>
+//           <p style={{ margin: "6px 0 0", color: "#64748b", fontSize: 12 }}>
+//             PDF, Office documents, text, CSV, or ZIP (up to 15 MB)
+//           </p>
+//         </>
+//       )}
+//       <input
+//         ref={fileInputRef}
+//         type="file"
+//         accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip"
+//         hidden
+//         onChange={(event) => {
+//           void handleFile(event.target.files?.[0]);
+//           event.target.value = "";
+//         }}
+//       />
+//     </div>
+//   );
+// };
+
+// // ===================== EMOJI PICKER =====================
+// const COMMON_EMOJIS = [
+//   "😀", "😃", "😄", "😁", "😆", "😅", "😂", "🤣", "😊", "😇",
+//   "🙂", "🙃", "😉", "😌", "😍", "🥰", "😘", "😗", "😙", "😚",
+//   "😋", "😛", "😝", "😜", "🤪", "🤨", "🧐", "🤓", "😎", "🤩",
+//   "🥳", "😏", "😒", "😞", "😔", "😟", "😕", "🙁", "☹️", "😣",
+//   "😖", "😫", "😩", "🥺", "😢", "😭", "😤", "😠", "😡", "🤬",
+//   "👍", "👎", "👏", "🙌", "👐", "🤝", "🙏", "✌️", "🤞", "🤟",
+//   "🤘", "👌", "🤏", "👈", "👉", "👆", "👇", "☝️", "✋", "🤚",
+//   "👋", "💪", "🦾", "❤️", "🧡", "💛", "💚", "💙", "💜", "🖤",
+//   "🤍", "🤎", "💔", "❣️", "💕", "💞", "💓", "💗", "💖", "💘",
+//   "💝", "💟", "☮️", "✝️", "☪️", "🕉", "☸️", "✡️", "🔯", "🕎",
+//   "🔥", "⭐", "🌟", "✨", "💫", "🎉", "🎊", "🎈", "🎁", "🏆",
+//   "🥇", "🥈", "🥉", "⚽", "🏀", "🏈", "⚾", "🎾", "🏐", "🏉",
+//   "📧", "📩", "📨", "💌", "📱", "💻", "🖥️", "⌨️", "🖨️", "🖱️",
+//   "✅", "❌", "❗", "❓", "💯", "🔔", "🔕", "📢", "📣", "💬",
+// ];
+
+// const EmojiPicker = ({
+//   onSelect,
+//   onClose,
+// }: {
+//   onSelect: (emoji: string) => void;
+//   onClose: () => void;
+// }) => {
+//   const ref = useRef<HTMLDivElement>(null);
+
+//   useEffect(() => {
+//     const handleClick = (e: MouseEvent) => {
+//       if (ref.current && !ref.current.contains(e.target as Node)) {
+//         onClose();
+//       }
+//     };
+//     document.addEventListener("mousedown", handleClick);
+//     return () => document.removeEventListener("mousedown", handleClick);
+//   }, [onClose]);
+
+//   return (
+//     <div
+//       ref={ref}
+//       style={{
+//         position: "absolute",
+//         top: "100%",
+//         left: 0,
+//         zIndex: 50,
+//         background: "#fff",
+//         border: "1px solid #e2e8f0",
+//         borderRadius: 10,
+//         padding: 10,
+//         boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+//         width: 280,
+//         maxHeight: 220,
+//         overflowY: "auto",
+//         display: "grid",
+//         gridTemplateColumns: "repeat(8, 1fr)",
+//         gap: 4,
+//       }}
+//     >
+//       {COMMON_EMOJIS.map((emoji) => (
+//         <button
+//           key={emoji}
+//           type="button"
+//           onClick={() => {
+//             onSelect(emoji);
+//             onClose();
+//           }}
+//           style={{
+//             border: "none",
+//             background: "transparent",
+//             fontSize: 20,
+//             cursor: "pointer",
+//             padding: 4,
+//             borderRadius: 6,
+//             lineHeight: 1.2,
+//           }}
+//           onMouseEnter={(e) => {
+//             e.currentTarget.style.background = "#f1f5f9";
+//           }}
+//           onMouseLeave={(e) => {
+//             e.currentTarget.style.background = "transparent";
+//           }}
+//         >
+//           {emoji}
+//         </button>
+//       ))}
+//     </div>
+//   );
+// };
+
+// // ===================== TEXT BLOCK EDITOR =====================
+// const TextBlockEditor = ({
+//   block,
+//   onUpdate,
+//   placeholder,
+// }: {
+//   block: Block;
+//   onUpdate: (updates: Partial<Block>) => void;
+//   placeholder?: string;
+// }) => {
+//   const [showEmoji, setShowEmoji] = useState(false);
+//   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+//   const insertEmoji = (emoji: string) => {
+//     const ta = textareaRef.current;
+//     if (!ta) {
+//       onUpdate({ content: (block.content || "") + emoji });
+//       return;
+//     }
+//     const start = ta.selectionStart;
+//     const end = ta.selectionEnd;
+//     const text = block.content || "";
+//     const newText = text.slice(0, start) + emoji + text.slice(end);
+//     onUpdate({ content: newText });
+//     requestAnimationFrame(() => {
+//       if (textareaRef.current) {
+//         const pos = start + emoji.length;
+//         textareaRef.current.focus();
+//         textareaRef.current.setSelectionRange(pos, pos);
+//       }
+//     });
+//   };
+
+//   const fontSizes = [12, 13, 14, 15, 16, 18, 20, 22, 24, 28, 32];
+
+//   return (
+//     <div>
+//       <div
+//         style={{
+//           display: "flex",
+//           flexWrap: "wrap",
+//           alignItems: "center",
+//           gap: 8,
+//           marginBottom: 8,
+//           padding: "8px 10px",
+//           background: "#f8fafc",
+//           borderRadius: 8,
+//           border: "1px solid #e2e8f0",
+//         }}
+//       >
+//         <label style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: "#64748b" }}>
+//           <span>Color</span>
+//           <input
+//             type="color"
+//             value={block.color && block.color !== "transparent" ? block.color : "#334155"}
+//             onChange={(e) => onUpdate({ color: e.target.value })}
+//             style={{
+//               width: 28,
+//               height: 28,
+//               border: "1px solid #e2e8f0",
+//               borderRadius: 6,
+//               cursor: "pointer",
+//               padding: 0,
+//               background: "none",
+//             }}
+//           />
+//         </label>
+
+//         <label style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: "#64748b" }}>
+//           <span>Bg</span>
+//           <input
+//             type="color"
+//             value={
+//               block.backgroundColor && block.backgroundColor !== "transparent"
+//                 ? block.backgroundColor
+//                 : "#ffffff"
+//             }
+//             onChange={(e) => onUpdate({ backgroundColor: e.target.value })}
+//             style={{
+//               width: 28,
+//               height: 28,
+//               border: "1px solid #e2e8f0",
+//               borderRadius: 6,
+//               cursor: "pointer",
+//               padding: 0,
+//               background: "none",
+//             }}
+//           />
+//           <button
+//             type="button"
+//             onClick={() => onUpdate({ backgroundColor: "transparent" })}
+//             style={{
+//               fontSize: 11,
+//               padding: "2px 6px",
+//               border: "1px solid #e2e8f0",
+//               borderRadius: 4,
+//               background: "#fff",
+//               cursor: "pointer",
+//               color: "#64748b",
+//             }}
+//           >
+//             Clear
+//           </button>
+//         </label>
+
+//         <label style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: "#64748b" }}>
+//           <span>Size</span>
+//           <select
+//             value={block.fontSize ?? 14}
+//             onChange={(e) => onUpdate({ fontSize: Number(e.target.value) })}
+//             style={{
+//               padding: "4px 6px",
+//               borderRadius: 6,
+//               border: "1px solid #e2e8f0",
+//               fontSize: 12,
+//               background: "#fff",
+//               cursor: "pointer",
+//             }}
+//           >
+//             {fontSizes.map((s) => (
+//               <option key={s} value={s}>
+//                 {s}px
+//               </option>
+//             ))}
+//           </select>
+//         </label>
+
+//         <button
+//           type="button"
+//           onClick={() =>
+//             onUpdate({
+//               fontWeight: block.fontWeight === "bold" ? "normal" : "bold",
+//             })
+//           }
+//           style={{
+//             width: 28,
+//             height: 28,
+//             border: block.fontWeight === "bold" ? "2px solid #2563eb" : "1px solid #e2e8f0",
+//             borderRadius: 6,
+//             background: block.fontWeight === "bold" ? "#eff6ff" : "#fff",
+//             fontWeight: 700,
+//             fontSize: 13,
+//             cursor: "pointer",
+//             color: "#334155",
+//           }}
+//         >
+//           B
+//         </button>
+
+//         <button
+//           type="button"
+//           onClick={() =>
+//             onUpdate({
+//               fontStyle: block.fontStyle === "italic" ? "normal" : "italic",
+//             })
+//           }
+//           style={{
+//             width: 28,
+//             height: 28,
+//             border: block.fontStyle === "italic" ? "2px solid #2563eb" : "1px solid #e2e8f0",
+//             borderRadius: 6,
+//             background: block.fontStyle === "italic" ? "#eff6ff" : "#fff",
+//             fontStyle: "italic",
+//             fontSize: 13,
+//             cursor: "pointer",
+//             color: "#334155",
+//           }}
+//         >
+//           I
+//         </button>
+
+//         {(["left", "center", "right"] as const).map((align) => (
+//           <button
+//             key={align}
+//             type="button"
+//             onClick={() => onUpdate({ textAlign: align })}
+//             style={{
+//               width: 28,
+//               height: 28,
+//               border:
+//                 (block.textAlign || "left") === align
+//                   ? "2px solid #2563eb"
+//                   : "1px solid #e2e8f0",
+//               borderRadius: 6,
+//               background:
+//                 (block.textAlign || "left") === align ? "#eff6ff" : "#fff",
+//               fontSize: 11,
+//               cursor: "pointer",
+//               color: "#334155",
+//             }}
+//           >
+//             {align === "left" ? "⬅" : align === "center" ? "↔" : "➡"}
+//           </button>
+//         ))}
+
+//         <div style={{ position: "relative" }}>
+//           <button
+//             type="button"
+//             onClick={() => setShowEmoji((v) => !v)}
+//             style={{
+//               display: "inline-flex",
+//               alignItems: "center",
+//               gap: 4,
+//               padding: "4px 10px",
+//               border: "1px solid #e2e8f0",
+//               borderRadius: 6,
+//               background: showEmoji ? "#eff6ff" : "#fff",
+//               fontSize: 12,
+//               cursor: "pointer",
+//               color: "#475569",
+//             }}
+//           >
+//             <Smile size={14} /> Emoji
+//           </button>
+//           {showEmoji && (
+//             <EmojiPicker
+//               onSelect={insertEmoji}
+//               onClose={() => setShowEmoji(false)}
+//             />
+//           )}
+//         </div>
+//       </div>
+
+//       <textarea
+//         ref={textareaRef}
+//         className="w-full rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500"
+//         style={{
+//           ...styles.textBlock,
+//           color: block.color || "#334155",
+//           backgroundColor:
+//             block.backgroundColor && block.backgroundColor !== "transparent"
+//               ? block.backgroundColor
+//               : "#fff",
+//           fontSize: block.fontSize || 14,
+//           fontWeight: block.fontWeight || "normal",
+//           fontStyle: block.fontStyle || "normal",
+//           textAlign: block.textAlign || "left",
+//         }}
+//         value={block.content}
+//         onChange={(e) => onUpdate({ content: e.target.value })}
+//         rows={4}
+//         placeholder={placeholder || "Hi {{Name}},\n\nType your message here..."}
+//       />
+//     </div>
+//   );
+// };
+
+// // ===================== COMPONENT =====================
+// interface Props {
+//   onBack?: () => void;
+// }
+
+// const Campaign = ({ onBack }: Props) => {
+//   const { user } = useContext(AuthContext);
+
+//   const [showTemplates, setShowTemplates] = useState(true);
+//   const [templates, setTemplates] = useState<any[]>([]);
+//   const [templatesLoading, setTemplatesLoading] = useState(false);
+
+//   const [channel, setChannel] = useState("Email");
+//   const [activeTab, setActiveTab] = useState("Email");
+
+//   const [campaignId, setCampaignId] = useState<string | null>(null);
+//   const [campaignName, setCampaignName] = useState("");
+//   const [category, setCategory] = useState("Event");
+//   const [subject, setSubject] = useState("");
+
+//   const [recipients, setRecipients] = useState("");
+
+//   const [blocks, setBlocks] = useState<Block[]>([
+//     {
+//       id: "1",
+//       type: "text",
+//       content: "",
+//       color: "#334155",
+//       backgroundColor: "transparent",
+//       fontSize: 14,
+//       fontWeight: "normal",
+//       fontStyle: "normal",
+//       textAlign: "left",
+//     },
+//   ]);
+
+//   const [loading, setLoading] = useState(false);
+//   const [saving, setSaving] = useState(false);
+//   const [sending, setSending] = useState(false);
+//   const [alert, setAlert] = useState<AlertState | null>(null);
+
+//   const showAlert = (type: AlertType, message: string) => {
+//     setAlert({ type, message });
+//   };
+
+//   const loadTemplates = useCallback(async () => {
+//     try {
+//       setTemplatesLoading(true);
+//       const res = await axios.get(`${API}/api/campaigns`, {
+//         withCredentials: true,
+//       });
+//       setTemplates(res.data.data || []);
+//     } catch (err) {
+//       console.error("Failed to load templates", err);
+//     } finally {
+//       setTemplatesLoading(false);
+//     }
+//   }, []);
+
+//   useEffect(() => {
+//     loadTemplates();
+//   }, [loadTemplates]);
+
+//   const loadCampaign = useCallback(async (id: string) => {
+//     try {
+//       setLoading(true);
+
+//       const [campRes, blocksRes] = await Promise.all([
+//         axios.get(`${API}/api/campaigns/${id}`, { withCredentials: true }),
+//         axios.get(`${API}/api/campaigns/${id}/blocks`, { withCredentials: true }),
+//       ]);
+
+//       const camp = campRes.data.data;
+//       setCampaignId(camp.id);
+//       setCampaignName(camp.campaignName || "Untitled Campaign");
+//       setCategory(camp.category || "Event");
+//       setSubject(camp.subject || "");
+
+//       const ch = camp.channel || "Email";
+//       setChannel(ch);
+//       if (ch === "WhatsApp") setActiveTab("WhatsApp Message");
+//       else if (ch === "Social") setActiveTab("Social Media Post");
+//       else setActiveTab("Email");
+
+//       const apiBlocks = blocksRes.data.data || [];
+//       setBlocks(apiBlocks.length ? apiBlocks.map(apiBlockToUi) : []);
+//     } catch (err: any) {
+//       console.error(err);
+//       showAlert("error", err?.response?.data?.message || "Failed to load campaign");
+//     } finally {
+//       setLoading(false);
+//     }
+//   }, []);
+
+//   const openTemplate = async (id: string) => {
+//     setShowTemplates(false);
+//     await loadCampaign(id);
+//   };
+
+//   const startNewCampaign = () => {
+//     setShowTemplates(false);
+//     setCampaignId(null);
+//     setCampaignName("");
+//     setCategory("Event");
+//     setSubject("");
+//     setChannel("Email");
+//     setActiveTab("Email");
+//     setRecipients("");
+//     setBlocks([
+//       {
+//         id: generateId(),
+//         type: "text",
+//         content: "",
+//         color: "#334155",
+//         backgroundColor: "transparent",
+//         fontSize: 14,
+//         fontWeight: "normal",
+//         fontStyle: "normal",
+//         textAlign: "left",
+//       },
+//     ]);
+//     setAlert(null);
+//   };
+
+//   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+//     const file = e.target.files?.[0];
+//     if (!file) return;
+
+//     const reader = new FileReader();
+
+//     reader.onload = (event) => {
+//       try {
+//         const data = new Uint8Array(event.target?.result as ArrayBuffer);
+//         const workbook = XLSX.read(data, { type: "array" });
+//         const sheetName = workbook.SheetNames[0];
+//         const sheet = workbook.Sheets[sheetName];
+//         const rows: any[] = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+//         const emails: string[] = [];
+
+//         rows.forEach((row) => {
+//           if (!Array.isArray(row)) return;
+//           row.forEach((cell) => {
+//             if (typeof cell === "string" || typeof cell === "number") {
+//               const value = String(cell).trim();
+//               if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+//                 emails.push(value);
+//               }
+//             }
+//           });
+//         });
+
+//         const uniqueEmails = [...new Set(emails)];
+
+//         if (uniqueEmails.length === 0) {
+//           showAlert("warning", "No valid email addresses found in the file");
+//           return;
+//         }
+
+//         setRecipients(uniqueEmails.join("\n"));
+//         showAlert("success", `${uniqueEmails.length} emails loaded from file`);
+//       } catch (err) {
+//         console.error(err);
+//         showAlert("error", "Failed to read the file. Please upload a valid CSV or Excel file.");
+//       }
+//     };
+
+//     reader.readAsArrayBuffer(file);
+//     e.target.value = "";
+//   };
+
+//   const addBlock = (type: BlockType) => {
+//     const newBlock: Block = {
+//       id: generateId(),
+//       type,
+//       content: type === "text" ? "" : "",
+//       url: type === "image" || type === "logo" || type === "document" ? "" : undefined,
+//       documentName: type === "document" ? "" : undefined,
+//       buttonText: type === "button" ? "" : undefined,
+//       buttonLink: type === "button" ? "" : undefined,
+//       align: "center",
+//       color: type === "text" ? "#334155" : undefined,
+//       backgroundColor: type === "text" ? "transparent" : undefined,
+//       fontSize: type === "text" ? 14 : undefined,
+//       fontWeight: type === "text" ? "normal" : undefined,
+//       fontStyle: type === "text" ? "normal" : undefined,
+//       textAlign: type === "text" ? "left" : undefined,
+//     };
+//     setBlocks((prev) => [...prev, newBlock]);
+//   };
+
+//   const updateBlock = (id: string, updates: Partial<Block>) => {
+//     setBlocks((prev) => prev.map((b) => (b.id === id ? { ...b, ...updates } : b)));
+//   };
+
+//   const removeBlock = (id: string) => {
+//     setBlocks((prev) => prev.filter((b) => b.id !== id));
+//   };
+
+//   const moveBlock = (index: number, direction: "up" | "down") => {
+//     setBlocks((prev) => {
+//       const next = [...prev];
+//       const target = direction === "up" ? index - 1 : index + 1;
+//       if (target < 0 || target >= next.length) return prev;
+//       [next[index], next[target]] = [next[target], next[index]];
+//       return next;
+//     });
+//   };
+
+//   // ---------- SAVE DRAFT ----------
+//   const handleSaveDraft = async () => {
+//     if (!campaignName.trim()) {
+//       showAlert("warning", "Please enter a campaign name");
+//       return;
+//     }
+
+//     try {
+//       setSaving(true);
+
+//       const payload = {
+//         campaign_name: campaignName.trim(),
+//         channel:
+//           channel === "WhatsApp"
+//             ? "WhatsApp"
+//             : channel === "Social"
+//               ? "Social"
+//               : "Email",
+//         category: category || "Others",
+//         subject: channel === "Email" ? subject || null : null,
+//         preheader: null,
+//         status: "Draft",
+//         scheduled_at: null,
+//       };
+
+//       let id = campaignId;
+
+//       if (!id) {
+//         const res = await axios.post(`${API}/api/campaigns`, payload, {
+//           withCredentials: true,
+//         });
+//         id = res.data.data.id;
+//         setCampaignId(id);
+//       } else {
+//         await axios.put(`${API}/api/campaigns/${id}`, payload, {
+//           withCredentials: true,
+//         });
+//       }
+
+//       const existingRes = await axios.get(`${API}/api/campaigns/${id}/blocks`, {
+//         withCredentials: true,
+//       });
+//       const existing = existingRes.data.data || [];
+
+//       await Promise.all(
+//         existing.map((b: any) =>
+//           axios.delete(`${API}/api/campaigns/${id}/blocks/${b.id}`, {
+//             withCredentials: true,
+//           })
+//         )
+//       );
+
+//       for (let i = 0; i < blocks.length; i++) {
+//         await axios.post(
+//           `${API}/api/campaigns/${id}/blocks`,
+//           uiBlockToApi(blocks[i], i),
+//           { withCredentials: true }
+//         );
+//       }
+
+//       const refreshed = await axios.get(`${API}/api/campaigns/${id}/blocks`, {
+//         withCredentials: true,
+//       });
+//       setBlocks((refreshed.data.data || []).map(apiBlockToUi));
+
+//       showAlert("success", "Campaign saved as draft");
+//       loadTemplates();
+//     } catch (err: any) {
+//       console.error(err);
+//       showAlert("error", err?.response?.data?.message || "Failed to save campaign");
+//     } finally {
+//       setSaving(false);
+//     }
+//   };
+
+//   // ---------- SEND ----------
+//   const handleSend = async () => {
+//     if (!campaignName.trim()) {
+//       showAlert("warning", "Please enter a campaign name");
+//       return;
+//     }
+
+//     if (channel !== "Email") {
+//       showAlert("warning", "Sending is currently only supported for Email campaigns");
+//       return;
+//     }
+
+//     const emails = recipients
+//       .split(/[,;\n]/)
+//       .map((e) => e.trim())
+//       .filter(Boolean);
+
+//     if (emails.length === 0) {
+//       showAlert("warning", "Please enter at least one recipient email or upload a file");
+//       return;
+//     }
+
+//     try {
+//       setSending(true);
+
+//       let id = campaignId;
+
+//       const payload = {
+//         campaign_name: campaignName.trim(),
+//         channel: "Email",
+//         category: category || "Others",
+//         subject: subject || null,
+//         preheader: null,
+//         status: "Draft",
+//         scheduled_at: null,
+//       };
+
+//       if (!id) {
+//         const res = await axios.post(`${API}/api/campaigns`, payload, {
+//           withCredentials: true,
+//         });
+//         id = res.data.data.id;
+//         setCampaignId(id);
+//       } else {
+//         await axios.put(`${API}/api/campaigns/${id}`, payload, {
+//           withCredentials: true,
+//         });
+//       }
+
+//       const existingRes = await axios.get(`${API}/api/campaigns/${id}/blocks`, {
+//         withCredentials: true,
+//       });
+//       const existing = existingRes.data.data || [];
+
+//       await Promise.all(
+//         existing.map((b: any) =>
+//           axios.delete(`${API}/api/campaigns/${id}/blocks/${b.id}`, {
+//             withCredentials: true,
+//           })
+//         )
+//       );
+
+//       for (let i = 0; i < blocks.length; i++) {
+//         await axios.post(
+//           `${API}/api/campaigns/${id}/blocks`,
+//           uiBlockToApi(blocks[i], i),
+//           { withCredentials: true }
+//         );
+//       }
+
+//       await axios.post(
+//         `${API}/api/campaigns/${id}/send`,
+//         { emails },
+//         { withCredentials: true }
+//       );
+
+//       showAlert("success", `Campaign sent to ${emails.length} recipient(s)`);
+//       await loadTemplates();
+//       setShowTemplates(true);
+//     } catch (err: any) {
+//       console.error(err);
+//       showAlert("error", err?.response?.data?.message || "Failed to send campaign");
+//     } finally {
+//       setSending(false);
+//     }
+//   };
+
+//   const editorPlaceholder =
+//     activeTab === "Email"
+//       ? "Hi {{Name}},\n\nType your message here..."
+//       : activeTab === "WhatsApp Message"
+//         ? "Hi {{Name}},\n\nType your WhatsApp message here..."
+//         : "Type your social post caption here...";
+
+//   const designTitle =
+//     activeTab === "Email"
+//       ? "Create Email"
+//       : activeTab === "WhatsApp Message"
+//         ? "Create WhatsApp Message"
+//         : "Create Social Media Post";
+
+//   if (loading) {
+//     return (
+//       <div
+//         style={{
+//           ...styles.page,
+//           display: "flex",
+//           alignItems: "center",
+//           justifyContent: "center",
+//         }}
+//       >
+//         <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#64748b" }}>
+//           <Loader2 size={20} className="animate-spin" />
+//           Loading campaign...
+//         </div>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div style={styles.page}>
+//       {alert && (
+//         <AlertModal
+//           type={alert.type}
+//           message={alert.message}
+//           onClose={() => setAlert(null)}
+//         />
+//       )}
+
+//       {/* ===================== TEMPLATES VIEW ===================== */}
+//       {showTemplates && (
+//         <div style={{ padding: "20px 24px", maxWidth: 1600, margin: "0 auto" }}>
+//           <div style={styles.card}>
+//             <div
+//               style={{
+//                 display: "flex",
+//                 justifyContent: "space-between",
+//                 alignItems: "center",
+//                 marginBottom: 20,
+//               }}
+//             >
+//               <div>
+//                 <h3 style={styles.sectionTitle}>Your Campaigns & Templates</h3>
+//                 <p style={styles.sectionHint}>
+//                   Open a previous campaign or start a new one
+//                 </p>
+//               </div>
+//               <div style={{ display: "flex", gap: 10 }}>
+//                 {onBack && (
+//                   <button style={styles.secondaryBtn} onClick={onBack}>
+//                     <ArrowLeft size={16} /> Back
+//                   </button>
+//                 )}
+//                 <button
+//                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm font-semibold shadow-lg hover:opacity-90 transition"
+//                   onClick={startNewCampaign}
+//                 >
+//                   <Plus size={16} /> Create New Campaign
+//                 </button>
+//               </div>
+//             </div>
+
+//             {templatesLoading ? (
+//               <div
+//                 style={{
+//                   display: "flex",
+//                   alignItems: "center",
+//                   gap: 8,
+//                   color: "#64748b",
+//                   padding: "40px 0",
+//                   justifyContent: "center",
+//                 }}
+//               >
+//                 <Loader2 size={18} className="animate-spin" />
+//                 Loading campaigns...
+//               </div>
+//             ) : templates.length === 0 ? (
+//               <div style={{ textAlign: "center", padding: "50px 0", color: "#94a3b8" }}>
+//                 <FileText size={40} style={{ marginBottom: 12, opacity: 0.4 }} />
+//                 <p style={{ marginBottom: 16 }}>No campaigns yet</p>
+//                 <button
+//                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm font-semibold shadow-lg hover:opacity-90 transition"
+//                   onClick={startNewCampaign}
+//                 >
+//                   <Plus size={16} /> Create your first campaign
+//                 </button>
+//               </div>
+//             ) : (
+//               <div
+//                 style={{
+//                   display: "grid",
+//                   gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+//                   gap: 14,
+//                 }}
+//               >
+//                 {templates.map((t) => (
+//                   <div
+//                     key={t.id}
+//                     onClick={() => openTemplate(t.id)}
+//                     style={styles.templateCard}
+//                     onMouseEnter={(e) => {
+//                       e.currentTarget.style.borderColor = "#2563eb";
+//                       e.currentTarget.style.boxShadow =
+//                         "0 4px 12px rgba(37,99,235,0.12)";
+//                     }}
+//                     onMouseLeave={(e) => {
+//                       e. currentTarget.style.borderColor = "#e2e8f0";
+//                       e.currentTarget.style.boxShadow = "none";
+//                     }}
+//                   >
+//                     <div
+//                       style={{
+//                         display: "flex",
+//                         justifyContent: "space-between",
+//                         marginBottom: 10,
+//                       }}
+//                     >
+//                       <span
+//                         style={{
+//                           ...styles.channelBadge,
+//                           background:
+//                             t.channel === "Email"
+//                               ? "#dbeafe"
+//                               : t.channel === "WhatsApp"
+//                                 ? "#dcfce7"
+//                                 : t.channel === "Social"
+//                                   ? "#dbeafe"
+//                                   : "#fef3c7",
+//                           color:
+//                             t.channel === "Email"
+//                               ? "#2563eb"
+//                               : t.channel === "WhatsApp"
+//                                 ? "#16a34a"
+//                                 : t.channel === "Social"
+//                                   ? "#2563eb"
+//                                   : "#d97706",
+//                         }}
+//                       >
+//                         {t.channel || "Email"}
+//                       </span>
+//                       <span
+//                         style={{
+//                           fontSize: 11,
+//                           fontWeight: 500,
+//                           color: t.status === "Sent" ? "#16a34a" : "#64748b",
+//                         }}
+//                       >
+//                         {t.status || "Draft"}
+//                       </span>
+//                     </div>
+
+//                     <h4 style={styles.templateTitle}>
+//                       {t.campaignName || "Untitled"}
+//                     </h4>
+
+//                     <p style={{ margin: 0, fontSize: 12, color: "#94a3b8" }}>
+//                       {t.category || "—"} ·{" "}
+//                       {new Date(t.updatedAt || t.createdAt).toLocaleDateString()}
+//                     </p>
+//                   </div>
+//                 ))}
+//               </div>
+//             )}
+//           </div>
+//         </div>
+//       )}
+
+//       {/* ===================== EDITOR VIEW ===================== */}
+//       {!showTemplates && (
+//         <>
+//           <div style={{ padding: "16px 24px", maxWidth: 1600, margin: "0 auto" }}>
+//             {/* TOP BAR – compact, one line */}
+//             <div
+//               style={{
+//                 display: "flex",
+//                 alignItems: "center",
+//                 gap: 16,
+//                 marginBottom: 16,
+//                 flexWrap: "wrap",
+//               }}
+//             >
+//               {/* Back – icon only */}
+//               <button
+//                 type="button"
+//                 onClick={() => {
+//                   setShowTemplates(true);
+//                   loadTemplates();
+//                 }}
+//                 title="Back to Templates"
+//                 style={{
+//                   ...styles.secondaryBtn,
+//                   padding: "8px 10px",
+//                   flexShrink: 0,
+//                 }}
+//               >
+//                 <ArrowLeft size={16} />
+//               </button>
+
+//               {/* Audience */}
+//               <div
+//                 style={{
+//                   display: "flex",
+//                   alignItems: "center",
+//                   gap: 8,
+//                   flex: "1 1 280px",
+//                   minWidth: 220,
+//                   maxWidth: 420,
+//                 }}
+//               >
+//                 <input
+//                   type="text"
+//                   value={recipients}
+//                   onChange={(e) => setRecipients(e.target.value)}
+//                   placeholder="emails@example.com (comma or new line)"
+//                   className="w-full h-10 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500 text-sm"
+//                 />
+//                 <label
+//                   className="inline-flex items-center gap-1 px-3 h-10 rounded-lg border border-gray-300 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 cursor-pointer shrink-0"
+//                   title="Upload CSV / Excel"
+//                 >
+//                   <Upload size={14} />
+//                   <input
+//                     type="file"
+//                     accept=".csv,.xls,.xlsx"
+//                     onChange={handleFileUpload}
+//                     style={{ display: "none" }}
+//                   />
+//                 </label>
+//                 <button
+//                   type="button"
+//                   onClick={handleSend}
+//                   disabled={saving || sending}
+//                   className="inline-flex items-center gap-1.5 px-3 h-10 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white text-xs font-semibold shadow hover:opacity-90 transition disabled:opacity-60 shrink-0"
+//                 >
+//                   {sending ? (
+//                     <Loader2 size={13} className="animate-spin" />
+//                   ) : (
+//                     "Send"
+//                   )}
+//                 </button>
+//               </div>
+
+//               {/* Spacer gap between groups */}
+//               <div style={{ width: 12, flexShrink: 0 }} />
+
+//               {/* Campaign name + Save */}
+//               <div
+//                 style={{
+//                   display: "flex",
+//                   alignItems: "center",
+//                   gap: 8,
+//                   flex: "1 1 200px",
+//                   minWidth: 180,
+//                   maxWidth: 320,
+//                 }}
+//               >
+//                 <input
+//                   type="text"
+//                   value={campaignName}
+//                   onChange={(e) => setCampaignName(e.target.value)}
+//                   placeholder="Campaign name *"
+//                   className="w-full h-10 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500 text-sm"
+//                 />
+//                 <button
+//                   type="button"
+//                   onClick={handleSaveDraft}
+//                   disabled={saving || sending}
+//                   className="inline-flex items-center gap-1.5 px-3 h-10 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white text-xs font-semibold shadow hover:opacity-90 transition disabled:opacity-60 shrink-0"
+//                 >
+//                   {saving ? (
+//                     <Loader2 size={13} className="animate-spin" />
+//                   ) : (
+//                     "Save"
+//                   )}
+//                 </button>
+//               </div>
+//             </div>
+
+//             {/* BOTTOM: Editor + Preview */}
+//             <div
+//               style={{
+//                 display: "grid",
+//                 gridTemplateColumns: "220px minmax(0, 1fr) 340px",
+//                 gap: 16,
+//               }}
+//             >
+//               {/* LEFT SIDEBAR: Channel + content blocks */}
+//               <div style={styles.sidebar}>
+//                 <div style={styles.card}>
+//                   <h3 style={styles.sectionTitle}>Campaign type</h3>
+//                   <div style={styles.tabs}>
+//                     {["Email", "WhatsApp Message", "Social Media Post"].map((tab) => (
+//                       <button
+//                         key={tab}
+//                         type="button"
+//                         onClick={() => {
+//                           if (tab === "Email") {
+//                             setChannel("Email");
+//                             setActiveTab("Email");
+//                           } else if (tab === "WhatsApp Message") {
+//                             setChannel("WhatsApp");
+//                             setActiveTab("WhatsApp Message");
+//                           } else {
+//                             setChannel("Social");
+//                             setActiveTab("Social Media Post");
+//                           }
+//                         }}
+//                         style={activeTab === tab ? styles.activeTab : styles.tab}
+//                       >
+//                         {tab}
+//                       </button>
+//                     ))}
+//                   </div>
+
+//                   <h3 style={{ ...styles.sectionTitle, marginTop: 20 }}>
+//                     Add to campaign
+//                   </h3>
+//                   <div style={styles.addToolbar}>
+//                     <button type="button" style={styles.addBtn} onClick={() => addBlock("text")}>
+//                       <TypeIcon size={14} /> Text
+//                     </button>
+//                     <button type="button" style={styles.addBtn} onClick={() => addBlock("image")}>
+//                       <ImageIcon size={14} /> Banner / Image
+//                     </button>
+//                     <button type="button" style={styles.addBtn} onClick={() => addBlock("logo")}>
+//                       <Square size={14} /> Logo
+//                     </button>
+//                     <button type="button" style={styles.addBtn} onClick={() => addBlock("document")}>
+//                       <FileText size={14} /> Document
+//                     </button>
+//                     <button type="button" style={styles.addBtn} onClick={() => addBlock("button")}>
+//                       <Square size={14} /> Button
+//                     </button>
+//                     <button type="button" style={styles.addBtn} onClick={() => addBlock("divider")}>
+//                       <Minus size={14} /> Divider
+//                     </button>
+//                   </div>
+//                 </div>
+//               </div>
+
+//               {/* CENTER COLUMN */}
+//               <div style={styles.centerCol}>
+//                 <div style={styles.card}>
+//                   <h3 style={styles.sectionTitle}>{designTitle}</h3>
+
+//                   {activeTab === "Email" && (
+//                     <div style={styles.emailComposer}>
+//                       <div style={styles.emailSectionCard}>
+//                         <h4 style={{ margin: "0 0 10px", fontSize: 14 }}>
+//                           Email Details
+//                         </h4>
+//                         <label className="block mb-2 text-sm font-medium">
+//                           Subject
+//                         </label>
+//                         <input
+//                           className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500 text-sm"
+//                           value={subject}
+//                           onChange={(e) => setSubject(e.target.value)}
+//                           placeholder="Enter email subject"
+//                         />
+//                       </div>
+//                     </div>
+//                   )}
+
+//                   <div style={styles.canvas}>
+//                     {blocks.length === 0 && (
+//                       <div style={styles.emptyCanvas}>
+//                         <p>No content yet. Click the buttons above to start designing.</p>
+//                       </div>
+//                     )}
+
+//                     {blocks.map((block, index) => (
+//                       <div key={block.id} style={styles.blockWrapper}>
+//                         <div style={styles.blockControls}>
+//                           <span style={styles.blockTypeLabel}>
+//                             {block.type === "text"
+//                               ? "Text"
+//                               : block.type === "image"
+//                                 ? "Banner / Image"
+//                                 : block.type === "logo"
+//                                   ? "Logo"
+//                                   : block.type === "document"
+//                                     ? "Document"
+//                                     : block.type === "button"
+//                                       ? "Button"
+//                                       : "Divider"}
+//                           </span>
+//                           <div style={styles.blockControlButtons}>
+//                             <button
+//                               type="button"
+//                               style={styles.controlBtn}
+//                               onClick={() => moveBlock(index, "up")}
+//                               title="Move up"
+//                             >
+//                               ↑
+//                             </button>
+//                             <button
+//                               type="button"
+//                               style={styles.controlBtn}
+//                               onClick={() => moveBlock(index, "down")}
+//                               title="Move down"
+//                             >
+//                               ↓
+//                             </button>
+//                             <button
+//                               type="button"
+//                               style={{ ...styles.controlBtn, color: "#ef4444" }}
+//                               onClick={() => removeBlock(block.id)}
+//                               title="Delete block"
+//                             >
+//                               <Trash2 size={14} />
+//                             </button>
+//                           </div>
+//                         </div>
+
+//                         {block.type === "text" && (
+//                           <TextBlockEditor
+//                             block={block}
+//                             onUpdate={(updates) => updateBlock(block.id, updates)}
+//                             placeholder={editorPlaceholder}
+//                           />
+//                         )}
+
+//                         {block.type === "image" && (
+//                           <ImageBlockEditor
+//                             block={block}
+//                             onUpdate={(updates) => updateBlock(block.id, updates)}
+//                             onError={(msg) => msg && showAlert("error", msg)}
+//                           />
+//                         )}
+
+//                         {block.type === "logo" && (
+//                           <ImageBlockEditor
+//                             block={block}
+//                             onUpdate={(updates) => updateBlock(block.id, updates)}
+//                             onError={(msg) => msg && showAlert("error", msg)}
+//                             isLogo
+//                           />
+//                         )}
+
+//                         {block.type === "document" && (
+//                           <DocumentBlockEditor
+//                             block={block}
+//                             onUpdate={(updates) => updateBlock(block.id, updates)}
+//                             onError={(msg) => msg && showAlert("error", msg)}
+//                           />
+//                         )}
+
+//                         {block.type === "button" && (
+//                           <div>
+//                             <div style={{ textAlign: block.align || "center" }}>
+//                               <button className="inline-flex items-center gap-1.5 px-6 py-2.5 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm font-semibold shadow-lg">
+//                                 {block.buttonText || "Button"}
+//                               </button>
+//                             </div>
+//                             <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+//                               <input
+//                                 className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500 text-sm"
+//                                 placeholder="Button Text"
+//                                 value={block.buttonText || ""}
+//                                 onChange={(e) =>
+//                                   updateBlock(block.id, {
+//                                     buttonText: e.target.value,
+//                                   })
+//                                 }
+//                               />
+//                               <input
+//                                 className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500 text-sm"
+//                                 placeholder="Button Link (URL)"
+//                                 value={block.buttonLink || ""}
+//                                 onChange={(e) =>
+//                                   updateBlock(block.id, {
+//                                     buttonLink: e.target.value,
+//                                   })
+//                                 }
+//                               />
+//                             </div>
+//                           </div>
+//                         )}
+
+//                         {block.type === "divider" && (
+//                           <hr
+//                             style={{
+//                               border: "none",
+//                               borderTop: "1px solid #e2e8f0",
+//                               margin: "12px 0",
+//                             }}
+//                           />
+//                         )}
+//                       </div>
+//                     ))}
+//                   </div>
+//                 </div>
+//               </div>
+
+//               {/* RIGHT COLUMN - PREVIEW */}
+//               <div style={styles.rightCol}>
+//                 <div style={styles.card}>
+//                   <h3 style={styles.sectionTitle}>Preview</h3>
+//                   <p style={styles.sectionHint}>Live preview of your design</p>
+
+//                   {activeTab === "Email" && (
+//                     <div style={styles.previewCard}>
+//                       <div style={styles.previewHeader}>
+//                         <Mail size={16} color="#2563eb" />
+//                         <span style={{ fontWeight: 600, fontSize: 13 }}>
+//                           Email Preview
+//                         </span>
+//                       </div>
+//                       <div style={styles.emailPreviewFrame}>
+//                         {subject && (
+//                           <div style={styles.previewSubject}>
+//                             <strong>Subject:</strong> {subject}
+//                           </div>
+//                         )}
+//                         <div style={styles.previewBody}>
+//                           {blocks.map((block) => {
+//                             if (block.type === "logo") {
+//                               const logoAlign = block.align || "center";
+//                               return (
+//                                 <div
+//                                   key={block.id}
+//                                   style={{
+//                                     textAlign: logoAlign,
+//                                     marginBottom: 12,
+//                                   }}
+//                                 >
+//                                   {block.url ? (
+//                                     <img
+//                                       src={block.url}
+//                                       alt="Logo"
+//                                       style={{
+//                                         maxHeight: 40,
+//                                         objectFit: "contain",
+//                                         display: "block",
+//                                         margin:
+//                                           logoAlign === "left"
+//                                             ? "0 auto 0 0"
+//                                             : logoAlign === "right"
+//                                               ? "0 0 0 auto"
+//                                               : "0 auto",
+//                                       }}
+//                                     />
+//                                   ) : (
+//                                     <div style={styles.logoPlaceholder}>
+//                                       <ImageIcon size={16} color="#2563eb" />
+//                                       <span>Your Logo</span>
+//                                     </div>
+//                                   )}
+//                                 </div>
+//                               );
+//                             }
+//                             if (block.type === "image" && block.url) {
+//                               return (
+//                                 <img
+//                                   key={block.id}
+//                                   src={block.url}
+//                                   alt=""
+//                                   style={{
+//                                     width: "100%",
+//                                     borderRadius: 8,
+//                                     marginBottom: 12,
+//                                     maxHeight: 140,
+//                                     objectFit: "cover",
+//                                   }}
+//                                 />
+//                               );
+//                             }
+//                             if (block.type === "document" && block.url) {
+//                               return (
+//                                 <div key={block.id} style={{ marginBottom: 12 }}>
+//                                   <a
+//                                     href={block.url}
+//                                     target="_blank"
+//                                     rel="noopener noreferrer"
+//                                     style={{
+//                                       display: "inline-flex",
+//                                       alignItems: "center",
+//                                       gap: 8,
+//                                       color: "#2563eb",
+//                                       textDecoration: "underline",
+//                                       overflowWrap: "anywhere",
+//                                     }}
+//                                   >
+//                                     <FileText size={16} />
+//                                     {block.documentName || "Download document"}
+//                                   </a>
+//                                 </div>
+//                               );
+//                             }
+//                             if (block.type === "text") {
+//                               return (
+//                                 <p
+//                                   key={block.id}
+//                                   style={{
+//                                     fontSize: block.fontSize || 14,
+//                                     lineHeight: 1.6,
+//                                     whiteSpace: "pre-wrap",
+//                                     margin: "0 0 12px",
+//                                     color: block.color || "#334155",
+//                                     backgroundColor:
+//                                       block.backgroundColor &&
+//                                       block.backgroundColor !== "transparent"
+//                                         ? block.backgroundColor
+//                                         : undefined,
+//                                     fontWeight: block.fontWeight || "normal",
+//                                     fontStyle: block.fontStyle || "normal",
+//                                     textAlign: block.textAlign || "left",
+//                                     padding:
+//                                       block.backgroundColor &&
+//                                       block.backgroundColor !== "transparent"
+//                                         ? "8px 10px"
+//                                         : undefined,
+//                                     borderRadius:
+//                                       block.backgroundColor &&
+//                                       block.backgroundColor !== "transparent"
+//                                         ? 6
+//                                         : undefined,
+//                                   }}
+//                                 >
+//                                   {block.content}
+//                                 </p>
+//                               );
+//                             }
+//                             if (block.type === "button") {
+//                               return (
+//                                 <div
+//                                   key={block.id}
+//                                   style={{
+//                                     textAlign: block.align || "center",
+//                                     margin: "16px 0",
+//                                   }}
+//                                 >
+//                                   <a
+//                                     href={block.buttonLink}
+//                                     className="inline-block px-5 py-2.5 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm font-semibold shadow-lg no-underline"
+//                                   >
+//                                     {block.buttonText}
+//                                   </a>
+//                                 </div>
+//                               );
+//                             }
+//                             if (block.type === "divider") {
+//                               return (
+//                                 <hr
+//                                   key={block.id}
+//                                   style={{
+//                                     border: "none",
+//                                     borderTop: "1px solid #e2e8f0",
+//                                     margin: "16px 0",
+//                                   }}
+//                                 />
+//                               );
+//                             }
+//                             return null;
+//                           })}
+//                         </div>
+//                       </div>
+//                     </div>
+//                   )}
+
+//                   {activeTab === "WhatsApp Message" && (
+//                     <div style={styles.previewCard}>
+//                       <div style={styles.previewHeader}>
+//                         <FaWhatsapp size={16} color="#25D366" />
+//                         <span style={{ fontWeight: 600, fontSize: 13 }}>
+//                           WhatsApp Preview
+//                         </span>
+//                       </div>
+//                       <div style={styles.whatsappFrame}>
+//                         <div style={styles.waHeader}>
+//                           <ArrowLeft size={16} color="#fff" />
+//                           <div style={styles.waAvatar}></div>
+//                           <div>
+//                             <div style={{ fontWeight: 600, fontSize: 13, color: "#fff" }}>
+//                               Your Company
+//                             </div>
+//                             <div style={{ fontSize: 11, color: "#d1fae5" }}>online</div>
+//                           </div>
+//                         </div>
+//                         <div style={styles.waBody}>
+//                           <div style={styles.waBubble}>
+//                             {blocks.map((block) => {
+//                               if (block.type === "image" && block.url) {
+//                                 return (
+//                                   <img
+//                                     key={block.id}
+//                                     src={block.url}
+//                                     alt=""
+//                                     style={{
+//                                       width: "100%",
+//                                       borderRadius: 8,
+//                                       marginBottom: 8,
+//                                     }}
+//                                   />
+//                                 );
+//                               }
+//                               if (block.type === "text") {
+//                                 return (
+//                                   <p
+//                                     key={block.id}
+//                                     style={{
+//                                       fontSize: block.fontSize || 13,
+//                                       whiteSpace: "pre-wrap",
+//                                       margin: "0 0 8px",
+//                                       color: block.color || "#111",
+//                                       backgroundColor:
+//                                         block.backgroundColor &&
+//                                         block.backgroundColor !== "transparent"
+//                                           ? block.backgroundColor
+//                                           : undefined,
+//                                       fontWeight: block.fontWeight || "normal",
+//                                       fontStyle: block.fontStyle || "normal",
+//                                       textAlign: block.textAlign || "left",
+//                                       padding:
+//                                         block.backgroundColor &&
+//                                         block.backgroundColor !== "transparent"
+//                                           ? "6px 8px"
+//                                           : undefined,
+//                                       borderRadius: 6,
+//                                     }}
+//                                   >
+//                                     {block.content}
+//                                   </p>
+//                                 );
+//                               }
+//                               if (block.type === "button") {
+//                                 return (
+//                                   <div key={block.id} style={{ margin: "8px 0" }}>
+//                                     <a
+//                                       href={block.buttonLink}
+//                                       className="inline-block px-4 py-2 rounded-md bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm no-underline"
+//                                     >
+//                                       {block.buttonText}
+//                                     </a>
+//                                   </div>
+//                                 );
+//                               }
+//                               return null;
+//                             })}
+//                             <div
+//                               style={{
+//                                 textAlign: "right",
+//                                 fontSize: 11,
+//                                 color: "#94a3b8",
+//                                 marginTop: 6,
+//                               }}
+//                             >
+//                               11:30 AM ✓✓
+//                             </div>
+//                           </div>
+//                         </div>
+//                         <div style={styles.waInput}>
+//                           <Smile size={18} color="#94a3b8" />
+//                           <span style={{ flex: 1, color: "#94a3b8", fontSize: 13 }}>
+//                             Type a message
+//                           </span>
+//                         </div>
+//                       </div>
+//                     </div>
+//                   )}
+
+//                   {activeTab === "Social Media Post" && (
+//                     <div style={styles.previewCard}>
+//                       <div style={styles.previewHeader}>
+//                         <span style={{ fontWeight: 600, fontSize: 13 }}>
+//                           Social Media Preview
+//                         </span>
+//                       </div>
+//                       <div style={styles.socialCard}>
+//                         <div style={styles.socialHeader}>
+//                           <div style={styles.socialAvatar}></div>
+//                           <div>
+//                             <div style={{ fontWeight: 600, fontSize: 13 }}>
+//                               Your Company
+//                             </div>
+//                             <div style={{ fontSize: 11, color: "#94a3b8" }}>
+//                               Just now · 🌐
+//                             </div>
+//                           </div>
+//                         </div>
+//                         {blocks.map((block) => {
+//                           if (block.type === "text") {
+//                             return (
+//                               <p
+//                                 key={block.id}
+//                                 style={{
+//                                   fontSize: block.fontSize || 13,
+//                                   padding: "8px 12px",
+//                                   whiteSpace: "pre-wrap",
+//                                   color: block.color || "#111",
+//                                   backgroundColor:
+//                                     block.backgroundColor &&
+//                                     block.backgroundColor !== "transparent"
+//                                       ? block.backgroundColor
+//                                       : undefined,
+//                                   fontWeight: block.fontWeight || "normal",
+//                                   fontStyle: block.fontStyle || "normal",
+//                                   textAlign: block.textAlign || "left",
+//                                   margin: 0,
+//                                 }}
+//                               >
+//                                 {block.content}
+//                               </p>
+//                             );
+//                           }
+//                           if (block.type === "image" && block.url) {
+//                             return (
+//                               <img
+//                                 key={block.id}
+//                                 src={block.url}
+//                                 alt=""
+//                                 style={{
+//                                   width: "100%",
+//                                   display: "block",
+//                                   marginTop: 8,
+//                                 }}
+//                               />
+//                             );
+//                           }
+//                           return null;
+//                         })}
+//                         <div style={styles.socialActions}>
+//                           <span>👍 Like</span>
+//                           <span>💬 Comment</span>
+//                           <span>↗ Share</span>
+//                         </div>
+//                       </div>
+//                     </div>
+//                   )}
+//                 </div>
+//               </div>
+//             </div>
+//           </div>
+
+//           <div style={styles.bottomBar}>
+//             <button
+//               type="button"
+//               style={styles.bottomSecondary}
+//               onClick={() => {
+//                 setShowTemplates(true);
+//                 loadTemplates();
+//               }}
+//             >
+//               <ArrowLeft size={16} /> Back to Templates
+//             </button>
+//           </div>
+//         </>
+//       )}
+//     </div>
+//   );
+// };
+
+// // ===================== STYLES =====================
+// const styles: any = {
+//   page: {
+//     minHeight: "100vh",
+//     background: "#f1f5f9",
+//     fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+//     color: "#1e293b",
+//     paddingBottom: 80,
+//   },
+//   templateCard: {
+//     border: "1px solid #e2e8f0",
+//     borderRadius: 10,
+//     padding: 16,
+//     cursor: "pointer",
+//     background: "#fff",
+//     transition: "all 0.15s",
+//   },
+//   channelBadge: {
+//     fontSize: 11,
+//     fontWeight: 600,
+//     padding: "2px 8px",
+//     borderRadius: 20,
+//   },
+//   templateTitle: {
+//     margin: "0 0 6px",
+//     fontSize: 14,
+//     fontWeight: 600,
+//     color: "#1e293b",
+//     overflow: "hidden",
+//     textOverflow: "ellipsis",
+//     whiteSpace: "nowrap",
+//   },
+//   centerCol: { display: "flex", flexDirection: "column" },
+//   sidebar: { display: "flex", flexDirection: "column", minWidth: 0 },
+//   rightCol: { display: "flex", flexDirection: "column" },
+//   card: {
+//     background: "#fff",
+//     borderRadius: 12,
+//     padding: 20,
+//     boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+//     border: "1px solid #e2e8f0",
+//   },
+//   sectionTitle: { margin: "0 0 4px", fontSize: 15, fontWeight: 600 },
+//   sectionHint: { margin: "0 0 14px", fontSize: 12, color: "#94a3b8" },
+//   secondaryBtn: {
+//     display: "inline-flex",
+//     alignItems: "center",
+//     justifyContent: "center",
+//     gap: 6,
+//     padding: "10px 16px",
+//     borderRadius: 8,
+//     border: "1px solid #d1d5db",
+//     background: "#fff",
+//     fontSize: 13,
+//     fontWeight: 500,
+//     cursor: "pointer",
+//     color: "#475569",
+//   },
+//   tabs: {
+//     display: "flex",
+//     flexDirection: "column",
+//     gap: 6,
+//     marginTop: 12,
+//   },
+//   tab: {
+//     padding: "10px 12px",
+//     border: "none",
+//     background: "transparent",
+//     fontSize: 13,
+//     color: "#64748b",
+//     cursor: "pointer",
+//     borderLeft: "3px solid transparent",
+//     borderRadius: "0 6px 6px 0",
+//     textAlign: "left",
+//     width: "100%",
+//   },
+//   activeTab: {
+//     padding: "10px 12px",
+//     border: "none",
+//     background: "#eff6ff",
+//     fontSize: 13,
+//     color: "#2563eb",
+//     fontWeight: 600,
+//     cursor: "pointer",
+//     borderLeft: "3px solid #2563eb",
+//     borderRadius: "0 6px 6px 0",
+//     textAlign: "left",
+//     width: "100%",
+//   },
+//   addToolbar: {
+//     display: "flex",
+//     flexDirection: "column",
+//     alignItems: "stretch",
+//     gap: 8,
+//     marginTop: 12,
+//   },
+//   addBtn: {
+//     display: "flex",
+//     alignItems: "center",
+//     gap: 6,
+//     padding: "9px 10px",
+//     borderRadius: 6,
+//     border: "1px solid #e2e8f0",
+//     background: "#f8fafc",
+//     fontSize: 12,
+//     fontWeight: 500,
+//     cursor: "pointer",
+//     color: "#475569",
+//     textAlign: "left",
+//   },
+//   canvas: {
+//     minHeight: 320,
+//     background: "#fafafa",
+//     border: "1px solid #e2e8f0",
+//     borderRadius: 10,
+//     padding: 16,
+//   },
+//   emptyCanvas: {
+//     textAlign: "center",
+//     padding: "60px 20px",
+//     color: "#94a3b8",
+//   },
+//   blockWrapper: {
+//     marginBottom: 16,
+//     padding: 12,
+//     background: "#fff",
+//     borderRadius: 8,
+//     border: "1px solid #e2e8f0",
+//   },
+//   blockControls: {
+//     display: "flex",
+//     alignItems: "center",
+//     justifyContent: "space-between",
+//     marginBottom: 10,
+//     paddingBottom: 8,
+//     borderBottom: "1px solid #f1f5f9",
+//   },
+//   blockTypeLabel: {
+//     fontSize: 11,
+//     fontWeight: 600,
+//     color: "#64748b",
+//     textTransform: "uppercase",
+//     letterSpacing: "0.04em",
+//   },
+//   blockControlButtons: {
+//     display: "flex",
+//     gap: 4,
+//   },
+//   controlBtn: {
+//     width: 28,
+//     height: 28,
+//     border: "1px solid #e2e8f0",
+//     borderRadius: 6,
+//     background: "#fff",
+//     cursor: "pointer",
+//     display: "flex",
+//     alignItems: "center",
+//     justifyContent: "center",
+//     fontSize: 12,
+//     color: "#475569",
+//   },
+//   textBlock: {
+//     width: "100%",
+//     minHeight: 80,
+//     padding: 12,
+//     border: "1px solid #d1d5db",
+//     borderRadius: 8,
+//     fontSize: 14,
+//     lineHeight: 1.5,
+//     resize: "vertical",
+//     boxSizing: "border-box",
+//     fontFamily: "inherit",
+//   },
+//   imagePlaceholder: {
+//     height: 140,
+//     background: "#f1f5f9",
+//     borderRadius: 8,
+//     display: "flex",
+//     flexDirection: "column",
+//     alignItems: "center",
+//     justifyContent: "center",
+//     color: "#94a3b8",
+//     gap: 8,
+//   },
+//   logoPlaceholder: {
+//     height: 80,
+//     background: "#f1f5f9",
+//     borderRadius: 8,
+//     display: "flex",
+//     flexDirection: "column",
+//     alignItems: "center",
+//     justifyContent: "center",
+//     color: "#94a3b8",
+//     gap: 4,
+//   },
+//   uploadBox: {
+//     border: "2px dashed #cbd5e1",
+//     borderRadius: 10,
+//     padding: "24px 16px",
+//     textAlign: "center",
+//     background: "#f8fafc",
+//   },
+//   emailComposer: { display: "flex", flexDirection: "column", gap: 12 },
+//   emailSectionCard: {
+//     border: "1px solid #e2e8f0",
+//     borderRadius: 10,
+//     padding: 12,
+//     background: "#f8fafc",
+//   },
+//   previewCard: { marginBottom: 20 },
+//   previewHeader: {
+//     display: "flex",
+//     alignItems: "center",
+//     gap: 8,
+//     marginBottom: 10,
+//   },
+//   emailPreviewFrame: {
+//     border: "1px solid #e2e8f0",
+//     borderRadius: 10,
+//     overflow: "hidden",
+//     background: "#fff",
+//   },
+//   previewSubject: {
+//     padding: "10px 14px",
+//     background: "#f8fafc",
+//     borderBottom: "1px solid #e2e8f0",
+//     fontSize: 13,
+//     color: "#475569",
+//   },
+//   previewBody: { padding: 16 },
+//   whatsappFrame: {
+//     border: "1px solid #e2e8f0",
+//     borderRadius: 12,
+//     overflow: "hidden",
+//     background: "#efeae2",
+//   },
+//   waHeader: {
+//     background: "#075e54",
+//     padding: "10px 12px",
+//     display: "flex",
+//     alignItems: "center",
+//     gap: 10,
+//   },
+//   waAvatar: {
+//     width: 32,
+//     height: 32,
+//     borderRadius: "50%",
+//     background: "#25D366",
+//   },
+//   waBody: { padding: 12, minHeight: 200 },
+//   waBubble: {
+//     background: "#fff",
+//     borderRadius: "8px 8px 8px 0",
+//     padding: 10,
+//     maxWidth: "95%",
+//     boxShadow: "0 1px 2px rgba(0,0,0,0.08)",
+//   },
+//   waInput: {
+//     background: "#f0f2f5",
+//     padding: "8px 12px",
+//     display: "flex",
+//     alignItems: "center",
+//     gap: 10,
+//   },
+//   socialCard: {
+//     border: "1px solid #e2e8f0",
+//     borderRadius: 10,
+//     overflow: "hidden",
+//     background: "#fff",
+//   },
+//   socialHeader: {
+//     display: "flex",
+//     alignItems: "center",
+//     gap: 10,
+//     padding: "10px 12px",
+//   },
+//   socialAvatar: {
+//     width: 36,
+//     height: 36,
+//     borderRadius: "50%",
+//     background: "linear-gradient(135deg, #2563eb, #60a5fa)",
+//   },
+//   socialActions: {
+//     display: "flex",
+//     justifyContent: "space-around",
+//     padding: "8px 0",
+//     borderTop: "1px solid #f1f5f9",
+//     fontSize: 12,
+//     color: "#64748b",
+//   },
+//   bottomBar: {
+//     margin: "0 auto",
+//     marginTop: 8,
+//     maxWidth: 1600,
+//     width: "calc(100% - 48px)",
+//     background: "#fff",
+//     border: "1px solid #e2e8f0",
+//     borderRadius: 12,
+//     padding: "14px 24px",
+//     display: "flex",
+//     justifyContent: "space-between",
+//     alignItems: "center",
+//     boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+//   },
+//   bottomSecondary: {
+//     display: "flex",
+//     alignItems: "center",
+//     gap: 6,
+//     padding: "9px 18px",
+//     borderRadius: 8,
+//     border: "1px solid #d1d5db",
+//     background: "#fff",
+//     fontSize: 13,
+//     fontWeight: 500,
+//     cursor: "pointer",
+//     color: "#475569",
+//   },
+// };
+
+// export default Campaign;
+
 "use client";
 
 import React, { useState, useEffect, useContext, useCallback, useRef } from "react";
 import axios from "axios";
 import * as XLSX from "xlsx";
-import { AuthContext } from "../../../../../../context/AuthContext"; // ← adjust path
+import { AuthContext } from "../../../../../../context/AuthContext";
 import {
   Mail,
   Upload,
-  Calendar,
-  ChevronDown,
-  Link2,
   Smile,
   ArrowLeft,
-  Send,
   FileText,
   Image as ImageIcon,
   Type as TypeIcon,
@@ -25,7 +12666,6 @@ import {
   Minus,
   Trash2,
   Loader2,
-  Check,
   Plus,
   CheckCircle,
   XCircle,
@@ -33,10 +12673,6 @@ import {
   X,
 } from "lucide-react";
 import {
-  FaFacebook,
-  FaInstagram,
-  FaLinkedin,
-  FaTwitter,
   FaWhatsapp,
 } from "react-icons/fa";
 
@@ -131,7 +12767,7 @@ const AlertModal = ({
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            background: "#020b3d",
+            background: "#1e40af",
             padding: "14px 20px",
             color: "#fff",
           }}
@@ -206,24 +12842,31 @@ const AlertModal = ({
 };
 
 // ===================== TYPES =====================
-type BlockType = "text" | "image" | "button" | "logo" | "divider";
+type BlockType = "text" | "image" | "button" | "logo" | "document" | "divider";
+
+/** For image blocks: full-width, or image on left/right of side content */
+type ImageLayout = "full" | "left" | "right";
 
 interface Block {
   id: string;
   type: BlockType;
   content?: string;
   url?: string;
+  documentName?: string;
   buttonText?: string;
   buttonLink?: string;
   align?: "left" | "center" | "right";
   serverId?: string;
-  // Text styling
   color?: string;
   backgroundColor?: string;
   fontSize?: number;
   fontWeight?: "normal" | "bold";
   fontStyle?: "normal" | "italic";
   textAlign?: "left" | "center" | "right";
+  /** Image layout: full width, or image left/right of side text */
+  imageLayout?: ImageLayout;
+  /** Text shown beside the image when imageLayout is left or right */
+  sideContent?: string;
 }
 
 // ===================== HELPERS =====================
@@ -242,8 +12885,17 @@ function uiBlockToApi(block: Block, sortOrder: number) {
       content.textAlign = block.textAlign ?? "left";
       break;
     case "image":
+      content.url = block.url ?? "";
+      content.imageLayout = block.imageLayout ?? "full";
+      content.sideContent = block.sideContent ?? "";
+      break;
     case "logo":
       content.url = block.url ?? "";
+      content.align = block.align ?? "center";
+      break;
+    case "document":
+      content.url = block.url ?? "";
+      content.documentName = block.documentName ?? "";
       break;
     case "button":
       content.buttonText = block.buttonText ?? "";
@@ -273,6 +12925,7 @@ function apiBlockToUi(row: {
     type: row.blockType as BlockType,
     content: c.text ?? "",
     url: c.url ?? "",
+    documentName: c.documentName ?? "",
     buttonText: c.buttonText ?? "",
     buttonLink: c.buttonLink ?? "",
     align: (c.align as "left" | "center" | "right") ?? "center",
@@ -282,6 +12935,8 @@ function apiBlockToUi(row: {
     fontWeight: (c.fontWeight as "normal" | "bold") ?? "normal",
     fontStyle: (c.fontStyle as "normal" | "italic") ?? "normal",
     textAlign: (c.textAlign as "left" | "center" | "right") ?? "left",
+    imageLayout: (c.imageLayout as ImageLayout) ?? "full",
+    sideContent: c.sideContent ?? "",
   };
 }
 
@@ -301,8 +12956,27 @@ async function uploadImageFile(file: File): Promise<string> {
   return res.data.url as string;
 }
 
+async function uploadDocumentFile(file: File): Promise<string> {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const res = await axios.post(`${API}/api/upload/document`, formData, {
+    withCredentials: true,
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+
+  if (!res.data?.success || !res.data?.url) {
+    throw new Error(res.data?.message || "Document upload failed");
+  }
+  return res.data.url as string;
+}
+
 function isImageFile(file: File) {
   return file.type.startsWith("image/");
+}
+
+function isCampaignDocument(file: File) {
+  return /\.(pdf|docx?|xlsx?|pptx?|txt|csv|zip)$/i.test(file.name);
 }
 
 // ===================== IMAGE / LOGO BLOCK EDITOR =====================
@@ -346,7 +13020,6 @@ const ImageBlockEditor = ({
     }
   };
 
-  // Paste support (Gmail-style)
   useEffect(() => {
     const el = dropRef.current;
     if (!el) return;
@@ -366,7 +13039,7 @@ const ImageBlockEditor = ({
     };
 
     el.addEventListener("paste", onPaste as any);
-    el.tabIndex = 0; // make focusable so paste works
+    el.tabIndex = 0;
 
     return () => el.removeEventListener("paste", onPaste as any);
   }, []);
@@ -379,58 +13052,213 @@ const ImageBlockEditor = ({
     }
   };
 
+  const logoAlign = block.align || "center";
+  const imageLayout: ImageLayout = block.imageLayout || "full";
+
   return (
     <div>
-  {block.url ? (
-  <div style={{ textAlign: isLogo ? "center" : "left" }}>
-    <img
-      src={block.url}
-      alt={isLogo ? "Logo" : "Banner"}
-      style={
-        isLogo
-          ? {
-              maxHeight: 80,
-              maxWidth: 200,
-              objectFit: "contain",
-              display: "block",
-              margin: "0 auto",
-            }
-          : {
-              width: "100%",
-              borderRadius: 8,
-              maxHeight: 220,
-              objectFit: "cover",
-            }
-      }
-    />
-    <div
-      style={{
-        display: "flex",
-        justifyContent: isLogo ? "center" : "flex-end",
-        marginTop: 8,
-      }}
-    >
-      <button
-        type="button"
-        onClick={() => onUpdate({ url: "" })}
-        style={{
-          background: "#fef2f2",
-          color: "#dc2626",
-          border: "1px solid #fecaca",
-          borderRadius: 6,
-          padding: "6px 12px",
-          fontSize: 12,
-          fontWeight: 500,
-          cursor: "pointer",
-          display: "inline-flex",
-          alignItems: "center",
-          gap: 4,
-        }}
-      >
-        <Trash2 size={12} /> Remove image
-      </button>
-    </div>
-  </div>
+      {isLogo && (
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            gap: 8,
+            marginBottom: 8,
+            padding: "8px 10px",
+            background: "#f8fafc",
+            borderRadius: 8,
+            border: "1px solid #e2e8f0",
+          }}
+        >
+          <span style={{ fontSize: 12, color: "#64748b", marginRight: 4 }}>
+            Align
+          </span>
+          {(["left", "center", "right"] as const).map((align) => (
+            <button
+              key={align}
+              type="button"
+              onClick={() => onUpdate({ align })}
+              style={{
+                width: 28,
+                height: 28,
+                border:
+                  logoAlign === align
+                    ? "2px solid #2563eb"
+                    : "1px solid #e2e8f0",
+                borderRadius: 6,
+                background: logoAlign === align ? "#eff6ff" : "#fff",
+                fontSize: 11,
+                cursor: "pointer",
+                color: "#334155",
+              }}
+              title={align}
+            >
+              {align === "left" ? "⬅" : align === "center" ? "↔" : "➡"}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Image layout controls (only for Banner / Image, not logo) */}
+      {!isLogo && (
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            gap: 8,
+            marginBottom: 8,
+            padding: "8px 10px",
+            background: "#f8fafc",
+            borderRadius: 8,
+            border: "1px solid #e2e8f0",
+          }}
+        >
+          <span style={{ fontSize: 12, color: "#64748b", marginRight: 4 }}>
+            Layout
+          </span>
+          {(
+            [
+              { value: "full" as const, label: "Full width" },
+              { value: "left" as const, label: "Image left" },
+              { value: "right" as const, label: "Image right" },
+            ] as const
+          ).map((opt) => (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => onUpdate({ imageLayout: opt.value })}
+              style={{
+                padding: "4px 10px",
+                border:
+                  imageLayout === opt.value
+                    ? "2px solid #2563eb"
+                    : "1px solid #e2e8f0",
+                borderRadius: 6,
+                background: imageLayout === opt.value ? "#eff6ff" : "#fff",
+                fontSize: 11,
+                cursor: "pointer",
+                color: "#334155",
+                fontWeight: imageLayout === opt.value ? 600 : 400,
+              }}
+              title={opt.label}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {block.url ? (
+        <div>
+          {imageLayout === "full" || isLogo ? (
+            <div style={{ textAlign: isLogo ? logoAlign : "left" }}>
+              <img
+                src={block.url}
+                alt={isLogo ? "Logo" : "Banner"}
+                style={
+                  isLogo
+                    ? {
+                        maxHeight: 80,
+                        maxWidth: 200,
+                        objectFit: "contain",
+                        display: "block",
+                        margin:
+                          logoAlign === "left"
+                            ? "0 auto 0 0"
+                            : logoAlign === "right"
+                              ? "0 0 0 auto"
+                              : "0 auto",
+                      }
+                    : {
+                        width: "100%",
+                        borderRadius: 8,
+                        maxHeight: 220,
+                        objectFit: "cover",
+                      }
+                }
+              />
+            </div>
+          ) : (
+            <div
+              style={{
+                display: "flex",
+                gap: 12,
+                alignItems: "flex-start",
+                flexDirection: imageLayout === "right" ? "row-reverse" : "row",
+              }}
+            >
+              <div style={{ flex: "0 0 45%", maxWidth: "45%" }}>
+                <img
+                  src={block.url}
+                  alt="Banner"
+                  style={{
+                    width: "100%",
+                    borderRadius: 8,
+                    maxHeight: 180,
+                    objectFit: "cover",
+                    display: "block",
+                  }}
+                />
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <textarea
+                  value={block.sideContent || ""}
+                  onChange={(e) => onUpdate({ sideContent: e.target.value })}
+                  placeholder="Add content next to the image..."
+                  rows={5}
+                  style={{
+                    width: "100%",
+                    padding: 10,
+                    border: "1px solid #d1d5db",
+                    borderRadius: 8,
+                    fontSize: 13,
+                    lineHeight: 1.5,
+                    resize: "vertical",
+                    boxSizing: "border-box",
+                    fontFamily: "inherit",
+                    color: "#334155",
+                  }}
+                />
+              </div>
+            </div>
+          )}
+
+          <div
+            style={{
+              display: "flex",
+              justifyContent: isLogo
+                ? logoAlign === "left"
+                  ? "flex-start"
+                  : logoAlign === "right"
+                    ? "flex-end"
+                    : "center"
+                : "flex-end",
+              marginTop: 8,
+            }}
+          >
+            <button
+              type="button"
+              onClick={() => onUpdate({ url: "", sideContent: "" })}
+              style={{
+                background: "#fef2f2",
+                color: "#dc2626",
+                border: "1px solid #fecaca",
+                borderRadius: 6,
+                padding: "6px 12px",
+                fontSize: 12,
+                fontWeight: 500,
+                cursor: "pointer",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 4,
+              }}
+            >
+              <Trash2 size={12} /> Remove image
+            </button>
+          </div>
+        </div>
       ) : (
         <div
           ref={dropRef}
@@ -443,8 +13271,8 @@ const ImageBlockEditor = ({
           onClick={() => !uploading && fileInputRef.current?.click()}
           style={{
             ...(isLogo ? styles.logoPlaceholder : styles.imagePlaceholder),
-            border: dragOver ? "2px dashed #7c3aed" : "2px dashed #cbd5e1",
-            background: dragOver ? "#f5f3ff" : "#f8fafc",
+            border: dragOver ? "2px dashed #2563eb" : "2px dashed #cbd5e1",
+            background: dragOver ? "#eff6ff" : "#f8fafc",
             cursor: uploading ? "wait" : "pointer",
             outline: "none",
             transition: "all 0.15s",
@@ -452,7 +13280,7 @@ const ImageBlockEditor = ({
         >
           {uploading ? (
             <>
-              <Loader2 size={28} className="animate-spin" color="#7c3aed" />
+              <Loader2 size={28} className="animate-spin" color="#2563eb" />
               <p style={{ margin: "8px 0 0", fontSize: 13 }}>Uploading…</p>
             </>
           ) : (
@@ -469,6 +13297,33 @@ const ImageBlockEditor = ({
         </div>
       )}
 
+      {/* Side content editor when layout is side-by-side but no image yet */}
+      {!isLogo && imageLayout !== "full" && !block.url && (
+        <div style={{ marginTop: 10 }}>
+          <label style={{ fontSize: 12, color: "#64748b", display: "block", marginBottom: 4 }}>
+            Side content (shown next to image)
+          </label>
+          <textarea
+            value={block.sideContent || ""}
+            onChange={(e) => onUpdate({ sideContent: e.target.value })}
+            placeholder="Add content next to the image..."
+            rows={3}
+            style={{
+              width: "100%",
+              padding: 10,
+              border: "1px solid #d1d5db",
+              borderRadius: 8,
+              fontSize: 13,
+              lineHeight: 1.5,
+              resize: "vertical",
+              boxSizing: "border-box",
+              fontFamily: "inherit",
+              color: "#334155",
+            }}
+          />
+        </div>
+      )}
+
       <input
         ref={fileInputRef}
         type="file"
@@ -479,8 +13334,133 @@ const ImageBlockEditor = ({
           e.target.value = "";
         }}
       />
+    </div>
+  );
+};
 
-      </div>
+const DocumentBlockEditor = ({
+  block,
+  onUpdate,
+  onError,
+}: {
+  block: Block;
+  onUpdate: (updates: Partial<Block>) => void;
+  onError: (msg: string | null) => void;
+}) => {
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFile = async (file?: File) => {
+    if (!file) return;
+    if (!isCampaignDocument(file)) {
+      onError("Select a PDF, Word, Excel, PowerPoint, text, CSV, or ZIP file");
+      return;
+    }
+    if (file.size > 15 * 1024 * 1024) {
+      onError("Document must be under 15 MB");
+      return;
+    }
+
+    try {
+      setUploading(true);
+      onError(null);
+      const url = await uploadDocumentFile(file);
+      onUpdate({ url, documentName: file.name });
+    } catch (err: any) {
+      console.error(err);
+      onError(err?.message || "Failed to upload document");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <div>
+      {block.url ? (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 12,
+            padding: 12,
+            border: "1px solid #e2e8f0",
+            borderRadius: 8,
+          }}
+        >
+          <a
+            href={block.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              minWidth: 0,
+              color: "#2563eb",
+              textDecoration: "none",
+            }}
+          >
+            <FileText size={20} />
+            <span style={{ overflowWrap: "anywhere" }}>
+              {block.documentName || "Uploaded document"}
+            </span>
+          </a>
+          <button
+            type="button"
+            onClick={() => onUpdate({ url: "", documentName: "" })}
+            aria-label="Remove document"
+            style={{
+              border: "none",
+              background: "transparent",
+              color: "#dc2626",
+              cursor: "pointer",
+            }}
+          >
+            <Trash2 size={16} />
+          </button>
+        </div>
+      ) : (
+        <>
+          <button
+            type="button"
+            disabled={uploading}
+            onClick={() => fileInputRef.current?.click()}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              padding: "10px 14px",
+              border: "1px dashed #94a3b8",
+              borderRadius: 8,
+              background: "#f8fafc",
+              color: "#334155",
+              cursor: uploading ? "wait" : "pointer",
+            }}
+          >
+            {uploading ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : (
+              <Upload size={16} />
+            )}
+            {uploading ? "Uploading document..." : "Choose document"}
+          </button>
+          <p style={{ margin: "6px 0 0", color: "#64748b", fontSize: 12 }}>
+            PDF, Office documents, text, CSV, or ZIP (up to 15 MB)
+          </p>
+        </>
+      )}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip"
+        hidden
+        onChange={(event) => {
+          void handleFile(event.target.files?.[0]);
+          event.target.value = "";
+        }}
+      />
+    </div>
   );
 };
 
@@ -585,7 +13565,6 @@ const TextBlockEditor = ({
 }) => {
   const [showEmoji, setShowEmoji] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const toolbarRef = useRef<HTMLDivElement>(null);
 
   const insertEmoji = (emoji: string) => {
     const ta = textareaRef.current;
@@ -598,7 +13577,6 @@ const TextBlockEditor = ({
     const text = block.content || "";
     const newText = text.slice(0, start) + emoji + text.slice(end);
     onUpdate({ content: newText });
-    // Restore cursor after React re-render
     requestAnimationFrame(() => {
       if (textareaRef.current) {
         const pos = start + emoji.length;
@@ -612,9 +13590,7 @@ const TextBlockEditor = ({
 
   return (
     <div>
-      {/* Formatting toolbar */}
       <div
-        ref={toolbarRef}
         style={{
           display: "flex",
           flexWrap: "wrap",
@@ -627,7 +13603,6 @@ const TextBlockEditor = ({
           border: "1px solid #e2e8f0",
         }}
       >
-        {/* Text color */}
         <label style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: "#64748b" }}>
           <span>Color</span>
           <input
@@ -643,11 +13618,9 @@ const TextBlockEditor = ({
               padding: 0,
               background: "none",
             }}
-            title="Text color"
           />
         </label>
 
-        {/* Background color */}
         <label style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: "#64748b" }}>
           <span>Bg</span>
           <input
@@ -667,7 +13640,6 @@ const TextBlockEditor = ({
               padding: 0,
               background: "none",
             }}
-            title="Background color"
           />
           <button
             type="button"
@@ -681,13 +13653,11 @@ const TextBlockEditor = ({
               cursor: "pointer",
               color: "#64748b",
             }}
-            title="Clear background"
           >
             Clear
           </button>
         </label>
 
-        {/* Font size */}
         <label style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: "#64748b" }}>
           <span>Size</span>
           <select
@@ -710,7 +13680,6 @@ const TextBlockEditor = ({
           </select>
         </label>
 
-        {/* Bold */}
         <button
           type="button"
           onClick={() =>
@@ -721,20 +13690,18 @@ const TextBlockEditor = ({
           style={{
             width: 28,
             height: 28,
-            border: block.fontWeight === "bold" ? "2px solid #7c3aed" : "1px solid #e2e8f0",
+            border: block.fontWeight === "bold" ? "2px solid #2563eb" : "1px solid #e2e8f0",
             borderRadius: 6,
-            background: block.fontWeight === "bold" ? "#f5f3ff" : "#fff",
+            background: block.fontWeight === "bold" ? "#eff6ff" : "#fff",
             fontWeight: 700,
             fontSize: 13,
             cursor: "pointer",
             color: "#334155",
           }}
-          title="Bold"
         >
           B
         </button>
 
-        {/* Italic */}
         <button
           type="button"
           onClick={() =>
@@ -745,20 +13712,18 @@ const TextBlockEditor = ({
           style={{
             width: 28,
             height: 28,
-            border: block.fontStyle === "italic" ? "2px solid #7c3aed" : "1px solid #e2e8f0",
+            border: block.fontStyle === "italic" ? "2px solid #2563eb" : "1px solid #e2e8f0",
             borderRadius: 6,
-            background: block.fontStyle === "italic" ? "#f5f3ff" : "#fff",
+            background: block.fontStyle === "italic" ? "#eff6ff" : "#fff",
             fontStyle: "italic",
             fontSize: 13,
             cursor: "pointer",
             color: "#334155",
           }}
-          title="Italic"
         >
           I
         </button>
 
-        {/* Align */}
         {(["left", "center", "right"] as const).map((align) => (
           <button
             key={align}
@@ -769,22 +13734,20 @@ const TextBlockEditor = ({
               height: 28,
               border:
                 (block.textAlign || "left") === align
-                  ? "2px solid #7c3aed"
+                  ? "2px solid #2563eb"
                   : "1px solid #e2e8f0",
               borderRadius: 6,
               background:
-                (block.textAlign || "left") === align ? "#f5f3ff" : "#fff",
+                (block.textAlign || "left") === align ? "#eff6ff" : "#fff",
               fontSize: 11,
               cursor: "pointer",
               color: "#334155",
             }}
-            title={`Align ${align}`}
           >
             {align === "left" ? "⬅" : align === "center" ? "↔" : "➡"}
           </button>
         ))}
 
-        {/* Emoji */}
         <div style={{ position: "relative" }}>
           <button
             type="button"
@@ -796,12 +13759,11 @@ const TextBlockEditor = ({
               padding: "4px 10px",
               border: "1px solid #e2e8f0",
               borderRadius: 6,
-              background: showEmoji ? "#f5f3ff" : "#fff",
+              background: showEmoji ? "#eff6ff" : "#fff",
               fontSize: 12,
               cursor: "pointer",
               color: "#475569",
             }}
-            title="Insert emoji"
           >
             <Smile size={14} /> Emoji
           </button>
@@ -814,9 +13776,9 @@ const TextBlockEditor = ({
         </div>
       </div>
 
-      {/* Textarea with live styles */}
       <textarea
         ref={textareaRef}
+        className="w-full rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500"
         style={{
           ...styles.textBlock,
           color: block.color || "#334155",
@@ -846,30 +13808,20 @@ interface Props {
 const Campaign = ({ onBack }: Props) => {
   const { user } = useContext(AuthContext);
 
-  // View
   const [showTemplates, setShowTemplates] = useState(true);
-
-  // Templates
   const [templates, setTemplates] = useState<any[]>([]);
   const [templatesLoading, setTemplatesLoading] = useState(false);
 
-  // Channel
   const [channel, setChannel] = useState("Email");
   const [activeTab, setActiveTab] = useState("Email");
 
-  // Campaign meta
   const [campaignId, setCampaignId] = useState<string | null>(null);
   const [campaignName, setCampaignName] = useState("");
   const [category, setCategory] = useState("Event");
   const [subject, setSubject] = useState("");
-  const [preheader, setPreheader] = useState(false);
-  const [preheaderText, setPreheaderText] = useState("");
 
-  // Recipients
-  const [recipientsTab, setRecipientsTab] = useState<"enter" | "upload">("enter");
   const [recipients, setRecipients] = useState("");
 
-  // Blocks
   const [blocks, setBlocks] = useState<Block[]>([
     {
       id: "1",
@@ -884,17 +13836,20 @@ const Campaign = ({ onBack }: Props) => {
     },
   ]);
 
-  // UI state
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [sending, setSending] = useState(false);
   const [alert, setAlert] = useState<AlertState | null>(null);
 
+  // Drag & drop state
+  const [canvasDragOver, setCanvasDragOver] = useState(false);
+  const [dragBlockIndex, setDragBlockIndex] = useState<number | null>(null);
+  const [dropTargetIndex, setDropTargetIndex] = useState<number | null>(null);
+
   const showAlert = (type: AlertType, message: string) => {
     setAlert({ type, message });
   };
 
-  // ---------- LOAD TEMPLATES ----------
   const loadTemplates = useCallback(async () => {
     try {
       setTemplatesLoading(true);
@@ -913,7 +13868,6 @@ const Campaign = ({ onBack }: Props) => {
     loadTemplates();
   }, [loadTemplates]);
 
-  // ---------- LOAD SINGLE CAMPAIGN ----------
   const loadCampaign = useCallback(async (id: string) => {
     try {
       setLoading(true);
@@ -928,8 +13882,6 @@ const Campaign = ({ onBack }: Props) => {
       setCampaignName(camp.campaignName || "Untitled Campaign");
       setCategory(camp.category || "Event");
       setSubject(camp.subject || "");
-      setPreheaderText(camp.preheader || "");
-      setPreheader(!!camp.preheader);
 
       const ch = camp.channel || "Email";
       setChannel(ch);
@@ -958,8 +13910,6 @@ const Campaign = ({ onBack }: Props) => {
     setCampaignName("");
     setCategory("Event");
     setSubject("");
-    setPreheader(false);
-    setPreheaderText("");
     setChannel("Email");
     setActiveTab("Email");
     setRecipients("");
@@ -979,7 +13929,6 @@ const Campaign = ({ onBack }: Props) => {
     setAlert(null);
   };
 
-  // ---------- FILE UPLOAD (CSV / Excel) ----------
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -1016,7 +13965,6 @@ const Campaign = ({ onBack }: Props) => {
         }
 
         setRecipients(uniqueEmails.join("\n"));
-        setRecipientsTab("enter");
         showAlert("success", `${uniqueEmails.length} emails loaded from file`);
       } catch (err) {
         console.error(err);
@@ -1028,24 +13976,35 @@ const Campaign = ({ onBack }: Props) => {
     e.target.value = "";
   };
 
-  // ---------- BLOCK ACTIONS ----------
-  const addBlock = (type: BlockType) => {
-    const newBlock: Block = {
-      id: generateId(),
-      type,
-      content: type === "text" ? "" : "",
-      url: type === "image" || type === "logo" ? "" : undefined,
-      buttonText: type === "button" ? "" : undefined,
-      buttonLink: type === "button" ? "" : undefined,
-      align: "center",
-      color: type === "text" ? "#334155" : undefined,
-      backgroundColor: type === "text" ? "transparent" : undefined,
-      fontSize: type === "text" ? 14 : undefined,
-      fontWeight: type === "text" ? "normal" : undefined,
-      fontStyle: type === "text" ? "normal" : undefined,
-      textAlign: type === "text" ? "left" : undefined,
-    };
-    setBlocks((prev) => [...prev, newBlock]);
+  const createBlock = (type: BlockType): Block => ({
+    id: generateId(),
+    type,
+    content: type === "text" ? "" : "",
+    url: type === "image" || type === "logo" || type === "document" ? "" : undefined,
+    documentName: type === "document" ? "" : undefined,
+    buttonText: type === "button" ? "" : undefined,
+    buttonLink: type === "button" ? "" : undefined,
+    align: "center",
+    color: type === "text" ? "#334155" : undefined,
+    backgroundColor: type === "text" ? "transparent" : undefined,
+    fontSize: type === "text" ? 14 : undefined,
+    fontWeight: type === "text" ? "normal" : undefined,
+    fontStyle: type === "text" ? "normal" : undefined,
+    textAlign: type === "text" ? "left" : undefined,
+    imageLayout: type === "image" ? "full" : undefined,
+    sideContent: type === "image" ? "" : undefined,
+  });
+
+  const addBlock = (type: BlockType, atIndex?: number) => {
+    const newBlock = createBlock(type);
+    setBlocks((prev) => {
+      if (atIndex === undefined || atIndex < 0 || atIndex >= prev.length) {
+        return [...prev, newBlock];
+      }
+      const next = [...prev];
+      next.splice(atIndex, 0, newBlock);
+      return next;
+    });
   };
 
   const updateBlock = (id: string, updates: Partial<Block>) => {
@@ -1064,6 +14023,105 @@ const Campaign = ({ onBack }: Props) => {
       [next[index], next[target]] = [next[target], next[index]];
       return next;
     });
+  };
+
+  const reorderBlock = (fromIndex: number, toIndex: number) => {
+    if (fromIndex === toIndex || fromIndex < 0 || toIndex < 0) return;
+    setBlocks((prev) => {
+      if (fromIndex >= prev.length || toIndex > prev.length) return prev;
+      const next = [...prev];
+      const [item] = next.splice(fromIndex, 1);
+      next.splice(toIndex > fromIndex ? toIndex - 1 : toIndex, 0, item);
+      return next;
+    });
+  };
+
+  // ---- Drag handlers (left pane → canvas, and block reorder) ----
+  const handlePaletteDragStart = (e: React.DragEvent, type: BlockType) => {
+    e.dataTransfer.setData("application/x-block-type", type);
+    e.dataTransfer.effectAllowed = "copy";
+  };
+
+  const handleBlockDragStart = (e: React.DragEvent, index: number) => {
+    e.dataTransfer.setData("application/x-block-index", String(index));
+    e.dataTransfer.effectAllowed = "move";
+    setDragBlockIndex(index);
+  };
+
+  const handleBlockDragEnd = () => {
+    setDragBlockIndex(null);
+    setDropTargetIndex(null);
+  };
+
+  const handleCanvasDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    const hasType = e.dataTransfer.types.includes("application/x-block-type");
+    const hasIndex = e.dataTransfer.types.includes("application/x-block-index");
+    if (hasType || hasIndex) {
+      e.dataTransfer.dropEffect = hasType ? "copy" : "move";
+      setCanvasDragOver(true);
+    }
+  };
+
+  const handleCanvasDragLeave = (e: React.DragEvent) => {
+    // Only clear when leaving the canvas itself
+    if (!(e.currentTarget as HTMLElement).contains(e.relatedTarget as Node)) {
+      setCanvasDragOver(false);
+      setDropTargetIndex(null);
+    }
+  };
+
+  const handleCanvasDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setCanvasDragOver(false);
+    setDropTargetIndex(null);
+
+    const blockType = e.dataTransfer.getData("application/x-block-type") as BlockType;
+    if (blockType) {
+      addBlock(blockType);
+      return;
+    }
+
+    const fromStr = e.dataTransfer.getData("application/x-block-index");
+    if (fromStr !== "") {
+      const from = Number(fromStr);
+      if (!Number.isNaN(from)) {
+        reorderBlock(from, blocks.length);
+      }
+    }
+  };
+
+  const handleBlockDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const hasType = e.dataTransfer.types.includes("application/x-block-type");
+    const hasIndex = e.dataTransfer.types.includes("application/x-block-index");
+    if (hasType || hasIndex) {
+      e.dataTransfer.dropEffect = hasType ? "copy" : "move";
+      setDropTargetIndex(index);
+      setCanvasDragOver(true);
+    }
+  };
+
+  const handleBlockDrop = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCanvasDragOver(false);
+    setDropTargetIndex(null);
+
+    const blockType = e.dataTransfer.getData("application/x-block-type") as BlockType;
+    if (blockType) {
+      addBlock(blockType, index);
+      return;
+    }
+
+    const fromStr = e.dataTransfer.getData("application/x-block-index");
+    if (fromStr !== "") {
+      const from = Number(fromStr);
+      if (!Number.isNaN(from) && from !== index) {
+        reorderBlock(from, index);
+      }
+    }
   };
 
   // ---------- SAVE DRAFT ----------
@@ -1086,7 +14144,7 @@ const Campaign = ({ onBack }: Props) => {
               : "Email",
         category: category || "Others",
         subject: channel === "Email" ? subject || null : null,
-        preheader: channel === "Email" && preheader ? preheaderText || null : null,
+        preheader: null,
         status: "Draft",
         scheduled_at: null,
       };
@@ -1105,7 +14163,6 @@ const Campaign = ({ onBack }: Props) => {
         });
       }
 
-      // Replace blocks
       const existingRes = await axios.get(`${API}/api/campaigns/${id}/blocks`, {
         withCredentials: true,
       });
@@ -1174,7 +14231,7 @@ const Campaign = ({ onBack }: Props) => {
         channel: "Email",
         category: category || "Others",
         subject: subject || null,
-        preheader: preheader ? preheaderText || null : null,
+        preheader: null,
         status: "Draft",
         scheduled_at: null,
       };
@@ -1191,7 +14248,6 @@ const Campaign = ({ onBack }: Props) => {
         });
       }
 
-      // Replace blocks
       const existingRes = await axios.get(`${API}/api/campaigns/${id}/blocks`, {
         withCredentials: true,
       });
@@ -1213,7 +14269,6 @@ const Campaign = ({ onBack }: Props) => {
         );
       }
 
-      // Send to all emails
       await axios.post(
         `${API}/api/campaigns/${id}/send`,
         { emails },
@@ -1221,7 +14276,8 @@ const Campaign = ({ onBack }: Props) => {
       );
 
       showAlert("success", `Campaign sent to ${emails.length} recipient(s)`);
-      loadTemplates();
+      await loadTemplates();
+      setShowTemplates(true);
     } catch (err: any) {
       console.error(err);
       showAlert("error", err?.response?.data?.message || "Failed to send campaign");
@@ -1230,7 +14286,6 @@ const Campaign = ({ onBack }: Props) => {
     }
   };
 
-  // ---------- HELPERS ----------
   const editorPlaceholder =
     activeTab === "Email"
       ? "Hi {{Name}},\n\nType your message here..."
@@ -1245,7 +14300,6 @@ const Campaign = ({ onBack }: Props) => {
         ? "Create WhatsApp Message"
         : "Create Social Media Post";
 
-  // ---------- LOADING ----------
   if (loading) {
     return (
       <div
@@ -1264,10 +14318,8 @@ const Campaign = ({ onBack }: Props) => {
     );
   }
 
-  // ---------- RENDER ----------
   return (
     <div style={styles.page}>
-      {/* Alert Modal */}
       {alert && (
         <AlertModal
           type={alert.type}
@@ -1300,7 +14352,10 @@ const Campaign = ({ onBack }: Props) => {
                     <ArrowLeft size={16} /> Back
                   </button>
                 )}
-                <button style={styles.primaryBtn} onClick={startNewCampaign}>
+                <button
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm font-semibold shadow-lg hover:opacity-90 transition"
+                  onClick={startNewCampaign}
+                >
                   <Plus size={16} /> Create New Campaign
                 </button>
               </div>
@@ -1324,7 +14379,10 @@ const Campaign = ({ onBack }: Props) => {
               <div style={{ textAlign: "center", padding: "50px 0", color: "#94a3b8" }}>
                 <FileText size={40} style={{ marginBottom: 12, opacity: 0.4 }} />
                 <p style={{ marginBottom: 16 }}>No campaigns yet</p>
-                <button style={styles.primaryBtn} onClick={startNewCampaign}>
+                <button
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm font-semibold shadow-lg hover:opacity-90 transition"
+                  onClick={startNewCampaign}
+                >
                   <Plus size={16} /> Create your first campaign
                 </button>
               </div>
@@ -1342,9 +14400,9 @@ const Campaign = ({ onBack }: Props) => {
                     onClick={() => openTemplate(t.id)}
                     style={styles.templateCard}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = "#7c3aed";
+                      e.currentTarget.style.borderColor = "#2563eb";
                       e.currentTarget.style.boxShadow =
-                        "0 4px 12px rgba(124,58,237,0.12)";
+                        "0 4px 12px rgba(37,99,235,0.12)";
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.borderColor = "#e2e8f0";
@@ -1363,7 +14421,7 @@ const Campaign = ({ onBack }: Props) => {
                           ...styles.channelBadge,
                           background:
                             t.channel === "Email"
-                              ? "#ede9fe"
+                              ? "#dbeafe"
                               : t.channel === "WhatsApp"
                                 ? "#dcfce7"
                                 : t.channel === "Social"
@@ -1371,7 +14429,7 @@ const Campaign = ({ onBack }: Props) => {
                                   : "#fef3c7",
                           color:
                             t.channel === "Email"
-                              ? "#7c3aed"
+                              ? "#2563eb"
                               : t.channel === "WhatsApp"
                                 ? "#16a34a"
                                 : t.channel === "Social"
@@ -1411,662 +14469,521 @@ const Campaign = ({ onBack }: Props) => {
       {/* ===================== EDITOR VIEW ===================== */}
       {!showTemplates && (
         <>
-          <div style={styles.mainGrid}>
-            {/* LEFT COLUMN */}
-            <div style={styles.leftCol}>
+          <div style={{ padding: "16px 24px", maxWidth: 1600, margin: "0 auto" }}>
+            {/* TOP BAR – compact, one line */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 16,
+                marginBottom: 16,
+                flexWrap: "wrap",
+              }}
+            >
+              {/* Back – icon only */}
               <button
-                style={{ ...styles.secondaryBtn, marginBottom: 4, width: "100%" }}
+                type="button"
                 onClick={() => {
                   setShowTemplates(true);
                   loadTemplates();
                 }}
+                title="Back to Templates"
+                style={{
+                  ...styles.secondaryBtn,
+                  padding: "8px 10px",
+                  flexShrink: 0,
+                }}
               >
-                ← Back to Templates
+                <ArrowLeft size={16} />
               </button>
 
-              {/* Channel */}
-              <div style={styles.card}>
-                <h3 style={styles.sectionTitle}>1. Choose Channel</h3>
-                <p style={styles.sectionHint}>Select the channel</p>
-
-                <ChannelItem
-                  icon={<Mail size={18} color="#7c3aed" />}
-                  title="Email"
-                  active={channel === "Email"}
-                  onClick={() => {
-                    setChannel("Email");
-                    setActiveTab("Email");
-                  }}
-                />
-                <ChannelItem
-                  icon={<FaWhatsapp size={18} color="#25D366" />}
-                  title="WhatsApp Message"
-                  active={channel === "WhatsApp"}
-                  onClick={() => {
-                    setChannel("WhatsApp");
-                    setActiveTab("WhatsApp Message");
-                  }}
-                />
-                <ChannelItem
-                  icon={<FaFacebook size={18} color="#1877F2" />}
-                  title="Social Media Post"
-                  active={channel === "Social"}
-                  onClick={() => {
-                    setChannel("Social");
-                    setActiveTab("Social Media Post");
-                  }}
-                />
-              </div>
-
               {/* Audience */}
-              <div style={styles.card}>
-                <h3 style={styles.sectionTitle}>2. Select Audience</h3>
-                <p style={styles.sectionHint}>Enter emails or upload a list</p>
-
-                {/* Manual Email Entry */}
-                <label style={styles.label}>Recipient Emails</label>
-                <textarea
-                  style={{
-                    ...styles.input,
-                    minHeight: "100px",
-                    resize: "vertical",
-                    marginBottom: 6,
-                  }}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  flex: "1 1 280px",
+                  minWidth: 220,
+                  maxWidth: 420,
+                }}
+              >
+                <input
+                  type="text"
                   value={recipients}
                   onChange={(e) => setRecipients(e.target.value)}
-                  placeholder={`Enter emails separated by comma or new line
-
-test1@example.com
-test2@example.com
-test3@example.com`}
+                  placeholder="emails@example.com (comma or new line)"
+                  className="w-full h-10 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500 text-sm"
                 />
-                <p style={{ fontSize: 12, color: "#64748b", margin: "0 0 14px" }}>
-                  Enter one or multiple email addresses.
-                </p>
-
-                <p style={{ fontSize: 13, color: "#64748b", margin: "0 0 8px" }}>
-                  Or upload file (CSV/Excel)
-                </p>
-
-                <div style={styles.uploadBox}>
-                  <Upload size={28} color="#7c3aed" />
-                  <p style={{ margin: "10px 0 4px", fontWeight: 500, color: "#334155" }}>
-                    Drag & drop CSV / Excel
-                  </p>
-                  <p style={{ fontSize: 13, color: "#94a3b8", marginBottom: 12 }}>or</p>
-                  <label style={styles.browseBtn}>
-                    <FileText size={15} /> Browse File
-                    <input
-                      type="file"
-                      accept=".csv,.xls,.xlsx"
-                      onChange={handleFileUpload}
-                      style={{ display: "none" }}
-                    />
-                  </label>
-                  <p style={{ fontSize: 12, color: "#94a3b8", marginTop: 10 }}>
-                    Supports .csv, .xls, .xlsx
-                  </p>
-                </div>
-
+                <label
+                  className="inline-flex items-center gap-1 px-3 h-10 rounded-lg border border-gray-300 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 cursor-pointer shrink-0"
+                  title="Upload CSV / Excel"
+                >
+                  <Upload size={14} />
+                  <input
+                    type="file"
+                    accept=".csv,.xls,.xlsx"
+                    onChange={handleFileUpload}
+                    style={{ display: "none" }}
+                  />
+                </label>
                 <button
                   type="button"
-                  style={{
-                    ...styles.primaryBtn,
-                    width: "100%",
-                    marginTop: 16,
-                    opacity: saving || sending ? 0.6 : 1,
-                    cursor: saving || sending ? "not-allowed" : "pointer",
-                  }}
                   onClick={handleSend}
                   disabled={saving || sending}
+                  className="inline-flex items-center gap-1.5 px-3 h-10 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white text-xs font-semibold shadow hover:opacity-90 transition disabled:opacity-60 shrink-0"
                 >
                   {sending ? (
-                    <>
-                      <Loader2 size={14} className="animate-spin" />
-                      Sending...
-                    </>
+                    <Loader2 size={13} className="animate-spin" />
                   ) : (
-                    "Send Campaign"
+                    "Send"
                   )}
                 </button>
               </div>
 
-              {/* Details */}
-              <div style={styles.card}>
-                <h3 style={styles.sectionTitle}>3. Campaign Details</h3>
+              {/* Spacer gap between groups */}
+              <div style={{ width: 12, flexShrink: 0 }} />
 
-                <label style={styles.label}>Campaign Name</label>
+              {/* Campaign name + Save */}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  flex: "1 1 200px",
+                  minWidth: 180,
+                  maxWidth: 320,
+                }}
+              >
                 <input
-                  style={styles.input}
+                  type="text"
                   value={campaignName}
                   onChange={(e) => setCampaignName(e.target.value)}
-                  placeholder="e.g. Education Expo 2024"
+                  placeholder="Campaign name *"
+                  className="w-full h-10 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500 text-sm"
                 />
-
                 <button
                   type="button"
-                  style={{
-                    ...styles.secondaryBtn,
-                    width: "100%",
-                    marginTop: 4,
-                    opacity: saving || sending ? 0.6 : 1,
-                    cursor: saving || sending ? "not-allowed" : "pointer",
-                  }}
                   onClick={handleSaveDraft}
                   disabled={saving || sending}
+                  className="inline-flex items-center gap-1.5 px-3 h-10 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white text-xs font-semibold shadow hover:opacity-90 transition disabled:opacity-60 shrink-0"
                 >
                   {saving ? (
-                    <>
-                      <Loader2 size={14} className="animate-spin" />
-                      Saving...
-                    </>
+                    <Loader2 size={13} className="animate-spin" />
                   ) : (
                     "Save"
                   )}
                 </button>
               </div>
-
-              {/* Actions */}
-              {/* <div style={styles.leftActions}>
-                <button
-                  style={styles.secondaryBtn}
-                  onClick={handleSaveDraft}
-                  disabled={saving || sending}
-                >
-                  {saving ? (
-                    <>
-                      <Loader2
-                        size={14}
-                        className="animate-spin"
-                        style={{ marginRight: 6 }}
-                      />
-                      Saving...
-                    </>
-                  ) : (
-                    "Save as Draft"
-                  )}
-                </button>
-
-                <button
-                  style={styles.primaryBtn}
-                  onClick={handleSend}
-                  disabled={saving || sending}
-                >
-                  {sending ? (
-                    <>
-                      <Loader2
-                        size={14}
-                        className="animate-spin"
-                        style={{ marginRight: 6 }}
-                      />
-                      Sending...
-                    </>
-                  ) : (
-                    "Send Campaign"
-                  )}
-                </button>
-              </div> */}
             </div>
 
-            {/* CENTER COLUMN */}
-            <div style={styles.centerCol}>
-              <div style={styles.card}>
-                <h3 style={styles.sectionTitle}>4. {designTitle}</h3>
+            {/* BOTTOM: Editor + Preview */}
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "220px minmax(0, 1fr) 340px",
+                gap: 16,
+              }}
+            >
+              {/* LEFT SIDEBAR: Channel + content blocks */}
+              <div style={styles.sidebar}>
+                <div style={styles.card}>
+                  <h3 style={styles.sectionTitle}>Campaign type</h3>
+                  <div style={styles.tabs}>
+                    {["Email", "WhatsApp Message", "Social Media Post"].map((tab) => (
+                      <button
+                        key={tab}
+                        type="button"
+                        onClick={() => {
+                          if (tab === "Email") {
+                            setChannel("Email");
+                            setActiveTab("Email");
+                          } else if (tab === "WhatsApp Message") {
+                            setChannel("WhatsApp");
+                            setActiveTab("WhatsApp Message");
+                          } else {
+                            setChannel("Social");
+                            setActiveTab("Social Media Post");
+                          }
+                        }}
+                        style={activeTab === tab ? styles.activeTab : styles.tab}
+                      >
+                        {tab}
+                      </button>
+                    ))}
+                  </div>
 
-                <div style={styles.tabs}>
-                  {[
-                    "Email",
-                    "WhatsApp Message",
-                    "Social Media Post",
-                  ].map((tab) => (
-                    <button
-                      key={tab}
-                      onClick={() => {
-                        if (tab === "Email") {
-                          setChannel("Email");
-                          setActiveTab("Email");
-                        } else if (tab === "WhatsApp Message") {
-                          setChannel("WhatsApp");
-                          setActiveTab("WhatsApp Message");
-                        } else {
-                          setChannel("Social");
-                          setActiveTab("Social Media Post");
-                        }
-                      }}
-                      style={activeTab === tab ? styles.activeTab : styles.tab}
-                    >
-                      {tab}
-                    </button>
-                  ))}
+                  <h3 style={{ ...styles.sectionTitle, marginTop: 20 }}>
+                    Add to campaign
+                  </h3>
+                  <p style={{ margin: "0 0 8px", fontSize: 11, color: "#94a3b8" }}>
+                    Click or drag onto the canvas
+                  </p>
+                  <div style={styles.addToolbar}>
+                    {(
+                      [
+                        { type: "text" as const, label: "Text", Icon: TypeIcon },
+                        { type: "image" as const, label: "Banner / Image", Icon: ImageIcon },
+                        { type: "logo" as const, label: "Logo", Icon: Square },
+                        { type: "document" as const, label: "Document", Icon: FileText },
+                        { type: "button" as const, label: "Button", Icon: Square },
+                        { type: "divider" as const, label: "Divider", Icon: Minus },
+                      ] as const
+                    ).map(({ type, label, Icon }) => (
+                      <button
+                        key={type}
+                        type="button"
+                        draggable
+                        onDragStart={(e) => handlePaletteDragStart(e, type)}
+                        onClick={() => addBlock(type)}
+                        style={{
+                          ...styles.addBtn,
+                          cursor: "grab",
+                        }}
+                        title={`Click or drag to add ${label}`}
+                      >
+                        <Icon size={14} /> {label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
+              </div>
 
-                {/* Email recipients + subject */}
-             {/* Email recipients + subject */}
-{/* Email Details only */}
-{activeTab === "Email" && (
-  <div style={styles.emailComposer}>
-    <div style={styles.emailSectionCard}>
-      <h4 style={{ margin: "0 0 10px", fontSize: 14 }}>
-        Email Details
-      </h4>
-      <label style={styles.label}>Subject</label>
-      <input
-        style={styles.input}
-        value={subject}
-        onChange={(e) => setSubject(e.target.value)}
-        placeholder="Enter email subject"
-      />
-      <label
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 8,
-          fontSize: 13,
-          marginTop: 4,
-        }}
-      >
-        <input
-          type="checkbox"
-          checked={preheader}
-          onChange={(e) => setPreheader(e.target.checked)}
-        />
-        Add preview text (Preheader)
-      </label>
-      {preheader && (
-        <input
-          style={{ ...styles.input, marginTop: 8 }}
-          value={preheaderText}
-          onChange={(e) => setPreheaderText(e.target.value)}
-          placeholder="Preheader text..."
-        />
-      )}
-    </div>
-  </div>
-)}
-                {/* Toolbar */}
-                <div style={styles.addToolbar}>
-                  {/* <span
-                    style={{
-                      fontSize: 13,
-                      fontWeight: 500,
-                      color: "#475569",
-                      marginRight: 8,
-                    }}
-                  >
-                    Add Element:
-                  </span> */}
-                  <button style={styles.addBtn} onClick={() => addBlock("text")}>
-                    <TypeIcon size={14} /> Text
-                  </button>
-                  <button style={styles.addBtn} onClick={() => addBlock("image")}>
-                    <ImageIcon size={14} /> Banner / Image
-                  </button>
-                  <button style={styles.addBtn} onClick={() => addBlock("logo")}>
-                    <Square size={14} /> Logo
-                  </button>
-                  <button style={styles.addBtn} onClick={() => addBlock("button")}>
-                    <Square size={14} /> Button
-                  </button>
-                  <button style={styles.addBtn} onClick={() => addBlock("divider")}>
-                    <Minus size={14} /> Divider
-                  </button>
-                </div>
+              {/* CENTER COLUMN */}
+              <div style={styles.centerCol}>
+                <div style={styles.card}>
+                  <h3 style={styles.sectionTitle}>{designTitle}</h3>
 
-                {/* Canvas */}
-                <div style={styles.canvas}>
-                  {blocks.length === 0 && (
-                    <div style={styles.emptyCanvas}>
-                      <p>No content yet. Click the buttons above to start designing.</p>
+                  {activeTab === "Email" && (
+                    <div style={styles.emailComposer}>
+                      <div style={styles.emailSectionCard}>
+                        <h4 style={{ margin: "0 0 10px", fontSize: 14 }}>
+                          Email Details
+                        </h4>
+                        <label className="block mb-2 text-sm font-medium">
+                          Subject
+                        </label>
+                        <input
+                          className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500 text-sm"
+                          value={subject}
+                          onChange={(e) => setSubject(e.target.value)}
+                          placeholder="Enter email subject"
+                        />
+                      </div>
                     </div>
                   )}
 
-                {blocks.map((block, index) => (
-  <div key={block.id} style={styles.blockWrapper}>
-    <div style={styles.blockControls}>
-      <span style={styles.blockTypeLabel}>
-        {block.type === "text"
-          ? "Text"
-          : block.type === "image"
-            ? "Banner / Image"
-            : block.type === "logo"
-              ? "Logo"
-              : block.type === "button"
-                ? "Button"
-                : "Divider"}
-      </span>
-      <div style={styles.blockControlButtons}>
-        <button
-          type="button"
-          style={styles.controlBtn}
-          onClick={() => moveBlock(index, "up")}
-          title="Move up"
-        >
-          ↑
-        </button>
-        <button
-          type="button"
-          style={styles.controlBtn}
-          onClick={() => moveBlock(index, "down")}
-          title="Move down"
-        >
-          ↓
-        </button>
-        <button
-          type="button"
-          style={{ ...styles.controlBtn, color: "#ef4444" }}
-          onClick={() => removeBlock(block.id)}
-          title="Delete block"
-        >
-          <Trash2 size={14} />
-        </button>
-      </div>
-    </div>
+                  <div
+                    style={{
+                      ...styles.canvas,
+                      border: canvasDragOver
+                        ? "2px dashed #2563eb"
+                        : "1px solid #e2e8f0",
+                      background: canvasDragOver ? "#eff6ff" : "#fafafa",
+                      transition: "border-color 0.15s, background 0.15s",
+                    }}
+                    onDragOver={handleCanvasDragOver}
+                    onDragLeave={handleCanvasDragLeave}
+                    onDrop={handleCanvasDrop}
+                  >
+                    {blocks.length === 0 && (
+                      <div style={styles.emptyCanvas}>
+                        <p>
+                          No content yet. Drag blocks from the left panel or click
+                          them to start designing.
+                        </p>
+                      </div>
+                    )}
 
-                      {block.type === "text" && (
-                        <TextBlockEditor
-                          block={block}
-                          onUpdate={(updates) => updateBlock(block.id, updates)}
-                          placeholder={editorPlaceholder}
-                        />
-                      )}
-
-                      {block.type === "image" && (
-                        <ImageBlockEditor
-                          block={block}
-                          onUpdate={(updates) => updateBlock(block.id, updates)}
-                          onError={(msg) => msg && showAlert("error", msg)}
-                        />
-                      )}
-
-                      {block.type === "logo" && (
-                        <ImageBlockEditor
-                          block={block}
-                          onUpdate={(updates) => updateBlock(block.id, updates)}
-                          onError={(msg) => msg && showAlert("error", msg)}
-                          isLogo
-                        />
-                      )}
-
-                      {block.type === "button" && (
-                        <div>
-                          <div style={{ textAlign: block.align || "center" }}>
-                            <button style={styles.previewButton}>
-                              {block.buttonText || "Button"}
+                    {blocks.map((block, index) => (
+                      <div
+                        key={block.id}
+                        draggable
+                        onDragStart={(e) => handleBlockDragStart(e, index)}
+                        onDragEnd={handleBlockDragEnd}
+                        onDragOver={(e) => handleBlockDragOver(e, index)}
+                        onDrop={(e) => handleBlockDrop(e, index)}
+                        style={{
+                          ...styles.blockWrapper,
+                          opacity: dragBlockIndex === index ? 0.5 : 1,
+                          outline:
+                            dropTargetIndex === index
+                              ? "2px solid #2563eb"
+                              : undefined,
+                          outlineOffset: 2,
+                          cursor: "grab",
+                        }}
+                      >
+                        <div style={styles.blockControls}>
+                          <span style={styles.blockTypeLabel}>
+                            {block.type === "text"
+                              ? "Text"
+                              : block.type === "image"
+                                ? "Banner / Image"
+                                : block.type === "logo"
+                                  ? "Logo"
+                                  : block.type === "document"
+                                    ? "Document"
+                                    : block.type === "button"
+                                      ? "Button"
+                                      : "Divider"}
+                            <span
+                              style={{
+                                marginLeft: 8,
+                                fontWeight: 400,
+                                color: "#94a3b8",
+                                textTransform: "none",
+                                letterSpacing: 0,
+                              }}
+                            >
+                              · drag to reorder
+                            </span>
+                          </span>
+                          <div style={styles.blockControlButtons}>
+                            <button
+                              type="button"
+                              style={styles.controlBtn}
+                              onClick={() => moveBlock(index, "up")}
+                              title="Move up"
+                            >
+                              ↑
+                            </button>
+                            <button
+                              type="button"
+                              style={styles.controlBtn}
+                              onClick={() => moveBlock(index, "down")}
+                              title="Move down"
+                            >
+                              ↓
+                            </button>
+                            <button
+                              type="button"
+                              style={{ ...styles.controlBtn, color: "#ef4444" }}
+                              onClick={() => removeBlock(block.id)}
+                              title="Delete block"
+                            >
+                              <Trash2 size={14} />
                             </button>
                           </div>
-                          <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
-                            <input
-                              style={{
-                                ...styles.input,
-                                marginBottom: 0,
-                                flex: 1,
-                              }}
-                              placeholder="Button Text"
-                              value={block.buttonText || ""}
-                              onChange={(e) =>
-                                updateBlock(block.id, {
-                                  buttonText: e.target.value,
-                                })
-                              }
-                            />
-                            <input
-                              style={{
-                                ...styles.input,
-                                marginBottom: 0,
-                                flex: 1,
-                              }}
-                              placeholder="Button Link (URL)"
-                              value={block.buttonLink || ""}
-                              onChange={(e) =>
-                                updateBlock(block.id, {
-                                  buttonLink: e.target.value,
-                                })
-                              }
-                            />
-                          </div>
                         </div>
-                      )}
 
-                      {block.type === "divider" && (
-                        <hr
-                          style={{
-                            border: "none",
-                            borderTop: "1px solid #e2e8f0",
-                            margin: "12px 0",
-                          }}
-                        />
-                      )}
-                    </div>
-                  ))}
-                </div>
+                        {block.type === "text" && (
+                          <TextBlockEditor
+                            block={block}
+                            onUpdate={(updates) => updateBlock(block.id, updates)}
+                            placeholder={editorPlaceholder}
+                          />
+                        )}
 
-                {/* <div style={styles.editorFooter}>
-                  <div style={{ display: "flex", gap: 12 }}>
-                    <button style={styles.iconOnlyBtn}>
-                      <Smile size={16} />
-                    </button>
-                    <button style={styles.iconOnlyBtn}>
-                      <Link2 size={16} />
-                    </button>
-                  </div>
-                  <button style={styles.addVariable}>
-                    + Add Variable (e.g. {"{{Name}}"})
-                  </button>
-                </div> */}
-              </div>
-            </div>
+                        {block.type === "image" && (
+                          <ImageBlockEditor
+                            block={block}
+                            onUpdate={(updates) => updateBlock(block.id, updates)}
+                            onError={(msg) => msg && showAlert("error", msg)}
+                          />
+                        )}
 
-            {/* RIGHT COLUMN - PREVIEW */}
-            <div style={styles.rightCol}>
-              <div style={styles.card}>
-                <h3 style={styles.sectionTitle}>5. Preview</h3>
-                <p style={styles.sectionHint}>Live preview of your design</p>
+                        {block.type === "logo" && (
+                          <ImageBlockEditor
+                            block={block}
+                            onUpdate={(updates) => updateBlock(block.id, updates)}
+                            onError={(msg) => msg && showAlert("error", msg)}
+                            isLogo
+                          />
+                        )}
 
-                {/* EMAIL PREVIEW */}
-                {activeTab === "Email" && (
-                  <div style={styles.previewCard}>
-                    <div style={styles.previewHeader}>
-                      <Mail size={16} color="#7c3aed" />
-                      <span style={{ fontWeight: 600, fontSize: 13 }}>
-                        Email Preview
-                      </span>
-                    </div>
-                    <div style={styles.emailPreviewFrame}>
-                      {subject && (
-                        <div style={styles.previewSubject}>
-                          <strong>Subject:</strong> {subject}
-                        </div>
-                      )}
-                      <div style={styles.previewBody}>
-                        {blocks.map((block) => {
-                          if (block.type === "logo") {
-                            return (
-                              <div
-                                key={block.id}
-                                style={{ textAlign: "center", marginBottom: 12 }}
-                              >
-                                {block.url ? (
-                                  <img
-                                    src={block.url}
-                                    alt="Logo"
-                                    style={{
-                                      maxHeight: 40,
-                                      objectFit: "contain",
-                                    }}
-                                  />
-                                ) : (
-                                  <div style={styles.logoPlaceholder}>
-                                    <ImageIcon size={16} color="#7c3aed" />
-                                    <span>Your Logo</span>
-                                  </div>
-                                )}
-                              </div>
-                            );
-                          }
-                          if (block.type === "image" && block.url) {
-                            return (
-                              <img
-                                key={block.id}
-                                src={block.url}
-                                alt=""
-                                style={{
-                                  width: "100%",
-                                  borderRadius: 8,
-                                  marginBottom: 12,
-                                  maxHeight: 140,
-                                  objectFit: "cover",
-                                }}
+                        {block.type === "document" && (
+                          <DocumentBlockEditor
+                            block={block}
+                            onUpdate={(updates) => updateBlock(block.id, updates)}
+                            onError={(msg) => msg && showAlert("error", msg)}
+                          />
+                        )}
+
+                        {block.type === "button" && (
+                          <div>
+                            <div style={{ textAlign: block.align || "center" }}>
+                              <button className="inline-flex items-center gap-1.5 px-6 py-2.5 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm font-semibold shadow-lg">
+                                {block.buttonText || "Button"}
+                              </button>
+                            </div>
+                            <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+                              <input
+                                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500 text-sm"
+                                placeholder="Button Text"
+                                value={block.buttonText || ""}
+                                onChange={(e) =>
+                                  updateBlock(block.id, {
+                                    buttonText: e.target.value,
+                                  })
+                                }
                               />
-                            );
-                          }
-                          if (block.type === "text") {
-                            return (
-                              <p
-                                key={block.id}
-                                style={{
-                                  fontSize: block.fontSize || 14,
-                                  lineHeight: 1.6,
-                                  whiteSpace: "pre-wrap",
-                                  margin: "0 0 12px",
-                                  color: block.color || "#334155",
-                                  backgroundColor:
-                                    block.backgroundColor &&
-                                    block.backgroundColor !== "transparent"
-                                      ? block.backgroundColor
-                                      : undefined,
-                                  fontWeight: block.fontWeight || "normal",
-                                  fontStyle: block.fontStyle || "normal",
-                                  textAlign: block.textAlign || "left",
-                                  padding:
-                                    block.backgroundColor &&
-                                    block.backgroundColor !== "transparent"
-                                      ? "8px 10px"
-                                      : undefined,
-                                  borderRadius:
-                                    block.backgroundColor &&
-                                    block.backgroundColor !== "transparent"
-                                      ? 6
-                                      : undefined,
-                                }}
-                              >
-                                {block.content}
-                              </p>
-                            );
-                          }
-                          if (block.type === "button") {
-                            return (
-                              <div
-                                key={block.id}
-                                style={{
-                                  textAlign: block.align || "center",
-                                  margin: "16px 0",
-                                }}
-                              >
-                                <a
-                                  href={block.buttonLink}
+                              <input
+                                className="w-full h-11 rounded-lg border border-gray-300 px-3 focus:outline-none focus:border-blue-500 text-sm"
+                                placeholder="Button Link (URL)"
+                                value={block.buttonLink || ""}
+                                onChange={(e) =>
+                                  updateBlock(block.id, {
+                                    buttonLink: e.target.value,
+                                  })
+                                }
+                              />
+                            </div>
+                          </div>
+                        )}
+
+                        {block.type === "divider" && (
+                          <hr
+                            style={{
+                              border: "none",
+                              borderTop: "1px solid #e2e8f0",
+                              margin: "12px 0",
+                            }}
+                          />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* RIGHT COLUMN - PREVIEW */}
+              <div style={styles.rightCol}>
+                <div style={styles.card}>
+                  <h3 style={styles.sectionTitle}>Preview</h3>
+                  <p style={styles.sectionHint}>Live preview of your design</p>
+
+                  {activeTab === "Email" && (
+                    <div style={styles.previewCard}>
+                      <div style={styles.previewHeader}>
+                        <Mail size={16} color="#2563eb" />
+                        <span style={{ fontWeight: 600, fontSize: 13 }}>
+                          Email Preview
+                        </span>
+                      </div>
+                      <div style={styles.emailPreviewFrame}>
+                        {subject && (
+                          <div style={styles.previewSubject}>
+                            <strong>Subject:</strong> {subject}
+                          </div>
+                        )}
+                        <div style={styles.previewBody}>
+                          {blocks.map((block) => {
+                            if (block.type === "logo") {
+                              const logoAlign = block.align || "center";
+                              return (
+                                <div
+                                  key={block.id}
                                   style={{
-                                    display: "inline-block",
-                                    background: "#7c3aed",
-                                    color: "#fff",
-                                    padding: "10px 20px",
-                                    borderRadius: 8,
-                                    fontSize: 13,
-                                    fontWeight: 600,
-                                    textDecoration: "none",
+                                    textAlign: logoAlign,
+                                    marginBottom: 12,
                                   }}
                                 >
-                                  {block.buttonText}
-                                </a>
-                              </div>
-                            );
-                          }
-                          if (block.type === "divider") {
-                            return (
-                              <hr
-                                key={block.id}
-                                style={{
-                                  border: "none",
-                                  borderTop: "1px solid #e2e8f0",
-                                  margin: "16px 0",
-                                }}
-                              />
-                            );
-                          }
-                          return null;
-                        })}
-                        {/* <div style={styles.previewFooter}>
-                          <p
-                            style={{
-                              margin: "0 0 10px",
-                              fontSize: 12,
-                              color: "#64748b",
-                            }}
-                          >
-                            Stay connected with us
-                          </p>
-                          <div style={styles.socialIcons}>
-                            <div style={styles.socialIcon}>
-                              <FaFacebook size={12} />
-                            </div>
-                            <div style={styles.socialIcon}>
-                              <FaInstagram size={12} />
-                            </div>
-                            <div style={styles.socialIcon}>
-                              <FaLinkedin size={12} />
-                            </div>
-                            <div style={styles.socialIcon}>
-                              <FaTwitter size={12} />
-                            </div>
-                          </div>
-                        </div> */}
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* WHATSAPP */}
-                {activeTab === "WhatsApp Message" && (
-                  <div style={styles.previewCard}>
-                    <div style={styles.previewHeader}>
-                      <FaWhatsapp size={16} color="#25D366" />
-                      <span style={{ fontWeight: 600, fontSize: 13 }}>
-                        WhatsApp Preview
-                      </span>
-                    </div>
-                    <div style={styles.whatsappFrame}>
-                      <div style={styles.waHeader}>
-                        <ArrowLeft size={16} color="#fff" />
-                        <div style={styles.waAvatar}></div>
-                        <div>
-                          <div
-                            style={{
-                              fontWeight: 600,
-                              fontSize: 13,
-                              color: "#fff",
-                            }}
-                          >
-                            Your Company
-                          </div>
-                          <div style={{ fontSize: 11, color: "#d1fae5" }}>
-                            online
-                          </div>
-                        </div>
-                      </div>
-                      <div style={styles.waBody}>
-                        <div style={styles.waBubble}>
-                          {blocks.map((block) => {
+                                  {block.url ? (
+                                    <img
+                                      src={block.url}
+                                      alt="Logo"
+                                      style={{
+                                        maxHeight: 40,
+                                        objectFit: "contain",
+                                        display: "block",
+                                        margin:
+                                          logoAlign === "left"
+                                            ? "0 auto 0 0"
+                                            : logoAlign === "right"
+                                              ? "0 0 0 auto"
+                                              : "0 auto",
+                                      }}
+                                    />
+                                  ) : (
+                                    <div style={styles.logoPlaceholder}>
+                                      <ImageIcon size={16} color="#2563eb" />
+                                      <span>Your Logo</span>
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            }
                             if (block.type === "image" && block.url) {
+                              const layout = block.imageLayout || "full";
+                              if (layout === "full") {
+                                return (
+                                  <img
+                                    key={block.id}
+                                    src={block.url}
+                                    alt=""
+                                    style={{
+                                      width: "100%",
+                                      borderRadius: 8,
+                                      marginBottom: 12,
+                                      maxHeight: 140,
+                                      objectFit: "cover",
+                                    }}
+                                  />
+                                );
+                              }
                               return (
-                                <img
+                                <div
                                   key={block.id}
-                                  src={block.url}
-                                  alt=""
                                   style={{
-                                    width: "100%",
-                                    borderRadius: 8,
-                                    marginBottom: 8,
+                                    display: "flex",
+                                    gap: 12,
+                                    alignItems: "flex-start",
+                                    marginBottom: 12,
+                                    flexDirection:
+                                      layout === "right" ? "row-reverse" : "row",
                                   }}
-                                />
+                                >
+                                  <div style={{ flex: "0 0 45%", maxWidth: "45%" }}>
+                                    <img
+                                      src={block.url}
+                                      alt=""
+                                      style={{
+                                        width: "100%",
+                                        borderRadius: 8,
+                                        maxHeight: 120,
+                                        objectFit: "cover",
+                                        display: "block",
+                                      }}
+                                    />
+                                  </div>
+                                  {block.sideContent ? (
+                                    <p
+                                      style={{
+                                        flex: 1,
+                                        margin: 0,
+                                        fontSize: 13,
+                                        lineHeight: 1.5,
+                                        color: "#334155",
+                                        whiteSpace: "pre-wrap",
+                                      }}
+                                    >
+                                      {block.sideContent}
+                                    </p>
+                                  ) : null}
+                                </div>
+                              );
+                            }
+                            if (block.type === "document" && block.url) {
+                              return (
+                                <div key={block.id} style={{ marginBottom: 12 }}>
+                                  <a
+                                    href={block.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{
+                                      display: "inline-flex",
+                                      alignItems: "center",
+                                      gap: 8,
+                                      color: "#2563eb",
+                                      textDecoration: "underline",
+                                      overflowWrap: "anywhere",
+                                    }}
+                                  >
+                                    <FileText size={16} />
+                                    {block.documentName || "Download document"}
+                                  </a>
+                                </div>
                               );
                             }
                             if (block.type === "text") {
@@ -2074,10 +14991,11 @@ test3@example.com`}
                                 <p
                                   key={block.id}
                                   style={{
-                                    fontSize: block.fontSize || 13,
+                                    fontSize: block.fontSize || 14,
+                                    lineHeight: 1.6,
                                     whiteSpace: "pre-wrap",
-                                    margin: "0 0 8px",
-                                    color: block.color || "#111",
+                                    margin: "0 0 12px",
+                                    color: block.color || "#334155",
                                     backgroundColor:
                                       block.backgroundColor &&
                                       block.backgroundColor !== "transparent"
@@ -2089,9 +15007,13 @@ test3@example.com`}
                                     padding:
                                       block.backgroundColor &&
                                       block.backgroundColor !== "transparent"
-                                        ? "6px 8px"
+                                        ? "8px 10px"
                                         : undefined,
-                                    borderRadius: 6,
+                                    borderRadius:
+                                      block.backgroundColor &&
+                                      block.backgroundColor !== "transparent"
+                                        ? 6
+                                        : undefined,
                                   }}
                                 >
                                   {block.content}
@@ -2100,125 +15022,294 @@ test3@example.com`}
                             }
                             if (block.type === "button") {
                               return (
-                                <div key={block.id} style={{ margin: "8px 0" }}>
+                                <div
+                                  key={block.id}
+                                  style={{
+                                    textAlign: block.align || "center",
+                                    margin: "16px 0",
+                                  }}
+                                >
                                   <a
                                     href={block.buttonLink}
-                                    style={{
-                                      display: "inline-block",
-                                      background: "#7c3aed",
-                                      color: "#fff",
-                                      padding: "8px 16px",
-                                      borderRadius: 6,
-                                      fontSize: 13,
-                                      textDecoration: "none",
-                                    }}
+                                    className="inline-block px-5 py-2.5 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm font-semibold shadow-lg no-underline"
                                   >
                                     {block.buttonText}
                                   </a>
                                 </div>
                               );
                             }
+                            if (block.type === "divider") {
+                              return (
+                                <hr
+                                  key={block.id}
+                                  style={{
+                                    border: "none",
+                                    borderTop: "1px solid #e2e8f0",
+                                    margin: "16px 0",
+                                  }}
+                                />
+                              );
+                            }
                             return null;
                           })}
-                          <div
-                            style={{
-                              textAlign: "right",
-                              fontSize: 11,
-                              color: "#94a3b8",
-                              marginTop: 6,
-                            }}
-                          >
-                            11:30 AM ✓✓
-                          </div>
                         </div>
                       </div>
-                      <div style={styles.waInput}>
-                        <Smile size={18} color="#94a3b8" />
-                        <span
-                          style={{ flex: 1, color: "#94a3b8", fontSize: 13 }}
-                        >
-                          Type a message
+                    </div>
+                  )}
+
+                  {activeTab === "WhatsApp Message" && (
+                    <div style={styles.previewCard}>
+                      <div style={styles.previewHeader}>
+                        <FaWhatsapp size={16} color="#25D366" />
+                        <span style={{ fontWeight: 600, fontSize: 13 }}>
+                          WhatsApp Preview
                         </span>
                       </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* SOCIAL */}
-                {activeTab === "Social Media Post" && (
-                  <div style={styles.previewCard}>
-                    <div style={styles.previewHeader}>
-                      <span style={{ fontWeight: 600, fontSize: 13 }}>
-                        Social Media Preview
-                      </span>
-                    </div>
-                    <div style={styles.socialCard}>
-                      <div style={styles.socialHeader}>
-                        <div style={styles.socialAvatar}></div>
-                        <div>
-                          <div style={{ fontWeight: 600, fontSize: 13 }}>
-                            Your Company
-                          </div>
-                          <div style={{ fontSize: 11, color: "#94a3b8" }}>
-                            Just now · 🌐
+                      <div style={styles.whatsappFrame}>
+                        <div style={styles.waHeader}>
+                          <ArrowLeft size={16} color="#fff" />
+                          <div style={styles.waAvatar}></div>
+                          <div>
+                            <div style={{ fontWeight: 600, fontSize: 13, color: "#fff" }}>
+                              Your Company
+                            </div>
+                            <div style={{ fontSize: 11, color: "#d1fae5" }}>online</div>
                           </div>
                         </div>
-                      </div>
-                      {blocks.map((block) => {
-                        if (block.type === "text") {
-                          return (
-                            <p
-                              key={block.id}
+                        <div style={styles.waBody}>
+                          <div style={styles.waBubble}>
+                            {blocks.map((block) => {
+                              if (block.type === "image" && block.url) {
+                                const layout = block.imageLayout || "full";
+                                if (layout === "full") {
+                                  return (
+                                    <img
+                                      key={block.id}
+                                      src={block.url}
+                                      alt=""
+                                      style={{
+                                        width: "100%",
+                                        borderRadius: 8,
+                                        marginBottom: 8,
+                                      }}
+                                    />
+                                  );
+                                }
+                                return (
+                                  <div
+                                    key={block.id}
+                                    style={{
+                                      display: "flex",
+                                      gap: 8,
+                                      alignItems: "flex-start",
+                                      marginBottom: 8,
+                                      flexDirection:
+                                        layout === "right" ? "row-reverse" : "row",
+                                    }}
+                                  >
+                                    <img
+                                      src={block.url}
+                                      alt=""
+                                      style={{
+                                        width: "45%",
+                                        borderRadius: 6,
+                                        objectFit: "cover",
+                                      }}
+                                    />
+                                    {block.sideContent ? (
+                                      <p
+                                        style={{
+                                          flex: 1,
+                                          margin: 0,
+                                          fontSize: 12,
+                                          whiteSpace: "pre-wrap",
+                                          color: "#111",
+                                        }}
+                                      >
+                                        {block.sideContent}
+                                      </p>
+                                    ) : null}
+                                  </div>
+                                );
+                              }
+                              if (block.type === "text") {
+                                return (
+                                  <p
+                                    key={block.id}
+                                    style={{
+                                      fontSize: block.fontSize || 13,
+                                      whiteSpace: "pre-wrap",
+                                      margin: "0 0 8px",
+                                      color: block.color || "#111",
+                                      backgroundColor:
+                                        block.backgroundColor &&
+                                        block.backgroundColor !== "transparent"
+                                          ? block.backgroundColor
+                                          : undefined,
+                                      fontWeight: block.fontWeight || "normal",
+                                      fontStyle: block.fontStyle || "normal",
+                                      textAlign: block.textAlign || "left",
+                                      padding:
+                                        block.backgroundColor &&
+                                        block.backgroundColor !== "transparent"
+                                          ? "6px 8px"
+                                          : undefined,
+                                      borderRadius: 6,
+                                    }}
+                                  >
+                                    {block.content}
+                                  </p>
+                                );
+                              }
+                              if (block.type === "button") {
+                                return (
+                                  <div key={block.id} style={{ margin: "8px 0" }}>
+                                    <a
+                                      href={block.buttonLink}
+                                      className="inline-block px-4 py-2 rounded-md bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm no-underline"
+                                    >
+                                      {block.buttonText}
+                                    </a>
+                                  </div>
+                                );
+                              }
+                              return null;
+                            })}
+                            <div
                               style={{
-                                fontSize: block.fontSize || 13,
-                                padding: "8px 12px",
-                                whiteSpace: "pre-wrap",
-                                color: block.color || "#111",
-                                backgroundColor:
-                                  block.backgroundColor &&
-                                  block.backgroundColor !== "transparent"
-                                    ? block.backgroundColor
-                                    : undefined,
-                                fontWeight: block.fontWeight || "normal",
-                                fontStyle: block.fontStyle || "normal",
-                                textAlign: block.textAlign || "left",
-                                margin: 0,
+                                textAlign: "right",
+                                fontSize: 11,
+                                color: "#94a3b8",
+                                marginTop: 6,
                               }}
                             >
-                              {block.content}
-                            </p>
-                          );
-                        }
-                        if (block.type === "image" && block.url) {
-                          return (
-                            <img
-                              key={block.id}
-                              src={block.url}
-                              alt=""
-                              style={{
-                                width: "100%",
-                                display: "block",
-                                marginTop: 8,
-                              }}
-                            />
-                          );
-                        }
-                        return null;
-                      })}
-                      <div style={styles.socialActions}>
-                        <span>👍 Like</span>
-                        <span>💬 Comment</span>
-                        <span>↗ Share</span>
+                              11:30 AM ✓✓
+                            </div>
+                          </div>
+                        </div>
+                        <div style={styles.waInput}>
+                          <Smile size={18} color="#94a3b8" />
+                          <span style={{ flex: 1, color: "#94a3b8", fontSize: 13 }}>
+                            Type a message
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
-
+                  {activeTab === "Social Media Post" && (
+                    <div style={styles.previewCard}>
+                      <div style={styles.previewHeader}>
+                        <span style={{ fontWeight: 600, fontSize: 13 }}>
+                          Social Media Preview
+                        </span>
+                      </div>
+                      <div style={styles.socialCard}>
+                        <div style={styles.socialHeader}>
+                          <div style={styles.socialAvatar}></div>
+                          <div>
+                            <div style={{ fontWeight: 600, fontSize: 13 }}>
+                              Your Company
+                            </div>
+                            <div style={{ fontSize: 11, color: "#94a3b8" }}>
+                              Just now · 🌐
+                            </div>
+                          </div>
+                        </div>
+                        {blocks.map((block) => {
+                          if (block.type === "text") {
+                            return (
+                              <p
+                                key={block.id}
+                                style={{
+                                  fontSize: block.fontSize || 13,
+                                  padding: "8px 12px",
+                                  whiteSpace: "pre-wrap",
+                                  color: block.color || "#111",
+                                  backgroundColor:
+                                    block.backgroundColor &&
+                                    block.backgroundColor !== "transparent"
+                                      ? block.backgroundColor
+                                      : undefined,
+                                  fontWeight: block.fontWeight || "normal",
+                                  fontStyle: block.fontStyle || "normal",
+                                  textAlign: block.textAlign || "left",
+                                  margin: 0,
+                                }}
+                              >
+                                {block.content}
+                              </p>
+                            );
+                          }
+                          if (block.type === "image" && block.url) {
+                            const layout = block.imageLayout || "full";
+                            if (layout !== "full") {
+                              return (
+                                <div
+                                  key={block.id}
+                                  style={{
+                                    display: "flex",
+                                    gap: 10,
+                                    alignItems: "flex-start",
+                                    marginTop: 8,
+                                    padding: "0 12px",
+                                    flexDirection:
+                                      layout === "right" ? "row-reverse" : "row",
+                                  }}
+                                >
+                                  <img
+                                    src={block.url}
+                                    alt=""
+                                    style={{
+                                      width: "45%",
+                                      borderRadius: 6,
+                                      objectFit: "cover",
+                                    }}
+                                  />
+                                  {block.sideContent ? (
+                                    <p
+                                      style={{
+                                        flex: 1,
+                                        margin: 0,
+                                        fontSize: 13,
+                                        whiteSpace: "pre-wrap",
+                                        color: "#111",
+                                      }}
+                                    >
+                                      {block.sideContent}
+                                    </p>
+                                  ) : null}
+                                </div>
+                              );
+                            }
+                            return (
+                              <img
+                                key={block.id}
+                                src={block.url}
+                                alt=""
+                                style={{
+                                  width: "100%",
+                                  display: "block",
+                                  marginTop: 8,
+                                }}
+                              />
+                            );
+                          }
+                          return null;
+                        })}
+                        <div style={styles.socialActions}>
+                          <span>👍 Like</span>
+                          <span>💬 Comment</span>
+                          <span>↗ Share</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-          {/* Bottom Bar */}
+
           <div style={styles.bottomBar}>
             <button
               type="button"
@@ -2237,54 +15328,6 @@ test3@example.com`}
   );
 };
 
-// ===================== CHANNEL ITEM =====================
-const ChannelItem = ({
-  icon,
-  title,
-  active,
-  onClick,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  active: boolean;
-  onClick: () => void;
-}) => (
-  <div
-    onClick={onClick}
-    style={{
-      ...styles.channelItem,
-      border: active ? "2px solid #7c3aed" : "1px solid #e2e8f0",
-      background: active ? "#f5f3ff" : "#fff",
-    }}
-  >
-    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-      <div
-        style={{
-          width: 36,
-          height: 36,
-          borderRadius: 8,
-          background: active ? "#ede9fe" : "#f8fafc",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        {icon}
-      </div>
-      <span style={{ fontWeight: 500, fontSize: 14 }}>{title}</span>
-    </div>
-    <div
-      style={{
-        width: 18,
-        height: 18,
-        borderRadius: "50%",
-        border: active ? "6px solid #7c3aed" : "2px solid #cbd5e1",
-        background: "#fff",
-      }}
-    />
-  </div>
-);
-
 // ===================== STYLES =====================
 const styles: any = {
   page: {
@@ -2293,41 +15336,6 @@ const styles: any = {
     fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
     color: "#1e293b",
     paddingBottom: 80,
-  },
-  successMsg: {
-    margin: "12px 24px 0",
-    display: "flex",
-    alignItems: "center",
-    gap: 8,
-    padding: "10px 14px",
-    background: "#ecfdf5",
-    border: "1px solid #a7f3d0",
-    color: "#065f46",
-    borderRadius: 8,
-    fontSize: 13,
-    fontWeight: 500,
-  },
-  errorMsg: {
-    margin: "12px 24px 0",
-    display: "flex",
-    alignItems: "center",
-    gap: 8,
-    padding: "10px 14px",
-    background: "#fef2f2",
-    border: "1px solid #fecaca",
-    color: "#991b1b",
-    borderRadius: 8,
-    fontSize: 13,
-    fontWeight: 500,
-  },
-  dismissBtn: {
-    marginLeft: "auto",
-    background: "none",
-    border: "none",
-    color: "#991b1b",
-    cursor: "pointer",
-    fontSize: 12,
-    textDecoration: "underline",
   },
   templateCard: {
     border: "1px solid #e2e8f0",
@@ -2352,16 +15360,8 @@ const styles: any = {
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
   },
-  mainGrid: {
-    display: "grid",
-    gridTemplateColumns: "300px 1fr 340px",
-    gap: 20,
-    padding: "20px 24px",
-    maxWidth: 1600,
-    margin: "0 auto",
-  },
-  leftCol: { display: "flex", flexDirection: "column", gap: 16 },
   centerCol: { display: "flex", flexDirection: "column" },
+  sidebar: { display: "flex", flexDirection: "column", minWidth: 0 },
   rightCol: { display: "flex", flexDirection: "column" },
   card: {
     background: "#fff",
@@ -2372,74 +15372,6 @@ const styles: any = {
   },
   sectionTitle: { margin: "0 0 4px", fontSize: 15, fontWeight: 600 },
   sectionHint: { margin: "0 0 14px", fontSize: 12, color: "#94a3b8" },
-  channelItem: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: "10px 12px",
-    borderRadius: 10,
-    marginBottom: 8,
-    cursor: "pointer",
-  },
-  select: {
-    width: "100%",
-    padding: "10px 12px",
-    borderRadius: 8,
-    border: "1px solid #e2e8f0",
-    fontSize: 13,
-    background: "#fff",
-    marginBottom: 4,
-  },
-  input: {
-    width: "100%",
-    padding: "10px 12px",
-    borderRadius: 8,
-    border: "1px solid #e2e8f0",
-    fontSize: 13,
-    marginBottom: 12,
-    boxSizing: "border-box",
-  },
-  label: {
-    display: "block",
-    fontSize: 12,
-    fontWeight: 500,
-    color: "#475569",
-    marginBottom: 6,
-  },
-  uploadBox: {
-    border: "2px dashed #cbd5e1",
-    borderRadius: 10,
-    padding: "24px 16px",
-    textAlign: "center",
-    background: "#f8fafc",
-  },
-  browseBtn: {
-    display: "inline-flex",
-    alignItems: "center",
-    gap: 6,
-    background: "#7c3aed",
-    color: "#fff",
-    border: "none",
-    padding: "8px 16px",
-    borderRadius: 8,
-    fontSize: 13,
-    fontWeight: 500,
-    cursor: "pointer",
-  },
-  dateBtn: {
-    display: "flex",
-    alignItems: "center",
-    gap: 8,
-    width: "100%",
-    padding: "10px 12px",
-    borderRadius: 8,
-    border: "1px solid #e2e8f0",
-    background: "#fff",
-    fontSize: 13,
-    cursor: "pointer",
-    color: "#64748b",
-  },
-  leftActions: { display: "flex", flexDirection: "column", gap: 8 },
   secondaryBtn: {
     display: "inline-flex",
     alignItems: "center",
@@ -2447,66 +15379,56 @@ const styles: any = {
     gap: 6,
     padding: "10px 16px",
     borderRadius: 8,
-    border: "1px solid #e2e8f0",
+    border: "1px solid #d1d5db",
     background: "#fff",
     fontSize: 13,
     fontWeight: 500,
     cursor: "pointer",
     color: "#475569",
   },
-  primaryBtn: {
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 6,
-    padding: "10px 16px",
-    borderRadius: 8,
-    border: "none",
-    background: "#7c3aed",
-    color: "#fff",
-    fontSize: 13,
-    fontWeight: 500,
-    cursor: "pointer",
-  },
   tabs: {
     display: "flex",
-    gap: 4,
-    borderBottom: "1px solid #e2e8f0",
-    marginBottom: 16,
+    flexDirection: "column",
+    gap: 6,
+    marginTop: 12,
   },
   tab: {
-    padding: "8px 14px",
+    padding: "10px 12px",
     border: "none",
     background: "transparent",
     fontSize: 13,
     color: "#64748b",
     cursor: "pointer",
-    borderBottom: "2px solid transparent",
+    borderLeft: "3px solid transparent",
+    borderRadius: "0 6px 6px 0",
+    textAlign: "left",
+    width: "100%",
   },
   activeTab: {
-    padding: "8px 14px",
+    padding: "10px 12px",
     border: "none",
-    background: "transparent",
+    background: "#eff6ff",
     fontSize: 13,
-    color: "#7c3aed",
+    color: "#2563eb",
     fontWeight: 600,
     cursor: "pointer",
-    borderBottom: "2px solid #7c3aed",
+    borderLeft: "3px solid #2563eb",
+    borderRadius: "0 6px 6px 0",
+    textAlign: "left",
+    width: "100%",
   },
   addToolbar: {
     display: "flex",
-    flexWrap: "wrap",
-    alignItems: "center",
+    flexDirection: "column",
+    alignItems: "stretch",
     gap: 8,
-    padding: "12px 0",
-    borderBottom: "1px solid #e2e8f0",
-    marginBottom: 16,
+    marginTop: 12,
   },
   addBtn: {
-    display: "inline-flex",
+    display: "flex",
     alignItems: "center",
     gap: 6,
-    padding: "6px 12px",
+    padding: "9px 10px",
     borderRadius: 6,
     border: "1px solid #e2e8f0",
     background: "#f8fafc",
@@ -2514,6 +15436,7 @@ const styles: any = {
     fontWeight: 500,
     cursor: "pointer",
     color: "#475569",
+    textAlign: "left",
   },
   canvas: {
     minHeight: 320,
@@ -2527,51 +15450,51 @@ const styles: any = {
     padding: "60px 20px",
     color: "#94a3b8",
   },
- blockWrapper: {
-  marginBottom: 16,
-  padding: 12,
-  background: "#fff",
-  borderRadius: 8,
-  border: "1px solid #e2e8f0",
-},
-blockControls: {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  marginBottom: 10,
-  paddingBottom: 8,
-  borderBottom: "1px solid #f1f5f9",
-},
-blockTypeLabel: {
-  fontSize: 11,
-  fontWeight: 600,
-  color: "#64748b",
-  textTransform: "uppercase",
-  letterSpacing: "0.04em",
-},
-blockControlButtons: {
-  display: "flex",
-  gap: 4,
-},
-controlBtn: {
-  width: 28,
-  height: 28,
-  border: "1px solid #e2e8f0",
-  borderRadius: 6,
-  background: "#fff",
-  cursor: "pointer",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  fontSize: 12,
-  color: "#475569",
-},
+  blockWrapper: {
+    marginBottom: 16,
+    padding: 12,
+    background: "#fff",
+    borderRadius: 8,
+    border: "1px solid #e2e8f0",
+  },
+  blockControls: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 10,
+    paddingBottom: 8,
+    borderBottom: "1px solid #f1f5f9",
+  },
+  blockTypeLabel: {
+    fontSize: 11,
+    fontWeight: 600,
+    color: "#64748b",
+    textTransform: "uppercase",
+    letterSpacing: "0.04em",
+  },
+  blockControlButtons: {
+    display: "flex",
+    gap: 4,
+  },
+  controlBtn: {
+    width: 28,
+    height: 28,
+    border: "1px solid #e2e8f0",
+    borderRadius: 6,
+    background: "#fff",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: 12,
+    color: "#475569",
+  },
   textBlock: {
     width: "100%",
     minHeight: 80,
     padding: 12,
-    border: "1px solid #e2e8f0",
-    borderRadius: 6,
+    border: "1px solid #d1d5db",
+    borderRadius: 8,
     fontSize: 14,
     lineHeight: 1.5,
     resize: "vertical",
@@ -2600,44 +15523,13 @@ controlBtn: {
     color: "#94a3b8",
     gap: 4,
   },
-  previewButton: {
-    background: "#7c3aed",
-    color: "#fff",
-    border: "none",
-    padding: "10px 24px",
-    borderRadius: 8,
-    fontWeight: 600,
-    fontSize: 14,
-    cursor: "pointer",
+  uploadBox: {
+    border: "2px dashed #cbd5e1",
+    borderRadius: 10,
+    padding: "24px 16px",
+    textAlign: "center",
+    background: "#f8fafc",
   },
-  editorFooter: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 16,
-    paddingTop: 12,
-    borderTop: "1px solid #e2e8f0",
-  },
-  iconOnlyBtn: {
-    width: 32,
-    height: 32,
-    border: "1px solid #e2e8f0",
-    borderRadius: 6,
-    background: "#fff",
-    cursor: "pointer",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  addVariable: {
-    border: "none",
-    background: "transparent",
-    color: "#7c3aed",
-    fontSize: 13,
-    fontWeight: 500,
-    cursor: "pointer",
-  },
-  previewCard: { marginBottom: 20 },
   emailComposer: { display: "flex", flexDirection: "column", gap: 12 },
   emailSectionCard: {
     border: "1px solid #e2e8f0",
@@ -2645,12 +15537,27 @@ controlBtn: {
     padding: 12,
     background: "#f8fafc",
   },
+  previewCard: { marginBottom: 20 },
   previewHeader: {
     display: "flex",
     alignItems: "center",
     gap: 8,
     marginBottom: 10,
   },
+  emailPreviewFrame: {
+    border: "1px solid #e2e8f0",
+    borderRadius: 10,
+    overflow: "hidden",
+    background: "#fff",
+  },
+  previewSubject: {
+    padding: "10px 14px",
+    background: "#f8fafc",
+    borderBottom: "1px solid #e2e8f0",
+    fontSize: 13,
+    color: "#475569",
+  },
+  previewBody: { padding: 16 },
   whatsappFrame: {
     border: "1px solid #e2e8f0",
     borderRadius: 12,
@@ -2685,41 +15592,6 @@ controlBtn: {
     alignItems: "center",
     gap: 10,
   },
-  emailPreviewFrame: {
-    border: "1px solid #e2e8f0",
-    borderRadius: 10,
-    overflow: "hidden",
-    background: "#fff",
-  },
-  previewSubject: {
-    padding: "10px 14px",
-    background: "#f8fafc",
-    borderBottom: "1px solid #e2e8f0",
-    fontSize: 13,
-    color: "#475569",
-  },
-  previewBody: { padding: 16 },
-  previewFooter: {
-    borderTop: "1px solid #f1f5f9",
-    paddingTop: 16,
-    marginTop: 20,
-    textAlign: "center",
-  },
-  socialIcons: {
-    display: "flex",
-    justifyContent: "center",
-    gap: 10,
-  },
-  socialIcon: {
-    width: 28,
-    height: 28,
-    borderRadius: "50%",
-    background: "#f1f5f9",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    color: "#64748b",
-  },
   socialCard: {
     border: "1px solid #e2e8f0",
     borderRadius: 10,
@@ -2736,7 +15608,7 @@ controlBtn: {
     width: 36,
     height: 36,
     borderRadius: "50%",
-    background: "linear-gradient(135deg, #7c3aed, #a78bfa)",
+    background: "linear-gradient(135deg, #2563eb, #60a5fa)",
   },
   socialActions: {
     display: "flex",
@@ -2766,25 +15638,12 @@ controlBtn: {
     gap: 6,
     padding: "9px 18px",
     borderRadius: 8,
-    border: "1px solid #e2e8f0",
+    border: "1px solid #d1d5db",
     background: "#fff",
     fontSize: 13,
     fontWeight: 500,
     cursor: "pointer",
     color: "#475569",
-  },
-  bottomPrimary: {
-    display: "flex",
-    alignItems: "center",
-    gap: 6,
-    padding: "9px 20px",
-    borderRadius: 8,
-    border: "none",
-    background: "#7c3aed",
-    color: "#fff",
-    fontSize: 13,
-    fontWeight: 600,
-    cursor: "pointer",
   },
 };
 
